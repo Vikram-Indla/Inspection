@@ -6,6 +6,7 @@ import {
 } from "@/features/enforcement/catalogue";
 import { fill } from "@/i18n/messages";
 import styles from "./penalty-mapping-card.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type PenaltyMappingStrings = {
   readonly severity: string;
@@ -43,15 +44,15 @@ export default function PenaltyMappingCard({ code, today, formatAmount, formatDa
   const lifecycle = deriveLifecycle(code.active_from, code.active_to, today);
   const lifecycleLabel = lifecycle === "active" ? strings.lifecycleActive
     : lifecycle === "future" ? strings.lifecycleFuture : strings.lifecycleDeactivated;
-  const missing = <span className={styles.absent}>{strings.absent}</span>;
+  const missing = <Text as="span" tone="muted">{strings.absent}</Text>;
   const days = (value: number | null) => value === null ? missing : fill(strings.days, { days: value });
 
   return (
     <Card as="article">
       <CardHeader
         level="h3"
-        eyebrow={<bdi className={styles.code}>{code.code}</bdi>}
         title={code.title}
+        description={<bdi><Mono tone="muted">{code.code}</Mono></bdi>}
         trailing={
           <span className={styles.pills}>
             <StatusPill tone={severityTone(code.level)}>{fill(strings.severity, { level: code.level })}</StatusPill>
@@ -64,18 +65,18 @@ export default function PenaltyMappingCard({ code, today, formatAmount, formatDa
       />
       <CardBody gap="tight">
         {!mapping ? (
-          <p className={styles.muted}>{strings.unmappedBody}</p>
+          <Text tone="muted">{strings.unmappedBody}</Text>
         ) : (
           <DefinitionList
             columns="two"
             items={[
-              { label: strings.reference, value: <bdi className={styles.code}>{mapping.penalty_ref}</bdi> },
+              { label: strings.reference, value: <bdi><Mono tone="muted">{mapping.penalty_ref}</Mono></bdi> },
               { label: strings.legalBasis, value: mapping.legal_basis ? <bdi>{mapping.legal_basis}</bdi> : missing },
               { label: strings.type, value: mapping.penalty_type ? labelFor(mapping.penalty_type) : missing },
               {
                 label: strings.amount,
                 value: mapping.amount === null
-                  ? <span className={styles.absent}>{strings.noAmount}</span>
+                  ? <Text as="span" tone="muted">{strings.noAmount}</Text>
                   : <bdi>{formatAmount(mapping.amount)}</bdi>,
               },
               { label: strings.grace, value: days(mapping.grace_period_days) },
@@ -86,7 +87,7 @@ export default function PenaltyMappingCard({ code, today, formatAmount, formatDa
                   ? <bdi>{formatDay(mapping.effective_from)}{mapping.effective_to ? ` → ${formatDay(mapping.effective_to)}` : ""}</bdi>
                   : missing,
               },
-              { label: strings.mappingVersion, value: <bdi className={styles.code}>{mapping.mapping_version}</bdi> },
+              { label: strings.mappingVersion, value: <bdi><Mono tone="muted">{mapping.mapping_version}</Mono></bdi> },
               { label: strings.state, value: labelFor(mapping.status) },
             ]}
           />

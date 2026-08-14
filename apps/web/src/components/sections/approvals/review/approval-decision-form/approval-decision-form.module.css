@@ -3,7 +3,6 @@
 .comment {
   inline-size: 100%;
   padding: var(--sqx-space-3);
-  font: var(--sqx-text-body);
   color: var(--sqx-text-primary);
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
@@ -13,6 +12,5 @@
 
 .comment:focus-visible { outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus); outline-offset: var(--sqx-focus-ring-offset); }
 .actions { display: flex; flex-wrap: wrap; gap: var(--sqx-space-3); }
-.note { margin: 0; font: var(--sqx-text-caption); color: var(--sqx-text-muted); text-wrap: pretty; }
-.cascade { margin: 0; font: var(--sqx-text-caption); color: var(--sqx-status-warning-on-soft); text-wrap: pretty; }
-.error { margin: 0; font: var(--sqx-text-caption); color: var(--sqx-status-critical-on-soft); text-wrap: pretty; }
+.cascade { margin: 0; color: var(--sqx-status-warning-on-soft); text-wrap: pretty; }
+.error { margin: 0; color: var(--sqx-status-critical-on-soft); text-wrap: pretty; }

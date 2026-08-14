@@ -51,6 +51,7 @@ const tone = (band: string | null): GeoTone =>
 
 const TONE_CLASS: Record<GeoTone, string> = {
   high: styles.toneHigh, medium: styles.toneMedium, low: styles.toneLow, neutral: styles.toneNeutral,
+  brand: styles.toneBrand,
 };
 
 export default async function FieldMapPage() {

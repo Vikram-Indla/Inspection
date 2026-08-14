@@ -1,0 +1,18 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}

@@ -5,6 +5,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { RegulationWorkspace } from "@/features/regulations/workspace-source";
 import { configStatusTone } from "@/features/regulations/workspace-view";
 import styles from "./regulation-overview.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type RegulationOverviewStrings = {
   readonly authority: string;
@@ -30,7 +31,7 @@ export default function RegulationOverview({ workspace, statusLabel, formatDay, 
   strings: RegulationOverviewStrings;
 }) {
   const { regulation } = workspace;
-  const missing = <span className={styles.absent}>{strings.notRecorded}</span>;
+  const missing = <Text as="span" tone="muted">{strings.notRecorded}</Text>;
   const count = (table: RegulationWorkspace["items"] | RegulationWorkspace["violations"] | RegulationWorkspace["penalties"]) =>
     table.kind === "unavailable" ? strings.unavailable : String(table.rows.length);
 

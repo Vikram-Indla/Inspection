@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
-import NotificationBell from "@/components/NotificationBell";
+import NotificationBell from "@/components/notifications/notification-bell";
 import Icon from "@/components/saqeel/icon/icon";
 import { getNotificationStrings } from "@/features/shell/notification-strings";
 import type { ShellView } from "@/features/shell/types";
@@ -15,26 +15,12 @@ import ShellThemeToggle from "./shell-theme-toggle";
 import ShellUserMenu from "./shell-user-menu";
 import styles from "./shell-topbar.module.css";
 
-function isoDay(value: Date): string {
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${value.getFullYear()}-${month}-${day}`;
-}
-
-function defaultDateRange(): { from: string; to: string } {
-  const to = new Date();
-  const from = new Date(to);
-  from.setDate(from.getDate() - 29);
-  return { from: isoDay(from), to: isoDay(to) };
-}
-
 export default async function ShellTopbar({ view, mobileNav }: {
   view: ShellView;
   mobileNav: ReactNode;
 }) {
   const locale = await getLocale();
   const { common, shell } = getMessages(locale);
-  const range = defaultDateRange();
   const administrationItems = view.groups.find(group => group.isAdministration)?.items ?? [];
   const navigationItems = view.groups.flatMap(group => group.items);
   const aiLabel = shell.aiInsights;
@@ -75,8 +61,8 @@ export default async function ShellTopbar({ view, mobileNav }: {
           <ShellScopeControls
             scope={view.scope}
             regions={view.regions}
-            initialFrom={range.from}
-            initialTo={range.to}
+            initialFrom=""
+            initialTo=""
             initialRegion=""
             locale={locale}
             strings={{
@@ -88,6 +74,7 @@ export default async function ShellTopbar({ view, mobileNav }: {
               nextMonth: common.action.nextMonth,
               regionScope: common.field.regionScope,
               allRegions: common.scope.allRegions,
+              anyDate: common.scope.anyDate,
               notApplicable: common.state.notApplicable,
               presets: common.scope,
             }}
@@ -99,12 +86,11 @@ export default async function ShellTopbar({ view, mobileNav }: {
         <ShellLocaleToggle locale={locale} label={common.field.language} />
         <ShellThemeToggle
           labels={{
-            system: shell.theme.system,
             light: shell.theme.light,
             dark: shell.theme.dark,
           }}
         />
-        <NotificationBell strings={await getNotificationStrings()} locale={locale} fieldOnly={view.isFieldOnly} />
+        <NotificationBell strings={getNotificationStrings(locale)} locale={locale} fieldOnly={view.isFieldOnly} />
         <Link className={styles.aiButton} href={localeHref(locale, "/ai/suggestions")} aria-label={aiLabel} title={aiLabel} prefetch={false}>
           <Icon name="ai" />
         </Link>

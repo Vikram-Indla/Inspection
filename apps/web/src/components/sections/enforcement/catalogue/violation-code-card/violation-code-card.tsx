@@ -7,6 +7,7 @@ import {
 } from "@/features/enforcement/catalogue";
 import { fill } from "@/i18n/messages";
 import styles from "./violation-code-card.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type ViolationCodeStrings = {
   readonly severity: string;
@@ -46,14 +47,14 @@ export default function ViolationCodeCard({ code, triggers, triggersReadable, ve
     : lifecycle === "future" ? strings.lifecycleFuture : strings.lifecycleDeactivated;
   const mapping = mappingStateOf(code.penalty_mappings);
   const clause = code.regulation_clauses;
-  const missing = <span className={styles.absent}>{strings.absent}</span>;
+  const missing = <Text as="span" tone="muted">{strings.absent}</Text>;
 
   return (
     <Card as="article">
       <CardHeader
         level="h3"
-        eyebrow={<bdi className={styles.code}>{code.code}</bdi>}
         title={code.title}
+        description={<bdi><Mono tone="muted">{code.code}</Mono></bdi>}
         trailing={
           <span className={styles.pills}>
             <StatusPill tone={severityTone(code.level)}>{fill(strings.severity, { level: code.level })}</StatusPill>
@@ -71,8 +72,8 @@ export default function ViolationCodeCard({ code, triggers, triggersReadable, ve
             {
               label: strings.legalTrace,
               value: clause
-                ? <bdi className={styles.code}>{clause.regulations?.code ?? "—"} §{clause.clause_ref}</bdi>
-                : <span className={styles.absent}>{strings.noAnchor}</span>,
+                ? <bdi><Mono tone="muted">{clause.regulations?.code ?? "—"} §{clause.clause_ref}</Mono></bdi>
+                : <Text as="span" tone="muted">{strings.noAnchor}</Text>,
             },
             { label: strings.configVersion, value: <bdi>{code.configuration_version}</bdi> },
             { label: strings.category, value: code.category ? labelFor(code.category) : missing },
@@ -86,41 +87,41 @@ export default function ViolationCodeCard({ code, triggers, triggersReadable, ve
         />
 
         <details className={styles.disclosure}>
-          <summary className={styles.summary}>{fill(strings.triggers, { count: triggers.length })}</summary>
+          <summary className={styles.summary}><Text as="span" role="bodyStrong">{fill(strings.triggers, { count: triggers.length })}</Text></summary>
           {!triggersReadable ? (
-            <p className={styles.muted}>{strings.triggersUnavailable}</p>
+            <Text tone="muted">{strings.triggersUnavailable}</Text>
           ) : triggers.length === 0 ? (
-            <p className={styles.muted}>{strings.triggersEmpty}</p>
+            <Text tone="muted">{strings.triggersEmpty}</Text>
           ) : (
             <ul className={styles.list}>
               {triggers.map(trigger => (
-                <li key={trigger.code}>
-                  <bdi className={styles.code}>{trigger.code}</bdi> — {trigger.title}
-                </li>
+                <Text as="li" tone="inherit" key={trigger.code}>
+                  <bdi><Mono tone="muted">{trigger.code}</Mono></bdi> — {trigger.title}
+                </Text>
               ))}
             </ul>
           )}
         </details>
 
         <details className={styles.disclosure}>
-          <summary className={styles.summary}>{fill(strings.versions, { count: versions.length })}</summary>
+          <summary className={styles.summary}><Text as="span" role="bodyStrong">{fill(strings.versions, { count: versions.length })}</Text></summary>
           <ol className={styles.list}>
             {versions.map(version => (
-              <li key={version.id}>
+              <Text as="li" tone="inherit" key={version.id}>
                 <bdi>{version.configuration_version}</bdi> · {labelFor(version.status)} · <bdi>{version.active_from ?? "—"}</bdi>
                 {version.deactivation_reason ? ` · ${version.deactivation_reason}` : ""}
-              </li>
+              </Text>
             ))}
           </ol>
         </details>
 
-        <p className={styles.muted}>
+        <Text tone="muted">
           {fill(strings.derivation, {
             from: code.active_from ?? "—",
             to: code.active_to ?? "—",
             today,
           })}
-        </p>
+        </Text>
       </CardBody>
     </Card>
   );

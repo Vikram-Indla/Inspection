@@ -40,10 +40,6 @@ export function buildNoticeStrings(locale: Locale): BulkMessages["notice"] {
   return bulkMessages(locale).notice;
 }
 
-export function buildAdvisoryStrings(locale: Locale): BulkMessages["ai"] {
-  return bulkMessages(locale).ai;
-}
-
 export function buildLedgerStrings(locale: Locale): LedgerStrings {
   return bulkMessages(locale).ledger;
 }

@@ -10,7 +10,6 @@ async function openDashboard(page: Page, locale: Locale, theme: Theme, route: st
   await page.goto(route);
   await page.evaluate(value => {
     localStorage.setItem("saqeel-theme", value);
-    localStorage.setItem("saqeel-theme-mode", value);
   }, theme);
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", locale);

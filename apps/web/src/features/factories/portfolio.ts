@@ -129,7 +129,10 @@ export function provenanceDetail(factory: FactoryRow, strings: ProvenanceStrings
   if (base.label === strings.test) {
     return { ...base, body: strings.testBody, recorded: strings.noSenaeiSync };
   }
-  return { ...base, body: strings.unavailableBody, recorded: strings.freshnessUnavailable };
+  // No body. The pill already says provenance is unavailable; the sentence that
+  // followed it only restated that in longer words, which is the shape of every
+  // absence note this card used to carry.
+  return { ...base, body: "", recorded: strings.freshnessUnavailable };
 }
 
 export function conditionOf(band: string | null, strings: ConditionStrings): {

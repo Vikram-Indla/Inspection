@@ -69,7 +69,6 @@ test.describe("TASK-MVP3-RETROFIT-REGRESSION-001 integrated control planes", () 
     // mode through its persisted keys and prove the surface renders in both.
     for (const theme of ["light", "dark"] as const) {
       await page.evaluate(mode => {
-        localStorage.setItem("saqeel-theme-mode", mode);
         localStorage.setItem("saqeel-theme", mode);
       }, theme);
       await page.reload();

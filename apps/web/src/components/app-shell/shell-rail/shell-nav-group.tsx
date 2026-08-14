@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { type CSSProperties } from "react";
 import Icon from "@/components/saqeel/icon/icon";
+import { Overline, Text } from "@/components/saqeel/type";
 import { stripLocale, type Locale } from "@/lib/locale-path";
 import { shellRouteOf } from "@/lib/route-rewrites";
 import { isShellRouteCurrent } from "@/lib/shell-navigation";
@@ -14,6 +15,13 @@ type ShellNavGroupProps = {
   group: ShellNavGroup;
   locale: Locale;
   pathname: string;
+  /**
+   * Which rail instance this belongs to. The rail renders twice — once as the
+   * desktop rail, once inside the mobile drawer — so a subgroup id built from
+   * the group and entry alone appears twice in one document, and every
+   * `aria-labelledby` pointing at it resolves to whichever came first.
+   */
+  variant: string;
 };
 
 type ConnectorStyle = CSSProperties & Record<"--sqx-rows-after-active", string>;
@@ -28,24 +36,26 @@ function connectorStyle(rowsAfter: number | null): ConnectorStyle | undefined {
   return { "--sqx-rows-after-active": String(rowsAfter) };
 }
 
-function Subgroup({ entry, groupId, locale, pathname }: {
+function Subgroup({ entry, groupId, locale, pathname, variant }: {
   entry: ShellNavSubgroup;
   groupId: string;
   locale: Locale;
   pathname: string;
+  variant: string;
 }) {
   const rowsAfter = rowsAfterActive(entry.items, pathname);
+  const labelId = `sqx-nav-${variant}-${groupId}-${entry.id}`;
   return (
     <div
       className={styles.subgroup}
       role="group"
-      aria-labelledby={`sqx-nav-${groupId}-${entry.id}`}
+      aria-labelledby={labelId}
       data-holds-current={rowsAfter === null ? undefined : ""}
       style={connectorStyle(rowsAfter)}
     >
-      <p className={styles.subgroupLabel} id={`sqx-nav-${groupId}-${entry.id}`}>
+      <p className={styles.subgroupLabel} id={labelId}>
         <Icon name={entry.icon} size="md" />
-        <span>{entry.label}</span>
+        <Text as="span" role="label" tone="inherit">{entry.label}</Text>
       </p>
       {entry.items.map(item => (
         <ShellNavItemLink
@@ -60,7 +70,7 @@ function Subgroup({ entry, groupId, locale, pathname }: {
   );
 }
 
-export default function ShellNavGroupSection({ group, locale, pathname }: ShellNavGroupProps) {
+export default function ShellNavGroupSection({ group, locale, pathname, variant }: ShellNavGroupProps) {
   const livePathname = shellRouteOf(stripLocale(usePathname() || pathname));
   const holdsCurrentRoute = group.items.some(item => isShellRouteCurrent(livePathname, item.href));
 
@@ -73,7 +83,9 @@ export default function ShellNavGroupSection({ group, locale, pathname }: ShellN
     >
       <summary className={styles.groupSummary}>
         {group.isAdministration ? <Icon name="admin" size="md" /> : null}
-        <span className={styles.groupLabel}>{group.label}</span>
+        <span className={styles.groupLabel}>
+          <Overline as="span" tone="inherit">{group.label}</Overline>
+        </span>
         <span className={styles.groupChevron}>
           <Icon name="disclosure" size="sm" />
         </span>
@@ -89,7 +101,7 @@ export default function ShellNavGroupSection({ group, locale, pathname }: ShellN
               isCurrent={isShellRouteCurrent(livePathname, entry.item.href)}
             />
           ) : (
-            <Subgroup key={entry.id} entry={entry} groupId={group.id} locale={locale} pathname={livePathname} />
+            <Subgroup key={entry.id} entry={entry} groupId={group.id} locale={locale} pathname={livePathname} variant={variant} />
           ),
         )}
       </div>

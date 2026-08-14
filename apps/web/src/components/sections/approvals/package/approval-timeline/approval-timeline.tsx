@@ -2,6 +2,7 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Timeline, { type TimelineEvent } from "@/components/saqeel/timeline/timeline";
 import styles from "./approval-timeline.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ApprovalTimelineStrings = {
   readonly heading: string;
@@ -23,7 +24,7 @@ export default function ApprovalTimeline({ events, strings }: {
         ) : (
           <Timeline events={events} label={strings.heading} />
         )}
-        <p className={styles.footnote}>{strings.footnote}</p>
+        <Text tone="muted">{strings.footnote}</Text>
       </CardBody>
     </Card>
   );

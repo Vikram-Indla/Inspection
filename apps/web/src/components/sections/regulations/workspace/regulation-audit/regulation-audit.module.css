@@ -1,6 +1,5 @@
 .footnote {
   margin: var(--sqx-space-3) 0 0;
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

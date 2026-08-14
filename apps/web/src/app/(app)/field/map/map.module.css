@@ -58,6 +58,7 @@
 .toneMedium { background: var(--status-warning); }
 .toneLow { background: var(--status-compliant); }
 .toneNeutral { background: var(--status-disabled); }
+.toneBrand { background: var(--action-primary); }
 
 /* A visit with no governed window gets a plain dot, never an invented number. */
 .stopDot {

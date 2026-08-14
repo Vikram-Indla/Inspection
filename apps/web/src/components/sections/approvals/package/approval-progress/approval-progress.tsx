@@ -3,6 +3,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { StepState } from "@/features/approvals/rows";
 import { fill } from "@/i18n/messages";
 import styles from "./approval-progress.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ApprovalProgressStrings = {
   readonly heading: string;
@@ -27,17 +28,17 @@ export default function ApprovalProgress({ groups, decided, total, labelFor, str
         <ul className={styles.list}>
           {groups.map(group => (
             <li className={styles.group} key={group.step}>
-              <span className={styles.label}>{labelFor(group.step)}</span>
+              <Text as="span" role="bodyStrong">{labelFor(group.step)}</Text>
               {group.breakdown.total === 0 ? (
-                <span className={styles.absent}>{strings.none}</span>
+                <Text as="span" tone="muted">{strings.none}</Text>
               ) : (
                 <span className={styles.parts}>
                   {group.breakdown.approved > 0
-                    ? <span>{fill(strings.approved, { count: group.breakdown.approved })}</span> : null}
+                    ? <Text as="span" tone="inherit">{fill(strings.approved, { count: group.breakdown.approved })}</Text> : null}
                   {group.breakdown.rejected > 0
-                    ? <span>{fill(strings.rejected, { count: group.breakdown.rejected })}</span> : null}
+                    ? <Text as="span" tone="inherit">{fill(strings.rejected, { count: group.breakdown.rejected })}</Text> : null}
                   {group.breakdown.pending > 0
-                    ? <span>{fill(strings.pending, { count: group.breakdown.pending })}</span> : null}
+                    ? <Text as="span" tone="inherit">{fill(strings.pending, { count: group.breakdown.pending })}</Text> : null}
                 </span>
               )}
             </li>

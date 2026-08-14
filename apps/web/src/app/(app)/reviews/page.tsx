@@ -1,33 +1,47 @@
 import Shell, { preloadShell } from "@/components/Shell";
-import { getServerUser, supabaseServer } from "@/lib/supabase-server";
-import { getUserRoles } from "@/lib/persona";
-import { useT } from "@/lib/i18n";
+import ReviewsAccessState from "@/components/sections/reviews/reviews-access-state/reviews-access-state";
+import ReviewsScreen from "@/components/sections/reviews/reviews-screen/reviews-screen";
 import { hasQueueAccess } from "@/features/reviews/access";
 import { loadReviewQueue } from "@/features/reviews/queries";
-import { QueueScreen } from "./QueueScreen";
-import { QueueUnauthorized } from "./QueueUnauthorized";
+import { buildReviewsStrings } from "@/features/reviews/strings";
+import { getUserRoles } from "@/lib/persona";
+import { getLocale } from "@/lib/i18n";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
-export default async function Reviews() {
+export default async function Reviews({ searchParams }: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   preloadShell("/reviews");
-  const { t } = await useT();
-  const title = t("review.list.title", "Inspection review queue");
+  const params = await searchParams;
+  const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? "";
+  const locale = await getLocale();
+  const strings = buildReviewsStrings(locale);
   const { data: { user } } = await getServerUser();
   const { data: roleRows } = user ? await getUserRoles(user.id) : { data: null };
+
   if (!hasQueueAccess(roleRows)) {
     return (
-      <Shell current="/reviews" title={title}>
-        <QueueUnauthorized />
+      <Shell current="/reviews" title={strings.title}>
+        <ReviewsAccessState strings={strings} />
       </Shell>
     );
   }
-  const sb = await supabaseServer();
-  const loaded = await loadReviewQueue(sb);
+
   return (
-    <Shell current="/reviews" title={title}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
-      <QueueScreen loaded={loaded} />
+    <Shell current="/reviews" title={strings.title}>
+      <ReviewsScreen
+        loaded={await loadReviewQueue(await supabaseServer())}
+        filters={{
+          query: one(params.q),
+          status: one(params.status),
+          risk: one(params.risk),
+          overdueOnly: one(params.overdue) === "1",
+        }}
+        strings={strings}
+        locale={locale}
+      />
     </Shell>
   );
 }

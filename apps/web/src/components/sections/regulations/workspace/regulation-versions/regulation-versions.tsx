@@ -3,6 +3,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { WorkspaceVersion } from "@/features/regulations/workspace-source";
 import { fill } from "@/i18n/messages";
 import styles from "./regulation-versions.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type RegulationVersionsStrings = {
   readonly caption: string;
@@ -27,20 +28,20 @@ export default function RegulationVersions({ versions, currentVersionId, request
   formatDay: (iso: string) => string;
   strings: RegulationVersionsStrings;
 }) {
-  const absent = <span className={styles.absent}>{strings.none}</span>;
+  const absent = <Text as="span" tone="muted">{strings.none}</Text>;
 
   const columns: readonly DataColumn<WorkspaceVersion>[] = [
     {
       key: "version",
       header: strings.version,
       isRowHeader: true,
-      cell: version => <bdi className={styles.code}>{fill(strings.versionNumber, { number: version.version_number })}</bdi>,
+      cell: version => <bdi><Mono tone="muted">{fill(strings.versionNumber, { number: version.version_number })}</Mono></bdi>,
     },
     {
       key: "published",
       header: strings.published,
       numeric: true,
-      cell: version => version.published_at ? <bdi className={styles.code}>{formatDay(version.published_at)}</bdi> : absent,
+      cell: version => version.published_at ? <bdi><Mono tone="muted">{formatDay(version.published_at)}</Mono></bdi> : absent,
     },
     {
       key: "request",

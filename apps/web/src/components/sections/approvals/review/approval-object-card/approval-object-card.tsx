@@ -7,6 +7,7 @@ import { fill } from "@/i18n/messages";
 import styles from "./approval-object-card.module.css";
 import ApprovalDecisionForm, { type ApprovalDecisionStrings } from "../approval-decision-form/approval-decision-form";
 import ApprovalFieldDiff, { type ApprovalFieldDiffStrings } from "../approval-field-diff/approval-field-diff";
+import { Overline, Text } from "@/components/saqeel/type";
 
 export type ApprovalObjectStrings = {
   readonly created: string;
@@ -58,8 +59,8 @@ export default function ApprovalObjectCard({
     <Card as="article">
       <CardHeader
         level="h3"
-        eyebrow={kindLabel(component.entity_kind)}
         title={isCreate ? strings.created : strings.modified}
+        description={kindLabel(component.entity_kind)}
         trailing={<StatusPill tone={componentTone(component.component_status)}>{statusLabel(component.component_status)}</StatusPill>}
       />
       <CardBody gap="tight">
@@ -71,53 +72,53 @@ export default function ApprovalObjectCard({
         />
 
         <section className={styles.block}>
-          <h4 className={styles.blockTitle}>{strings.dependencies}</h4>
+          <h4 className={styles.blockTitle}><Overline as="span">{strings.dependencies}</Overline></h4>
           {parents.length ? (
             <ul className={styles.chips}>
               {parents.map(parent => <li className={styles.chip} key={parent.id}>{kindLabel(parent.entity_kind)}</li>)}
             </ul>
           ) : (
-            <p className={styles.muted}>{strings.noDependencies}</p>
+            <Text tone="muted">{strings.noDependencies}</Text>
           )}
         </section>
 
         {component.target_entity_id ? (
           <section className={styles.block}>
-            <h4 className={styles.blockTitle}>{strings.recordedDependents}</h4>
+            <h4 className={styles.blockTitle}><Overline as="span">{strings.recordedDependents}</Overline></h4>
             {!recordedReadable ? (
-              <p className={styles.muted}>{strings.dependentsUnavailable}</p>
+              <Text tone="muted">{strings.dependentsUnavailable}</Text>
             ) : counts.length ? (
               <ul className={styles.counts}>
                 {counts.map(entry => (
                   <li className={styles.count} key={entry.key}>
-                    <span>{entry.label}</span>
-                    <bdi className={styles.countValue}>{entry.value}</bdi>
+                    <Text as="span" tone="inherit">{entry.label}</Text>
+                    <bdi className={styles.countValue}><Text as="span" tone="inherit" numeric>{entry.value}</Text></bdi>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className={styles.muted}>{strings.noDependents}</p>
+              <Text tone="muted">{strings.noDependents}</Text>
             )}
-            <p className={styles.muted}>{strings.dependentsNote}</p>
+            <Text tone="muted">{strings.dependentsNote}</Text>
           </section>
         ) : null}
 
         {component.component_comments ? (
           <p className={styles.comment}>
-            <span className={styles.commentLabel}>{strings.reviewerComment}</span>
-            <span dir="auto">{component.component_comments}</span>
+            <Overline as="span">{strings.reviewerComment}</Overline>
+            <Text as="span" tone="inherit" dir="auto">{component.component_comments}</Text>
           </p>
         ) : null}
 
         {component.decision_comments ? (
           <p className={styles.comment}>
-            <span className={styles.commentLabel}>{strings.decidedComment}</span>
-            <span dir="auto">{component.decision_comments}</span>
+            <Overline as="span">{strings.decidedComment}</Overline>
+            <Text as="span" tone="inherit" dir="auto">{component.decision_comments}</Text>
           </p>
         ) : null}
 
         {publishedVersion ? (
-          <p className={styles.published}>{fill(strings.published, { version: publishedVersion })}</p>
+          <p className={styles.published}><Text as="span" tone="inherit">{fill(strings.published, { version: publishedVersion })}</Text></p>
         ) : null}
 
         {canDecide && component.component_status === "pending_review" ? (

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import Icon from "@/components/saqeel/icon/icon";
+import Kbd from "@/components/saqeel/kbd/kbd";
+import { Text } from "@/components/saqeel/type";
 import type { ShellNavItem } from "@/features/shell/types";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./shell-topbar.module.css";
@@ -64,8 +66,8 @@ export default function ShellAdminPalette({ items, locale, strings }: {
         aria-haspopup="dialog" aria-expanded={isOpen} aria-controls={dialogId}
         onClick={() => setIsOpen(true)}>
         <Icon name="commandPalette" size="sm" />
-        <span>{strings.open}</span>
-        <kbd>⌘K</kbd>
+        <Text as="span" role="label" tone="inherit">{strings.open}</Text>
+        <Kbd keys="⌘K" />
       </button>
 
       {isOpen ? (
@@ -83,20 +85,20 @@ export default function ShellAdminPalette({ items, locale, strings }: {
               aria-describedby={`${dialogId}-count`}
               onChange={event => setQuery(event.target.value)}
             />
-            <p className={styles.paletteCount} id={`${dialogId}-count`} role="status" aria-live="polite">
+            <Text id={`${dialogId}-count`} live="status" tone="muted">
               {(matches.length === 1 ? strings.resultsOne : strings.resultsOther)
                 .replace("{count}", String(matches.length))}
-            </p>
+            </Text>
             <div className={styles.paletteResults} role="listbox" aria-label={strings.title}>
               {matches.map(item => (
                 <Link className={styles.paletteResult} role="option" aria-selected="false"
                   key={item.id} href={localeHref(locale, item.href)} prefetch={false} data-next-spa="true"
                   onClick={() => setIsOpen(false)}>
                   <Icon name={item.icon} size="sm" />
-                  <span>{item.label}</span>
+                  <Text as="span" role="label" tone="inherit">{item.label}</Text>
                 </Link>
               ))}
-              {!matches.length ? <p className={styles.paletteEmpty}>{strings.empty}</p> : null}
+              {!matches.length ? <Text tone="muted">{strings.empty}</Text> : null}
             </div>
           </div>
         </div>

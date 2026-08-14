@@ -1,4 +1,5 @@
 import EmptyState from "@/components/EmptyState";
+import { Mono } from "@/components/saqeel/type";
 import type { PlanningReadFailure } from "@/lib/planning/read-contract";
 
 type PlanningReadFailureProps = {
@@ -23,7 +24,7 @@ export default function PlanningReadFailureState({
       glyph="⚠"
       role="alert"
       title={title}
-      body={<>{body} <span className="id-code">{referenceLabel}: {failure.code} · {failure.correlationId}</span></>}
+      body={<>{body} <Mono>{referenceLabel}: {failure.code} · {failure.correlationId}</Mono></>}
     >
       <a className="btn btn-secondary" href={retryHref}>{retryLabel}</a>
     </EmptyState>

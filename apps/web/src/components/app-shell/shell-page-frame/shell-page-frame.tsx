@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
+import { Heading, Text } from "@/components/saqeel/type";
 import styles from "./shell-page-frame.module.css";
 
 export type ShellBreadcrumb = {
@@ -24,8 +25,10 @@ export default function ShellPageFrame({ title, description, breadcrumbs, action
                 <li key={crumb.href ?? crumb.label}
                   aria-current={index === breadcrumbs.length - 1 ? "page" : undefined}>
                   {crumb.href && index < breadcrumbs.length - 1
-                    ? <Link href={crumb.href} data-next-spa="true">{crumb.label}</Link>
-                    : <span>{crumb.label}</span>}
+                    ? <Link href={crumb.href} data-next-spa="true">
+                        <Text as="span" role="label" tone="inherit">{crumb.label}</Text>
+                      </Link>
+                    : <Text as="span" role="label" tone="inherit">{crumb.label}</Text>}
                 </li>
               ))}
             </ol>
@@ -33,8 +36,12 @@ export default function ShellPageFrame({ title, description, breadcrumbs, action
           {title ? (
             <div className={styles.titleRow}>
               <div className={styles.titleText}>
-                <h1 className={styles.title}>{title}</h1>
-                {description ? <p className={styles.description}>{description}</p> : null}
+                <Heading level={1}>{title}</Heading>
+                {description ? (
+                  <p className={styles.description}>
+                    <Text as="span" tone="secondary">{description}</Text>
+                  </p>
+                ) : null}
               </div>
               {actions ? <div className={styles.frameActions}>{actions}</div> : null}
             </div>

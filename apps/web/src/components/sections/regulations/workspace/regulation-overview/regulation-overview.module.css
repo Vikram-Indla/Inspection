@@ -4,14 +4,8 @@
   gap: var(--sqx-space-5);
 }
 
-.absent {
-  color: var(--sqx-text-muted);
-  font-style: italic;
-}
-
 .note {
   margin: 0;
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

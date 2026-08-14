@@ -9,7 +9,6 @@
   inline-size: 100%;
   min-inline-size: 0;
   padding: var(--sqx-space-3);
-  font: var(--sqx-text-body);
   color: var(--sqx-text-primary);
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
@@ -24,7 +23,6 @@
 
 .error {
   margin: 0;
-  font: var(--sqx-text-caption);
   color: var(--sqx-status-critical-on-soft);
   text-wrap: pretty;
 }
@@ -37,7 +35,6 @@
 }
 
 .detail {
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-secondary);
   text-wrap: pretty;
 }

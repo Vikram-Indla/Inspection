@@ -38,6 +38,27 @@ export type DateRangePickerProps = {
   monthLabels: { previous: string; next: string };
   strings?: DateRangeStrings;
   disabled?: boolean;
+  /**
+   * Let `reset` commit an empty range instead of only clearing the draft.
+   *
+   * Off by default because most callers require a range: there, `reset` returns
+   * the draft to nothing so the reader picks again, and `apply` stays disabled
+   * until both ends are set. A filter is the other case — "no date scope" is a
+   * legitimate value, and without this the reader can clear the draft but never
+   * commit it, because `apply` is disabled on exactly the state `reset` creates.
+   *
+   * When on, the caller must accept `{ from: "", to: "" }` from `onChange` and
+   * render its own unset `displayValue`; the picker never invents one.
+   */
+  clearable?: boolean;
+  /**
+   * Render the trigger as its icon alone, for a toolbar with no room for the
+   * label. The value is not lost: it moves into the accessible name, and a
+   * `PingDot` marks the control as carrying one, so "filtered" stays visible
+   * without the text. Never decide this from a media query inside the
+   * primitive — the caller owns its own layout and passes the answer.
+   */
+  compact?: boolean;
   align?: "start" | "end";
   /**
    * Fill the container instead of shrink-wrapping.
@@ -120,6 +141,8 @@ export default function DateRangePicker({
   monthLabels,
   strings = DEFAULT_STRINGS,
   disabled,
+  clearable = false,
+  compact = false,
   align = "start",
   block = false,
   withTime = false,
@@ -195,6 +218,10 @@ export default function DateRangePicker({
     setDraftFrom("");
     setDraftTo("");
     setEditing("from");
+    if (clearable) {
+      onChange({ from: "", to: "" });
+      close(true);
+    }
   }
 
   function onGridKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
@@ -229,7 +256,8 @@ export default function DateRangePicker({
         className={styles.trigger}
         ref={triggerRef}
         type="button"
-        aria-label={label}
+        data-compact={compact ? "" : undefined}
+        aria-label={compact ? `${label} — ${displayValue}` : label}
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-haspopup="dialog"
@@ -239,7 +267,8 @@ export default function DateRangePicker({
         <span className={styles.leading}>
           <Icon name="dateScope" size="md" />
         </span>
-        <span>{displayValue}</span>
+        <span className={styles.triggerValue}>{displayValue}</span>
+        {compact && dayPart(from) && dayPart(to) ? <PingDot tone="accent" size="sm" /> : null}
       </button>
 
       <MenuSurface

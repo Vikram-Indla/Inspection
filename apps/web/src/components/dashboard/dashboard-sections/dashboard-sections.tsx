@@ -25,12 +25,6 @@ import RoleSummary from "../role-summary/role-summary";
 import DashboardToolbar from "../dashboard-toolbar/dashboard-toolbar";
 import ExecutiveBrief from "../executive-brief/executive-brief";
 
-function refreshedLabel(nowMs: number): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Riyadh", hour: "2-digit", minute: "2-digit", hour12: false,
-  }).format(new Date(nowMs));
-}
-
 function projectionFor(
   persona: DashboardPersona,
   snapshot: DashboardSnapshot,
@@ -139,12 +133,17 @@ export default async function DashboardSections({ locale, scope }: {
 
   const partialSources = snapshot.failedSources.map(key => dashboard.source[key]);
   const { metrics, projection, roleProjection } = projectionFor(persona, snapshot, resolved, partialSources);
-  const enforcementTrend = await queryEnforcementTrend(
-    await supabaseServer(),
-    resolved.scope.fromDate,
-    resolved.scope.toDate,
-    resolved.region,
-  );
+  // A period-over-period comparison needs a period. An unbounded scope has none
+  // and no previous one either, so the card falls to its no-trend state rather
+  // than inventing a window to compare against.
+  const enforcementTrend = resolved.scope.fromDate && resolved.scope.toDate
+    ? await queryEnforcementTrend(
+      await supabaseServer(),
+      resolved.scope.fromDate,
+      resolved.scope.toDate,
+      resolved.region,
+    )
+    : { periods: [], change: null, readable: false };
 
   return (
     <ExplainProvider
@@ -164,7 +163,7 @@ export default async function DashboardSections({ locale, scope }: {
 
       <DashboardToolbar
         locale={locale} scope={resolved} view={resolved.view}
-        refreshedAt={refreshedLabel(scope.nowMs)}
+        refreshedAt={scope.nowMs}
       />
       {resolved.view === "strategic" ? (
         <ExecutiveBrief

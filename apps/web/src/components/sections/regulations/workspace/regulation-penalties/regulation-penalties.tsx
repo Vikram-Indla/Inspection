@@ -4,6 +4,7 @@ import type { WorkspacePenalty, WorkspaceViolation } from "@/features/regulation
 import { configStatusTone } from "@/features/regulations/workspace-view";
 import { fill } from "@/i18n/messages";
 import styles from "./regulation-penalties.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type RegulationPenaltiesStrings = {
   readonly caption: string;
@@ -30,7 +31,7 @@ export default function RegulationPenalties({ penalties, violations, formatAmoun
   labelFor: (value: string) => string;
   strings: RegulationPenaltiesStrings;
 }) {
-  const absent = <span className={styles.absent}>{strings.none}</span>;
+  const absent = <Text as="span" tone="muted">{strings.none}</Text>;
   const violationById = new Map(violations.map(violation => [violation.id, violation]));
   const days = (value: number | null) => value === null ? absent : fill(strings.days, { days: value });
 
@@ -39,7 +40,7 @@ export default function RegulationPenalties({ penalties, violations, formatAmoun
       key: "penalty",
       header: strings.penalty,
       isRowHeader: true,
-      cell: penalty => <bdi className={styles.code}>{penalty.penalty_ref}</bdi>,
+      cell: penalty => <bdi><Mono tone="muted">{penalty.penalty_ref}</Mono></bdi>,
     },
     { key: "type", header: strings.type, cell: penalty => penalty.penalty_type ? labelFor(penalty.penalty_type) : absent },
     {
@@ -48,7 +49,7 @@ export default function RegulationPenalties({ penalties, violations, formatAmoun
       align: "end",
       numeric: true,
       cell: penalty => penalty.amount === null
-        ? <span className={styles.absent}>{strings.noAmount}</span>
+        ? <Text as="span" tone="muted">{strings.noAmount}</Text>
         : <bdi>{formatAmount(penalty.amount)}</bdi>,
     },
     {
@@ -59,7 +60,7 @@ export default function RegulationPenalties({ penalties, violations, formatAmoun
         return violation
           ? <span className={styles.identity}>
               <span>{violation.title}</span>
-              <bdi className={styles.code}>{violation.code}</bdi>
+              <bdi><Mono tone="muted">{violation.code}</Mono></bdi>
             </span>
           : absent;
       },

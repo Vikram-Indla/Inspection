@@ -8,7 +8,572 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ---
 
+## ID reservation
+
+**Claim the next id here at the START of a task, before writing code.** T-076 and
+T-101 and T-106 were each used by two concurrent sessions; every one of those
+collisions was predicted in this file and none was prevented, because nothing
+implements the reservation. **Highest id in use: T-110.** Take T-111.
+
+---
+
 ## NOW
+
+### T-110 · `/execution` leaves the legacy sheets
+`status: partial — code complete, every static gate green; axe, e2e and the rendered pass are owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-012, WEB-013, WEB-014` · `est: 4h`
+`record:` [2026-08-14-T-110-execution-rebuild](sessions/2026-08/2026-08-14-T-110-execution-rebuild.md)
+
+**The screen carried a permanent false alarm.** *"Submission service
+unavailable"* rendered **unconditionally** — no query, no prop, no data source —
+styled critical and announced `role="status"`, on every load, forever. Deleted on
+the owner's direction under WEB-002 §9.
+
+**The Arabic empty state named row-security policies.** It was not a translation
+of the English, and it leaked the database layer to the user. Now split by cause:
+*nothing scheduled* routes to Planning, *nothing matches these filters* carries
+the scope count and a clear action.
+
+**A native `<dialog>` deleted the focus trap rather than migrating it.**
+`showModal()` via a ref callback removes 35 lines of `useEffect`,
+`querySelectorAll` traversal and `origin?.focus()` bookkeeping; containment,
+Escape and focus restoration become platform guarantees. **A native `<dialog>`
+gets no accessible name on its own** — `aria-labelledby` is wired explicitly.
+
+```
+RevampExecutionWorkspace.tsx   397 → deleted, replaced by 7 components
+route file                     80 → 34      largest component 165
+copy() call sites              ~120 → 0     i18n keys 0 → 137 × 2 locales
+non-null !  6 → 0    as never 2 → 0    useEffect 1 → 0
+coordinates fact  5 renderings → 1     always-on banners 2 → 0
+v5 gate  105 → 103,  route-owned 1 → 0
+```
+
+**WCAG 2.2 AA 2.5.7 closed** — every calendar entry now has a Reschedule button,
+so the drag is no longer the only path.
+
+**The pinned spec was re-pointed, not deleted.**
+`execution-revamp-accessibility-contract.spec.ts` held 14 source-text greps for
+the spelling of the trap. They are now five browser tests asserting the actual
+claims. **It `readFileSync`s the workspace at module scope, so deleting the file
+first would have thrown before any assertion ran** — T-078's lesson, avoided by
+checking rather than by luck.
+
+**Owed before `done`:** axe, the manual checklist, the Arabic render, e2e with a
+seeded supervisor, and the first-load JS / CSS numbers (WEB-005 §8 measurement
+request — the agent may not run a production build).
+
+**Parked:** there is **no `LocaleProvider`**, so `error.tsx` reads
+`documentElement.lang` through `useSyncExternalStore` — effect-free, but its
+server snapshot is `en`, so a server-rendered error shows one English frame in
+Arabic. **Every `error.tsx` in the repo has this shape or hardcodes English; a
+provider on `AppShell` fixes ~25 boundaries at once.**
+
+### T-109 · the AI planning summary leaves `/planning/bulk`
+`status: done — code complete; the contract record is owed by the sponsor` · `rules: WEB-000, WEB-006 §4, WEB-008, WEB-013` · `est: 0.5h`
+`record:` [2026-08-14-T-109-bulk-ai-advisory-removal](sessions/2026-08/2026-08-14-T-109-bulk-ai-advisory-removal.md)
+
+Owner-directed removal. **It took out an MVP1-Mandatory contracted capability.**
+`atomic_scope.csv` rows 17 and 27 classify the AI Planning Summary
+(`MVP1-M01-016`, `MVP1-M01-026`) as *"Implement as specified"*, accepted as
+`AC-0016` / `AC-0026`, and those rows sit under change ticket
+`CC-AC-0016-0026-AI-PLANNING-SUMMARY-DEFERRAL-001` (`DEC-026`) whose status is
+**OPEN** and whose `scope_forbidden` says no code change is authorized by it
+alone. The concern was raised with options; **the owner reaffirmed and it was
+executed in full.**
+
+**`AC_LEDGER.csv` was not edited** — `product-contract.md` forbids changing a
+controlled contract without an approved change ID. It still marks both rows
+`implemented` and **now overstates the build**. `DEC-026` needs the sponsor.
+
+Two spec blocks **deleted rather than re-pointed** — the behaviour is gone, so
+there is nothing to point them at. Recorded as a real loss of contract coverage.
+Separately, `ai-delta-contract.spec.ts` **was already failing** before this task.
+
+### T-108 · the dashboard stamp was British, and only in English
+`status: done` · `rules: WEB-000, WEB-002, WEB-008, WEB-011, WEB-013, WEB-014` · `est: 0.5h`
+`record:` [2026-08-14-T-108-dashboard-refreshed-stamp](sessions/2026-08/2026-08-14-T-108-dashboard-refreshed-stamp.md)
+
+`dashboard-sections.tsx:28` carried its own `Intl.DateTimeFormat("en-GB", …)`,
+so **the Arabic dashboard rendered Latin digits in British format regardless of
+locale**. Routed through `lib/dates.ts` instead of correcting the private copy.
+
+```
+en   "20:28" → "14 Aug 2026, 8:28 PM (Riyadh)"
+ar   "20:28" → "١٤ أغسطس ٢٠٢٦, ٨:٢٨ م (الرياض)"
+call sites moved by the new option: 0 of 94
+```
+
+`hour12` defaults to `false`, so all 94 consumers are byte-identical. It also
+switches `hour` to `numeric`, **measured against ICU** — `2-digit` renders
+`08:28 PM`, not `8:28 PM`.
+
+**Parked:** `formatDateTime` joins date and time with a **Latin comma**; Arabic
+takes `،`. Visible in the output above. Fixing it moves all 94 consumers, so it
+is its own task — **WEB-011 defect**. Also: `Text` cannot carry `dateTime`, so
+every `<Text as="time">` in the app emits a `<time>` with no machine-readable
+value.
+
+### T-107 · the typography gate went green on a file that did not compile
+`status: done` · `rules: WEB-000, WEB-006, WEB-008, WEB-014` · `est: 0.25h`
+`record:` [2026-08-14-T-107-explain-panel-missing-import](sessions/2026-08/2026-08-14-T-107-explain-panel-missing-import.md)
+
+`explain-panel.tsx` used `Heading`, `Mono` and `Text` across nine call sites and
+**imported none of them**. `tsc` reported 10 errors; `Text` failed loudly because
+it collides with the DOM lib's global `Text`, while `Heading` and `Mono` failed
+quietly as unbound identifiers — so the explain popover threw a `ReferenceError`
+at runtime. One barrel import fixed all nine.
+
+**Landed in `1bd7abdd refactor(typography): clear operations and explain-panel to
+zero`** — a commit that turned the typography gate green and shipped a file that
+does not compile. **This is T-102's lesson one level worse: the gate counts
+declarations removed, and nothing in `npm run gates` typechecks.**
+
+**`npm run verify` does not exist either.** `CLAUDE.md` requires it before any
+task is done; `package.json` has **none of `verify`, `lint`, `test`, `unit`,
+`budgets`**. T-102 recorded the missing `lint` — it is all five. **This defect
+shipped because the one command that would have caught it is the one no rule
+names.**
+
+**Closed the same day:** `gates` is now
+`typecheck && gates:typography && check:design-system-v5` — typecheck first, so
+the chain short-circuits before style-checking code that does not compile.
+Verified by re-introducing the defect (exit 2, style gates never run). **The
+first attempt at that proof was worthless and looked fine** — a `\n`-terminated
+replace against a **CRLF** file matched nothing and reported success, T-090's
+shape hit while building this very control. **A test that injects a defect must
+assert the injection landed.** The other four scripts remain absent.
+
+### T-106 · axe on the topbar, and the compact gap filled
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-14-T-106-topbar-axe-and-compact-scope](sessions/2026-08/2026-08-14-T-106-topbar-axe-and-compact-scope.md)
+
+**axe reported 0 violations and 3 incomplete — and incomplete is not clean.**
+Two were non-defects proved by measurement (lazy-popup `aria-controls`; the badge
+at **7.88:1**, flagged only because it overlaps the bell). The third was real and
+critical: **the rail renders twice** — desktop `variant="rail"` and mobile
+`"drawer"` — and subgroup ids were built from group + entry alone, so **every
+`aria-labelledby` in the drawer resolved to the rail's label**. Seven
+`role="group"` regions were named by an element in a different landmark.
+**7 → 0 duplicates across 14 ids.**
+
+**Filled the `compact` gap T-105 raised.** `compact` is a prop, **never a media
+query inside the primitive** — the shell decides through `useSyncExternalStore`
+over `matchMedia`, so no `useEffect`. `Select` also gained `icon`, because an
+icon-only trigger showing a bare chevron names nothing. The label moves into the
+accessible name rather than being deleted.
+
+```
+scope visible from   1361px → 881px    (480px reclaimed)
+1280 scope           hidden → 94px icon-only, search 384 / input 334
+duplicate nav ids    7 → 0
+```
+
+**Parked:** `aria-valid-attr-value` will stay permanently incomplete for every
+`MenuSurface` trigger — inherent to lazily-mounted popups. Worth an axe rule
+exclusion citing this record rather than re-triaging it every run.
+
+### T-106 · clear every typography violation in migrated code
+`status: partial — 239 of 253 closed; the 14 that remain are two recorded decisions, not misses` · `rules: WEB-000, WEB-002 §2, WEB-008, WEB-009, WEB-014 §2.1, §4.1, §5.1, §8, §11` · `est: 6h`
+
+```
+baseline 1781 → 1542        files with violations 51 → 2
+
+sections/approvals   68 → 0     app/operations          32 → 0
+sections/regulations 63 → 0     components/dashboard     8 → 0
+sections/enforcement 52 → 0     admin/compliance-approvals 5 → 0
+shared components     9 → 0     saqeel/list-row · OpsMap  3 → 0
+card eyebrows         9 → 0     and the prop is DELETED
+```
+
+**The two survivors are deliberate.** `shell-brand` (2) is the logotype question
+raised in T-104. `factory360.module.css` (12) is **legacy `--type-*`, not
+pre-contract `--sqx-text-*`** — it belongs to `/factories/cr/[id]`, the **T-020
+structural rebuild target**, and its `.facts dt` / `.compactFacts dt` selectors
+feed **40+ `<dt>`/`<dd>` sites** across two route files. It was stripped, the
+orphan check caught that the JSX was unmigrated, and it was **restored
+byte-for-byte to HEAD**. Migrating it now is the same work twice (T-076's lesson);
+it lands with T-020.
+
+**`operations.module.css` cost nothing to clear.** All 12 classes that carried a
+font were **dead** — no `styles.X` reference from either importer — which confirms
+T-072's amended note. 30 violations, zero JSX risk.
+
+**The method that made 239 safe, and the one that nearly broke it.** Bulk regex
+transforms did the mechanical 72+14+17 substitutions, but stripping CSS ahead of
+the JSX left **21 orphaned sites in approvals** — text with no font and a green
+gate. What caught them was a **diff-driven orphan check**: parse `git diff` for
+every declaration removed, resolve the class back to its JSX, and assert a
+primitive is present. **Run that after every strip.** A first version used a
+3-line proximity window and gave false negatives (`.check`, `.value`, `.parts`,
+`.meta`, `.type`, `.comment`, `.count`, `DiffValue`); the strict version — list
+every still-used class that lost a font, no proximity heuristic — found them all.
+
+**47 class blocks deleted** once their text moved to primitives, verified unused
+in both directions with no dynamic `styles[...]` access anywhere in the three
+families.
+
+Owner-directed: clear all violations in migrated code, including the compliance
+family — `/admin/regulations`, `/admin/compliance-approvals`, `/admin/violations`,
+`/compliance`, `/enforcement-library`.
+
+**Measured worklist, by reachability from route entries** (not by directory):
+
+```
+68 sections/approvals    32 app/operations       8 components/dashboard
+63 sections/regulations  12 app/factories        5 app/admin/compliance-approvals
+52 sections/enforcement  12 ContextualAiPanel    5 EmptyState · 4 GeoMap
+                                                 125 more in dead/unreachable code
+```
+
+**The compliance family is not legacy — it is pre-contract.** `sections/approvals`,
+`regulations` and `enforcement` were migrated by T-036 · T-037 · T-038 · T-040 ·
+T-041, **all before T-057 wrote the typography contract**. They are structurally
+SAQEEL and author type in feature CSS with retired roles — a different defect from
+`/field`'s legacy, and it migrates cleanly.
+
+**`caption → body` is size-neutral** (both 14px), so the bulk of this sweep is
+zero visual change, which is what makes it safe to do in volume.
+
+**Done so far:**
+
+```
+baseline 1781 → 1757      files with violations 51 → 34
+shared components   9 → 0   EmptyState · ContextualAiPanel · GeoMap ·
+                            PlanningReadFailure · PwaUpdatePrompt
+card eyebrows       9 → 0   and the `eyebrow` prop is DELETED from CardHeader
+enforcement screens 6 → 0   catalogue-screen · enforcement-screen · filter-bar
+```
+
+**`CardHeader.eyebrow` is gone.** §5.1 said the prop *"is deleted when no call site
+passes it"*; all nine call sites moved their string to `description`, so the prop
+and `.eyebrow` left `card.tsx` and `card.module.css`. **The pattern is now
+unrepresentable** — TypeScript rejects it, which is stronger than a gate rule. One
+card, `regulation-workspace`, already had a `description`; its locked caveat moved
+into the `CardBody` rather than inventing a way to join two strings.
+
+**The established pattern for the remaining 34 files**, in order:
+
+1. Build the selector→element map first.
+2. **Check the primitive's stylesheet before keeping the class.** `Text` already
+   supplies `margin: 0`, the font and `text-wrap: pretty`, so four classes in
+   `catalogue-screen`/`enforcement-screen` were **deleted outright** rather than
+   trimmed — no wrapper span needed.
+3. Mixed classes keep layout and colour; the primitive goes inside as a span with
+   `tone="inherit"` wherever a `:hover`/`[aria-current]`/state selector repaints.
+4. `<input>`/`<button>`/`<select>`/`<textarea>` take `font: inherit`.
+5. Strip the CSS **in the same pass** as the JSX. Stripping first leaves text
+   unstyled while the gate goes green — exactly how T-104 shipped a live nav
+   regression.
+
+**Two judgement calls taken and recorded** (WEB-008 §5 — decide and record, do not
+stall): `.absent`'s `font-style: italic` is **dropped**, because the scale has no
+italic and §4.1 bans `font-style` in feature CSS — de-emphasis becomes `tone`.
+`.blockTitle`'s `overline` is **kept unchanged**, because it is already on-scale
+and re-deciding a size mid-migration is what §11.1 forbids.
+
+**The four card/table modules in `sections/enforcement` each define an identical
+`.code`, `.absent`, `.muted`, `.warning`** — four copies of one decision. Migrating
+them is the chance to stop that.
+
+### T-105 · the header stopped starving its search, and the date scope became clearable
+`status: done — measured at seven widths in both directions; axe owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 2h`
+`record:` [2026-08-14-T-105-topbar-responsive-and-clearable-scope](sessions/2026-08/2026-08-14-T-105-topbar-responsive-and-clearable-scope.md)
+
+**The search input was 4px wide across the entire 900–1300px band.** `.scope`
+sized to its content and `.search` was the only flexible sibling, so search
+absorbed every shortfall; at 768px the scope was 368px inside a 204px parent and
+painted over the action row.
+
+**The breakpoint must be measured against the scope's widest state.** Unset it
+is 220px; carrying an Arabic range it is **357px**. A first attempt set it at
+1160 against the unset state, measured clean, then spilled the moment a date was
+picked — exactly how the original overlap shipped. It is 1360.
+
+**Reset was a dead end by construction.** It cleared only the draft and never
+called `onChange`, while `apply` is `disabled={!draftFrom || !draftTo}` — the
+exact state reset creates. Opt-in `clearable`; the other seven picker call sites
+pass nothing and are byte-identical.
+
+```
+                 before          after (widest scope, both dirs)
+1100  search      26 / input 4    374 / 324
+ 768  search      26, OVERLAP     244 / 194, overlap 0
+ 430  search      HIDDEN          44 → 384 on focus
+```
+
+**Parked:** icon-only scope chips would buy back 1160–1360 but need a `compact`
+prop on `date-range-picker` **and** `select` — raised, not filled inline.
+
+### T-104 · shell and topbar to zero — the floor every migrated route stands on
+`status: partial — 64 of 66 closed; 2 raised as a scale question, 4 states unrendered` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8, §11` · `est: 2h`
+`record:` [2026-08-14-T-104-shell-typography](sessions/2026-08/2026-08-14-T-104-shell-typography.md)
+
+```
+baseline 1846 → 1781        app-shell 66 → 2
+shell-topbar.module.css     26 → 0     shell-page-frame.module.css   7 → 0
+shell-user-menu.module.css  19 → 0     app-shell.module.css          1 → 0
+shell-rail.module.css        9 → 0     shell-brand.module.css        4 → 2
+saqeel/kbd.module.css        1 → 0     (retired `code` → `mono`)
+
+shell rendered sizes  11 · 12 · 14 · 16 · 20, all on the nine-role scale
+shell typefaces       plexArabic, one
+```
+
+**Every migrated route's shared floor drops from 61 to 2.**
+
+**The two survivors are deliberate, and they are not a primitive gap.**
+`.brandAr` sets `صقيل` at `font: var(--sqx-text-subheading)` (16px). `Text` cannot
+express `subheading`, and `Heading` can only by emitting an `<h1>`–`<h6>` — which
+would put a heading in the outline of **every page** and break "exactly one
+`display` per route". §11.4 says extend the primitive; **I did not**, because §2
+defines `subheading` as *"a named group inside a card"* and a logotype is not
+that. The real question is **whether a bilingual wordmark is typography at all or
+a mark that happens to be set in the UI face** — and adding `subheading` to
+`TextRole` would answer it by accident while handing every feature a 16px
+non-heading, the exact expressiveness §1 removed on purpose. WEB-002 §2: raised,
+not filled inline.
+
+**A partial `replace_all` shipped a live regression, and only the render caught
+it.** `shell-nav-item.tsx` renders the same two lines twice — a disabled `<span>`
+branch at 8-space indent and an enabled `<Link>` branch at 6. A `replace_all` on
+the 8-space form matched **one** occurrence and reported success, so the CSS lost
+its `font` while the enabled branch kept bare markup: **every clickable nav item
+in the application rendered at inherited 14px/400 instead of 12px/600.** The gate
+counted 9 removed and stayed green, because it counts declarations deleted, not
+text rendered.
+
+This is the fourth instance of the shape already recorded — T-058's rule matching
+0 of 24, T-076's regex matching 0 of 7, T-090's CRLF replace on an unchanged file.
+The new form is worse than a zero-match because a **partial** match looks like
+success. **After any multi-site edit, count the sites you expected and the sites
+you changed, and re-render.**
+
+`tone="inherit"` is load-bearing throughout the rail: `.item` colour is driven by
+`[data-state]`, `:hover`, `[aria-current]` and `[data-state="restricted"]`, and
+`.subgroup:has([aria-current]) .subgroupLabel` repaints the parent. A hardcoded
+tone would have frozen all five states. **Verified: the active item still measures
+`rgb(205,186,234)` accent through the primitive.**
+
+**`.item[aria-current="page"] { font-weight: semibold }` was a no-op** — `.item`
+already resolved `--sqx-text-label`, whose weight *is* semibold, so the active
+state never rendered heavier than its siblings. Second instance of T-088's
+"already-semibold" shape. It is gone; active is distinguished by colour, fill and
+the inline start bar, which is what was actually on screen all along.
+
+**`CountBadge` was not adopted, deliberately.** It renders the same type
+(body + semibold) and the exact same danger tokens, but `--sqx-radius-sm` against
+`.itemBadge`'s `--sqx-radius-pill`, plus different `min-inline-size` and padding.
+Swapping it would change the badge's **shape** inside a typography task. The class
+keeps its geometry and the numeral moved to `<Text role="bodyStrong" numeric>`.
+**Parked: adopt `CountBadge` in the rail — a one-line decision once someone rules
+on pill vs rounded.**
+
+**`font: inherit` is legal in feature CSS, and it is the only answer for a
+control.** It matches neither gate rule — `raw-typography-property` lists the
+longhands, `font-shorthand-outside-design-system` requires `var(--sqx-text-`. An
+`<input>` has no children, so it cannot host a primitive; `font: inherit` is what
+§11.2 prescribes and the gate permits. **Measured: both inputs render 14px
+plexArabic, not Arial.**
+
+**What `inherit` actually inherits is the legacy body rule.** Both inputs come out
+**14px/21px** — leading `1.5`, from `saqeel-runtime.css:19` winning over
+`saqeel.css:869` on `<body>`. Size and family are right and for a single-line
+control the leading is inert, but **every `font: inherit` in this application
+resolves against the frozen sheet until that conflict is ruled on.** Nobody had
+written that down.
+
+**A deleted class can keep its layout.** `.searchResults p` lost its font and kept
+`padding: var(--sqx-space-3)`; `Text` renders `<p>` for `body`, so the element
+selector still matches — verified, the empty state measures **8px padding, 14px
+muted, `role="status"` intact**.
+
+**The `aria-describedby` → `id` wiring survived the primitive swap.** The palette
+count moved `<p id role="status" aria-live>` → `<Text id live="status">`, and
+`role="status"` already implies `aria-live="polite"`, so the explicit attribute
+went. Verified `idsMatch: true` against the input's `aria-describedby`.
+
+`Kbd` was adopted rather than restyled, and its own retired `code` role fixed in
+the design system per §2.1 — `⌘K` now measures **13px/500 plexArabic**, the `mono`
+role, confirming §2.0's claim that mono differs by numerals and weight, not
+typeface.
+
+**`.scope` looked unused and is not** — it lives in `shell-scope-controls.tsx`, a
+sibling of the module's namesake. Third instance of T-093's shape; an unused-class
+check that scans only the namesake component lies.
+
+**The user menu had an inverted hierarchy and no gate could see it.** `.name` was
+`label` (**12px**) and `.role` was `caption` (**14px**), so the role summary
+rendered *larger* than the person's name. Both tokens are legal, which is why it
+survived: this is the fourth instance of the T-075 shape — `EmptyState`, the
+explain-panel key/value, the factory portfolio heading, and now the shell.
+**Compare a heading against the thing it introduces, not against the scale.**
+
+Now `bodyStrong` (14px) over `label` (12px, muted) — **and the geometry decided
+which correction was available.** The contract-literal reading of §10 (*"you want
+smaller prose → tone='muted' at body"*) puts both lines at 14px, which measures
+**54.4px in a 56px topbar in Arabic**: 1.6px of clearance. The shipped pairing
+measures **49.78px, 6.2px clearance**, and in English the identity block is
+**41.19px — byte-identical to before**, because it is the same two line boxes
+swapped between the two lines. Verified by measuring both locales, not by reading
+the diff.
+
+**`Avatar` from `components/saqeel/data/` was rejected on inspection.** The ledger
+rule says reuse before rebuilding, but that primitive renders
+`className="avatar"` — a **frozen-sheet global** — plus an inline `style`, and its
+`UserChip` sibling carries `t-caption` and `fontWeight: 500`. Adopting it would
+have imported three legacy constructs into the shell to remove one. **Reuse is
+conditional on the primitive being clean; check it before composing it.**
+
+**`font: inherit` is legal in feature CSS and worth knowing.** It matches neither
+`raw-typography-property` (which lists the longhands) nor
+`font-shorthand-outside-design-system` (which requires `var(--sqx-text-`). So the
+§11.2 control fix can always be applied without fighting the gate. `.trigger`
+carries it as the `<button>` insurance §11.2 prescribes.
+
+Three classes were deleted outright — `.name`, `.role`, `.headlineName`,
+`.detailLabel` held nothing but type and colour — and `.detailValue` kept only
+`text-align: end`. Checked both directions afterwards: **zero orphaned `styles.x`,
+zero unused classes.**
+
+**Half of `shell-topbar.module.css` was markup that no longer exists.** Fourteen
+classes — `iconButton cta ctaLabel locale localeOption user userTrigger
+userAvatar userIdentity userMenu userHeadline userDetail userSeparator
+userAction` — referenced nowhere, **224 lines**, holding 14 of the file's 26
+violations. Each was superseded and none was removed at the time: the locale
+control became `SegmentedControl`, the user menu moved to
+`shell-user-menu.module.css`, and the text CTA became the icon-only `.aiButton`.
+Verified dead three ways — no `styles.X` in any `.ts`/`.tsx`, no `composes`, no
+`:global` — and the one apparent hit (`styles.cta` at
+`field/visits/VisitsClient.tsx:91`) belongs to that route's own module.
+
+**`shell-page-frame` was deleted and restored, and the ledger is why.** It has
+zero importers, which the inventory read as dead. `04-COMPONENT-LEDGER.md:180`
+says otherwise: *"Supersedes the default `Shell` export; adopting it in the 55
+route files is future work."* **Zero importers is its expected state, not
+evidence of death.** Restored byte-for-byte and its 7 violations are back in the
+baseline. T-077 already wrote the lesson — *dead code is rarely as dead as the
+note says* — and the check it prescribes is specs and scripts; the ledger belongs
+in that list. **Read the ledger row before deleting a component, not after.**
+
+**Still open on the shell:** the ledger claims these components *"ship no CSS —
+every visual is a `.sqx-shell*` class in `app/saqeel.css`"*. Six CSS Modules say
+otherwise. And the whole `components/app-shell/` section is **duplicated** in the
+ledger at lines 157-194 and 376-413.
+
+`app/(app)/layout.tsx:2` imports `components/app-shell/app-shell`, so its **59
+counted violations are live on every route in the application** — including all
+thirteen planning routes the tracker records as closed at "1 violation each".
+That figure counted the shell's one inline style and none of its 59 CSS
+declarations. Fixing this once closes more violations than the next five route
+tasks combined.
+
+Blocked only by the concurrent-tree question in T-102's record.
+
+### T-102 · the gate learns to see the defects it was written for
+`status: done` · `rules: WEB-006, WEB-007, WEB-008, WEB-014 §4.1, §8` · `est: 1h`
+`record:` [2026-08-14-T-102-typography-gate-detection](sessions/2026-08/2026-08-14-T-102-typography-gate-detection.md)
+
+**Renumbered from T-101 on discovery of a concurrent session holding that ID** —
+the third collision in this programme after T-076 (twice) and now T-101.
+
+Four tasks — T-090, T-091, T-092, T-097 — each found their real defect by
+measuring a render *after* the gate reported the route clean. That is a tooling
+defect, not four unlucky sessions. Three rules added: `legacy-type-class-in-jsx`
+(fourteen classes **derived from the frozen sheets**, not invented),
+`legacy-type-token` (`--type-*` outside the frozen four, and deliberately **not**
+exempting `components/saqeel/`), and `inline-font-style` promoted to a multiline
+matcher because the engine tested single lines and `[^}]*` can never cross a
+newline.
+
+```
+baseline 733 → 1846        newly detected +1142        removed by T-101 -29
+legacy-type-class-in-jsx  +944    legacy-type-token  +179    inline-font  +18
+```
+
+**1,142 defects that existed this morning were invisible this morning.** The
+number did not get worse; the instrument got honest. WEB-014 §8's ratchet governs
+regressions, not detection — the rule text should be amended to say so.
+
+Found on live migrated code, scoring zero until today: `EmptyState.tsx:28`,
+`ContextualAiPanel.tsx` ×4 and `GeoMap.tsx:315` render **11.5px prose**;
+`PlanningReadFailure.tsx:26` renders **12.5px in `ui-monospace`**, a second
+typeface.
+
+**`npm run lint` does not exist in `package.json`** — every session that ticked
+it ticked something it could not have run.
+
+### T-103 · the nested shell overflowed every route by exactly one topbar
+`status: done — measured; per-route visual sweep owed` · `rules: WEB-002, WEB-005, WEB-009, WEB-010` · `est: 0.5h`
+`record:` [2026-08-14-T-103-nested-shell-viewport-overflow](sessions/2026-08/2026-08-14-T-103-nested-shell-viewport-overflow.md)
+
+**93 route files mount the legacy `Shell` inside the layout's `AppShell`.** The
+legacy shell pins three boxes to a hard `100dvh` while `.main` is `100dvh` minus
+the topbar, so `.main` scrolled **exactly 56px** into the region below the inner
+shell — and `.sq-shell__main`, the one carrying `overflow-y: auto`, ran its
+scroll range 56px past the visible box, making the last 56px of every long page
+unreachable. Fixed with one scoped rule in the **module**, not the frozen sheet.
+`56 → 0` on all five boxes; a 2000px-content check lands at content end with
+zero overshoot. **The block is written to be deleted by the `shell-page-frame`
+migration** — it is a symptom fix and says so.
+
+### T-101 · the notification panel leaves the frozen sheets
+`status: done — verified on a signed-in render; axe and Arabic review owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 4h`
+`record:` [2026-08-14-T-101-notification-panel-rebuild](sessions/2026-08/2026-08-14-T-101-notification-panel-rebuild.md)
+
+Owner-reported: the dropdown is cluttered, has no height cap, and its typography
+is a mess. Owner authorised shell edits **scoped to notifications only**.
+
+**The hierarchy was inverted, and that was the whole clutter problem.** The row
+set the *event* as a 600-weight title, so five consecutive rows read "Visit
+expired" while the only distinguishing fact — the factory — sat smaller and
+greyer beneath it. `StatusPill` now carries the event (tone + pulse + text) and
+the factory is the title, so **the event label appears exactly once per row**.
+
+**Three duplications removed.** The date printed twice on every row older than
+yesterday (`dayHeading` and `relativeLabel` both fell through to `formatDate`);
+the unread count rendered as an identical chip on the trigger *and* in the panel
+header; and the **56-string bell map existed verbatim in two files** —
+`Shell.tsx:162-218` and `features/shell/notification-strings.ts`.
+
+**"Mark all read" did not mark all read.** It looped the ≤15 loaded rows,
+awaiting one UPDATE each, so 55 unread fell to ~40 in 15 round trips. Now two
+statements.
+
+**Arabic relative time was grammatically wrong and nobody could see it.**
+`"قبل {n} ساعة"` interpolated a bare singular, so every count above two read as
+the singular. `Intl.RelativeTimeFormat` carries the plural form per locale, so
+the template is gone and **no `locale === "ar"` branch was introduced**.
+
+```
+NotificationBell.tsx    319 → 195 lines
+dead .module.css        232 → 0   (zero importers, 28 baseline violations)
+Shell.tsx               −57 lines (duplicated string map)
+typography baseline     733 → 704
+frozen-sheet classes    14 → 0
+rows fetched/rendered   15/8 → 15/15
+```
+
+**Two defects found on the signed-in render, and one is worth remembering.** The
+`CountBadge` default is ~40×24px on a 38×38px trigger — larger than its own
+button — so the bell was eclipsed; the `superscript` variant (16px box, 11px
+text) is the only on-scale small badge, since `--sqx-badge-font` is 10px and
+below the §7 floor. And **`contain: paint` on the scroller is load-bearing**:
+`menu-surface`'s root is itself `overflow-y: auto`, and without containment the
+list's 1466px counted toward that root's scroll height even though the scroller
+already clips it — **1473 against a 435px client, so the panel scrolled its own
+header and tabs into 1038px of nothing.** A definite height, `overflow: hidden`
+on the panel and `overflow-y: clip` on the root all measured *no change*; only
+containment worked.
+
+```
+ROOT_SCROLLS_BY  1038 → 0     rootScrollTop  140 → 0
+header offset    −133 → +7    list still scrolls (1146)
+```
+
+**Owed:** the Arabic pass (WEB-011 §1 — English was verified, Arabic was not),
+axe, the WEB-003 §10 checklist, font-size count, and a first-load JS measurement
+request. `gates:typography:update` deliberately not run — the baseline is dirty
+with concurrent T-102 work.
 
 ### T-100 · `/planning/workload` — capacity that measures the right thing, and the planning family finishes its Arabic
 `status: partial — verified in Arabic; English render, axe and 11 Arabic strings owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-013, WEB-014` · `est: 2h`
@@ -3005,19 +3570,35 @@ Pull one in only if it is genuinely part of doing the active task well.
   `invalidClear` and `summaryEmpty` from the live type did not break it. It
   should be deleted, not migrated.
 
-- **`sq-notification__badge` renders at 10px — below WEB-014 §7's 11px floor**
-  (found in T-083, measured on `/planning` in both locales). It is a frozen-sheet
-  `.sq-*` global in the shell, so the breach is on **every route in the
-  application**. The frozen sheets are exempt from the gate, so nothing will ever
-  flag it; only a render finds it.
+- ~~**`sq-notification__badge` renders at 10px — below WEB-014 §7's 11px floor**~~
+  **Resolved by T-101.** The trigger badge is now `CountBadge`; the frozen-sheet
+  rule has zero consumers.
 
-- **`NotificationBell.tsx:270` is the last violation on every otherwise-clean
-  route** (found in T-083). `style={{ fontWeight: unreadRow ? 600 : 500 }}` —
-  banned outright by WEB-014 §4.1 with no exemption. **It is a ruling, not a
-  rename:** 500 is not a weight the nine-role scale has, so the fix is `body` vs
-  `body-strong`, and that visibly changes how a read row differs from an unread
-  one. `/factories`, `/factories/[id]` and `/planning/visits/[id]` each sit at
-  exactly 1 violation and this is it.
+- ~~**`NotificationBell.tsx:270` is the last violation on every otherwise-clean
+  route**~~ **Resolved by T-101.** `style={{ fontWeight: unreadRow ? 600 : 500 }}`
+  is gone; the ruling went the way T-083 predicted — `body` vs `body-strong`,
+  with the unread/read distinction now also carried by tone and by
+  `StatusPill`'s pulse, so it no longer rests on weight alone.
+
+- **`saqeel-runtime.css:960-964` (`.sq-notification`, `__trigger`, `__badge` — 5
+  rules) is dead** (found in T-101). Zero consumers after the rebuild. T-101 did
+  not delete it because it does not own that sheet; the next task that does
+  should.
+
+- **No notifications list route exists for web personas** (found in T-101). "View
+  all" renders only when `fieldOnly` (`/field/notifications`). Routes are fixed
+  (design authority §8) so none was invented — a non-field user has no way to
+  reach notification 16 of 55. Needs an owner ruling.
+
+- **The design's third notification filter tab ("Needs action") needs a governed
+  event→action mapping** (found in T-101). `saqeel-revamp.html` specifies All /
+  Needs action / System; only All / Unread shipped, because which events "need
+  action" is not established anywhere and rule 9 forbids inventing it.
+
+- **`app/(app)/field/notifications/notification-meta.ts` holds in-code `en`/`ar`
+  label maps and six raw SVG path strings** (found in T-101) — a WEB-013 and
+  rule-8 breach on the field list screen, out of T-101's scope because it is a
+  different screen.
 
 - **16 retired-role references remain inside `components/saqeel/`** (found in
   T-083, deliberately out of that task's agreed scope): `primitives.module.css`

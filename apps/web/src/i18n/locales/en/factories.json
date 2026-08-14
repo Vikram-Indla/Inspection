@@ -111,13 +111,11 @@
     "outlook": {
       "title": "Risk outlook",
       "predictedRisk": "Predicted risk",
-      "predictedUnavailable": "Not available — no forecasting model is configured. Only recorded calculations are shown.",
+      "predictedUnavailable": "Not configured",
       "whyHighRisk": "Why this risk",
-      "driversUnavailable": "No driver breakdown was recorded for this score. The absence is preserved, not reconstructed.",
+      "driversUnavailable": "Not recorded",
       "modelVersion": "Model version",
-      "latestChange": "Latest change",
-      "nextBestAction": "Next best action",
-      "nextBestActionBody": "Review the recorded violations, actions and evidence on the factory profile before deciding."
+      "latestChange": "Latest change"
     },
     "trust": {
       "title": "Source trust",
@@ -151,7 +149,6 @@
     "violationsEmpty": "No violation is recorded against this factory",
     "penaltiesEmpty": "No penalty notice has been issued to this factory",
     "penaltiesRestricted": "Penalty notices are not visible to your role",
-    "openStateUnavailable": "Violations carry no open or closed state in the record. Only retracted violations are excluded.",
     "noDecision": "Not reviewed",
     "trends": "Trends"
   },
@@ -163,9 +160,9 @@
     "falling": "−{n} pts vs last calculation",
     "steady": "No change vs last calculation",
     "firstCalculation": "First recorded calculation",
-    "noHistory": "No risk calculation has been recorded for this factory.",
+    "noHistory": "Not recorded",
     "complianceTitle": "Compliance trend",
-    "complianceUnavailable": "Not available — no compliance score is recorded for a factory, so there is no series to trend.",
+    "complianceUnavailable": "Not recorded",
     "seriesLabel": "Recorded risk scores, oldest first"
   },
   "profile": {

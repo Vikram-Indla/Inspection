@@ -21,6 +21,27 @@ const FROZEN_SHEETS = [
 
 const TYPE_PRIMITIVE = "src/components/saqeel/type/";
 
+const LEGACY_TYPE_CLASSES = [
+  "t-display",
+  "t-page-title",
+  "t-section",
+  "t-heading",
+  "t-body-lg",
+  "t-body",
+  "t-compact",
+  "t-label",
+  "t-meta",
+  "t-caption",
+  "t-metric",
+  "t-mono",
+  "id-code",
+  "sq-overline",
+];
+
+const LEGACY_CLASS_PATTERN = new RegExp(
+  `(?<![\\w-])(${LEGACY_TYPE_CLASSES.join("|")})(?![\\w-])`,
+);
+
 const RULES = [
   {
     id: "raw-typography-property",
@@ -67,8 +88,25 @@ const RULES = [
     id: "inline-font-style",
     appliesTo: (path) => path.endsWith(".tsx"),
     exempt: () => false,
-    pattern: /style=\{\{[^}]*(?:font|letterSpacing|lineHeight)/,
+    multiline: true,
+    pattern: /style=\{\{[^}]*(?:font|letterSpacing|lineHeight)/g,
     message: "Inline font styling is never permitted. Use a type primitive.",
+  },
+  {
+    id: "legacy-type-class-in-jsx",
+    appliesTo: (path) => path.endsWith(".tsx"),
+    exempt: () => false,
+    pattern: LEGACY_CLASS_PATTERN,
+    message:
+      "A legacy typography class renders off the SAQEEL scale from JSX, where no CSS rule can see it. Render the text through a type primitive instead.",
+  },
+  {
+    id: "legacy-type-token",
+    appliesTo: (path) => path.endsWith(".css") || path.endsWith(".tsx") || path.endsWith(".ts"),
+    exempt: (path) => inZone(path, FROZEN_SHEETS),
+    pattern: /--type-[a-z]/,
+    message:
+      "The pre-SAQEEL --type-* scale is frozen legacy. Its sizes are not the nine roles; move the call site to a type primitive.",
   },
 ];
 
@@ -99,6 +137,19 @@ function scan() {
     for (const rule of RULES) {
       if (!rule.appliesTo(path) || rule.exempt(path)) continue;
       if (rule.fileMust !== undefined && !rule.fileMust.test(source)) continue;
+      if (rule.multiline === true) {
+        for (const match of source.matchAll(rule.pattern)) {
+          const line = source.slice(0, match.index).split("\n").length;
+          violations.push({
+            path,
+            line,
+            rule: rule.id,
+            message: rule.message,
+            text: match[0].split("\n")[0].trim(),
+          });
+        }
+        continue;
+      }
       lines.forEach((line, index) => {
         if (rule.pattern.test(line)) {
           violations.push({ path, line: index + 1, rule: rule.id, message: rule.message, text: line.trim() });

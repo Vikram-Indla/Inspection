@@ -8,10 +8,10 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAP_PALETTE } from "@/lib/map-palette";
 import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
-import { Heading } from "@/components/saqeel/type";
+import { Heading, Text } from "@/components/saqeel/type";
 import { loadKsaRegions } from "@/lib/ksa-regions";
 
-export type GeoTone = "high" | "medium" | "low" | "neutral";
+export type GeoTone = "high" | "medium" | "low" | "neutral" | "brand";
 
 export type GeoMarkerData = {
   id: string;
@@ -168,7 +168,7 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
     map.addSource(MARKER_SOURCE, { type: "geojson", data: markerData });
     map.addLayer({ id: MARKER_LAYER, type: "circle", source: MARKER_SOURCE, slot: "top", paint: {
       "circle-radius": ["case", ["get", "selected"], 10, 7],
-      "circle-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, TONE.neutral.fill],
+      "circle-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, "brand", TONE.brand.fill, TONE.neutral.fill],
       "circle-stroke-width": 2, "circle-stroke-color": MAP_PALETTE.halo,
     } });
   }
@@ -312,9 +312,9 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     return <div className="sq-state sq-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider={failed ? "mapbox-failed" : "mapbox-unavailable"}>
       <span className="sq-state__glyph">⌖</span>
       <Heading level={4} visual="bodyStrong">{ar ? "الخريطة غير متاحة" : "Map unavailable"}</Heading>
-      <p className="t-caption">{failed
+      <Text tone="muted">{failed
         ? (ar ? "تعذّر تحميل الخريطة. تبقى السجلات متاحة في القائمة." : "The map could not load. The records are still available as a list.")
-        : (ar ? "الخريطة غير متاحة في هذه البيئة. تبقى السجلات متاحة في القائمة." : "The map is not available here. The records are still available as a list.")}</p>
+        : (ar ? "الخريطة غير متاحة في هذه البيئة. تبقى السجلات متاحة في القائمة." : "The map is not available here. The records are still available as a list.")}</Text>
     </div>;
   }
   // Until the basemap paints, the container is an empty dark box — measured at

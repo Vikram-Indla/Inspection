@@ -21,7 +21,6 @@ async function setPresentation(page: Page, locale: "en" | "ar", theme: "light" |
   // not create an artificial 429; product assertions remain unchanged.
   await page.waitForTimeout(5_000);
   await page.addInitScript(value => {
-    localStorage.setItem("saqeel-theme-mode", value);
     localStorage.setItem("saqeel-theme", value);
   }, theme);
   const port = Number(process.env.PLAYWRIGHT_PORT ?? process.env.UI_COMPLIANCE_PORT ?? 3137);

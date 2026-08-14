@@ -8,6 +8,7 @@ import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone, RegionPostureMap } from "@/components/GeoMap";
 import EmptyState from "@/components/EmptyState";
+import { Text } from "@/components/saqeel/type";
 
 export type OpsPin = {
   id: string;                 // "v:<visitId>" | "f:<factoryId>"
@@ -61,14 +62,14 @@ export default function OpsMap({ pins, regionPostures, strings: s }: { pins: Ops
         </Suspense>
       </div>
       <div className="row" style={{ gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
-        <span className="t-caption">
+        <Text as="span" tone="muted">
           <span className="badge badge-compliant">{s.legendExecuting}</span>{" "}
           <span className="badge badge-warning">{s.legendEnRoute}</span>{" "}
           <span className="badge">{s.legendFactory}</span>
-        </span>
+        </Text>
         {selected
           ? <a className="sq-link" href={selected.href}>{s.open} — {selected.label}</a>
-          : <span className="t-caption">{s.selectHint}</span>}
+          : <Text as="span" tone="muted">{s.selectHint}</Text>}
       </div>
     </div>
   );

@@ -543,7 +543,7 @@
     "searchFieldLabel": "CR, Industrial License, plant or name",
     "searchPlaceholder": "1010123456",
     "searchPromptTitle": "Search to begin",
-    "searchPromptBody": "Enter at least 3 characters of a CR, Industrial License, plant number or name. Pick a factory, then confirm its license and location.",
+    "searchPromptBody": "Search by CR, Industrial License, plant number or name. Pick a factory, then confirm its license and location.",
     "portfolioStep": "Select the Industrial License / plant",
     "licenseStep": "Industrial License",
     "locationStep": "Confirm location",
@@ -563,16 +563,6 @@
     "notice": {
       "unreadableTitle": "Criteria could not be read",
       "unreadableBody": "The criteria link was invalid or corrupted and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below."
-    },
-    "ai": {
-      "title": "AI planning summary",
-      "description": "Evidence-linked advisory summary of the current factory scope. It never selects, ranks or publishes anything.",
-      "advisory": "Advisory only · human decides",
-      "evidence": "Generated from the recorded factory records in your access scope.",
-      "idle": "No planning summary has been generated for this scope yet.",
-      "generate": "Generate planning summary",
-      "generating": "Generating planning summary…",
-      "unavailable": "AI is not available right now — nothing was generated or changed."
     },
     "ledger": {
       "heading": "Eligibility ledger",

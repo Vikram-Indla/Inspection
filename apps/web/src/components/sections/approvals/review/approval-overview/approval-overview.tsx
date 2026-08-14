@@ -3,6 +3,7 @@ import type { ApprovalRequestRow } from "@/features/approvals/queries";
 import type { PackageSummary } from "@/features/approvals/rows";
 import { fill } from "@/i18n/messages";
 import styles from "./approval-overview.module.css";
+import { Heading, Mono, Text } from "@/components/saqeel/type";
 
 export type ApprovalOverviewStrings = {
   readonly requestNumber: string;
@@ -33,25 +34,25 @@ export default function ApprovalOverview({
   kindLabel: (kind: string) => string;
   strings: ApprovalOverviewStrings;
 }) {
-  const missing = <span className={styles.absent}>{strings.notRecorded}</span>;
+  const missing = <Text as="span" tone="muted">{strings.notRecorded}</Text>;
 
   return (
     <div className={styles.root}>
       <DefinitionList
         columns="two"
         items={[
-          { label: strings.requestNumber, value: <bdi className={styles.code}>{request.request_number}</bdi> },
+          { label: strings.requestNumber, value: <bdi><Mono tone="inherit">{request.request_number}</Mono></bdi> },
           { label: strings.requestType, value: typeLabel },
-          { label: strings.requester, value: requester ?? <span className={styles.absent}>{strings.requesterUnknown}</span> },
-          { label: strings.submitted, value: submitted ?? <span className={styles.absent}>{strings.notSubmitted}</span> },
+          { label: strings.requester, value: requester ?? <Text as="span" tone="muted">{strings.requesterUnknown}</Text> },
+          { label: strings.submitted, value: submitted ?? <Text as="span" tone="muted">{strings.notSubmitted}</Text> },
           { label: strings.revision, value: <bdi>{request.current_revision}</bdi> },
           { label: strings.status, value: statusLabel },
           { label: strings.justification, value: request.description?.trim() ? <span dir="auto">{request.description}</span> : missing },
         ]}
       />
 
-      <section aria-labelledby="approval-package-summary">
-        <h3 className={styles.heading} id="approval-package-summary">{strings.summary}</h3>
+      <section className={styles.section} aria-labelledby="approval-package-summary">
+        <Heading level={3} id="approval-package-summary">{strings.summary}</Heading>
         <ul className={styles.chips}>
           {[...summary.byKind.entries()].map(([kind, count]) => (
             <li className={styles.chip} key={kind}>{kindLabel(kind)} <bdi>{count}</bdi></li>
@@ -59,7 +60,7 @@ export default function ApprovalOverview({
           <li className={styles.chip}>{fill(strings.createdCount, { count: summary.created })}</li>
           <li className={styles.chip}>{fill(strings.modifiedCount, { count: summary.modified })}</li>
         </ul>
-        <p className={styles.note}>{strings.absent}</p>
+        <p className={styles.note}><Text as="span" tone="inherit">{strings.absent}</Text></p>
       </section>
     </div>
   );

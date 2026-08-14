@@ -4,6 +4,7 @@ import Choice from "@/components/saqeel/choice/choice";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Field from "@/components/saqeel/field/field";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { SEARCH_MIN_LENGTH } from "@/features/planning-single/shapes";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import Button from "@/components/saqeel/button/button";
 import { Skeleton, SkeletonRegion } from "@/components/saqeel/skeleton/skeleton";
@@ -72,7 +73,7 @@ export default function FactoryResults({
   onRetry: () => void;
   strings: FactoryResultsStrings;
 }) {
-  const searching = query.trim().length >= 3;
+  const searching = query.trim().length >= SEARCH_MIN_LENGTH;
   const pending = searching && !settled;
   const visible = settled ? results : [];
   const nothingFound = settled && !registryUnavailable && results.length === 0 && !matchedElsewhere;

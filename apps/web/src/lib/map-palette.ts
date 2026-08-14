@@ -9,11 +9,19 @@
 // semantic as a success pill, not a decorative choice. `neutral` was blue,
 // which now means info; an unclassified zone is grey. `primary` was the old
 // emerald brand and is now aubergine.
+// `brand` is the located-thing tone: a pin that answers "where is it", carrying
+// no risk claim. It mirrors --sqx-brand-400/-500, not --sqx-brand-600 (which is
+// `primary` below): 600 is the dark aubergine used behind light text, and a
+// marker painted with it disappears into the night basemap. 400 is the rung the
+// interface already uses for accents on dark, and it stays legible on the day
+// style too. `neutral` (#637381) reads as a black dot on the dark map — use it
+// for a genuinely unclassified zone, not for a location the reader must find.
 export const MAP_PALETTE = {
   high: { fill: "#B71D18", stroke: "#7A0916" },
   medium: { fill: "#B76E00", stroke: "#7A4100" },
   low: { fill: "#118D57", stroke: "#065E49" },
   neutral: { fill: "#637381", stroke: "#454F5B" },
+  brand: { fill: "#7E61AC", stroke: "#52406F" },
   primary: "#413259",
   info: "#215C66",
   halo: "#FFFFFF",

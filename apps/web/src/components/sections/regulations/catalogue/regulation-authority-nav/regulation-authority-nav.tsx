@@ -3,6 +3,7 @@ import CountBadge from "@/components/saqeel/count-badge/count-badge";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import type { RegulationAuthority } from "@/features/regulations/rows";
 import styles from "./regulation-authority-nav.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type RegulationAuthorityStrings = {
   readonly heading: string;
@@ -26,7 +27,7 @@ export default function RegulationAuthorityNav({ authorities, total, current, hr
         <ul className={styles.list}>
           <li>
             <Link className={styles.entry} href={hrefFor("")} aria-current={current ? undefined : "true"}>
-              <span className={styles.label}>{strings.all}</span>
+              <span className={styles.label}><Text as="span" tone="inherit">{strings.all}</Text></span>
               <CountBadge tone="neutral" value={total} />
             </Link>
           </li>
@@ -38,13 +39,13 @@ export default function RegulationAuthorityNav({ authorities, total, current, hr
                 aria-current={current === authority.key ? "true" : undefined}
                 data-unrecorded={authority.label === null ? "" : undefined}
               >
-                <span className={styles.label}>{authority.label ?? strings.notRecorded}</span>
+                <span className={styles.label}><Text as="span" tone="inherit">{authority.label ?? strings.notRecorded}</Text></span>
                 <CountBadge tone="neutral" value={authority.count} />
               </Link>
             </li>
           ))}
         </ul>
-        <p className={styles.caption}>{strings.caption}</p>
+        <Text tone="muted">{strings.caption}</Text>
       </CardBody>
       </Card>
     </nav>

@@ -14,7 +14,6 @@ type CardProps = {
 
 type CardHeaderProps = {
   title: ReactNode;
-  eyebrow?: ReactNode;
   description?: ReactNode;
   titleId?: string;
   trailing?: ReactNode;
@@ -36,12 +35,11 @@ export function Card({ children, as = "article", interactive, accent, labelledBy
   );
 }
 
-export function CardHeader({ title, eyebrow, description, titleId, trailing, level = "h3" }: CardHeaderProps) {
+export function CardHeader({ title, description, titleId, trailing, level = "h3" }: CardHeaderProps) {
   const Heading = level;
   return (
     <header className={styles.header}>
       <div className={styles.headline}>
-        {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
         <Heading className={styles.title} id={titleId}>{title}</Heading>
         {description ? <p className={styles.description}>{description}</p> : null}
       </div>

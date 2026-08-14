@@ -4,6 +4,7 @@ import type { WorkspaceItem, WorkspaceViolation } from "@/features/regulations/w
 import { configStatusTone, itemsLinkedToViolation, violationLevelTone } from "@/features/regulations/workspace-view";
 import { fill } from "@/i18n/messages";
 import styles from "./regulation-violations.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type RegulationViolationsStrings = {
   readonly caption: string;
@@ -29,7 +30,7 @@ export default function RegulationViolations({ violations, items, labelFor, stri
   labelFor: (value: string) => string;
   strings: RegulationViolationsStrings;
 }) {
-  const absent = <span className={styles.absent}>{strings.none}</span>;
+  const absent = <Text as="span" tone="muted">{strings.none}</Text>;
 
   const columns: readonly DataColumn<WorkspaceViolation>[] = [
     {
@@ -38,8 +39,8 @@ export default function RegulationViolations({ violations, items, labelFor, stri
       isRowHeader: true,
       cell: violation => (
         <span className={styles.identity}>
-          <span className={styles.title}>{violation.title}</span>
-          <bdi className={styles.code}>{violation.code}</bdi>
+          <Text as="span" role="bodyStrong">{violation.title}</Text>
+          <bdi><Mono tone="muted">{violation.code}</Mono></bdi>
         </span>
       ),
     },
@@ -67,7 +68,7 @@ export default function RegulationViolations({ violations, items, labelFor, stri
         const linked = itemsLinkedToViolation(items, violation.code);
         return linked.length
           ? <span className={styles.codes}>{linked.map(item => <bdi className={styles.code} key={item.id}>{item.code}</bdi>)}</span>
-          : <span className={styles.absent}>{strings.notLinked}</span>;
+          : <Text as="span" tone="muted">{strings.notLinked}</Text>;
       },
     },
     {

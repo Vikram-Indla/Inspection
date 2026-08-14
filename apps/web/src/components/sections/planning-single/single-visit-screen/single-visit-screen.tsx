@@ -11,6 +11,7 @@ import ConfigurationCard from "./configuration-card";
 import FactorySearch from "./factory-search";
 import PublishActions from "./publish-actions";
 import TargetFields from "./target-fields";
+import { SEARCH_MIN_LENGTH } from "@/features/planning-single/shapes";
 import type { DraftInfo, SinglePlanningData } from "@/features/planning-single/shapes";
 import type { SingleVisitStrings } from "@/features/planning-single/strings";
 import {
@@ -24,7 +25,6 @@ import {
 import type { Locale } from "@/lib/i18n";
 import styles from "./single-visit-screen.module.css";
 
-const SEARCH_MIN_LENGTH = 3;
 const SEARCH_DEBOUNCE_MS = 300;
 
 export default function SingleVisitScreen({ data, strings, locale }: {

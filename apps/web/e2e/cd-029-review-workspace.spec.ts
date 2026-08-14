@@ -155,7 +155,6 @@ test.describe("CD-029 reviewer workspace — read-only runtime", () => {
       // both keys are written so the head script and the post-hydration
       // toggle agree, exactly as the product does
       await page.evaluate(value => {
-        localStorage.setItem("saqeel-theme-mode", value);
         localStorage.setItem("saqeel-theme", value);
       }, theme);
       await page.reload();

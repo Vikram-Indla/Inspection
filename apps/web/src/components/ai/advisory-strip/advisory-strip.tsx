@@ -4,7 +4,6 @@ import { type ReactNode } from "react";
 import { useActionState } from "react";
 import Button from "@/components/saqeel/button/button";
 import Icon from "@/components/saqeel/icon/icon";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { generateContextualInsight, type ContextualResult } from "@/lib/ai/contextual-actions";
 import { Heading, Text } from "@/components/saqeel/type";
 import styles from "./advisory-strip.module.css";
@@ -13,7 +12,6 @@ const EMPTY: ContextualResult = {};
 
 export type AdvisoryStripStrings = {
   readonly title: string;
-  readonly advisory: string;
   readonly idle: string;
   readonly generate: string;
   readonly generating: string;
@@ -38,8 +36,6 @@ export default function AdvisoryStrip({ headingId, strings, notesShownWithAdviso
         <Icon name="ai" size="sm" />
         <Heading level={2} tone="accent" id={headingId}>{strings.title}</Heading>
       </span>
-
-      <StatusPill tone="info">{strings.advisory}</StatusPill>
 
       <span className={styles.body}>
         {result.error

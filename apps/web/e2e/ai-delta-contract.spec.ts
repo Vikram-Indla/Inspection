@@ -5,16 +5,6 @@ import path from "node:path";
 const SRC = (p: string) => fs.readFileSync(path.resolve(__dirname, "..", p), "utf8");
 
 test.describe("contextual AI delta contract", () => {
-  test("planning summary is evidence-linked and cannot publish or select", () => {
-    const page = SRC("src/app/(app)/planning/bulk/page.tsx");
-    expect(page).toContain("MVP1-M01-016");
-    expect(page).toContain("MVP1-M01-026");
-    expect(page).toContain("ContextualAiPanel");
-    expect(page).toContain("AC-0016");
-    expect(page).toContain("AC-0026");
-    expect(page).toContain("Do not select factories, alter risk values, invent thresholds, or publish a plan.");
-  });
-
   test("preparation assistant is present before geofence and cannot gate start", () => {
     const startup = SRC("src/app/(app)/field/[visitId]/Startup.tsx");
     expect(startup).toContain("M03-009");

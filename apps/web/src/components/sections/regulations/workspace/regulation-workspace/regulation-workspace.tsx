@@ -3,6 +3,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { titleCase } from "@/features/factories/portfolio";
 import { regulationHref, WORKSPACE_TABS, type RegulationScope, type WorkspaceTab } from "@/features/regulations/params";
 import { readRegulationWorkspace } from "@/features/regulations/workspace-source";
@@ -66,12 +67,12 @@ export default async function RegulationWorkspace({ locale, scope }: {
       <CardHeader
         level="h2"
         titleId="regulation-workspace"
-        eyebrow={<bdi>{regulation.code} · {regulation.issuing_authority ?? regulations.authorities.notRecorded}</bdi>}
         title={<bdi>{regulation.title}</bdi>}
-        description={regulations.workspace.locked}
+        description={<bdi>{regulation.code} · {regulation.issuing_authority ?? regulations.authorities.notRecorded}</bdi>}
         trailing={<StatusPill tone="info">{regulations.workspace.readOnly}</StatusPill>}
       />
       <CardBody>
+        <Text tone="muted">{regulations.workspace.locked}</Text>
         <SegmentedControl items={tabs} value={scope.tab} label={regulations.workspace.tabLabel} />
 
         <div className={styles.panel}>

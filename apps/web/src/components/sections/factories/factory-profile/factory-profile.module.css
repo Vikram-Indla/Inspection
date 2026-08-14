@@ -31,30 +31,23 @@
 }
 
 
+/* Identical to factory-sections' marker, deliberately. This card drew its plus
+   as two bars spanning the full icon box — 18px of ink against the ~7px glyph
+   the sibling cards use — so the one card that opens by default also had the
+   loudest control on the page. Same mechanism, same size. */
 .marker {
-  position: relative;
   flex: none;
   inline-size: var(--sqx-icon-md);
-  block-size: var(--sqx-icon-md);
-}
-
-.marker::before,
-.marker::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  inset-block-start: 50%;
-  block-size: var(--sqx-border-width-hair);
-  background: var(--sqx-text-muted);
+  color: var(--sqx-text-muted);
+  text-align: center;
 }
 
 .marker::after {
-  transform: rotate(90deg);
-  transition: transform var(--sqx-duration-fast) var(--sqx-ease-standard);
+  content: "+";
 }
 
 .section[open] .marker::after {
-  transform: rotate(0deg);
+  content: "\2212";
 }
 
 /* No `align-items: flex-start` here. It shrink-wrapped every child, which

@@ -4,6 +4,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { RegulationFootprint, RegulationRow } from "@/features/regulations/rows";
 import { fill } from "@/i18n/messages";
 import styles from "./regulation-catalogue.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type RegulationCatalogueStrings = {
   readonly caption: string;
@@ -48,9 +49,9 @@ export default function RegulationCatalogue({ rows, selectedId, statusLabelFor, 
       isRowHeader: true,
       cell: row => (
         <span className={styles.identity}>
-          <span className={styles.title}>{row.title}</span>
-          <bdi className={styles.code}>{row.code}</bdi>
-          {row.incomplete ? <span className={styles.warning}>{strings.incomplete}</span> : null}
+          <Text as="span" role="bodyStrong">{row.title}</Text>
+          <bdi><Mono tone="muted">{row.code}</Mono></bdi>
+          {row.incomplete ? <span className={styles.warning}><Text as="span" tone="inherit">{strings.incomplete}</Text></span> : null}
         </span>
       ),
     },
@@ -67,13 +68,13 @@ export default function RegulationCatalogue({ rows, selectedId, statusLabelFor, 
       header: strings.status,
       cell: row => <StatusPill tone={row.tone}>{statusLabelFor(row.status)}</StatusPill>,
     },
-    { key: "version", header: strings.version, cell: row => <bdi className={styles.code}>{row.versionLabel}</bdi> },
+    { key: "version", header: strings.version, cell: row => <bdi><Mono tone="muted">{row.versionLabel}</Mono></bdi> },
     {
       key: "published",
       header: strings.published,
       numeric: true,
       cell: row => row.publishedAt
-        ? <bdi className={styles.code}>{formatDay(row.publishedAt)}</bdi>
+        ? <bdi><Mono tone="muted">{formatDay(row.publishedAt)}</Mono></bdi>
         : <span className={styles.none}>{strings.none}</span>,
     },
     {

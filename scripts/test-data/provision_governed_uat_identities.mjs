@@ -31,6 +31,18 @@ if (apply && process.env.SAQEEL_UAT_IDENTITY_APPLY !== APPLY_ACK) {
 
 const id = (prefix, n) => `${prefix}000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const regions = ["Riyadh", "Eastern Province", "Makkah", "Madinah", "Qassim"];
+// Display names come from a checked-in map so the shell account chip renders an
+// officer rather than a data-provenance note. The identities remain governed
+// non-production: that fact is carried by app_metadata.data_mode and the
+// seed_batch_id below, which is where a machine reads it — not by the name a
+// human sees on every screen.
+const displayNames = JSON.parse(readFileSync(resolve("scripts/test-data/uat-identity-names.json"), "utf8"));
+const displayName = alias => {
+  const name = displayNames[alias];
+  if (!name) throw new Error(`UAT_IDENTITY_REFUSED: no display name for ${alias}`);
+  return name;
+};
+
 const definitions = [
   ...["admin", "planner", "supervisor"].flatMap((role, roleIndex) =>
     Array.from({ length: 5 }, (_, index) => ({
@@ -79,7 +91,7 @@ for (const account of definitions) {
     if (byId) await request(`/auth/v1/admin/users/${account.id}`, { method: "PUT", body: authBody });
     else await request("/auth/v1/admin/users", { method: "POST", body: authBody });
     await request("/rest/v1/profiles?on_conflict=user_id", { method: "POST", prefer: "resolution=merge-duplicates,return=minimal", body: {
-      user_id: account.id, full_name: `Synthetic ${account.alias}`, email: account.email,
+      user_id: account.id, full_name: displayName(account.alias), email: account.email,
       region: account.region, org_scope: account.org_scope, account_status: "active",
     }});
     await request("/rest/v1/user_roles?on_conflict=user_id,role_key", { method: "POST", prefer: "resolution=merge-duplicates,return=minimal", body: account.roles.map(role_key => ({ user_id: account.id, role_key })) });

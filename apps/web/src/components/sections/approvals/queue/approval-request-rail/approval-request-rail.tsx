@@ -6,6 +6,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { ApprovalRequestRow } from "@/features/approvals/queries";
 import { fill } from "@/i18n/messages";
 import styles from "./approval-request-rail.module.css";
+import { Mono, Overline, Text } from "@/components/saqeel/type";
 
 export type ApprovalRailEntry = {
   readonly request: ApprovalRequestRow;
@@ -59,22 +60,22 @@ export default function ApprovalRequestRail({ entries, selectedId, hrefFor, stat
                         number: entry.request.request_number,
                       })}
                     >
-                      <span className={styles.type}>{typeLabelFor(entry.request.request_type)}</span>
-                      <span className={styles.title} dir="auto">{entry.request.title}</span>
-                      <bdi className={styles.number}>{entry.request.request_number}</bdi>
+                      <Overline as="span">{typeLabelFor(entry.request.request_type)}</Overline>
+                      <Text as="span" role="bodyStrong" dir="auto">{entry.request.title}</Text>
+                      <bdi><Mono tone="muted">{entry.request.request_number}</Mono></bdi>
 
                       <span className={styles.chips}>
                         {entry.chips.map(chip => <span className={styles.chip} key={chip.key}>{chip.label}</span>)}
                       </span>
 
                       <span className={styles.meta}>
-                        <span>{entry.requester ?? strings.requesterUnknown}</span>
-                        <span>{entry.submitted ?? strings.notSubmitted}</span>
+                        <Text as="span" tone="inherit">{entry.requester ?? strings.requesterUnknown}</Text>
+                        <Text as="span" tone="inherit">{entry.submitted ?? strings.notSubmitted}</Text>
                       </span>
 
                       <span className={styles.foot}>
                         <StatusPill tone="neutral">{statusLabelFor(entry.request.status)}</StatusPill>
-                        <span className={styles.progress}>{entry.progress}</span>
+                        <Text as="span" tone="muted" numeric>{entry.progress}</Text>
                       </span>
                     </Link>
                   </li>

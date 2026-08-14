@@ -34,8 +34,8 @@ export default function ApprovalsSkeleton({ label }: { label: string }) {
 
           <Card as="div">
             <CardHeader
-              eyebrow={<Skeleton shape="line" width="narrow" size="sm" />}
               title={<Skeleton shape="line" width="wide" size="lg" />}
+              description={<Skeleton shape="line" width="narrow" size="sm" />}
             />
             <CardBody gap="tight">
               {Array.from({ length: DIFF_ROWS }, (_unused, index) => (

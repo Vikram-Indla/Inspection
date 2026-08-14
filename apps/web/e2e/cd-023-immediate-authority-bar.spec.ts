@@ -597,10 +597,8 @@ test.describe("CD-023 accessibility, localization and visual matrix", () => {
           await page.setViewportSize({ width: viewport.width, height: viewport.height });
           await page.goto(`/locale?set=${locale}`);
           await page.goto("/planning/immediate");
-          // The shell theme control resolves saqeel-theme-mode first and only
           // falls back to the legacy resolved key, so pin both.
           await page.evaluate(mode => {
-            localStorage.setItem("saqeel-theme-mode", mode);
             localStorage.setItem("saqeel-theme", mode);
           }, theme);
           await page.reload();

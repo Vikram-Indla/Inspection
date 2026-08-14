@@ -119,7 +119,7 @@ with inspectors as (
   returning user_id
 ), profiles as (
   insert into public.profiles(user_id,full_name,email,region,org_scope,account_status)
-  select uid,'Synthetic Inspector '||lpad(g::text,2,'0'),email,
+  select uid,(array['منصور الدوسري','سامي الشمري','خالد السبيعي','طارق الغامدي','ياسر البقمي','أنس العنزي','رامي الرشيد','مازن الخالدي','فارس القصيبي','عمار الصقر','باسم الجاسر','جابر الحمد','حاتم المالكي','رشيد الشهري','سلمان الفيفي','ضاري الأحمدي','عيسى العمري','غازي الصاعدي','قاسم الطلحي','لؤي السلمي','مهند الحميد','نواف الناصر','هشام الفهد','وسام السعيد','أيمن المهنا','بشير العواد','ثامر البراك','جمال التميمي','حكيم الشايع','راكان الدهش'])[((g-1)%30)+1],email,
     (array['Riyadh','Eastern Province','Makkah','Madinah','Qassim'])[((g-1)%5)+1],
     'regional','active' from inspectors
   on conflict (user_id) do update set email=excluded.email,region=excluded.region,

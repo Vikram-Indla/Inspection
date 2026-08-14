@@ -78,8 +78,14 @@
   cursor: pointer;
 }
 
+/* Wraps rather than crushes. `trailing` is `flex: none`, so on a narrow card the
+   headline absorbed the entire shortfall — a 197px status pill beside a 430px
+   card left the factory name 180px and broke it over three lines. The basis
+   gives the headline a width it will not go below before the trailing drops to
+   its own row; above that width the layout is unchanged. */
 .header {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--sqx-space-5);
@@ -89,16 +95,10 @@
 
 .headline {
   display: flex;
+  flex: 1 1 var(--sqx-grid-min-sm);
   flex-direction: column;
   gap: var(--sqx-space-2);
   min-inline-size: 0;
-}
-
-.eyebrow {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
 }
 
 .title {

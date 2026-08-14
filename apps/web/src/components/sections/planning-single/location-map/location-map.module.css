@@ -1,0 +1,9 @@
+/* `dir="ltr"` on the frame is set in the component, not here: the map is
+   geography, not text, so its controls and compass must not mirror in Arabic.
+   The coordinates that used to stand alone now read as a caption beneath it. */
+.frame {
+  block-size: min(var(--sqx-media-h-md), 50dvh);
+  overflow: hidden;
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+}

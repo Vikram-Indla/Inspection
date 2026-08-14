@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { Workbook, SpreadsheetFile } from '@oai/artifact-tool';
 
 const out = process.env.OUTPUT_DIR ?? new URL('../../outputs/019fbd0c-8368-7a72-819b-32653b4d1e65/', import.meta.url).pathname;
@@ -7,6 +8,7 @@ const wb = Workbook.create();
 const navy='#17324D', teal='#087E8B', gold='#D9A441', pale='#EAF4F5', input='#FFF4CC', output='#E8F3E8', ink='#243746';
 const roles=['admin','planner','supervisor','inspector'];
 const roleCounts={admin:5,planner:5,supervisor:5,inspector:30};
+const uatNames=JSON.parse(readFileSync(new URL('./uat-identity-names.json', import.meta.url),'utf8'));
 const names={admin:['نورة العتيبي','ريم القحطاني','سارة الحربي','هيا الدوسري','لطيفة الشهري'],planner:['عبدالله السبيعي','فيصل الغامدي','ماجد الزهراني','تركي المطيري','خالد الرشيدي'],supervisor:['محمد العنزي','أحمد الشمري','سلمان الثقفي','ياسر الجهني','بدر التميمي'],inspector:['فهد الدوسري','عمر القحطاني','زياد الحارثي','ناصر البلوي','راشد المطيري']};
 const regions=['Riyadh','Eastern Province','Makkah','Madinah','Qassim'];
 const cities=['Riyadh','Dammam','Jeddah','Madinah','Buraydah'];
@@ -33,7 +35,7 @@ add('Guide & Controls',['Control','Value','Purpose'],[
  ['Package ID','local-test-data-v1','Deterministic seed ownership and rollback key'],['Environment','LOCAL ONLY','Importer refuses non-loopback database hosts'],['QA password','OPERATOR SUPPLIED','Required through fail-closed environment loading; never stored in this package'],['Production writes','PROHIBITED','No production URLs or credentials are stored'],['Stable IDs','Enabled','All business and persona IDs are deterministic'],['Deletion policy','Exact-member only','No heuristic cleanup; immutable audit/history retained'],['Source schema','Current local clone','Derived read-only from active PLN-012 proof schema'],['Fictitious data','Yes','No real person or establishment is represented']]);
 
 const accounts=[]; const profiles=[];
-for(const role of roles) for(let n=1;n<=roleCounts[role];n++){ const p={admin:'a1',planner:'a2',supervisor:'a3',inspector:'a4'}[role]; accounts.push([`${role}${n}`,`${role}${n}@mim.gov.sa`,role,id(p,n),'SAQEEL_CROSS_ROLE_PASSWORD']); profiles.push([id(p,n),`${role}${n}`,names[role][n-1] ?? `Synthetic Inspector ${String(n).padStart(2,'0')}`,regions[(n-1)%regions.length],role==='admin'?'national':'regional','active']); }
+for(const role of roles) for(let n=1;n<=roleCounts[role];n++){ const p={admin:'a1',planner:'a2',supervisor:'a3',inspector:'a4'}[role]; accounts.push([`${role}${n}`,`${role}${n}@mim.gov.sa`,role,id(p,n),'SAQEEL_CROSS_ROLE_PASSWORD']); profiles.push([id(p,n),`${role}${n}`,names[role][n-1] ?? uatNames[`${role}${n}`],regions[(n-1)%regions.length],role==='admin'?'national':'regional','active']); }
 accounts.push(['multi-role','multi-role@mim.gov.sa','planner + supervisor',id('a5',1),'SAQEEL_CROSS_ROLE_PASSWORD'],['no-workspace','no-workspace@mim.gov.sa','none (refusal case)',id('a6',1),'SAQEEL_CROSS_ROLE_PASSWORD']);
 profiles.push([id('a5',1),'multi-role','ضابط تخطيط ومراجعة تجريبي','Riyadh','regional','active'],[id('a6',1),'no-workspace','مستخدم بلا مساحة عمل تجريبي','','','active']);
 add('Accounts',['Username','Hidden Auth Email','Role Grants','User ID','Credential Source'],accounts);

@@ -17,18 +17,23 @@ function chunk(ids: readonly string[]): string[][] {
 export async function loadLatestAudit(
   sb: DashboardClient,
   objectIds: readonly string[],
-  fromIso: string,
-  toIso: string,
+  fromIso: string | null,
+  toIso: string | null,
 ): Promise<Collected<AuditRow>> {
   const ids = [...new Set(objectIds)];
   if (!ids.length) return { rows: [], failed: false, reason: null };
-  const responses = await Promise.all(chunk(ids).map(group => sb.from("audit_events")
-    .select("id, object_type, object_id, action, requirement_refs, occurred_at")
-    .in("object_id", group)
-    .gte("occurred_at", fromIso)
-    .lte("occurred_at", toIso)
-    .order("occurred_at", { ascending: false })
-    .limit(TIMELINE_LIMIT)));
+  // A null end is unbounded, so its predicate is omitted rather than widened to
+  // some far-off date — an invented bound is a governed value from thin air.
+  const responses = await Promise.all(chunk(ids).map(group => {
+    const selected = sb.from("audit_events")
+      .select("id, object_type, object_id, action, requirement_refs, occurred_at")
+      .in("object_id", group);
+    const lowerBounded = fromIso ? selected.gte("occurred_at", fromIso) : selected;
+    const windowed = toIso ? lowerBounded.lte("occurred_at", toIso) : lowerBounded;
+    return windowed
+      .order("occurred_at", { ascending: false })
+      .limit(TIMELINE_LIMIT);
+  }));
   const results = responses.map(response => readRows(response, auditRow, "dashboard.audit_events"));
   if (results.some(result => result.failed)) return { rows: [], failed: true, reason: null };
   return {

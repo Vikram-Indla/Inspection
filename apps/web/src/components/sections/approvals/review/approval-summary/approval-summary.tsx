@@ -3,6 +3,7 @@ import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import type { StepState } from "@/features/approvals/rows";
 import { fill } from "@/i18n/messages";
 import styles from "./approval-summary.module.css";
+import { Heading, Text } from "@/components/saqeel/type";
 
 export type ApprovalSummaryStrings = {
   readonly heading: string;
@@ -33,7 +34,7 @@ export default function ApprovalSummary({ groups, missingComments, ready, labelF
         items={groups.map(group => ({
           label: labelFor(group.step),
           value: group.breakdown.total === 0
-            ? <span className={styles.absent}>{strings.none}</span>
+            ? <Text as="span" tone="muted">{strings.none}</Text>
             : fill(strings.breakdown, {
                 approved: group.breakdown.approved,
                 rejected: group.breakdown.rejected,
@@ -46,23 +47,23 @@ export default function ApprovalSummary({ groups, missingComments, ready, labelF
         {ready ? strings.settled : strings.outstanding}
       </StatusPill>
 
-      <section aria-labelledby="approval-checks">
-        <h3 className={styles.heading} id="approval-checks">{strings.checks}</h3>
+      <section className={styles.section} aria-labelledby="approval-checks">
+        <Heading level={3} id="approval-checks">{strings.checks}</Heading>
         <ul className={styles.checks}>
           <li className={styles.check}>
-            <span>{strings.missingComment}</span>
-            <bdi className={styles.value} data-flagged={missingComments > 0 ? "" : undefined}>{missingComments}</bdi>
+            <Text as="span" tone="inherit">{strings.missingComment}</Text>
+            <bdi className={styles.value} data-flagged={missingComments > 0 ? "" : undefined}><Text as="span" tone="inherit" numeric>{missingComments}</Text></bdi>
           </li>
           <li className={styles.check}>
-            <span>{strings.validation}</span>
-            <span className={styles.absent}>{strings.validationAbsent}</span>
+            <Text as="span" tone="inherit">{strings.validation}</Text>
+            <Text as="span" tone="muted">{strings.validationAbsent}</Text>
           </li>
           <li className={styles.check}>
-            <span>{strings.conflicts}</span>
-            <span className={styles.absent}>{strings.conflictsAbsent}</span>
+            <Text as="span" tone="inherit">{strings.conflicts}</Text>
+            <Text as="span" tone="muted">{strings.conflictsAbsent}</Text>
           </li>
         </ul>
-        <p className={styles.note}>{strings.missingCommentNote}</p>
+        <p className={styles.note}><Text as="span" tone="inherit">{strings.missingCommentNote}</Text></p>
       </section>
     </div>
   );
