@@ -2,7 +2,28 @@
 
 `Last updated: 2026-08-14` · `Updated by: T-110 — /execution rebuild`
 
-## Nothing in `npm run gates` typechecks, and a non-compiling file shipped (2026-08-14)
+## `npm run gates` now typechecks — after a non-compiling file shipped (2026-08-14)
+
+**Closed the same day it was found.** `gates` is now
+`typecheck && gates:typography && check:design-system-v5`, typecheck **first**,
+so the chain short-circuits before style-checking code that does not compile.
+Verified by re-introducing the defect: exit **2**, style gates never run.
+
+**Two things that verification taught, both worth more than the fix.** The first
+attempt to prove it used a `\n`-terminated replace against a **CRLF** file,
+matched nothing, left the file untouched, and *reported that typecheck passed* —
+T-090's zero-match shape, walked into while building the control meant to catch
+this exact class of defect. **A test that injects a defect must assert the
+injection landed**, not just read the exit code. And the v5 gate's real figure is
+**77 findings**, not the 103 quoted through this session: 103 counted bracketed
+tags in the output and over-counted multi-line entries.
+
+**`verify`, `lint`, `test`, `unit` and `budgets` are still absent.** The history
+below is why that matters.
+
+---
+
+### The original finding
 
 `explain-panel.tsx` used `Heading`, `Mono` and `Text` across nine call sites and
 **imported none of them**. It reached the branch in `1bd7abdd
@@ -20,7 +41,7 @@ requires `npm run verify` before any task is done, and the session template has
 checkboxes for `lint`, `unit` and budgets. `package.json` has **none of
 `verify`, `lint`, `test`, `unit`, `budgets`** — T-102 recorded the missing
 `lint`, and it is actually all five. **A rule that names a command nobody can run
-is not a control.** Adding `typecheck` to the `gates` chain is one line.
+is not a control.** The `typecheck` half is now closed; the other four are not.
 
 ## An always-on banner is a fabrication, not a state (2026-08-14)
 

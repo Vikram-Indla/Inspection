@@ -14,6 +14,7 @@ Restore `npm run typecheck` to green on `feat/ui-revamp`.
 | File | Action | Lines before → after |
 | --- | --- | --- |
 | `components/dashboard/explain-panel/explain-panel.tsx` | edited — one import line | 148 → 149 |
+| `package.json` | edited — `typecheck` prepended to the `gates` chain | 1 line |
 
 ## Decisions
 
@@ -54,6 +55,8 @@ restored, not merely compiling.
 - [x] `npm run typecheck` — 10 errors → 0
 - [ ] `npm run lint` — script does not exist
 - [x] `npm run gates:typography` — PASSED
+- [x] `npm run gates` — now typechecks first; verified it exits **2** when this
+      defect is present and short-circuits before the style gates
 - [ ] Rendered — **not verified.** `/dashboard` is auth-gated and this session
       could not sign in. The route compiles (`✓ Compiled /dashboard in 24.7s,
       1545 modules`), which proves the module graph, **not the panel**.
@@ -80,15 +83,50 @@ rule names.**
 
 ## Blocked / open questions
 
-Should `typecheck` be added to the gates chain? `npm run gates` currently runs
-typography and v5 only, so a non-compiling file passes every gate this repo has.
+**Resolved in this task, on the owner's direction.** `typecheck` now runs
+**first** in the gates chain:
+
+```
+"gates": "npm run typecheck && npm run gates:typography && npm run check:design-system-v5"
+```
+
+First is deliberate — the chain short-circuits, so the style gates never run
+against code that does not compile.
+
+**Proved by re-introducing this exact defect, not by assuming.** With the import
+removed, `npm run gates` exits **2** on the `tsc` errors and the typography and
+v5 gates do not run; restored, the file is byte-identical to committed
+(`git diff` empty) and gates behaves as before.
+
+**The first attempt at that proof was worthless and looked fine.** The injection
+used a `\n`-terminated pattern against a **CRLF** file, matched nothing, and left
+the file untouched — so "typecheck passed" meant only that the unmodified file
+still compiled. **This is T-090's zero-match shape, hit while building the
+control meant to catch this class of defect.** What caught it was asserting
+`grep -c` on the file afterwards rather than trusting the script's exit code; the
+second attempt aborts if the line count does not actually drop.
+
+**Still open:** `verify`, `lint`, `test`, `unit` and `budgets` remain absent from
+`package.json` while `CLAUDE.md` and the session template require them. With
+`typecheck` folded in, `verify` could now be a thin alias over `gates` plus
+`test:e2e` — but what gates a task is an owner decision, not an agent one.
+
+**Note on the v5 number.** This session quoted **103** findings in progress
+reports; the script's own figure is **77**. 103 was a count of bracketed tag
+occurrences in the output and over-counted multi-line entries. **77 is
+authoritative** — the trend reported elsewhere (down 2 across the session, zero
+owned by `/execution`) is unaffected.
 
 ## Proposed commit
 
+Two changes, two subjects:
+
 ```
 fix(dashboard): import the type primitives explain-panel renders
+build(gates): typecheck before the design-system gates
 ```
 
 ## Next
 
-Add `typecheck` to `npm run gates`, or create the missing `verify` script.
+Decide whether `verify` should exist as `gates` + `test:e2e`, which would make
+`CLAUDE.md`'s standing instruction runnable for the first time.

@@ -134,6 +134,15 @@ task is done; `package.json` has **none of `verify`, `lint`, `test`, `unit`,
 shipped because the one command that would have caught it is the one no rule
 names.**
 
+**Closed the same day:** `gates` is now
+`typecheck && gates:typography && check:design-system-v5` — typecheck first, so
+the chain short-circuits before style-checking code that does not compile.
+Verified by re-introducing the defect (exit 2, style gates never run). **The
+first attempt at that proof was worthless and looked fine** — a `\n`-terminated
+replace against a **CRLF** file matched nothing and reported success, T-090's
+shape hit while building this very control. **A test that injects a defect must
+assert the injection landed.** The other four scripts remain absent.
+
 ### T-106 · axe on the topbar, and the compact gap filled
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`
 `record:` [2026-08-14-T-106-topbar-axe-and-compact-scope](sessions/2026-08/2026-08-14-T-106-topbar-axe-and-compact-scope.md)
