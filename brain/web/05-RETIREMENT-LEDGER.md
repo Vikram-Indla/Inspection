@@ -113,6 +113,31 @@ task that supersedes them lands.
 | `app/(app)/admin/violations/Controls.module.css` (40 lines) | 2026-08-10 | colocated modules under `sections/enforcement/**` | ~0.9 KB |
 | `app/(app)/admin/violations/actions.ts` (45 lines) | 2026-08-10 | nothing — only `Controls` called it | ~1.8 KB |
 | `components/planning/planning-buckets/planning-buckets.module.css` (72 lines) | 2026-08-11 | `saqeel/stat-card` + `saqeel/card`'s `CardGrid` | ~1.4 KB |
+| `components/sections/planning-bulk/bulk-ai-advisory` (39 lines) | 2026-08-14 | nothing — owner-directed removal of the AI planning summary from `/planning/bulk` | ~1.2 KB |
+
+**`bulk-ai-advisory` removes a contracted capability, not just a widget.** It
+rendered `MVP1-M01-016` / `MVP1-M01-026` ("AI Planning Summary", **MVP1
+Mandatory** in `domain/atomic_scope.csv` rows 17 and 27), accepted as `AC-0016` /
+`AC-0026`. Those rows sit under change ticket
+`CC-AC-0016-0026-AI-PLANNING-SUMMARY-DEFERRAL-001` (`DEC-026`), whose status is
+**OPEN** and whose `scope_forbidden` states that no code change is authorized by
+that ticket alone. The removal was directed by the owner in session and executed;
+the change record is owed. `AC_LEDGER.csv` still marks both rows `implemented`
+and now overstates the build.
+
+Deleted with it: `buildAdvisoryStrings` (`features/planning-bulk/strings.ts`),
+`planningAiContext` (`features/planning-bulk/targeting.ts`), and the `bulk.ai`
+block from `i18n/locales/{en,ar}/planning.json` — all had this component as their
+only consumer. `components/ai/advisory-strip` **survives**: `executive-brief` and
+`factory-ai-advisory` still compose it.
+
+**Contract coverage lost.** Two spec blocks were deleted rather than re-pointed,
+because the behaviour they assert no longer exists:
+`e2e/ai-user-journey.spec.ts` (the planner journey: `planning_summary-panel`, the
+generate button, the "never selects, ranks or publishes anything" governance
+line) and the first test in `e2e/ai-delta-contract.spec.ts`. **The second was
+already failing** — it asserted `ContextualAiPanel` and `AC-0016` inside
+`bulk/page.tsx`, strings that moved to `bulk-screen.tsx` in an earlier refactor.
 
 ---
 
@@ -121,7 +146,7 @@ task that supersedes them lands.
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 11 |
+| Files deleted | 12 |
 | Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053) |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 

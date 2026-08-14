@@ -103,14 +103,3 @@ export function distributionsOf(
     buckets: bucketsFor(view.matched, key, UNKNOWN_BUCKET, labelOf),
   }));
 }
-
-export function planningAiContext(view: BulkTargetingView): string {
-  return JSON.stringify({
-    scope: { factories: view.denominator, eligible: view.eligible, criteria_applied: view.criteriaApplied },
-    risk_band_counts: view.riskCounts,
-    region_counts: view.regionCounts,
-    oldest_source_sync: view.oldestSyncedAt,
-    missing_source_sync: view.missingSync,
-    rule: "Use only these recorded aggregates. Do not select factories, alter risk values, invent thresholds, or publish a plan.",
-  });
-}
