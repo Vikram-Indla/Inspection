@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import Button from "@/components/saqeel/button/button";
 import IconButton from "@/components/saqeel/icon-button/icon-button";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Heading, Mono, Text } from "@/components/saqeel/type";
 import type { MethodologyEntry } from "@/app/(app)/dashboard/dashboard-format";
 import styles from "./explain-panel.module.css";
 
