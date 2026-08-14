@@ -74,55 +74,54 @@ update public.profiles set full_name = 'خالد عمر باحمدان',    regi
 update public.profiles set full_name = 'منال زهير باعشن',     region = 'Makkah' where email = 'factory-rep-02@mim-inspection.test';
 update public.profiles set full_name = 'سامي حاتم الشيخ',     region = 'Eastern' where email = 'factory-rep-03@mim-inspection.test';
 
--- Governed UAT identities (admin1-5, planner1-5, supervisor1-5, inspector1-30).
--- provision_governed_uat_identities.mjs used to write 'Synthetic <alias>' into
--- full_name, which surfaced on the shell account chip as 'Synthetic planner1'.
--- Non-production is recorded in app_metadata.data_mode and seed_batch_id, which
--- is where a machine reads it; the display name is for a human.
-update public.profiles set full_name = 'عبدالعزيز السديري' where email = 'admin1@mim.gov.sa';
-update public.profiles set full_name = 'سعد الجهني' where email = 'admin2@mim.gov.sa';
-update public.profiles set full_name = 'تركي العسيري' where email = 'admin3@mim.gov.sa';
-update public.profiles set full_name = 'نايف البلوي' where email = 'admin4@mim.gov.sa';
-update public.profiles set full_name = 'رياض الحازمي' where email = 'admin5@mim.gov.sa';
-update public.profiles set full_name = 'مشعل الرويلي' where email = 'planner1@mim.gov.sa';
-update public.profiles set full_name = 'بدر النفيعي' where email = 'planner2@mim.gov.sa';
-update public.profiles set full_name = 'وليد الثبيتي' where email = 'planner3@mim.gov.sa';
-update public.profiles set full_name = 'صالح المزيني' where email = 'planner4@mim.gov.sa';
-update public.profiles set full_name = 'فهد الشريف' where email = 'planner5@mim.gov.sa';
-update public.profiles set full_name = 'ناصر القرني' where email = 'supervisor1@mim.gov.sa';
-update public.profiles set full_name = 'عادل الزهراني' where email = 'supervisor2@mim.gov.sa';
-update public.profiles set full_name = 'زياد الحربي' where email = 'supervisor3@mim.gov.sa';
-update public.profiles set full_name = 'حسام العتيبي' where email = 'supervisor4@mim.gov.sa';
-update public.profiles set full_name = 'رائد المطيري' where email = 'supervisor5@mim.gov.sa';
-update public.profiles set full_name = 'منصور الدوسري' where email = 'inspector1@mim.gov.sa';
-update public.profiles set full_name = 'سامي الشمري' where email = 'inspector2@mim.gov.sa';
-update public.profiles set full_name = 'خالد السبيعي' where email = 'inspector3@mim.gov.sa';
-update public.profiles set full_name = 'طارق الغامدي' where email = 'inspector4@mim.gov.sa';
-update public.profiles set full_name = 'ياسر البقمي' where email = 'inspector5@mim.gov.sa';
-update public.profiles set full_name = 'أنس العنزي' where email = 'inspector6@mim.gov.sa';
-update public.profiles set full_name = 'رامي الرشيد' where email = 'inspector7@mim.gov.sa';
-update public.profiles set full_name = 'مازن الخالدي' where email = 'inspector8@mim.gov.sa';
-update public.profiles set full_name = 'فارس القصيبي' where email = 'inspector9@mim.gov.sa';
-update public.profiles set full_name = 'عمار الصقر' where email = 'inspector10@mim.gov.sa';
-update public.profiles set full_name = 'باسم الجاسر' where email = 'inspector11@mim.gov.sa';
-update public.profiles set full_name = 'جابر الحمد' where email = 'inspector12@mim.gov.sa';
-update public.profiles set full_name = 'حاتم المالكي' where email = 'inspector13@mim.gov.sa';
-update public.profiles set full_name = 'رشيد الشهري' where email = 'inspector14@mim.gov.sa';
-update public.profiles set full_name = 'سلمان الفيفي' where email = 'inspector15@mim.gov.sa';
-update public.profiles set full_name = 'ضاري الأحمدي' where email = 'inspector16@mim.gov.sa';
-update public.profiles set full_name = 'عيسى العمري' where email = 'inspector17@mim.gov.sa';
-update public.profiles set full_name = 'غازي الصاعدي' where email = 'inspector18@mim.gov.sa';
-update public.profiles set full_name = 'قاسم الطلحي' where email = 'inspector19@mim.gov.sa';
-update public.profiles set full_name = 'لؤي السلمي' where email = 'inspector20@mim.gov.sa';
-update public.profiles set full_name = 'مهند الحميد' where email = 'inspector21@mim.gov.sa';
-update public.profiles set full_name = 'نواف الناصر' where email = 'inspector22@mim.gov.sa';
-update public.profiles set full_name = 'هشام الفهد' where email = 'inspector23@mim.gov.sa';
-update public.profiles set full_name = 'وسام السعيد' where email = 'inspector24@mim.gov.sa';
-update public.profiles set full_name = 'أيمن المهنا' where email = 'inspector25@mim.gov.sa';
-update public.profiles set full_name = 'بشير العواد' where email = 'inspector26@mim.gov.sa';
-update public.profiles set full_name = 'ثامر البراك' where email = 'inspector27@mim.gov.sa';
-update public.profiles set full_name = 'جمال التميمي' where email = 'inspector28@mim.gov.sa';
-update public.profiles set full_name = 'حكيم الشايع' where email = 'inspector29@mim.gov.sa';
-update public.profiles set full_name = 'راكان الدهش' where email = 'inspector30@mim.gov.sa';
+-- Governed UAT identities. provision_governed_uat_identities.mjs used to write
+-- 'Synthetic <alias>' into full_name, which surfaced on the shell account chip
+-- as 'Synthetic planner1'. Non-production is recorded in app_metadata.data_mode
+-- and seed_batch_id, which is where a machine reads it; the name is for a human.
+--
+-- Guarded twice on purpose: the predicate only matches rows that still carry the
+-- generated label, and aliases already named by the curated section above are
+-- omitted entirely. Re-running can neither clobber a real name nor change a row
+-- an operator has since corrected by hand.
+update public.profiles set full_name = 'عبدالعزيز السديري' where email = 'admin1@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'سعد الجهني' where email = 'admin2@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'تركي العسيري' where email = 'admin3@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'نايف البلوي' where email = 'admin4@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'رياض الحازمي' where email = 'admin5@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'مشعل الرويلي' where email = 'planner1@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'بدر النفيعي' where email = 'planner2@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'وليد الثبيتي' where email = 'planner3@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'صالح المزيني' where email = 'planner4@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'فهد الشريف' where email = 'planner5@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'ناصر القرني' where email = 'supervisor1@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'عادل الزهراني' where email = 'supervisor2@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'زياد الحربي' where email = 'supervisor3@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'حسام العتيبي' where email = 'supervisor4@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'رائد المطيري' where email = 'supervisor5@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'أنس العنزي' where email = 'inspector6@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'رامي الرشيد' where email = 'inspector7@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'مازن الخالدي' where email = 'inspector8@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'فارس القصيبي' where email = 'inspector9@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'عمار الصقر' where email = 'inspector10@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'باسم الجاسر' where email = 'inspector11@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'جابر الحمد' where email = 'inspector12@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'حاتم المالكي' where email = 'inspector13@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'رشيد الشهري' where email = 'inspector14@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'سلمان الفيفي' where email = 'inspector15@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'ضاري الأحمدي' where email = 'inspector16@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'عيسى العمري' where email = 'inspector17@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'غازي الصاعدي' where email = 'inspector18@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'قاسم الطلحي' where email = 'inspector19@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'لؤي السلمي' where email = 'inspector20@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'مهند الحميد' where email = 'inspector21@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'نواف الناصر' where email = 'inspector22@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'هشام الفهد' where email = 'inspector23@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'وسام السعيد' where email = 'inspector24@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'أيمن المهنا' where email = 'inspector25@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'بشير العواد' where email = 'inspector26@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'ثامر البراك' where email = 'inspector27@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'جمال التميمي' where email = 'inspector28@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'حكيم الشايع' where email = 'inspector29@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'راكان الدهش' where email = 'inspector30@mim.gov.sa' and full_name like 'Synthetic %';
 
 commit;
