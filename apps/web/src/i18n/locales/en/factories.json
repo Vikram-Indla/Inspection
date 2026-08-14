@@ -111,13 +111,11 @@
     "outlook": {
       "title": "Risk outlook",
       "predictedRisk": "Predicted risk",
-      "predictedUnavailable": "Not available — no forecasting model is configured. Only recorded calculations are shown.",
+      "predictedUnavailable": "Not configured",
       "whyHighRisk": "Why this risk",
-      "driversUnavailable": "No driver breakdown was recorded for this score. The absence is preserved, not reconstructed.",
+      "driversUnavailable": "Not recorded",
       "modelVersion": "Model version",
-      "latestChange": "Latest change",
-      "nextBestAction": "Next best action",
-      "nextBestActionBody": "Review the recorded violations, actions and evidence on the factory profile before deciding."
+      "latestChange": "Latest change"
     },
     "trust": {
       "title": "Source trust",

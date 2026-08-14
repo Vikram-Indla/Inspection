@@ -11,8 +11,6 @@ export type FactoryRiskOutlookStrings = {
   readonly driversUnavailable: string;
   readonly modelVersion: string;
   readonly latestChange: string;
-  readonly nextBestAction: string;
-  readonly nextBestActionBody: string;
 };
 
 export default function FactoryRiskOutlook({
@@ -45,9 +43,6 @@ export default function FactoryRiskOutlook({
           )}
         <Text tone="muted">{strings.modelVersion}: {modelVersion}</Text>
         {latestChange ? <Text tone="muted">{strings.latestChange}: {latestChange}</Text> : null}
-
-        <Text role="label" tone="muted">{strings.nextBestAction}</Text>
-        <Text tone="secondary">{strings.nextBestActionBody}</Text>
       </CardBody>
     </Card>
   );

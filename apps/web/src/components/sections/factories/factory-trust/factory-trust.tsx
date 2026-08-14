@@ -36,7 +36,7 @@ export default function FactoryTrust({ lastSynchronised, sources, provenance, st
         trailing={<StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>}
       />
       <CardBody gap="tight">
-        <Text tone="secondary" dir="auto">{provenance.body}</Text>
+        {provenance.body ? <Text tone="secondary" dir="auto">{provenance.body}</Text> : null}
 
         <Text role="label" tone="muted">{strings.lastSynchronisation}</Text>
         <Text tone="secondary" dir="auto">{lastSynchronised}</Text>

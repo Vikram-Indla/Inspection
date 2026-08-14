@@ -111,13 +111,11 @@
     "outlook": {
       "title": "توقعات الخطورة",
       "predictedRisk": "الخطورة المتوقعة",
-      "predictedUnavailable": "غير متاحة — لا يوجد نموذج تنبؤ مُهيَّأ. تُعرض عمليات الاحتساب المسجَّلة فقط.",
+      "predictedUnavailable": "غير مُهيأ",
       "whyHighRisk": "سبب هذه الخطورة",
-      "driversUnavailable": "لم يُسجَّل تفصيل للعوامل لهذه الدرجة. يُحفظ هذا الغياب ولا يُعاد بناؤه.",
+      "driversUnavailable": "غير مسجّل",
       "modelVersion": "إصدار النموذج",
-      "latestChange": "آخر تغيير",
-      "nextBestAction": "الإجراء التالي الأنسب",
-      "nextBestActionBody": "راجع المخالفات والإجراءات والأدلة المسجَّلة في ملف المصنع قبل اتخاذ القرار."
+      "latestChange": "آخر تغيير"
     },
     "trust": {
       "title": "موثوقية المصدر",
