@@ -14,7 +14,8 @@ import {
 } from "@/lib/planning/factory-resolver";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { findDuplicateActiveVisits } from "./duplicates";
+import { findDuplicateActiveVisits, findDuplicateActiveVisitsFor } from "./duplicates";
+import { SEARCH_MIN_LENGTH } from "./shapes";
 import type { DraftConfig, DraftInfo, GradedFactory, InitialSelection, SinglePlanningData } from "./shapes";
 
 export type SinglePlanningParams = {
@@ -34,7 +35,6 @@ export type SinglePlanningLoad =
   | { kind: "failure"; reason: "contract" | "session"; failure: PlanningReadFailure; retryHref: string };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const SEARCH_MIN_LENGTH = 3;
 const SEARCH_LIMIT = 50;
 const FACTORY_COLUMNS =
   "id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source, source_synced_at";
@@ -112,12 +112,12 @@ async function searchLegacyFactories(sb: SupabaseClient, q: string): Promise<{ r
     return { rows: [], unavailable: true };
   }
   const candidates = (data ?? []) as LegacyFactoryRow[];
-  const duplicateReads = await Promise.all(candidates.map(row => findDuplicateActiveVisits(sb, row.id)));
-  if (duplicateReads.some(read => read.unavailable)) return { rows: [], unavailable: true };
+  const duplicates = await findDuplicateActiveVisitsFor(sb, candidates.map(row => row.id));
+  if (duplicates.unavailable) return { rows: [], unavailable: true };
   return {
     unavailable: false,
     rows: candidates
-      .map((row, index) => ({ row, grade: gradeCandidate(row, q), visits: duplicateReads[index]?.visits ?? [] }))
+      .map(row => ({ row, grade: gradeCandidate(row, q), visits: duplicates.byFactory[row.id] ?? [] }))
       .flatMap(entry => entry.grade === null ? [] : [toGradedFactory(entry.row, entry.grade, entry.visits)]),
   };
 }

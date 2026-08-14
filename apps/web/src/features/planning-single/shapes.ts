@@ -64,3 +64,14 @@ export type SinglePlanningData = {
   readonly virtualEligible: boolean;
   readonly transitionsExecutable: boolean;
 };
+
+/**
+ * Search runs from the first character typed.
+ *
+ * It was 3, duplicated as a literal in the screen, the results list and the
+ * server read — so the three could disagree and the reader would see a prompt
+ * that contradicted what the server had already answered. One constant now, and
+ * the batched duplicate read (duplicates.ts) is what makes a one-character
+ * query affordable: it used to cost one query per result.
+ */
+export const SEARCH_MIN_LENGTH = 1;

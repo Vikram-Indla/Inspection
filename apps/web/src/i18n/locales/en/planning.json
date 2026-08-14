@@ -543,7 +543,7 @@
     "searchFieldLabel": "CR, Industrial License, plant or name",
     "searchPlaceholder": "1010123456",
     "searchPromptTitle": "Search to begin",
-    "searchPromptBody": "Enter at least 3 characters of a CR, Industrial License, plant number or name. Pick a factory, then confirm its license and location.",
+    "searchPromptBody": "Search by CR, Industrial License, plant number or name. Pick a factory, then confirm its license and location.",
     "portfolioStep": "Select the Industrial License / plant",
     "licenseStep": "Industrial License",
     "locationStep": "Confirm location",
