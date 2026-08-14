@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n";
-import type { ExecutionRow } from "./RevampExecutionWorkspace";
+import type { ExecutionRow } from "@/features/execution/types";
+import { executionMessages } from "@/features/execution/strings";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -59,7 +60,7 @@ const parseRow = (value: unknown, locale: Locale): ExecutionRow | null => {
     id,
     visitReference: text(row.visit_reference) ?? id.slice(0, 8),
     factoryId: text(factory.id),
-    factory: factoryName ?? (locale === "ar" ? "المصنع غير متاح" : "Factory unavailable"),
+    factory: factoryName ?? executionMessages(locale).table.factoryUnavailable,
     factoryCode: nullableText(factory.factory_code),
     crNumber: nullableText(factory.cr_number),
     windowStart,

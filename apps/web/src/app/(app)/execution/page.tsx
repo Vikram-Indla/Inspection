@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import Shell from "@/components/Shell";
 import ExecutionAccessState from "@/components/sections/execution/execution-access-state/execution-access-state";
+import ExecutionWorkspace from "@/components/sections/execution/execution-workspace/execution-workspace";
 import { loadExecution } from "@/features/execution/queries";
 import { buildDeniedStrings, buildErrorStrings, buildScreenStrings } from "@/features/execution/strings";
 import { getLocale } from "@/lib/i18n";
-import RevampExecutionWorkspace from "./RevampExecutionWorkspace";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +16,13 @@ export default async function ExecutionPage() {
   return (
     <Shell current="/execution" title={buildScreenStrings(locale).title}>
       {loaded.kind === "ready" ? (
-        <RevampExecutionWorkspace
+        <ExecutionWorkspace
           rows={loaded.rows}
           currentUserId={loaded.currentUserId}
           locale={locale}
           totalVisibleRows={loaded.totalVisibleRows}
+          omittedRows={loaded.omittedRows}
+          nowMs={Date.now()}
         />
       ) : (
         <ExecutionAccessState

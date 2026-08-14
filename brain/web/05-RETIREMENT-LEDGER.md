@@ -114,6 +114,7 @@ task that supersedes them lands.
 | `app/(app)/admin/violations/actions.ts` (45 lines) | 2026-08-10 | nothing — only `Controls` called it | ~1.8 KB |
 | `components/planning/planning-buckets/planning-buckets.module.css` (72 lines) | 2026-08-11 | `saqeel/stat-card` + `saqeel/card`'s `CardGrid` | ~1.4 KB |
 | `components/sections/planning-bulk/bulk-ai-advisory` (39 lines) | 2026-08-14 | nothing — owner-directed removal of the AI planning summary from `/planning/bulk` | ~1.2 KB |
+| `app/(app)/execution/RevampExecutionWorkspace.tsx` (397 lines) | 2026-08-14 | `components/sections/execution/**` — workspace · calendar · toolbar · table · dialog · two dialog bodies | ~17 KB |
 
 **`bulk-ai-advisory` removes a contracted capability, not just a widget.** It
 rendered `MVP1-M01-016` / `MVP1-M01-026` ("AI Planning Summary", **MVP1
@@ -146,7 +147,7 @@ already failing** — it asserted `ContextualAiPanel` and `AC-0016` inside
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 12 |
+| Files deleted | 13 |
 | Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053) |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 

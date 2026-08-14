@@ -1,36 +1,65 @@
 import { expect, test } from "@playwright/test";
-import fs from "node:fs";
-import path from "node:path";
+import { storageStatePath } from "./personas";
 
-const source = fs.readFileSync(
-  path.resolve(process.cwd(), "src/app/(app)/execution/RevampExecutionWorkspace.tsx"),
-  "utf8",
-);
+// EXE-CP-S01. These assertions were source-text greps against the hand-rolled
+// focus trap in RevampExecutionWorkspace.tsx, which no longer exists: the
+// drawers are native <dialog> elements opened with showModal(), so focus
+// containment, Escape and focus restoration are platform guarantees rather
+// than application code. Asserting the spelling of a trap that is gone proves
+// nothing, so each claim is now exercised in the browser.
+
+test.use({ storageState: storageStatePath("supervisor") });
+
+const openFirstVisit = async (page: import("@playwright/test").Page) => {
+  await page.goto("/locale?set=en");
+  await page.goto("/execution");
+  await page.getByRole("button", { name: /^View$/ }).first().click();
+  return page.getByRole("dialog");
+};
 
 test.describe("EXE-CP-S01 governed drawer accessibility contract", () => {
-  test("both modal drawers receive focus and close on Escape", () => {
-    expect(source).toContain("initialFocusRef.current?.focus()");
-    expect(source).toContain('if (event.key === "Escape")');
-    expect(source).toContain("close();");
+  test("the visit drawer is a named modal dialog", async ({ page }) => {
+    const dialog = await openFirstVisit(page);
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute("aria-labelledby", "execution-detail-title");
+    await expect(page.locator("#execution-detail-title")).toBeVisible();
   });
 
-  test("focus returns to the originating control after either drawer closes", () => {
-    expect(source).toContain("origin?.focus()");
-    expect(source).toContain("useDialogFocus(!!selected");
-    expect(source).toContain("useDialogFocus(!!reschedule");
+  test("focus moves into the drawer when it opens", async ({ page }) => {
+    const dialog = await openFirstVisit(page);
+    await expect(dialog).toBeVisible();
+    const inside = await dialog.evaluate(node => node.contains(document.activeElement));
+    expect(inside).toBe(true);
   });
 
-  test("drawers retain named modal dialog semantics", () => {
-    expect(source).toContain('className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="execution-detail-title"');
-    expect(source).toContain('className="sq-execution__drawer" role="dialog" aria-modal="true" aria-labelledby="reschedule-title"');
+  test("Escape closes the drawer and returns focus to the originating control", async ({ page }) => {
+    const dialog = await openFirstVisit(page);
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    const restored = await page.evaluate(() =>
+      document.activeElement?.textContent?.trim() ?? "");
+    expect(restored).toBe("View");
   });
 
-  test("Tab and Shift+Tab remain inside either modal drawer", () => {
-    expect(source).toContain('if (event.key !== "Tab") return');
-    expect(source).toContain('dialogRef.current?.querySelectorAll<HTMLElement>');
-    expect(source).toContain("event.shiftKey && document.activeElement === first");
-    expect(source).toContain("!event.shiftKey && document.activeElement === last");
-    expect(source).toContain("detailDialogRef");
-    expect(source).toContain("rescheduleDialogRef");
+  test("Tab stays inside the drawer while it is open", async ({ page }) => {
+    const dialog = await openFirstVisit(page);
+    await expect(dialog).toBeVisible();
+    for (let step = 0; step < 12; step += 1) {
+      await page.keyboard.press("Tab");
+      const inside = await dialog.evaluate(node => node.contains(document.activeElement));
+      expect(inside).toBe(true);
+    }
+  });
+
+  test("the reschedule drawer is reachable by keyboard and is a named modal dialog", async ({ page }) => {
+    await page.goto("/locale?set=en");
+    await page.goto("/execution");
+    await page.getByRole("button", { name: /^Reschedule / }).first().click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute("aria-labelledby", "execution-reschedule-title");
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
   });
 });

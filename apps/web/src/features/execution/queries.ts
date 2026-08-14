@@ -4,7 +4,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import type { Locale } from "@/lib/i18n";
 import { parseExecutionWorkspaceRead } from "@/app/(app)/execution/read-model";
-import type { ExecutionRow } from "@/app/(app)/execution/RevampExecutionWorkspace";
+import type { ExecutionRow } from "./types";
 
 const READ_ROLES = new Set(["inspector", "planner", "supervisor", "admin"]);
 const ROW_LIMIT = 1000;
