@@ -8,7 +8,131 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ---
 
+## ID reservation
+
+**Claim the next id here at the START of a task, before writing code.** T-076 and
+T-101 and T-106 were each used by two concurrent sessions; every one of those
+collisions was predicted in this file and none was prevented, because nothing
+implements the reservation. **Highest id in use: T-110.** Take T-111.
+
+---
+
 ## NOW
+
+### T-110 · `/execution` leaves the legacy sheets
+`status: partial — code complete, every static gate green; axe, e2e and the rendered pass are owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-012, WEB-013, WEB-014` · `est: 4h`
+`record:` [2026-08-14-T-110-execution-rebuild](sessions/2026-08/2026-08-14-T-110-execution-rebuild.md)
+
+**The screen carried a permanent false alarm.** *"Submission service
+unavailable"* rendered **unconditionally** — no query, no prop, no data source —
+styled critical and announced `role="status"`, on every load, forever. Deleted on
+the owner's direction under WEB-002 §9.
+
+**The Arabic empty state named row-security policies.** It was not a translation
+of the English, and it leaked the database layer to the user. Now split by cause:
+*nothing scheduled* routes to Planning, *nothing matches these filters* carries
+the scope count and a clear action.
+
+**A native `<dialog>` deleted the focus trap rather than migrating it.**
+`showModal()` via a ref callback removes 35 lines of `useEffect`,
+`querySelectorAll` traversal and `origin?.focus()` bookkeeping; containment,
+Escape and focus restoration become platform guarantees. **A native `<dialog>`
+gets no accessible name on its own** — `aria-labelledby` is wired explicitly.
+
+```
+RevampExecutionWorkspace.tsx   397 → deleted, replaced by 7 components
+route file                     80 → 34      largest component 165
+copy() call sites              ~120 → 0     i18n keys 0 → 137 × 2 locales
+non-null !  6 → 0    as never 2 → 0    useEffect 1 → 0
+coordinates fact  5 renderings → 1     always-on banners 2 → 0
+v5 gate  105 → 103,  route-owned 1 → 0
+```
+
+**WCAG 2.2 AA 2.5.7 closed** — every calendar entry now has a Reschedule button,
+so the drag is no longer the only path.
+
+**The pinned spec was re-pointed, not deleted.**
+`execution-revamp-accessibility-contract.spec.ts` held 14 source-text greps for
+the spelling of the trap. They are now five browser tests asserting the actual
+claims. **It `readFileSync`s the workspace at module scope, so deleting the file
+first would have thrown before any assertion ran** — T-078's lesson, avoided by
+checking rather than by luck.
+
+**Owed before `done`:** axe, the manual checklist, the Arabic render, e2e with a
+seeded supervisor, and the first-load JS / CSS numbers (WEB-005 §8 measurement
+request — the agent may not run a production build).
+
+**Parked:** there is **no `LocaleProvider`**, so `error.tsx` reads
+`documentElement.lang` through `useSyncExternalStore` — effect-free, but its
+server snapshot is `en`, so a server-rendered error shows one English frame in
+Arabic. **Every `error.tsx` in the repo has this shape or hardcodes English; a
+provider on `AppShell` fixes ~25 boundaries at once.**
+
+### T-109 · the AI planning summary leaves `/planning/bulk`
+`status: done — code complete; the contract record is owed by the sponsor` · `rules: WEB-000, WEB-006 §4, WEB-008, WEB-013` · `est: 0.5h`
+`record:` [2026-08-14-T-109-bulk-ai-advisory-removal](sessions/2026-08/2026-08-14-T-109-bulk-ai-advisory-removal.md)
+
+Owner-directed removal. **It took out an MVP1-Mandatory contracted capability.**
+`atomic_scope.csv` rows 17 and 27 classify the AI Planning Summary
+(`MVP1-M01-016`, `MVP1-M01-026`) as *"Implement as specified"*, accepted as
+`AC-0016` / `AC-0026`, and those rows sit under change ticket
+`CC-AC-0016-0026-AI-PLANNING-SUMMARY-DEFERRAL-001` (`DEC-026`) whose status is
+**OPEN** and whose `scope_forbidden` says no code change is authorized by it
+alone. The concern was raised with options; **the owner reaffirmed and it was
+executed in full.**
+
+**`AC_LEDGER.csv` was not edited** — `product-contract.md` forbids changing a
+controlled contract without an approved change ID. It still marks both rows
+`implemented` and **now overstates the build**. `DEC-026` needs the sponsor.
+
+Two spec blocks **deleted rather than re-pointed** — the behaviour is gone, so
+there is nothing to point them at. Recorded as a real loss of contract coverage.
+Separately, `ai-delta-contract.spec.ts` **was already failing** before this task.
+
+### T-108 · the dashboard stamp was British, and only in English
+`status: done` · `rules: WEB-000, WEB-002, WEB-008, WEB-011, WEB-013, WEB-014` · `est: 0.5h`
+`record:` [2026-08-14-T-108-dashboard-refreshed-stamp](sessions/2026-08/2026-08-14-T-108-dashboard-refreshed-stamp.md)
+
+`dashboard-sections.tsx:28` carried its own `Intl.DateTimeFormat("en-GB", …)`,
+so **the Arabic dashboard rendered Latin digits in British format regardless of
+locale**. Routed through `lib/dates.ts` instead of correcting the private copy.
+
+```
+en   "20:28" → "14 Aug 2026, 8:28 PM (Riyadh)"
+ar   "20:28" → "١٤ أغسطس ٢٠٢٦, ٨:٢٨ م (الرياض)"
+call sites moved by the new option: 0 of 94
+```
+
+`hour12` defaults to `false`, so all 94 consumers are byte-identical. It also
+switches `hour` to `numeric`, **measured against ICU** — `2-digit` renders
+`08:28 PM`, not `8:28 PM`.
+
+**Parked:** `formatDateTime` joins date and time with a **Latin comma**; Arabic
+takes `،`. Visible in the output above. Fixing it moves all 94 consumers, so it
+is its own task — **WEB-011 defect**. Also: `Text` cannot carry `dateTime`, so
+every `<Text as="time">` in the app emits a `<time>` with no machine-readable
+value.
+
+### T-107 · the typography gate went green on a file that did not compile
+`status: done` · `rules: WEB-000, WEB-006, WEB-008, WEB-014` · `est: 0.25h`
+`record:` [2026-08-14-T-107-explain-panel-missing-import](sessions/2026-08/2026-08-14-T-107-explain-panel-missing-import.md)
+
+`explain-panel.tsx` used `Heading`, `Mono` and `Text` across nine call sites and
+**imported none of them**. `tsc` reported 10 errors; `Text` failed loudly because
+it collides with the DOM lib's global `Text`, while `Heading` and `Mono` failed
+quietly as unbound identifiers — so the explain popover threw a `ReferenceError`
+at runtime. One barrel import fixed all nine.
+
+**Landed in `1bd7abdd refactor(typography): clear operations and explain-panel to
+zero`** — a commit that turned the typography gate green and shipped a file that
+does not compile. **This is T-102's lesson one level worse: the gate counts
+declarations removed, and nothing in `npm run gates` typechecks.**
+
+**`npm run verify` does not exist either.** `CLAUDE.md` requires it before any
+task is done; `package.json` has **none of `verify`, `lint`, `test`, `unit`,
+`budgets`**. T-102 recorded the missing `lint` — it is all five. **This defect
+shipped because the one command that would have caught it is the one no rule
+names.**
 
 ### T-106 · axe on the topbar, and the compact gap filled
 `status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`

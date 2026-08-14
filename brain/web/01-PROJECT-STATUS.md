@@ -1,6 +1,122 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-14` · `Updated by: T-104 — shell typography`
+`Last updated: 2026-08-14` · `Updated by: T-110 — /execution rebuild`
+
+## Nothing in `npm run gates` typechecks, and a non-compiling file shipped (2026-08-14)
+
+`explain-panel.tsx` used `Heading`, `Mono` and `Text` across nine call sites and
+**imported none of them**. It reached the branch in `1bd7abdd
+refactor(typography): clear operations and explain-panel to zero` — a commit that
+**turned the typography gate green and shipped a file that does not compile.**
+The explain popover threw a `ReferenceError` at runtime.
+
+This document already records that the gate cannot see a rendered defect (T-090,
+T-091, T-092, T-097, closed by T-102). **This is the same hole one level lower:
+the gate does not compile the code either**, so `npm run gates` passes on a file
+`tsc` rejects outright.
+
+**And the command that would have caught it does not exist.** `CLAUDE.md`
+requires `npm run verify` before any task is done, and the session template has
+checkboxes for `lint`, `unit` and budgets. `package.json` has **none of
+`verify`, `lint`, `test`, `unit`, `budgets`** — T-102 recorded the missing
+`lint`, and it is actually all five. **A rule that names a command nobody can run
+is not a control.** Adding `typecheck` to the `gates` chain is one line.
+
+## An always-on banner is a fabrication, not a state (2026-08-14)
+
+`/execution` rendered *"Submission service unavailable"* **unconditionally** —
+no query, no prop, no data source — styled critical, announced `role="status"`,
+on every load since it was written. Every user was told the submission service
+was down, permanently, by a string literal.
+
+WEB-002 §9 says absent data renders as a state: *Not configured* / *Unavailable*
+/ *Insufficient evidence*. **It does not license asserting an outage nobody
+measured.** The tell is cheap to grep: an alert whose JSX has no conditional and
+no prop feeding it. **Worth sweeping for — this one survived every audit of the
+route because it looked like a legitimate degraded state.**
+
+## A native `<dialog>` deletes the focus trap instead of migrating it (2026-08-14)
+
+T-110 replaced a 35-line `useDialogFocus` hook — `useEffect`,
+`document.addEventListener`, `querySelectorAll` traversal, first/last focus
+arithmetic, `origin?.focus()` restoration — with:
+
+```
+const openModally = (node) => { if (node && !node.open) node.showModal(); };
+```
+
+Containment, Escape, background inertness and focus restoration become platform
+guarantees. **Two things that are not automatic:** a native `<dialog>` receives
+**no accessible name**, so `aria-labelledby` must be wired explicitly; and
+`z-index` is ignored in the top layer, so a modal z-index token does nothing.
+
+`showModal()` is the WEB-012 **library-handoff exception**, not a breach — there
+is no React API for opening a modal, and everything the reader sees stays render
+output. **Every hand-rolled focus trap in this repo is now a deletion candidate.**
+
+## A source-text spec must be re-pointed *before* the file it reads is deleted (2026-08-14)
+
+`execution-revamp-accessibility-contract.spec.ts` `readFileSync`s its target **at
+module scope**. Deleting the workspace first would have thrown before a single
+assertion ran — the T-078 shape, avoided only because the order was checked.
+
+Its 14 assertions tested the **spelling** of a focus trap (`"origin?.focus()"`,
+`'dialogRef.current?.querySelectorAll<HTMLElement>'`). None of them proved the
+behaviour reached the DOM. Re-pointed to five browser tests — named dialog, focus
+lands inside, Escape closes **and restores focus to the originating control**,
+Tab stays inside across 12 presses, reschedule reachable by keyboard. **T-063's
+rule stands and gains a corollary: when a re-point is forced, ask whether the old
+assertion tested the claim or just a spelling — and check the read order before
+deleting anything.**
+
+## There is no `LocaleProvider`, and ~25 error boundaries pay for it (2026-08-14)
+
+`error.tsx` must be a client component, so it cannot await `getLocale()`. Every
+one in this repo either **hardcodes English** or sniffs `document.documentElement.lang`
+**in a `useEffect`**. T-110 used `useSyncExternalStore` instead — effect-free and
+read-only, the T-106 `compact` pattern — but its **server snapshot returns `en`**,
+so a server-rendered error boundary shows one English frame to an Arabic user.
+
+That is the best available answer at the leaf. **The real fix is one provider
+rendered by `AppShell`**, which is a server component that already knows the
+locale, and it would serve every error boundary at once. Rule 16 says English
+gets the compromise, never Arabic — today, on every error surface, it is the
+other way round.
+
+## A private date formatter is the same defect as a private type scale (2026-08-14)
+
+`dashboard-sections.tsx:28` carried its own `Intl.DateTimeFormat("en-GB", …)`, so
+**the Arabic dashboard rendered Latin digits in British format regardless of
+locale**. `/execution` carried three more of the same shape.
+
+`lib/dates.ts` exists precisely because `ar-SA` silently defaults to
+`islamic-umalqura`; a bypass loses that guarantee without any gate noticing.
+`check:design-system-v5` catches `toISOString().slice()` and **not** a bare
+`new Intl.DateTimeFormat` — 6 occurrences remain outside `lib/dates.ts`, and a
+gate rule for them is cheap.
+
+**Extending the shared formatter beat changing it:** `formatDateTime` gained
+`{ hour12 }` defaulting to `false`, so **all 94 call sites stayed byte-identical**
+while the one screen that asked for 12-hour got it. **Parked and real:
+`formatDateTime` joins date and time with a Latin comma, and Arabic takes `،` —
+a WEB-011 defect on all 94.**
+
+## Removing a widget can be a contract change (2026-08-14)
+
+The AI advisory on `/planning/bulk` looked like a UI element. It was
+`MVP1-M01-016` / `MVP1-M01-026`, **MVP1 Mandatory** in `atomic_scope.csv`,
+accepted as `AC-0016`/`AC-0026`, and governed by change ticket `DEC-026` whose
+status is **OPEN** and whose `scope_forbidden` says no code change is authorized
+by it alone.
+
+The owner directed removal and it was done. **`AC_LEDGER.csv` still marks both
+rows `implemented` and now overstates the build**, and was deliberately not
+edited because `product-contract.md` requires an approved change ID.
+
+**Before deleting any surface, grep `product-contract/` for what it renders.**
+The check costs one command; the widget carried its own evidence refs
+(`AC-0016,AC-0026,M01-016,M01-026,SCR-WEB-110`) in a constant at the top of the
+file.
 
 ## The shell was charging every route 61 violations, and the tracker said 1 (2026-08-14)
 
