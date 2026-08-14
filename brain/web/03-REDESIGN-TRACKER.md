@@ -10,6 +10,101 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-106 · axe on the topbar, and the compact gap filled
+`status: done` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011` · `est: 1.5h`
+`record:` [2026-08-14-T-106-topbar-axe-and-compact-scope](sessions/2026-08/2026-08-14-T-106-topbar-axe-and-compact-scope.md)
+
+**axe reported 0 violations and 3 incomplete — and incomplete is not clean.**
+Two were non-defects proved by measurement (lazy-popup `aria-controls`; the badge
+at **7.88:1**, flagged only because it overlaps the bell). The third was real and
+critical: **the rail renders twice** — desktop `variant="rail"` and mobile
+`"drawer"` — and subgroup ids were built from group + entry alone, so **every
+`aria-labelledby` in the drawer resolved to the rail's label**. Seven
+`role="group"` regions were named by an element in a different landmark.
+**7 → 0 duplicates across 14 ids.**
+
+**Filled the `compact` gap T-105 raised.** `compact` is a prop, **never a media
+query inside the primitive** — the shell decides through `useSyncExternalStore`
+over `matchMedia`, so no `useEffect`. `Select` also gained `icon`, because an
+icon-only trigger showing a bare chevron names nothing. The label moves into the
+accessible name rather than being deleted.
+
+```
+scope visible from   1361px → 881px    (480px reclaimed)
+1280 scope           hidden → 94px icon-only, search 384 / input 334
+duplicate nav ids    7 → 0
+```
+
+**Parked:** `aria-valid-attr-value` will stay permanently incomplete for every
+`MenuSurface` trigger — inherent to lazily-mounted popups. Worth an axe rule
+exclusion citing this record rather than re-triaging it every run.
+
+### T-106 · clear every typography violation in migrated code
+`status: in-progress — 24 of 253 closed; 229 remain across 34 files` · `rules: WEB-000, WEB-002 §2, WEB-008, WEB-009, WEB-014 §2.1, §4.1, §5.1, §8, §11` · `est: 6h`
+
+Owner-directed: clear all violations in migrated code, including the compliance
+family — `/admin/regulations`, `/admin/compliance-approvals`, `/admin/violations`,
+`/compliance`, `/enforcement-library`.
+
+**Measured worklist, by reachability from route entries** (not by directory):
+
+```
+68 sections/approvals    32 app/operations       8 components/dashboard
+63 sections/regulations  12 app/factories        5 app/admin/compliance-approvals
+52 sections/enforcement  12 ContextualAiPanel    5 EmptyState · 4 GeoMap
+                                                 125 more in dead/unreachable code
+```
+
+**The compliance family is not legacy — it is pre-contract.** `sections/approvals`,
+`regulations` and `enforcement` were migrated by T-036 · T-037 · T-038 · T-040 ·
+T-041, **all before T-057 wrote the typography contract**. They are structurally
+SAQEEL and author type in feature CSS with retired roles — a different defect from
+`/field`'s legacy, and it migrates cleanly.
+
+**`caption → body` is size-neutral** (both 14px), so the bulk of this sweep is
+zero visual change, which is what makes it safe to do in volume.
+
+**Done so far:**
+
+```
+baseline 1781 → 1757      files with violations 51 → 34
+shared components   9 → 0   EmptyState · ContextualAiPanel · GeoMap ·
+                            PlanningReadFailure · PwaUpdatePrompt
+card eyebrows       9 → 0   and the `eyebrow` prop is DELETED from CardHeader
+enforcement screens 6 → 0   catalogue-screen · enforcement-screen · filter-bar
+```
+
+**`CardHeader.eyebrow` is gone.** §5.1 said the prop *"is deleted when no call site
+passes it"*; all nine call sites moved their string to `description`, so the prop
+and `.eyebrow` left `card.tsx` and `card.module.css`. **The pattern is now
+unrepresentable** — TypeScript rejects it, which is stronger than a gate rule. One
+card, `regulation-workspace`, already had a `description`; its locked caveat moved
+into the `CardBody` rather than inventing a way to join two strings.
+
+**The established pattern for the remaining 34 files**, in order:
+
+1. Build the selector→element map first.
+2. **Check the primitive's stylesheet before keeping the class.** `Text` already
+   supplies `margin: 0`, the font and `text-wrap: pretty`, so four classes in
+   `catalogue-screen`/`enforcement-screen` were **deleted outright** rather than
+   trimmed — no wrapper span needed.
+3. Mixed classes keep layout and colour; the primitive goes inside as a span with
+   `tone="inherit"` wherever a `:hover`/`[aria-current]`/state selector repaints.
+4. `<input>`/`<button>`/`<select>`/`<textarea>` take `font: inherit`.
+5. Strip the CSS **in the same pass** as the JSX. Stripping first leaves text
+   unstyled while the gate goes green — exactly how T-104 shipped a live nav
+   regression.
+
+**Two judgement calls taken and recorded** (WEB-008 §5 — decide and record, do not
+stall): `.absent`'s `font-style: italic` is **dropped**, because the scale has no
+italic and §4.1 bans `font-style` in feature CSS — de-emphasis becomes `tone`.
+`.blockTitle`'s `overline` is **kept unchanged**, because it is already on-scale
+and re-deciding a size mid-migration is what §11.1 forbids.
+
+**The four card/table modules in `sections/enforcement` each define an identical
+`.code`, `.absent`, `.muted`, `.warning`** — four copies of one decision. Migrating
+them is the chance to stop that.
+
 ### T-105 · the header stopped starving its search, and the date scope became clearable
 `status: done — measured at seven widths in both directions; axe owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 2h`
 `record:` [2026-08-14-T-105-topbar-responsive-and-clearable-scope](sessions/2026-08/2026-08-14-T-105-topbar-responsive-and-clearable-scope.md)

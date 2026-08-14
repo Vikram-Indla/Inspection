@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
 import { pastDateRangePresets, type DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
@@ -16,6 +16,21 @@ type ScopeStrings = Readonly<Record<
   string
 >> & { readonly presets: DateRangePresetLabels };
 
+const COMPACT_SCOPE_QUERY = "(max-width: 1360px)";
+
+function useMediaQuery(query: string): boolean {
+  const subscribe = useCallback((onChange: () => void) => {
+    const list = window.matchMedia(query);
+    list.addEventListener("change", onChange);
+    return () => list.removeEventListener("change", onChange);
+  }, [query]);
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}
+
 export default function ShellScopeControls({ scope, regions, initialFrom, initialTo, initialRegion, locale, strings }: {
   scope: ShellScope;
   regions: readonly string[];
@@ -26,6 +41,7 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
   strings: ScopeStrings;
 }) {
   const router = useRouter();
+  const isCompact = useMediaQuery(COMPACT_SCOPE_QUERY);
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
   const [region, setRegion] = useState(initialRegion);
@@ -73,6 +89,7 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
         monthLabels={{ previous: strings.previousMonth, next: strings.nextMonth }}
         disabled={!scope.date}
         clearable
+        compact={isCompact}
       />
 
       <SaqeelSelect
@@ -85,6 +102,8 @@ export default function ShellScopeControls({ scope, regions, initialFrom, initia
         label={strings.regionScope}
         placeholder={strings.allRegions}
         disabled={!scope.region || !regions.length}
+        icon="regionScope"
+        compact={isCompact}
       />
     </div>
   );

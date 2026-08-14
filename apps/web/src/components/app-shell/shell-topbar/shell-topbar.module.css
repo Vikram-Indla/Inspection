@@ -216,7 +216,7 @@
    picks a date, which is exactly how the overlap shipped.
    Icon-only chips would buy back 1160–1360 but need a `compact` prop on both
    `date-range-picker` and `select` — raised, not filled inline (WEB-002 §2). */
-@media (max-width: 1360px) {
+@media (max-width: 880px) {
   .scope {
     display: none;
   }
