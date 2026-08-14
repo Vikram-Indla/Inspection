@@ -18,7 +18,14 @@ import { loadDashboardPolicy } from "./policy";
 import type { DashboardSnapshot, SourceKey } from "./types";
 
 function boundsFor(scope: DashboardScope, strategic: boolean): SourceBounds {
-  const previousFromMs = scope.scope.fromMs - (scope.scope.toMs - scope.scope.fromMs + 1);
+  // An unbounded window cannot be narrowed by a lower bound, and it has no
+  // previous equal window to reach back for either — so the read is unbounded
+  // too rather than being silently clipped to today.
+  const { fromMs, toMs } = scope.scope;
+  if (fromMs === null || toMs === null) {
+    return { boundIso: new Date(scope.today.fromMs).toISOString(), bounded: false };
+  }
+  const previousFromMs = fromMs - (toMs - fromMs + 1);
   return {
     boundIso: new Date(Math.min(previousFromMs, scope.today.fromMs)).toISOString(),
     bounded: strategic,
@@ -58,8 +65,8 @@ export async function readDashboardSnapshot(
           ...reviews.rows.map(row => row.id),
           ...violations.rows.map(row => row.id),
         ],
-        new Date(scope.scope.fromMs).toISOString(),
-        new Date(scope.scope.toMs).toISOString(),
+        scope.scope.fromMs === null ? null : new Date(scope.scope.fromMs).toISOString(),
+        scope.scope.toMs === null ? null : new Date(scope.scope.toMs).toISOString(),
       )
     : { rows: [] as AuditRow[], failed: false };
 

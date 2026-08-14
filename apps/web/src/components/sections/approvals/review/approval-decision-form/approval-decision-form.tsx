@@ -7,6 +7,7 @@ import { decideComplianceRequestComponent } from "@/app/(app)/admin/compliance-r
 import type { CcrActionResult } from "@/app/(app)/admin/compliance-requests/actions";
 import { fill } from "@/i18n/messages";
 import styles from "./approval-decision-form.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ApprovalDecisionStrings = {
   readonly comment: string;
@@ -47,11 +48,11 @@ export default function ApprovalDecisionForm({ requestId, componentId, dependent
         <textarea className={styles.comment} id={`decision-comment-${componentId}`} name="comments" rows={3} />
       </Field>
 
-      <p className={styles.note}>{strings.rejectHint}</p>
+      <Text tone="muted">{strings.rejectHint}</Text>
       {dependents > 0 ? (
-        <p className={styles.cascade}>{fill(strings.cascade, { count: dependents })}</p>
+        <p className={styles.cascade}><Text as="span" tone="inherit">{fill(strings.cascade, { count: dependents })}</Text></p>
       ) : null}
-      <p className={styles.note}>{strings.returnNote}</p>
+      <Text tone="muted">{strings.returnNote}</Text>
 
       <div className={styles.actions}>
         <Button type="submit" name="decision" value="approve" variant="primary" size="sm"
@@ -64,7 +65,7 @@ export default function ApprovalDecisionForm({ requestId, componentId, dependent
         </Button>
       </div>
 
-      {state.error ? <p className={styles.error} role="alert">{state.error}</p> : null}
+      {state.error ? <p className={styles.error} role="alert"><Text as="span" tone="inherit">{state.error}</Text></p> : null}
       {state.ok ? <StatusPill tone="success">{strings.done}</StatusPill> : null}
     </form>
   );

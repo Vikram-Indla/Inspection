@@ -1,5 +1,6 @@
 import type { FieldDiff } from "@/features/approvals/rows";
 import styles from "./approval-field-diff.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type ApprovalFieldDiffStrings = {
   readonly caption: string;
@@ -19,12 +20,12 @@ export type ApprovalFieldDiffStrings = {
  */
 function DiffValue({ value, absent }: { value: unknown; absent: string }) {
   if (value === null || value === undefined || value === "") {
-    return <span className={styles.absent}>{absent}</span>;
+    return <Text as="span" tone="muted">{absent}</Text>;
   }
   if (typeof value === "object") {
-    return <pre className={styles.json}>{JSON.stringify(value, null, 2)}</pre>;
+    return <pre className={styles.json}><Mono tone="inherit">{JSON.stringify(value, null, 2)}</Mono></pre>;
   }
-  return <span dir="auto">{String(value)}</span>;
+  return <Text as="span" tone="inherit" dir="auto">{String(value)}</Text>;
 }
 
 export default function ApprovalFieldDiff({ diffs, isCreate, labelFor, strings }: {
@@ -38,7 +39,7 @@ export default function ApprovalFieldDiff({ diffs, isCreate, labelFor, strings }
   return (
     <div className={styles.scroll}>
       <table className={styles.table}>
-        <caption className={styles.caption}>{strings.caption}</caption>
+        <caption className={styles.caption}><Text as="span" tone="muted">{strings.caption}</Text></caption>
         <thead>
           <tr>
             <th className={styles.head} scope="col">{strings.field}</th>
@@ -51,7 +52,7 @@ export default function ApprovalFieldDiff({ diffs, isCreate, labelFor, strings }
             <tr className={styles.row} key={diff.field} data-changed={diff.changed ? "" : undefined}>
               <th className={styles.rowHead} scope="row">
                 {labelFor(diff.field)}
-                {diff.changed ? <span className={styles.flag}>{strings.changed}</span> : null}
+                {diff.changed ? <span className={styles.flag}><Text as="span" tone="inherit">{strings.changed}</Text></span> : null}
               </th>
               <td className={styles.cell}><DiffValue value={diff.current} absent={strings.absent} /></td>
               <td className={styles.cell}><DiffValue value={diff.proposed} absent={strings.absent} /></td>

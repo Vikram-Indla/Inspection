@@ -19,7 +19,7 @@ export type ExecutiveBriefStrings = {
 export default function ExecutiveBrief({ locale, context, period, region, strings }: {
   locale: Locale;
   context: string;
-  period: { readonly from: string; readonly to: string };
+  period: { readonly from: string | null; readonly to: string | null };
   region: string;
   strings: ExecutiveBriefStrings;
 }) {
@@ -32,8 +32,8 @@ export default function ExecutiveBrief({ locale, context, period, region, string
         <>
           <input type="hidden" name="surface" value="executive_brief" />
           <input type="hidden" name="context" value={context} />
-          <input type="hidden" name="period_from" value={period.from} />
-          <input type="hidden" name="period_to" value={period.to} />
+          {period.from ? <input type="hidden" name="period_from" value={period.from} /> : null}
+          {period.to ? <input type="hidden" name="period_to" value={period.to} /> : null}
           <input type="hidden" name="region" value={region} />
           <input type="hidden" name="evidence_refs" value={EVIDENCE_REFS} />
           <input type="hidden" name="locale" value={locale} />

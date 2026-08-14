@@ -139,12 +139,17 @@ export default async function DashboardSections({ locale, scope }: {
 
   const partialSources = snapshot.failedSources.map(key => dashboard.source[key]);
   const { metrics, projection, roleProjection } = projectionFor(persona, snapshot, resolved, partialSources);
-  const enforcementTrend = await queryEnforcementTrend(
-    await supabaseServer(),
-    resolved.scope.fromDate,
-    resolved.scope.toDate,
-    resolved.region,
-  );
+  // A period-over-period comparison needs a period. An unbounded scope has none
+  // and no previous one either, so the card falls to its no-trend state rather
+  // than inventing a window to compare against.
+  const enforcementTrend = resolved.scope.fromDate && resolved.scope.toDate
+    ? await queryEnforcementTrend(
+      await supabaseServer(),
+      resolved.scope.fromDate,
+      resolved.scope.toDate,
+      resolved.region,
+    )
+    : { periods: [], change: null, readable: false };
 
   return (
     <ExplainProvider

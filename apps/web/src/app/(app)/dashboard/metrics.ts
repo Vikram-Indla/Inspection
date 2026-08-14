@@ -109,6 +109,13 @@ import { countChecklistCompliance } from "@/lib/dashboard-kpi/checklist-complian
 
 export type DateScope = { fromMs: number; toMs: number };
 
+/**
+ * The reader's chosen window. Either end may be absent, and absent means
+ * unbounded — not "last 30 days". The topbar shows "Any date" for this state,
+ * and a default applied here would make that label a lie about what was counted.
+ */
+export type SelectedScope = { fromMs: number | null; toMs: number | null };
+
 const RIYADH_OFFSET_MS = 3 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -121,20 +128,25 @@ function riyadhMidnightUtc(year: number, month: number, day: number) {
   return Date.UTC(year, month, day) - RIYADH_OFFSET_MS;
 }
 
-export function parseDateScope(from: string | undefined, to: string | undefined, nowMs: number): DateScope & { fromDate: string; toDate: string } {
-  const today = riyadhDateParts(nowMs);
-  const todayStart = riyadhMidnightUtc(today.year, today.month, today.day);
-  const defaultFrom = todayStart - 29 * DAY_MS;
+export function parseDateScope(
+  from: string | undefined,
+  to: string | undefined,
+  nowMs: number,
+): SelectedScope & { fromDate: string | null; toDate: string | null } {
+  void nowMs;
   const parse = (value: string | undefined, end: boolean) => {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
     if (!match) return null;
     const ms = riyadhMidnightUtc(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
     return end ? ms + DAY_MS - 1 : ms;
   };
-  let fromMs = parse(from, false) ?? defaultFrom;
-  let toMs = parse(to, true) ?? todayStart + DAY_MS - 1;
-  if (fromMs > toMs) [fromMs, toMs] = [toMs - (DAY_MS - 1), fromMs + (DAY_MS - 1)];
-  const isoDate = (ms: number) => new Date(ms + RIYADH_OFFSET_MS).toISOString().slice(0, 10);
+  const parsedFrom = parse(from, false);
+  const parsedTo = parse(to, true);
+  const swap = parsedFrom !== null && parsedTo !== null && parsedFrom > parsedTo;
+  const fromMs = swap ? parsedTo - (DAY_MS - 1) : parsedFrom;
+  const toMs = swap ? parsedFrom + (DAY_MS - 1) : parsedTo;
+  const isoDate = (ms: number | null) =>
+    ms === null ? null : new Date(ms + RIYADH_OFFSET_MS).toISOString().slice(0, 10);
   return { fromMs, toMs, fromDate: isoDate(fromMs), toDate: isoDate(toMs) };
 }
 
@@ -144,10 +156,11 @@ export function riyadhTodayScope(nowMs: number): DateScope {
   return { fromMs, toMs: fromMs + DAY_MS - 1 };
 }
 
-export function isInScope(iso: string | null | undefined, scope: DateScope) {
+export function isInScope(iso: string | null | undefined, scope: DateScope | SelectedScope) {
   if (!iso) return false;
   const ms = Date.parse(iso);
-  return Number.isFinite(ms) && ms >= scope.fromMs && ms <= scope.toMs;
+  if (!Number.isFinite(ms)) return false;
+  return (scope.fromMs === null || ms >= scope.fromMs) && (scope.toMs === null || ms <= scope.toMs);
 }
 
 export function factoryInRegion(factory: FactoryRef | null | undefined, region: string) {
@@ -217,7 +230,7 @@ export function buildDashboardMetrics(input: {
    * rather than hard-coding a threshold.
    */
   slaWarnAtFraction?: number | null;
-  scope: DateScope;
+  scope: SelectedScope;
   today: DateScope;
   region: string;
   nowMs: number;
@@ -288,11 +301,16 @@ export function buildDashboardMetrics(input: {
   const pendingAnsweredForCompliance = pendingComplianceCounts.eligible;
 
   const scopedViolations = violations.filter(v => scopedInspectionIds.has(v.inspection_id));
-  const previousScope: DateScope = {
-    fromMs: scope.fromMs - (scope.toMs - scope.fromMs + 1),
-    toMs: scope.fromMs - 1,
-  };
-  const previousViolations = violations.filter(v => isInScope(v.inspections?.submitted_at, previousScope)).length;
+  // An unbounded window has no "previous equal window", so there is no baseline
+  // to compare against. Null travels to `comparison()` as direction "unknown";
+  // a zero here would assert that nothing happened before, which is a different
+  // and false claim.
+  const previousScope: DateScope | null = scope.fromMs === null || scope.toMs === null
+    ? null
+    : { fromMs: scope.fromMs - (scope.toMs - scope.fromMs + 1), toMs: scope.fromMs - 1 };
+  const previousViolations = previousScope === null
+    ? null
+    : violations.filter(v => isInScope(v.inspections?.submitted_at, previousScope)).length;
 
   const todayVisits = visits.filter(v => v.planning_status === "published" && isInScope(v.window_start, today));
   const todayCompleted = todayVisits.filter(v => v.operational_state === "submitted").length;
@@ -456,7 +474,7 @@ export function buildDashboardMetrics(input: {
       approvedScopedResponses,
       scopedViolations,
       previousViolations,
-      violationDelta: scopedViolations.length - previousViolations,
+      violationDelta: previousViolations === null ? null : scopedViolations.length - previousViolations,
       violationByRegulation: [...violationByRegulation.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value),
       activePublishedChecklistItems,
       checklistItemsByAuthority: [...checklistItemsByAuthority.entries()]

@@ -18,7 +18,6 @@
   min-inline-size: 0;
   min-block-size: var(--sqx-control-h-md);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-body);
   color: var(--sqx-text-primary);
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
@@ -45,7 +44,6 @@
   align-items: center;
   min-block-size: var(--sqx-control-h-md);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-body);
   color: var(--sqx-text-secondary);
   text-decoration: none;
   background: var(--sqx-surface-sunken);
@@ -64,7 +62,6 @@
 }
 
 .chip[aria-current="true"] {
-  font: var(--sqx-text-body-strong);
   color: var(--sqx-text-primary);
   background: var(--sqx-surface-accent);
   border-color: var(--sqx-border-strong);

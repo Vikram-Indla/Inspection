@@ -15,7 +15,6 @@
   min-block-size: var(--sqx-control-h-md);
   padding-inline: var(--sqx-space-3);
   border-radius: var(--sqx-radius-control);
-  font: var(--sqx-text-body);
   color: var(--sqx-text-secondary);
   text-decoration: none;
 }
@@ -33,12 +32,10 @@
 .entry[aria-current="true"] {
   background: var(--sqx-surface-accent);
   color: var(--sqx-text-primary);
-  font: var(--sqx-text-body-strong);
 }
 
 .entry[data-unrecorded] .label {
   color: var(--sqx-text-muted);
-  font-style: italic;
 }
 
 .label {
@@ -47,9 +44,3 @@
   white-space: nowrap;
 }
 
-.caption {
-  margin: 0;
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-  text-wrap: pretty;
-}

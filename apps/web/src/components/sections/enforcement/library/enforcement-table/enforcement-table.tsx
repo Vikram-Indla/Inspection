@@ -5,6 +5,7 @@ import type { ActionState, EnforcementRow, PenaltyState } from "@/features/enfor
 import { recordTone } from "@/features/enforcement/rows";
 import { fill } from "@/i18n/messages";
 import styles from "./enforcement-table.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type EnforcementTableStrings = {
   readonly caption: string;
@@ -44,13 +45,13 @@ export default function EnforcementTable({ rows, selectedId, hrefFor, formatDay,
   labelFor: (value: string) => string;
   strings: EnforcementTableStrings;
 }) {
-  const absent = <span className={styles.absent}>{strings.absent}</span>;
+  const absent = <Text as="span" tone="muted">{strings.absent}</Text>;
 
   const penaltyCell = (state: PenaltyState) => {
-    if (state.kind === "restricted") return <span className={styles.absent}>{strings.penaltyRestricted}</span>;
-    if (state.kind === "none") return <span className={styles.absent}>{strings.penaltyNone}</span>;
+    if (state.kind === "restricted") return <Text as="span" tone="muted">{strings.penaltyRestricted}</Text>;
+    if (state.kind === "none") return <Text as="span" tone="muted">{strings.penaltyNone}</Text>;
     if (state.kind === "multiple") {
-      return <span className={styles.warning}>{fill(strings.penaltyMultiple, { count: state.count })}</span>;
+      return <span className={styles.warning}><Text as="span" tone="inherit">{fill(strings.penaltyMultiple, { count: state.count })}</Text></span>;
     }
     const { snapshot } = state;
     const name = snapshot.penaltyType ? labelFor(snapshot.penaltyType) : snapshot.penaltyRef;
@@ -60,22 +61,22 @@ export default function EnforcementTable({ rows, selectedId, hrefFor, formatDay,
           {name ?? absent}
           {snapshot.amount === null ? null : <> — <bdi>{fill(strings.amount, { amount: formatAmount(snapshot.amount) })}</bdi></>}
         </span>
-        <span className={styles.caption}>
+        <Text as="span" tone="muted">
           {state.issued
             ? state.issuedAt ? `${strings.penaltyIssued} · ${formatDay(state.issuedAt)}` : strings.penaltyIssued
             : strings.penaltyInformational}
-        </span>
+        </Text>
       </span>
     );
   };
 
   const actionCell = (state: ActionState) => {
-    if (state.kind === "none") return <span className={styles.absent}>{strings.actionNone}</span>;
+    if (state.kind === "none") return <Text as="span" tone="muted">{strings.actionNone}</Text>;
     const label = state.kind === "open" ? strings.actionOpen : strings.actionClosed;
     return (
       <span className={styles.stack}>
         <StatusPill tone={state.kind === "open" ? "warning" : "success"}>{label}</StatusPill>
-        <span className={styles.caption}>{state.forms.map(form => labelFor(form.form_type)).join(" · ")}</span>
+        <Text as="span" tone="muted">{state.forms.map(form => labelFor(form.form_type)).join(" · ")}</Text>
       </span>
     );
   };
@@ -87,20 +88,20 @@ export default function EnforcementTable({ rows, selectedId, hrefFor, formatDay,
       isRowHeader: true,
       cell: row => (
         <span className={styles.stack}>
-          <span className={styles.title}>{row.factory?.name ?? strings.unknownFactory}</span>
-          {row.factory?.region ? <span className={styles.caption}>{row.factory.region}</span> : null}
+          <Text as="span" role="bodyStrong">{row.factory?.name ?? strings.unknownFactory}</Text>
+          {row.factory?.region ? <Text as="span" tone="muted">{row.factory.region}</Text> : null}
         </span>
       ),
     },
-    { key: "licence", header: strings.licence, cell: row => row.factory?.license_number ? <bdi className={styles.code}>{row.factory.license_number}</bdi> : absent },
+    { key: "licence", header: strings.licence, cell: row => row.factory?.license_number ? <bdi><Mono tone="muted">{row.factory.license_number}</Mono></bdi> : absent },
     {
       key: "inspection",
       header: strings.inspection,
       cell: row => row.inspectionReference
-        ? <bdi className={styles.code}>{row.inspectionReference}</bdi>
+        ? <bdi><Mono tone="muted">{row.inspectionReference}</Mono></bdi>
         : row.visitReference
-          ? <bdi className={styles.code}>{row.visitReference}</bdi>
-          : <span className={styles.absent}>{strings.noReference}</span>,
+          ? <bdi><Mono tone="muted">{row.visitReference}</Mono></bdi>
+          : <Text as="span" tone="muted">{strings.noReference}</Text>,
     },
     {
       key: "violation",
@@ -108,7 +109,7 @@ export default function EnforcementTable({ rows, selectedId, hrefFor, formatDay,
       cell: row => (
         <span className={styles.stack}>
           <span>{row.violationTitle ?? absent}</span>
-          {row.violationCode ? <bdi className={styles.code}>{row.violationCode}</bdi> : null}
+          {row.violationCode ? <bdi><Mono tone="muted">{row.violationCode}</Mono></bdi> : null}
         </span>
       ),
     },
@@ -124,7 +125,7 @@ export default function EnforcementTable({ rows, selectedId, hrefFor, formatDay,
       key: "date",
       header: strings.date,
       numeric: true,
-      cell: row => row.recordedAt ? <bdi className={styles.code}>{formatDay(row.recordedAt)}</bdi> : absent,
+      cell: row => row.recordedAt ? <bdi><Mono tone="muted">{formatDay(row.recordedAt)}</Mono></bdi> : absent,
     },
     {
       key: "open",

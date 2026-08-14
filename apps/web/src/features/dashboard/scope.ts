@@ -1,4 +1,4 @@
-import { parseDateScope, riyadhTodayScope, type DateScope } from "@/app/(app)/dashboard/metrics";
+import { parseDateScope, riyadhTodayScope, type DateScope, type SelectedScope } from "@/app/(app)/dashboard/metrics";
 
 export const DASHBOARD_VIEWS = ["strategic", "operational"] as const;
 export const DASHBOARD_LENSES = ["region", "city", "sector", "authority"] as const;
@@ -11,7 +11,7 @@ export type DashboardScope = {
   readonly lens: DashboardLens;
   readonly query: string;
   readonly region: string;
-  readonly scope: DateScope & { fromDate: string; toDate: string };
+  readonly scope: SelectedScope & { fromDate: string | null; toDate: string | null };
   readonly today: DateScope;
   readonly nowMs: number;
   readonly requestedView: string | null;
@@ -64,14 +64,16 @@ export function scopeFromSearchParams(params: URLSearchParams, nowMs: number): D
 }
 
 export function scopeToSearchParams(scope: DashboardScope): URLSearchParams {
-  return new URLSearchParams({
-    view: scope.view,
-    group: scope.lens,
-    q: scope.query,
-    from: scope.scope.fromDate,
-    to: scope.scope.toDate,
-    region: scope.region,
-  });
+  // An absent bound is omitted, not written as an empty value: the URL is the
+  // record of what the reader chose, and `from=` would claim a choice was made.
+  return new URLSearchParams([
+    ["view", scope.view],
+    ["group", scope.lens],
+    ["q", scope.query],
+    ...(scope.scope.fromDate ? [["from", scope.scope.fromDate]] : []),
+    ...(scope.scope.toDate ? [["to", scope.scope.toDate]] : []),
+    ["region", scope.region],
+  ]);
 }
 
 export function withView(scope: DashboardScope, view: DashboardView): DashboardScope {

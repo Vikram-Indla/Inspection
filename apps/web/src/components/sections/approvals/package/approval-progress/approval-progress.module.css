@@ -1,5 +1,3 @@
 .list { display: flex; flex-direction: column; gap: var(--sqx-space-3); margin: 0; padding: 0; list-style: none; }
 .group { display: flex; flex-direction: column; gap: var(--sqx-space-1); }
-.label { font: var(--sqx-text-body-strong); color: var(--sqx-text-primary); }
-.parts { display: flex; flex-wrap: wrap; gap: var(--sqx-space-3); font: var(--sqx-text-caption); color: var(--sqx-text-secondary); }
-.absent { font: var(--sqx-text-caption); color: var(--sqx-text-muted); }
+.parts { display: flex; flex-wrap: wrap; gap: var(--sqx-space-3); color: var(--sqx-text-secondary); }

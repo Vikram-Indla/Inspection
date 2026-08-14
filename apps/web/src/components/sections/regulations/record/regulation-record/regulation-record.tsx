@@ -12,6 +12,7 @@ import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./regulation-record.module.css";
 import RegulationLifecycle from "../regulation-lifecycle/regulation-lifecycle";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export default async function RegulationRecord({ locale, entityId }: {
   locale: Locale;
@@ -35,7 +36,7 @@ export default async function RegulationRecord({ locale, entityId }: {
   const { regulation, clauses, attachments, isWriter } = record;
   const statusLabel = regulations.status[regulation.operational_status as keyof typeof regulations.status]
     ?? titleCase(regulation.operational_status);
-  const absent = <span className={styles.absent}>{strings.notRecorded}</span>;
+  const absent = <Text as="span" tone="muted">{strings.notRecorded}</Text>;
   const unmapped = clauses.filter(clause => (clause.inspection_items?.length ?? 0) === 0).length;
 
   const clauseColumns: readonly DataColumn<RecordClause>[] = [
@@ -43,7 +44,7 @@ export default async function RegulationRecord({ locale, entityId }: {
       key: "clause",
       header: strings.clause,
       isRowHeader: true,
-      cell: clause => <bdi className={styles.code}>{clause.clause_ref ?? "—"}</bdi>,
+      cell: clause => <bdi><Mono tone="muted">{clause.clause_ref ?? "—"}</Mono></bdi>,
     },
     { key: "title", header: strings.clauseTitle, cell: clause => clause.title ?? absent },
     { key: "applicability", header: strings.applicability, cell: clause => clause.applicability ?? absent },
@@ -52,9 +53,9 @@ export default async function RegulationRecord({ locale, entityId }: {
       key: "items",
       header: strings.mappedItems,
       cell: clause => clause.inspection_items === null
-        ? <span className={styles.warning}>{strings.itemsUnknown}</span>
+        ? <span className={styles.warning}><Text as="span" tone="inherit">{strings.itemsUnknown}</Text></span>
         : clause.inspection_items.length === 0
-          ? <span className={styles.warning}>{strings.itemsNone}</span>
+          ? <span className={styles.warning}><Text as="span" tone="inherit">{strings.itemsNone}</Text></span>
           : <span className={styles.codes}>
               {clause.inspection_items.map(item => <bdi className={styles.code} key={item.id}>{item.code}</bdi>)}
             </span>,
@@ -75,8 +76,8 @@ export default async function RegulationRecord({ locale, entityId }: {
       key: "checksum",
       header: strings.checksum,
       cell: attachment => attachment.sha256
-        ? <bdi className={styles.code}>{attachment.sha256.slice(0, 12)}</bdi>
-        : <span className={styles.warning}>{strings.noChecksum}</span>,
+        ? <bdi><Mono tone="muted">{attachment.sha256.slice(0, 12)}</Mono></bdi>
+        : <span className={styles.warning}><Text as="span" tone="inherit">{strings.noChecksum}</Text></span>,
     },
   ];
 

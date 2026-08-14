@@ -1,8 +1,7 @@
 .root { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sqx-space-5); }
-.heading { margin: 0 0 var(--sqx-space-3); font: var(--sqx-text-subheading); color: var(--sqx-text-primary); }
+.section { display: flex; flex-direction: column; gap: var(--sqx-stack-tight); }
 .checks { display: flex; flex-direction: column; gap: var(--sqx-space-2); margin: 0; padding: 0; list-style: none; }
-.check { display: flex; justify-content: space-between; gap: var(--sqx-space-4); font: var(--sqx-text-body); color: var(--sqx-text-secondary); }
+.check { display: flex; justify-content: space-between; gap: var(--sqx-space-4); color: var(--sqx-text-secondary); }
 .value { font-variant-numeric: var(--sqx-numeric-tabular); color: var(--sqx-text-primary); }
 .value[data-flagged] { color: var(--sqx-status-warning-on-soft); }
-.absent { color: var(--sqx-text-muted); font-style: italic; }
-.note { margin: var(--sqx-space-3) 0 0; font: var(--sqx-text-caption); color: var(--sqx-text-muted); text-wrap: pretty; }
+.note { margin: var(--sqx-space-3) 0 0; color: var(--sqx-text-muted); text-wrap: pretty; }

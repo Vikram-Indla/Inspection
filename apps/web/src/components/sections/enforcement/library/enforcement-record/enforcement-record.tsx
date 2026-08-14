@@ -6,6 +6,7 @@ import type { EnforcementViolationRow } from "@/features/enforcement/queries";
 import { isActionFormComplete, recordTone, type EnforcementRow } from "@/features/enforcement/rows";
 import { fill } from "@/i18n/messages";
 import styles from "./enforcement-record.module.css";
+import { Mono, Overline, Text } from "@/components/saqeel/type";
 
 export type EnforcementRecordStrings = {
   readonly heading: string;
@@ -53,7 +54,7 @@ export default function EnforcementRecord({
   const forms = (inspection?.action_forms ?? []).filter(form => form.violation_id === row.id);
   const evidence = (inspection?.evidence ?? []).filter(item => item.linked_id === row.id);
   const hashed = evidence.length > 0 && evidence.every(item => Boolean(item.content_sha256));
-  const missing = <span className={styles.absent}>{strings.absent}</span>;
+  const missing = <Text as="span" tone="muted">{strings.absent}</Text>;
 
   return (
     <Card as="section" labelledBy="enforcement-record">
@@ -82,7 +83,7 @@ export default function EnforcementRecord({
               label: strings.submitted,
               value: inspection?.submitted_at
                 ? <bdi>{formatDay(inspection.submitted_at)}</bdi>
-                : <span className={styles.absent}>{strings.notSubmitted}</span>,
+                : <Text as="span" tone="muted">{strings.notSubmitted}</Text>,
             },
             { label: strings.recordedBy, value: row.inspector ?? missing },
             {
@@ -90,24 +91,26 @@ export default function EnforcementRecord({
               value: inspection?.started_at ? <bdi>{formatDay(inspection.started_at)}</bdi> : missing,
             },
             { label: strings.penalty, value: penaltyLine },
-            { label: strings.mappingVersion, value: <bdi className={styles.code}>{source.mapping_version}</bdi> },
-            { label: strings.sourceViolation, value: <bdi className={styles.code}>{row.id}</bdi> },
+            { label: strings.mappingVersion, value: <bdi><Mono tone="muted">{source.mapping_version}</Mono></bdi> },
+            { label: strings.sourceViolation, value: <bdi><Mono tone="muted">{row.id}</Mono></bdi> },
           ]}
         />
 
         <section className={styles.block}>
-          <h3 className={styles.blockTitle}>{strings.actionForms}</h3>
+          <h3 className={styles.blockTitle}><Overline as="span">{strings.actionForms}</Overline></h3>
           {forms.length === 0 ? (
-            <p className={styles.muted}>{strings.noActionForm}</p>
+            <Text tone="muted">{strings.noActionForm}</Text>
           ) : (
             <ul className={styles.list}>
               {forms.map(form => (
                 <li className={styles.entry} key={form.id}>
-                  <span>{labelFor(form.form_type)} · {labelFor(form.status)}</span>
+                  <Text as="span" tone="inherit">{labelFor(form.form_type)} · {labelFor(form.status)}</Text>
                   <span className={isActionFormComplete(form) ? styles.muted : styles.warning}>
-                    {isActionFormComplete(form) ? strings.complete : strings.incomplete}
+                    <Text as="span" tone="inherit">
+                      {isActionFormComplete(form) ? strings.complete : strings.incomplete}
+                    </Text>
                   </span>
-                  {form.due_at ? <span className={styles.muted}>{fill(strings.due, { date: formatDay(form.due_at) })}</span> : null}
+                  {form.due_at ? <Text as="span" tone="muted">{fill(strings.due, { date: formatDay(form.due_at) })}</Text> : null}
                 </li>
               ))}
             </ul>
@@ -115,10 +118,12 @@ export default function EnforcementRecord({
         </section>
 
         <section className={styles.block}>
-          <h3 className={styles.blockTitle}>{strings.evidence}</h3>
-          <p className={styles.muted}>{fill(strings.attachments, { count: evidence.length })}</p>
+          <h3 className={styles.blockTitle}><Overline as="span">{strings.evidence}</Overline></h3>
+          <Text tone="muted">{fill(strings.attachments, { count: evidence.length })}</Text>
           <p className={hashed ? styles.muted : styles.warning}>
-            {hashed ? strings.hashesRecorded : strings.hashesIncomplete}
+            <Text as="span" tone="inherit">
+              {hashed ? strings.hashesRecorded : strings.hashesIncomplete}
+            </Text>
           </p>
         </section>
       </CardBody>

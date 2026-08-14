@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ApprovalStep } from "@/features/approvals/params";
 import type { StepState } from "@/features/approvals/rows";
 import styles from "./approval-step-nav.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ApprovalStepEntry = {
   readonly state: StepState;
@@ -26,8 +27,8 @@ export default function ApprovalStepNav({ entries, current, label }: {
               aria-current={entry.state.step === current ? "step" : undefined}
               data-settled={entry.state.settled ? "" : undefined}
             >
-              <span className={styles.label}>{entry.label}</span>
-              <span className={styles.detail}>{entry.detail}</span>
+              <Text as="span" role="bodyStrong">{entry.label}</Text>
+              <Text as="span" tone="muted">{entry.detail}</Text>
             </Link>
           </li>
         ))}

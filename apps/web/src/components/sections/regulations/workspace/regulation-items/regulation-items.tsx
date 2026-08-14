@@ -4,6 +4,7 @@ import type { WorkspaceItem } from "@/features/regulations/workspace-source";
 import { evidenceRequirement, itemActionForms, itemResponses, itemViolationLinks } from "@/features/regulations/workspace-view";
 import { fill } from "@/i18n/messages";
 import styles from "./regulation-items.module.css";
+import { Mono, Text } from "@/components/saqeel/type";
 
 export type RegulationItemsStrings = {
   readonly caption: string;
@@ -29,7 +30,7 @@ export default function RegulationItems({ items, labelFor, strings }: {
   labelFor: (value: string) => string;
   strings: RegulationItemsStrings;
 }) {
-  const absent = <span className={styles.absent}>{strings.none}</span>;
+  const absent = <Text as="span" tone="muted">{strings.none}</Text>;
 
   const columns: readonly DataColumn<WorkspaceItem>[] = [
     {
@@ -38,12 +39,12 @@ export default function RegulationItems({ items, labelFor, strings }: {
       isRowHeader: true,
       cell: item => (
         <span className={styles.identity}>
-          <span className={styles.title}>{item.title}</span>
-          <bdi className={styles.code}>{item.code}</bdi>
+          <Text as="span" role="bodyStrong">{item.title}</Text>
+          <bdi><Mono tone="muted">{item.code}</Mono></bdi>
         </span>
       ),
     },
-    { key: "clause", header: strings.clause, cell: item => item.clauseRef ? <bdi className={styles.code}>{item.clauseRef}</bdi> : absent },
+    { key: "clause", header: strings.clause, cell: item => item.clauseRef ? <bdi><Mono tone="muted">{item.clauseRef}</Mono></bdi> : absent },
     {
       key: "responses",
       header: strings.responses,
@@ -57,7 +58,7 @@ export default function RegulationItems({ items, labelFor, strings }: {
       header: strings.evidence,
       cell: item => {
         const rule = evidenceRequirement(item.evidence_rule);
-        if (!rule) return <span className={styles.absent}>{strings.noEvidence}</span>;
+        if (!rule) return <Text as="span" tone="muted">{strings.noEvidence}</Text>;
         const line = fill(strings.evidenceLine, {
           type: labelFor(rule.type),
           on: rule.on ? labelFor(rule.on) : "—",

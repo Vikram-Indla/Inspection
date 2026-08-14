@@ -1,14 +1,3 @@
-.code {
-  font: var(--sqx-text-code);
-  font-variant-numeric: var(--sqx-numeric-tabular);
-  color: var(--sqx-text-muted);
-}
-
-.absent {
-  font: var(--sqx-text-caption);
-  color: var(--sqx-text-muted);
-}
-
 .link {
   color: var(--sqx-text-link);
   text-decoration: none;
@@ -25,7 +14,6 @@
 
 .footnote {
   margin: var(--sqx-space-3) 0 0;
-  font: var(--sqx-text-caption);
   color: var(--sqx-text-muted);
   text-wrap: pretty;
 }

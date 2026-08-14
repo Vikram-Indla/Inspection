@@ -9,6 +9,7 @@ import {
   type CcrActionResult,
 } from "@/app/(app)/admin/compliance-requests/actions";
 import styles from "./approval-package-decision.module.css";
+import { Text } from "@/components/saqeel/type";
 
 export type ApprovalPackageStrings = {
   readonly heading: string;
@@ -50,7 +51,7 @@ function ReasonedAction({ action, requestId, label, reasonLabel, hint, variant, 
       <Button type="submit" variant={variant} size="sm" disabled={disabled || pending} label={label}>
         {pending ? strings.working : label}
       </Button>
-      {state.error ? <p className={styles.error} role="alert">{state.error}</p> : null}
+      {state.error ? <p className={styles.error} role="alert"><Text as="span" tone="inherit">{state.error}</Text></p> : null}
       {state.ok ? <StatusPill tone="success">{strings.done}</StatusPill> : null}
     </form>
   );
@@ -83,17 +84,17 @@ export default function ApprovalPackageDecision({ requestId, canReview, allDecid
       />
       <CardBody gap="tight">
         {!canReview ? (
-          <p className={styles.note}>{strings.readOnly}</p>
+          <Text tone="muted">{strings.readOnly}</Text>
         ) : (
           <>
-            <p className={styles.note}>{strings.gate}</p>
+            <Text tone="muted">{strings.gate}</Text>
 
             <form className={styles.form} action={publishAction}>
               <input type="hidden" name="request_id" value={requestId} />
               <Button type="submit" variant="primary" size="sm" disabled={!publishable || publishing} label={strings.publish}>
                 {publishing ? strings.working : strings.publish}
               </Button>
-              {publishState.error ? <p className={styles.error} role="alert">{publishState.error}</p> : null}
+              {publishState.error ? <p className={styles.error} role="alert"><Text as="span" tone="inherit">{publishState.error}</Text></p> : null}
               {publishState.ok ? <StatusPill tone="success">{strings.done}</StatusPill> : null}
             </form>
 
