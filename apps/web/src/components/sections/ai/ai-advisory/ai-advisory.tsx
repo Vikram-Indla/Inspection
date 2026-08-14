@@ -4,7 +4,6 @@ import { useActionState, useEffect, useState } from "react";
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import Icon from "@/components/saqeel/icon/icon";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Mono, Text } from "@/components/saqeel/type";
 import {
   generateContextualInsight,
@@ -18,7 +17,6 @@ const EMPTY: ContextualResult = {};
 export type AiAdvisoryStrings = {
   readonly title: string;
   readonly description: string;
-  readonly advisory: string;
   readonly evidence: string;
   readonly generate: string;
   readonly generating: string;
@@ -62,7 +60,6 @@ export default function AiAdvisory({
         titleId={headingId}
         title={<span className={styles.heading}><Icon name="ai" size="sm" />{strings.title}</span>}
         description={strings.description}
-        trailing={<StatusPill tone="info">{strings.advisory}</StatusPill>}
       />
       <CardBody gap="tight">
         {result.text ? (
