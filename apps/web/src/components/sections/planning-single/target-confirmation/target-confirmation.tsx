@@ -4,6 +4,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import Choice from "@/components/saqeel/choice/choice";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import LocationMap from "@/components/sections/planning-single/location-map/location-map";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import type { GradedFactory } from "@/features/planning-single/shapes";
 import type { SingleVisitStrings } from "@/features/planning-single/strings";
@@ -28,9 +29,11 @@ export default function TargetConfirmation({
   strings: SingleVisitStrings;
   locale: Locale;
 }) {
-  const hasOfficial = target.officialLat != null && target.officialLng != null;
+  const officialLat = target.officialLat;
+  const officialLng = target.officialLng;
+  const hasOfficial = officialLat != null && officialLng != null;
   const pin = hasOfficial
-    ? <bdi>{target.officialLat}, {target.officialLng}</bdi>
+    ? <bdi>{officialLat}, {officialLng}</bdi>
     : strings.noOfficialPin;
   const licenceFreshness = licence?.sourceSyncedAt
     ? formatDate(licence.sourceSyncedAt, locale)
@@ -109,7 +112,9 @@ export default function TargetConfirmation({
           description={`${strings.stepLabels.location} · ${strings.locationAuthority}: ${target.masterSource ?? strings.absent} · ${strings.locationReadOnly}`}
         />
         <CardBody gap="tight">
-          {hasOfficial ? null : <PlanningNotice tone="warning">{strings.noOfficialPin}</PlanningNotice>}
+          {hasOfficial
+            ? <LocationMap lat={officialLat} lng={officialLng} label={`${strings.officialPin} — ${target.name}`} />
+            : <PlanningNotice tone="warning">{strings.noOfficialPin}</PlanningNotice>}
           <DefinitionList
             columns="two"
             items={[
