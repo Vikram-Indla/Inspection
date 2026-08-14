@@ -3,6 +3,9 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type RefObject } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import Button from "@/components/saqeel/button/button";
+import ExecutionEmptyState from "@/components/sections/execution/execution-empty-state/execution-empty-state";
+import { buildEmptyStrings } from "@/features/execution/strings";
 import type { Locale } from "@/lib/i18n";
 import { loadExecutionVisitDetail } from "./actions";
 import type { ExecutionVisitDetailRead } from "./read-model";
@@ -115,6 +118,7 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
   locale: Locale;
   totalVisibleRows: number;
 }) {
+  const emptyStrings = buildEmptyStrings(locale);
   const [view, setView] = useState<View>("mine");
   const [query, setQuery] = useState("");
   const [calendarMode, setCalendarMode] = useState<CalendarMode>("week");
@@ -209,17 +213,6 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           <a className="btn btn-secondary btn-sm" href="/reviews">{copy(locale, "Review queue", "قائمة المراجعة")}</a>
         </nav>
       </div>
-      <div className="alert alert-critical" role="status">
-        <div>
-          <strong>{copy(locale, "Submission service unavailable.", "خدمة التقديم غير متاحة.")}</strong> {copy(locale, "Inspection preparation and execution records remain available. New submissions and resubmissions cannot be sent right now.", "تظل سجلات التحضير والتنفيذ متاحة. لا يمكن إرسال عمليات تقديم أو إعادة تقديم جديدة حاليًا.")}
-        </div>
-      </div>
-      <div className="alert alert-info" role="status">
-        <div>
-          <strong>{copy(locale, "Live tracking is not available in this Web view.", "التتبع المباشر غير متاح في عرض الويب هذا.")}</strong>{" "}
-          {copy(locale, "The map uses recorded official factory coordinates only.", "تستخدم الخريطة إحداثيات المصنع الرسمية المسجلة فقط.")}
-        </div>
-      </div>
       {totalVisibleRows > rows.length ? (
         <div className="alert alert-info" role="status">
           <div>
@@ -254,7 +247,6 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
           <button className="seg-opt" type="button" aria-pressed={view === "all"} onClick={() => setView("all")}>{copy(locale, "All inspections", "كل التفتيشات")}</button>
           <button className="seg-opt" type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{copy(locale, "Location context", "سياق الموقع")}</button>
         </nav>
-        <span className="tl-meta">{copy(locale, "Map markers use recorded official factory coordinates—not live inspector tracking.", "تستخدم علامات الخريطة إحداثيات المصنع الرسمية المسجلة، وليست تتبعاً حياً للمفتش.")}</span>
       </div>
 
       <div className="sq-execution__filters">
@@ -320,9 +312,17 @@ export default function RevampExecutionWorkspace({ rows, currentUserId, locale, 
               </tr>
             ))}</tbody>
           </table>
-          {!visibleRows.length && <p>{hasActiveFilters
-            ? copy(locale, "No inspections match the current search and filters. Clear the filters to restore this view.", "لا توجد تفتيشات ظاهرة وفق سياسات أمان الصفوف تطابق البحث وعوامل التصفية الحالية. امسح عوامل التصفية لاستعادة العرض.")
-            : copy(locale, "No inspections are available in your scope.", "لا توجد تفتيشات متاحة في هذا العرض المقيّد بسياسات أمان الصفوف.")}</p>}
+          {!visibleRows.length && <ExecutionEmptyState
+            filtered={hasActiveFilters}
+            total={totalVisibleRows.toLocaleString(locale === "ar" ? "ar-SA" : "en-SA")}
+            strings={emptyStrings}
+            clearAction={hasActiveFilters ? (
+              <Button variant="secondary" size="sm" label={emptyStrings.filteredAction}
+                onClick={() => { setFilters({}); setQuery(""); }}>
+                {emptyStrings.filteredAction}
+              </Button>
+            ) : undefined}
+          />}
         </section>
       )}
       {selected ? (

@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n";
 import arApprovals from "./locales/ar/approvals.json";
 import arCommon from "./locales/ar/common.json";
 import arDashboard from "./locales/ar/dashboard.json";
+import arExecution from "./locales/ar/execution.json";
 import arEnforcement from "./locales/ar/enforcement.json";
 import arFactories from "./locales/ar/factories.json";
 import arNotifications from "./locales/ar/notifications.json";
@@ -14,6 +15,7 @@ import arVisits from "./locales/ar/visits.json";
 import enApprovals from "./locales/en/approvals.json";
 import enCommon from "./locales/en/common.json";
 import enDashboard from "./locales/en/dashboard.json";
+import enExecution from "./locales/en/execution.json";
 import enEnforcement from "./locales/en/enforcement.json";
 import enFactories from "./locales/en/factories.json";
 import enNotifications from "./locales/en/notifications.json";
@@ -29,6 +31,7 @@ export type Messages = {
   readonly common: typeof enCommon;
   readonly dashboard: typeof enDashboard;
   readonly enforcement: typeof enEnforcement;
+  readonly execution: typeof enExecution;
   readonly factories: typeof enFactories;
   readonly notifications: typeof enNotifications;
   readonly operations: typeof enOperations;
@@ -40,8 +43,8 @@ export type Messages = {
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, factories: enFactories, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
-  ar: { approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, factories: arFactories, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
+  en: { approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
+  ar: { approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {

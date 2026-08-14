@@ -1,0 +1,46 @@
+{
+  "title": "Inspection execution",
+  "journey": {
+    "label": "Execution journey",
+    "operations": "Operations",
+    "live": "Live operations",
+    "reviews": "Review queue"
+  },
+  "loading": {
+    "label": "Loading inspection execution"
+  },
+  "denied": {
+    "title": "You do not have access to this destination",
+    "body": "The destination stays visible so the platform remains legible. Access is refused here, at the boundary.",
+    "request": "Request access",
+    "back": "Back to the dashboard"
+  },
+  "error": {
+    "title": "Execution data could not be loaded",
+    "body": "Nothing was changed. No inspection state was affected.",
+    "unverified": "The governed response could not be verified. Nothing was changed.",
+    "retry": "Retry",
+    "back": "Back to the dashboard",
+    "reference": "Reference {digest}"
+  },
+  "empty": {
+    "scopeTitle": "No inspections scheduled in your scope",
+    "scopeBody": "Visits appear here once Planning assigns them to you or your team.",
+    "scopeAction": "Open planning",
+    "filteredTitle": "No inspections match these filters",
+    "filteredBody": "{total} visits are in your scope. Clear the filters to see them.",
+    "filteredAction": "Clear filters",
+    "mapTitle": "No recorded coordinates in this view",
+    "mapBody": "The table view remains fully usable."
+  },
+  "notice": {
+    "boundedTitle": "Bounded result set",
+    "boundedBody": "Showing {shown} of {total} visits in your scope. Rows beyond this limit are not shown.",
+    "degradedTitle": "Some execution records are unavailable",
+    "degradedBody": "{count} malformed records were withheld rather than shown as verified data.",
+    "degradedBodyOne": "One malformed record was withheld rather than shown as verified data.",
+    "coordinatesTitle": "Location coverage is partial",
+    "coordinatesBody": "{count} visits in this scope have no recorded official coordinates and are omitted from the map.",
+    "coordinatesBodyOne": "One visit in this scope has no recorded official coordinates and is omitted from the map."
+  }
+}
