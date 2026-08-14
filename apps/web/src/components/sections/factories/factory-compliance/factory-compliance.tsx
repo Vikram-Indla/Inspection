@@ -56,7 +56,6 @@ export type FactoryComplianceStrings = {
   readonly violationsEmpty: string;
   readonly penaltiesEmpty: string;
   readonly penaltiesRestricted: string;
-  readonly openStateUnavailable: string;
   readonly trends: string;
 };
 
@@ -121,7 +120,6 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
           empty={{ icon: "enforcement", title: strings.violationsEmpty }}
           density="compact"
         />
-        <Text tone="muted">{strings.openStateUnavailable}</Text>
 
         <Text role="label" tone="muted">{strings.penalties}</Text>
         {penaltiesReadable ? (
