@@ -43,13 +43,17 @@
   background: var(--sqx-surface-subtle);
 }
 
+/* The floor is the whole point. `.scope` sizes to its content and `.search` was
+   the only flexible sibling, so search absorbed every shortfall — measured at
+   4px of usable input across the entire 900–1300px band. Search now refuses to
+   shrink past a legible width and `.scope` yields instead. */
 .search {
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--sqx-space-3);
-  flex: 1;
-  min-inline-size: 0;
+  flex: 1 1 auto;
+  min-inline-size: var(--sqx-grid-min-sm);
   max-inline-size: var(--sqx-grid-min-lg);
   padding-inline: var(--sqx-space-4);
   color: var(--sqx-text-muted);
@@ -114,6 +118,7 @@
   display: flex;
   align-items: center;
   gap: var(--sqx-space-4);
+  flex: none;
 }
 
 .paletteTrigger {
@@ -193,7 +198,25 @@
   background: var(--sqx-surface-subtle);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1280px) {
+  .topbar {
+    gap: var(--sqx-space-3);
+  }
+
+  .actions {
+    gap: var(--sqx-space-2);
+  }
+}
+
+/* Measured against the scope's WIDEST state, not its narrowest. An unset scope
+   is 220px, but a scope carrying an Arabic range — "من ١٦ يوليو ٢٠٢٦ إلى ١٤
+   أغسطس ٢٠٢٦" — is 357px, and 726px of the bar is fixed overhead. 357 + the
+   224px search floor + the gap needs 593px of `.controls`, which arrives at
+   ~1350px. A breakpoint set against the unset state looks fine until someone
+   picks a date, which is exactly how the overlap shipped.
+   Icon-only chips would buy back 1160–1360 but need a `compact` prop on both
+   `date-range-picker` and `select` — raised, not filled inline (WEB-002 §2). */
+@media (max-width: 1360px) {
   .scope {
     display: none;
   }
@@ -204,15 +227,48 @@
     gap: var(--sqx-space-2);
     padding-inline: var(--sqx-space-3);
   }
-
-  .actions {
-    gap: var(--sqx-space-2);
-  }
 }
 
-@media (max-width: 480px) {
+/* Search stays. It was the one control deleted below 480px while the locale,
+   theme and AI buttons all survived — the most useful thing in the bar was the
+   first to go. There is genuinely no room for a field beside five actions at
+   this width (measured: 62px box, 12px input), so it collapses to its icon and
+   expands over the bar on focus. `:focus-within` carries it, so tap-to-open
+   costs no client state; the input covers the collapsed box so the tap lands
+   on it, and stays focusable while transparent. */
+@media (max-width: 560px) {
   .search {
-    display: none;
+    flex: none;
+    min-inline-size: 0;
+    inline-size: var(--sqx-touch-target);
+    justify-content: center;
+    padding-inline: 0;
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .searchInput {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    padding: 0;
+    opacity: 0;
+  }
+
+  .search:focus-within {
+    position: absolute;
+    inset-inline: var(--sqx-space-3);
+    z-index: var(--sqx-z-popover);
+    inline-size: auto;
+    padding-inline: var(--sqx-space-4);
+    background: var(--sqx-surface-default);
+    border-color: var(--sqx-border-focus);
+  }
+
+  .search:focus-within .searchInput {
+    position: static;
+    flex: 1;
+    opacity: 1;
   }
 }
 

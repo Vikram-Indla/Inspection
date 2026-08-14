@@ -10,6 +10,35 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 
 ## NOW
 
+### T-105 · the header stopped starving its search, and the date scope became clearable
+`status: done — measured at seven widths in both directions; axe owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-013` · `est: 2h`
+`record:` [2026-08-14-T-105-topbar-responsive-and-clearable-scope](sessions/2026-08/2026-08-14-T-105-topbar-responsive-and-clearable-scope.md)
+
+**The search input was 4px wide across the entire 900–1300px band.** `.scope`
+sized to its content and `.search` was the only flexible sibling, so search
+absorbed every shortfall; at 768px the scope was 368px inside a 204px parent and
+painted over the action row.
+
+**The breakpoint must be measured against the scope's widest state.** Unset it
+is 220px; carrying an Arabic range it is **357px**. A first attempt set it at
+1160 against the unset state, measured clean, then spilled the moment a date was
+picked — exactly how the original overlap shipped. It is 1360.
+
+**Reset was a dead end by construction.** It cleared only the draft and never
+called `onChange`, while `apply` is `disabled={!draftFrom || !draftTo}` — the
+exact state reset creates. Opt-in `clearable`; the other seven picker call sites
+pass nothing and are byte-identical.
+
+```
+                 before          after (widest scope, both dirs)
+1100  search      26 / input 4    374 / 324
+ 768  search      26, OVERLAP     244 / 194, overlap 0
+ 430  search      HIDDEN          44 → 384 on focus
+```
+
+**Parked:** icon-only scope chips would buy back 1160–1360 but need a `compact`
+prop on `date-range-picker` **and** `select` — raised, not filled inline.
+
 ### T-104 · shell and topbar to zero — the floor every migrated route stands on
 `status: partial — 64 of 66 closed; 2 raised as a scale question, 4 states unrendered` · `rules: WEB-000, WEB-002 §2, WEB-003, WEB-006 §4, WEB-008, WEB-009, WEB-011, WEB-014 §2.1, §4.1, §8, §11` · `est: 2h`
 `record:` [2026-08-14-T-104-shell-typography](sessions/2026-08/2026-08-14-T-104-shell-typography.md)
