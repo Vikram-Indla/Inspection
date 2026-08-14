@@ -1,3 +1,5 @@
+import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
+
 export type ReadinessFact = "present" | "missing" | "verified" | "updated" | "unavailable";
 
 export type Readiness = {
@@ -11,13 +13,12 @@ export type SlaState = "on_time" | "overdue" | "none";
 
 export type QueueBadges = {
   slaLabel: string;
-  slaTone: string;
+  slaTone: StatusTone;
   slaState: SlaState;
   riskLabel: string;
-  riskTone: string;
+  riskTone: StatusTone;
   riskBand: string | null;
   criticalCount: number;
-  criticalLabel: string;
   priorityLabel: string | null;
 };
 
@@ -31,7 +32,7 @@ export type QueueRow = QueueBadges & {
   submittedDisplay: string;
   status: string;
   statusLabel: string;
-  statusTone: string;
+  statusTone: StatusTone;
   modeLabel: string;
   typeLabel: string;
   readiness: Readiness;
@@ -39,55 +40,15 @@ export type QueueRow = QueueBadges & {
   unassigned: boolean;
 };
 
-export type FingerprintStrings = {
-  sla: string;
-  slaOverdue: string;
-  slaOnTime: string;
-  slaUnavailable: string;
-  risk: string;
-  critical: string;
-  priority: string;
-  checklist: string;
-  evidence: string;
-  ack: string;
-  factory: string;
-  present: string;
-  missing: string;
-  verified: string;
-  updated: string;
-  unavailable: string;
-  readyBlockTag: string;
-  noEvidenceTitle: string;
-  noEvidenceBody: string;
-  unassignedTitle: string;
-  unassignedBlocked: string;
-};
-
-export type ReviewQueueStrings = {
-  searchPlaceholder: string;
-  searchAria: string;
-  allStatuses: string;
-  allRisks: string;
-  overdueOnly: string;
-  clearFilters: string;
-  showing: string;
-  noMatch: string;
-  noMatchBody: string;
-  colFactory: string;
-  colInspector: string;
-  colTypeMode: string;
-  colVersion: string;
-  colFingerprint: string;
-  colStatus: string;
-  colOpen: string;
-  open: string;
-  openHint: string;
-  fpTitle: string;
-  fpHint: string;
-  fp: FingerprintStrings;
-};
-
 export type QueueOption = { value: string; label: string };
+
+/** The filter state the queue reads from `searchParams` (WEB-004 §1). */
+export type QueueFilters = {
+  query: string;
+  status: string;
+  risk: string;
+  overdueOnly: boolean;
+};
 
 export type SubmissionVersion = {
   version_number: number;
@@ -132,5 +93,3 @@ export type LoadedQueue = {
   workDays: Set<number>;
   degraded: boolean;
 };
-
-export type { Translator } from "@/lib/i18n";

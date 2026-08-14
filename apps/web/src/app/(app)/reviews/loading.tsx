@@ -1,8 +1,7 @@
-import RouteLoading from "@/components/RouteLoading";
+import ReviewsSkeleton from "@/components/sections/reviews/reviews-skeleton/reviews-skeleton";
+import { buildReviewsStrings } from "@/features/reviews/strings";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading review queue…" ar="جارٍ تحميل قائمة المراجعات…" />;
+export default async function Loading() {
+  return <ReviewsSkeleton label={buildReviewsStrings(await getLocale()).loading} />;
 }

@@ -1,0 +1,83 @@
+{
+  "title": "Inspection review queue",
+  "context": "Read-only queue",
+  "loading": "Loading review queue",
+  "empty": {
+    "title": "No inspections waiting for review",
+    "body": "No reviews in your scope are waiting for a decision."
+  },
+  "unauthorized": {
+    "title": "You don’t have access to the review queue",
+    "body": "This queue needs an allowed role — Admin, Planner, Supervisor, or assigned Inspector — with matching scope."
+  },
+  "error": {
+    "title": "Review queue not available",
+    "body": "We could not tell what state the reviews are in.",
+    "retry": "Try again",
+    "reference": "Reference"
+  },
+  "degraded": {
+    "title": "Some linked sources could not be read",
+    "body": "The queue loaded, but one or more linked sources could not be read. Those details show as unavailable."
+  },
+  "missingSla": {
+    "title": "Deadline settings missing",
+    "body": "No review deadline is configured. Rows show as unavailable instead of on time."
+  },
+  "submissionBlocked": {
+    "title": "New submissions unavailable",
+    "body": "New inspection submissions cannot be sent right now. Existing review records in your scope are still available."
+  },
+  "filters": {
+    "search": "Factory, code or inspector",
+    "searchAria": "Search the review queue",
+    "allStatuses": "All statuses",
+    "allRisks": "All risk levels",
+    "overdueOnly": "Overdue only",
+    "clear": "Clear filters",
+    "showing": "{shown} of {total}"
+  },
+  "noMatch": {
+    "title": "No reviews match the filters",
+    "body": "Adjust or clear the filters."
+  },
+  "columns": {
+    "factory": "Factory",
+    "inspector": "Inspector",
+    "typeMode": "Type · mode",
+    "version": "Version",
+    "readiness": "Review readiness",
+    "status": "Status",
+    "open": "Review"
+  },
+  "open": "Open review",
+  "openHint": "Opens the review as read-only.",
+  "readiness": {
+    "sla": "Deadline",
+    "slaOverdue": "Overdue",
+    "slaOnTime": "On time",
+    "risk": "Risk",
+    "critical": "Critical",
+    "priority": "Priority",
+    "checklist": "Checklist",
+    "evidence": "Evidence",
+    "ack": "Acknowledgement",
+    "factory": "Factory verify",
+    "present": "Present",
+    "missing": "Missing",
+    "verified": "Verified",
+    "updated": "Updated",
+    "unavailable": "Not available",
+    "noEvidenceTitle": "Evidence not yet readable",
+    "noEvidenceBody": "A linked source could not be read. It is not counted as ready.",
+    "unassignedTitle": "Unassigned reviewer",
+    "unassignedBlocked": "Assignment unavailable"
+  },
+  "status": {
+    "submitted": "Submitted",
+    "inReview": "In review",
+    "returned": "Returned",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  }
+}

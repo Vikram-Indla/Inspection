@@ -1,0 +1,17 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+/* The search is the only control that earns extra width; the rest shrink-wrap
+   their labels, so a narrow viewport wraps the row instead of crushing it. */
+.field {
+  flex: 1 1 var(--sqx-grid-min-sm);
+  min-inline-size: 0;
+}
+
+.count {
+  margin-inline-start: auto;
+}

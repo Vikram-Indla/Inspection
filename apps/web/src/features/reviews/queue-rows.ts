@@ -1,67 +1,96 @@
+import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { slaDeadline } from "./sla";
-import type { LoadedQueue, QueueOption, QueueRow, SlaState, Translator } from "./types";
+import type { ReviewsStrings } from "./strings";
+import type { LoadedQueue, QueueOption, QueueRow, ReadinessFact, SlaState } from "./types";
 
-const TONE: Record<string, string> = { approved: "sq-lozenge--success", returned: "sq-lozenge--warning", rejected: "sq-lozenge--critical", under_review: "sq-lozenge--info", pending_review: "sq-lozenge--warning" };
-const RISK_TONE: Record<string, string> = { low: "sq-lozenge--success", medium: "sq-lozenge--warning", high: "sq-lozenge--critical" };
+const STATUS_TONE: Readonly<Record<string, StatusTone>> = {
+  approved: "success",
+  returned: "warning",
+  rejected: "danger",
+  under_review: "info",
+  pending_review: "warning",
+};
 
-export function buildQueueRows(loaded: LoadedQueue, t: Translator, locale: Locale): QueueRow[] {
+const RISK_TONE: Readonly<Record<string, StatusTone>> = {
+  low: "success",
+  medium: "warning",
+  high: "danger",
+};
+
+const STATUS_KEY: Readonly<Record<string, keyof ReviewsStrings["status"]>> = {
+  pending_review: "submitted",
+  under_review: "inReview",
+  returned: "returned",
+  approved: "approved",
+  rejected: "rejected",
+};
+
+export function readinessLabel(fact: ReadinessFact, strings: ReviewsStrings): string {
+  return strings.readiness[fact];
+}
+
+export function readinessTone(fact: ReadinessFact): StatusTone {
+  if (fact === "present" || fact === "verified") return "success";
+  if (fact === "updated") return "info";
+  if (fact === "missing") return "danger";
+  return "neutral";
+}
+
+export function buildQueueRows(loaded: LoadedQueue, strings: ReviewsStrings, locale: Locale): QueueRow[] {
   const now = Date.now();
-  const criticalLabel = t("review.list.criticalBadge", "{n} critical");
-  const fmt = (iso: string | null) => iso ? formatDateTime(iso, locale) : "—";
+  const absent = "—";
   return loaded.entries.map(({ review, readiness, readable }) => {
     const visit = review.inspections?.visits;
     const factory = visit?.factories;
     const submittedAt = review.submission_versions?.submitted_at ?? review.inspections?.submitted_at ?? null;
     const deadline = review.decided_at ? null : slaDeadline(submittedAt, loaded.reviewDays, loaded.workDays);
     const slaState: SlaState = !deadline ? "none" : now > deadline.getTime() ? "overdue" : "on_time";
-    const criticalCount = (review.inspections?.violations ?? []).filter(item => item.violation_codes?.level === "L1").length;
     const riskBand = factory?.risk_band ?? null;
+    const statusKey = STATUS_KEY[review.status];
     return {
       id: review.id,
       href: review.inspections ? `/reviews/${review.inspections.id}` : "/reviews",
-      factoryName: factory?.name ?? review.inspections?.id?.slice(0, 8) ?? "—",
+      factoryName: factory?.name ?? review.inspections?.id?.slice(0, 8) ?? absent,
       factoryCode: factory?.factory_code ?? "",
       inspectorName: visit?.assignments?.[0]?.profiles?.full_name ?? "",
       versionNumber: review.submission_versions?.version_number ?? null,
-      submittedDisplay: fmt(submittedAt),
+      submittedDisplay: submittedAt ? formatDateTime(submittedAt, locale) : absent,
       status: review.status,
-      statusLabel: t(`enum.${review.status}`, review.status.replace(/_/g, " ")),
-      statusTone: TONE[review.status] ?? "",
-      modeLabel: visit ? t(`enum.${visit.execution_mode}`, visit.execution_mode) : "—",
-      typeLabel: visit ? t(`enum.${visit.visit_type}`, visit.visit_type) : "—",
+      statusLabel: statusKey ? strings.status[statusKey] : review.status,
+      statusTone: STATUS_TONE[review.status] ?? "neutral",
+      modeLabel: visit?.execution_mode ?? absent,
+      typeLabel: visit?.visit_type ?? absent,
       readiness,
       readable,
       unassigned: review.reviewer_id == null && !review.decided_at,
       slaState,
-      slaLabel: slaState === "overdue" ? t("review.list.slaOverdue", "overdue") : t("review.list.slaOnTime", "on time"),
-      slaTone: slaState === "overdue" ? "sq-lozenge--critical" : "sq-lozenge--success",
+      slaLabel: slaState === "overdue" ? strings.readiness.slaOverdue : strings.readiness.slaOnTime,
+      slaTone: slaState === "overdue" ? "danger" : "success",
       riskBand,
-      riskLabel: riskBand ? t(`enum.${riskBand}`, riskBand) : "",
-      riskTone: riskBand ? RISK_TONE[riskBand] ?? "sq-lozenge--info" : "",
-      criticalCount,
-      criticalLabel: criticalLabel.replace("{n}", String(criticalCount)),
-      priorityLabel: visit?.priority?.trim() ? t(`enum.priority.${visit.priority}`, visit.priority) : null,
+      riskLabel: riskBand ? riskBand : strings.readiness.unavailable,
+      riskTone: riskBand ? RISK_TONE[riskBand] ?? "info" : "neutral",
+      criticalCount: (review.inspections?.violations ?? []).filter(item => item.violation_codes?.level === "L1").length,
+      priorityLabel: visit?.priority?.trim() || null,
     };
   });
 }
 
-export function buildStatusOptions(t: Translator): QueueOption[] {
+export function buildStatusOptions(strings: ReviewsStrings): QueueOption[] {
   return [
-    { value: "pending_review", label: t("review.list.status.submitted", "Submitted") },
-    { value: "under_review", label: t("review.list.status.inReview", "In review") },
-    { value: "returned", label: t("review.list.status.returned", "Returned") },
-    { value: "approved", label: t("review.list.status.approved", "Approved") },
-    { value: "rejected", label: t("review.list.status.rejected", "Rejected") },
+    { value: "pending_review", label: strings.status.submitted },
+    { value: "under_review", label: strings.status.inReview },
+    { value: "returned", label: strings.status.returned },
+    { value: "approved", label: strings.status.approved },
+    { value: "rejected", label: strings.status.rejected },
   ];
 }
 
-export function buildRiskOptions(loaded: LoadedQueue, t: Translator): QueueOption[] {
-  const values = [...new Set(
+export function buildRiskOptions(loaded: LoadedQueue): QueueOption[] {
+  return [...new Set(
     loaded.entries
       .map(entry => entry.review.inspections?.visits?.factories?.risk_band ?? null)
       .filter((value): value is string => !!value),
-  )].sort();
-  return values.map(value => ({ value, label: t(`enum.${value}`, value) }));
+  )].sort().map(value => ({ value, label: value }));
 }
