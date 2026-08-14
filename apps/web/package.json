@@ -12,7 +12,7 @@
     "geo:regions": "node scripts/fetch-ksa-regions.mjs",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "gates": "npm run gates:typography && npm run check:design-system-v5",
+    "gates": "npm run typecheck && npm run gates:typography && npm run check:design-system-v5",
     "gates:typography": "node scripts/check-typography.mjs",
     "gates:typography:update": "node scripts/check-typography.mjs --update",
     "check:design-system-v5": "node scripts/check-design-system-v5.mjs",
