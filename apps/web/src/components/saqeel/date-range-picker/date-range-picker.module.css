@@ -385,3 +385,14 @@
   padding-inline: var(--sqx-space-4);
   padding-block-end: var(--sqx-space-3);
 }
+
+/* Icon-only. The label is not deleted, it moves into the accessible name — a
+   toolbar that runs out of room must lose text, never meaning. */
+.trigger[data-compact] .triggerValue {
+  display: none;
+}
+
+.trigger[data-compact] {
+  gap: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-3);
+}

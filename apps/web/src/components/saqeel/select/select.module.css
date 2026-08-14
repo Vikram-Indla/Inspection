@@ -60,3 +60,23 @@
   outline: none;
   border-color: var(--sqx-border-focus);
 }
+
+.leading {
+  display: inline-flex;
+  flex: none;
+  color: var(--sqx-text-muted);
+}
+
+/* Icon-only. The chosen option moves into the accessible name rather than
+   disappearing; the chevron goes because an icon plus a chevron is two glyphs
+   for one control, and the trigger still announces itself as a combobox. */
+.trigger[data-compact] {
+  inline-size: auto;
+  gap: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-3);
+}
+
+.trigger[data-compact] .value,
+.trigger[data-compact] .chevron {
+  display: none;
+}

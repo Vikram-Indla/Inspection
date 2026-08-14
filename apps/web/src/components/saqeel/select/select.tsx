@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import CountBadge from "../count-badge/count-badge";
 import Icon from "../icon/icon";
+import type { IconName } from "../icon/icon-registry";
 import MenuSurface from "../menu-surface/menu-surface";
 import MenuRow from "../menu-surface/menu-row";
 import styles from "./select.module.css";
@@ -58,6 +59,17 @@ export type SelectProps = {
    */
   emptyLabel?: string;
   disabled?: boolean;
+  /**
+   * Leading glyph. Required to make `compact` legible — an icon-only trigger
+   * showing a bare chevron names nothing.
+   */
+  icon?: IconName;
+  /**
+   * Render the trigger as its icon alone, for a toolbar with no room for the
+   * label. The selected option moves into the accessible name rather than
+   * disappearing, so the control still reports what it is filtering by.
+   */
+  compact?: boolean;
   align?: "start" | "end";
 };
 
@@ -73,6 +85,8 @@ export default function SaqeelSelect({
   placeholder,
   emptyLabel,
   disabled,
+  icon,
+  compact = false,
   align = "start",
 }: SelectProps) {
   const listId = useId();
@@ -163,7 +177,8 @@ export default function SaqeelSelect({
         id={id}
         type="button"
         role="combobox"
-        aria-label={id ? undefined : label}
+        data-compact={compact ? "" : undefined}
+        aria-label={id ? undefined : compact ? `${label} — ${selected?.label ?? placeholder ?? label}` : label}
         aria-required={required}
         aria-expanded={isOpen}
         aria-controls={listId}
@@ -173,6 +188,7 @@ export default function SaqeelSelect({
         onClick={() => (isOpen ? close(false) : open())}
         onKeyDown={onKeyDown}
       >
+        {icon ? <span className={styles.leading}><Icon name={icon} size="md" /></span> : null}
         <span className={styles.value} data-placeholder={selected ? undefined : ""}>
           {selected?.label ?? placeholder ?? label}
           {selected && typeof selected.count === "number" ? <CountBadge value={selected.count} superscript /> : null}
