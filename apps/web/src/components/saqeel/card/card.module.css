@@ -94,13 +94,6 @@
   min-inline-size: 0;
 }
 
-.eyebrow {
-  font: var(--sqx-text-overline);
-  letter-spacing: var(--sqx-text-overline-tracking);
-  text-transform: uppercase;
-  color: var(--sqx-text-muted);
-}
-
 .title {
   font: var(--sqx-text-heading);
   letter-spacing: var(--sqx-text-heading-tracking);

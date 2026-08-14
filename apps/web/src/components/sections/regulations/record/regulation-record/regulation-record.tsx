@@ -86,8 +86,8 @@ export default async function RegulationRecord({ locale, entityId }: {
         <CardHeader
           level="h2"
           titleId="regulation-record"
-          eyebrow={<bdi>{regulation.code}</bdi>}
           title={<bdi>{regulation.title}</bdi>}
+          description={<bdi>{regulation.code}</bdi>}
           trailing={<StatusPill tone={regulation.operational_status === "active" ? "success" : regulation.operational_status === "deactivated" ? "danger" : "warning"}>{statusLabel}</StatusPill>}
         />
         <CardBody>

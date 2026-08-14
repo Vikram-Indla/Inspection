@@ -58,8 +58,8 @@ export default function ApprovalObjectCard({
     <Card as="article">
       <CardHeader
         level="h3"
-        eyebrow={kindLabel(component.entity_kind)}
         title={isCreate ? strings.created : strings.modified}
+        description={kindLabel(component.entity_kind)}
         trailing={<StatusPill tone={componentTone(component.component_status)}>{statusLabel(component.component_status)}</StatusPill>}
       />
       <CardBody gap="tight">

@@ -50,8 +50,8 @@ export default function PenaltyMappingCard({ code, today, formatAmount, formatDa
     <Card as="article">
       <CardHeader
         level="h3"
-        eyebrow={<bdi className={styles.code}>{code.code}</bdi>}
         title={code.title}
+        description={<bdi className={styles.code}>{code.code}</bdi>}
         trailing={
           <span className={styles.pills}>
             <StatusPill tone={severityTone(code.level)}>{fill(strings.severity, { level: code.level })}</StatusPill>

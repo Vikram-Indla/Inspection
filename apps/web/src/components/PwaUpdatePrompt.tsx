@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Text } from "@/components/saqeel/type";
 
 // Update-available banner for the controlled service-worker lifecycle. Shown
 // only when a new worker is installed and waiting (see PwaRegister). Textual and
@@ -40,8 +41,8 @@ export default function PwaUpdatePrompt({ onReload, onDismiss }: { onReload: () 
         <path d="M12 3v12" /><path d="M8 11l4 4 4-4" /><path d="M5 21h14" />
       </svg>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 600 }}>{t("A new version is ready", "يتوفر إصدار جديد")}</div>
-        <div className="t-caption">{t("Reload to get the latest field app. Your saved work is kept.", "أعد التحميل للحصول على أحدث تطبيق ميداني. يُحتفظ بعملك المحفوظ.")}</div>
+        <Text as="div" role="bodyStrong">{t("A new version is ready", "يتوفر إصدار جديد")}</Text>
+        <Text as="div" tone="muted">{t("Reload to get the latest field app. Your saved work is kept.", "أعد التحميل للحصول على أحدث تطبيق ميداني. يُحتفظ بعملك المحفوظ.")}</Text>
       </div>
       <button
         type="button"

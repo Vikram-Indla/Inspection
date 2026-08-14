@@ -15,8 +15,8 @@ export default async function Loading() {
         {Array.from({ length: CARDS }, (_unused, card) => (
           <Card as="div" key={card}>
             <CardHeader
-              eyebrow={<Skeleton shape="line" width="narrow" size="sm" />}
               title={<Skeleton shape="line" width="wide" size="lg" />}
+              description={<Skeleton shape="line" width="narrow" size="sm" />}
               trailing={<Skeleton shape="pill" width="narrow" />}
             />
             <CardBody gap="tight">

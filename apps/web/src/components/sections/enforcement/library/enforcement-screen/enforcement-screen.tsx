@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { titleCase } from "@/features/factories/portfolio";
 import { PAST_DATE_RANGE_PRESETS } from "@/components/saqeel/date-range-picker/date-range-presets";
 import { enforcementExportHref, enforcementHref, type EnforcementScope } from "@/features/enforcement/params";
@@ -65,7 +66,7 @@ export default async function EnforcementScreen({ locale, scope, nowMs }: {
           trailing={<StatusPill tone="info">{enforcement.policy.readOnly}</StatusPill>}
         />
         <CardBody>
-          <p className={styles.text}>{enforcement.policy.body}</p>
+          <Text tone="secondary">{enforcement.policy.body}</Text>
         </CardBody>
       </Card>
 

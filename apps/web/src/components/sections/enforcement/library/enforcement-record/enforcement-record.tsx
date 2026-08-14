@@ -60,8 +60,8 @@ export default function EnforcementRecord({
       <CardHeader
         level="h2"
         titleId="enforcement-record"
-        eyebrow={row.violationCode ? <bdi>{row.violationCode}</bdi> : strings.heading}
         title={row.violationTitle ?? strings.heading}
+        description={row.violationCode ? <bdi>{row.violationCode}</bdi> : strings.heading}
         trailing={<StatusPill tone={recordTone(row.recordStatus)}>{labelFor(row.recordStatus)}</StatusPill>}
       />
       <CardBody gap="tight">

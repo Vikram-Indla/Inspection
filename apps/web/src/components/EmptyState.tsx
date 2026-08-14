@@ -4,6 +4,8 @@
  * Pure presentational — callers still own their own t() calls and pass
  * already-resolved strings, matching the existing server-component convention.
  */
+import { Text } from "@/components/saqeel/type";
+
 type EmptyStateProps = {
   /** V2: pass an SVG <Icon> from @/app/icons, e.g. icon={<IconFolder />}. */
   icon?: React.ReactNode;
@@ -25,7 +27,7 @@ export default function EmptyState({ icon, glyph, title, body, inline, bare, chi
     <div className={inline ? "sq-state sq-state--inline" : "sq-state"} role={role} aria-busy={ariaBusy}>
       <span className="sq-state__glyph" aria-hidden="true">{icon ?? glyph}</span>
       <h2>{title}</h2>
-      {body ? <p className="t-caption">{body}</p> : null}
+      {body ? <Text tone="muted">{body}</Text> : null}
       {children}
     </div>
   );

@@ -10,7 +10,7 @@
   min-inline-size: 0;
   min-block-size: var(--sqx-control-h-md);
   padding-inline: var(--sqx-space-3);
-  font: var(--sqx-text-body);
+  font: inherit;
   color: var(--sqx-text-primary);
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);

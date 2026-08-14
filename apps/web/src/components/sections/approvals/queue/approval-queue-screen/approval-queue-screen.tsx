@@ -115,8 +115,8 @@ export default async function ApprovalQueueScreen({ locale, scope }: {
           <CardHeader
             level="h2"
             titleId="approval-review"
-            eyebrow={<bdi>{selected.request_number}</bdi>}
             title={<bdi>{selected.title}</bdi>}
+            description={<bdi>{selected.request_number}</bdi>}
           />
           <CardBody gap="tight">
             {scope.step === "overview" ? (

@@ -52,8 +52,8 @@ export default function ViolationCodeCard({ code, triggers, triggersReadable, ve
     <Card as="article">
       <CardHeader
         level="h3"
-        eyebrow={<bdi className={styles.code}>{code.code}</bdi>}
         title={code.title}
+        description={<bdi className={styles.code}>{code.code}</bdi>}
         trailing={
           <span className={styles.pills}>
             <StatusPill tone={severityTone(code.level)}>{fill(strings.severity, { level: code.level })}</StatusPill>

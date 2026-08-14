@@ -3,6 +3,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { generateContextualInsight, type ContextualResult, type ContextualSurface } from "@/lib/ai/contextual-actions";
 
 type Props = {
@@ -36,12 +37,12 @@ export default function ContextualAiPanel({ surface, title, description, context
       <div className="panel-header row">
         <div className="grow">
           <h3 id={`${surface}-heading`}>{title}</h3>
-          <p className="t-caption">{description}</p>
+          <Text tone="muted">{description}</Text>
         </div>
         <StatusPill tone="info">{advisoryLabel}</StatusPill>
       </div>
       <div className="panel-body stack">
-        <p className="t-caption">{evidenceLabel}</p>
+        <Text tone="muted">{evidenceLabel}</Text>
         <form action={offline || providerUnavailable ? undefined : action} className="stack">
           <input type="hidden" name="surface" value={surface} />
           <input type="hidden" name="context" value={context} />
@@ -61,7 +62,7 @@ export default function ContextualAiPanel({ surface, title, description, context
             {offline || providerUnavailable
               ? <div className="alert alert-warning" role="status">{unavailableLabel}</div>
               : pending
-                ? <p className="t-caption" role="status">{generateLabel}…</p>
+                ? <Text tone="muted" live="status">{generateLabel}…</Text>
                 : null}
             {state.error
               ? <div className="alert alert-critical" role="alert">{state.error.includes("unavailable") ? unavailableLabel : state.error}</div>
@@ -69,7 +70,7 @@ export default function ContextualAiPanel({ surface, title, description, context
           </div>
         </form>
         {state.ok && state.text
-          ? <div className="sq-banner sq-banner--immutable" role="status"><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption">{evidenceLabel}</div>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel}</a>}</div>
+          ? <div className="sq-banner sq-banner--immutable" role="status"><strong>{advisoryLabel}</strong><div>{state.text}</div><Text as="div" tone="muted">{evidenceLabel}</Text>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel}</a>}</div>
           : null}
       </div>
     </section>

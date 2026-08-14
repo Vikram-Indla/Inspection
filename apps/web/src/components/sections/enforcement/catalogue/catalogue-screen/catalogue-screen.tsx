@@ -3,6 +3,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { titleCase } from "@/features/factories/portfolio";
 import {
   CATALOGUE_MODES, queryViolationCatalogue, versionsOf, type CatalogueMode,
@@ -44,8 +45,8 @@ export default async function CatalogueScreen({ locale, mode, nowMs }: {
           trailing={<StatusPill tone="info">{strings.readOnly}</StatusPill>}
         />
         <CardBody gap="tight">
-          <p className={styles.text}>{strings.governanceBody}</p>
-          {catalogue.isWriter ? null : <p className={styles.text}>{strings.readerNote}</p>}
+          <Text tone="secondary">{strings.governanceBody}</Text>
+          {catalogue.isWriter ? null : <Text tone="secondary">{strings.readerNote}</Text>}
         </CardBody>
         <CardFooter>
           <Button
@@ -64,7 +65,7 @@ export default async function CatalogueScreen({ locale, mode, nowMs }: {
           <CardBody>
             <ul className={styles.rules}>
               {[strings.lensRule1, strings.lensRule2, strings.lensRule3, strings.lensRule4].map(rule => (
-                <li className={styles.rule} key={rule}>{rule}</li>
+                <Text as="li" tone="secondary" key={rule}>{rule}</Text>
               ))}
             </ul>
           </CardBody>
@@ -112,7 +113,7 @@ export default async function CatalogueScreen({ locale, mode, nowMs }: {
         </section>
       )}
 
-      <p className={styles.footnote}>{mode === "penalty" ? strings.penaltyFootnote : strings.catalogueFootnote}</p>
+      <Text tone="muted">{mode === "penalty" ? strings.penaltyFootnote : strings.catalogueFootnote}</Text>
     </div>
   );
 }
