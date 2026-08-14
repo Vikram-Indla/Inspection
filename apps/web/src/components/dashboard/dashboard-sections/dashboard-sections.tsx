@@ -25,12 +25,6 @@ import RoleSummary from "../role-summary/role-summary";
 import DashboardToolbar from "../dashboard-toolbar/dashboard-toolbar";
 import ExecutiveBrief from "../executive-brief/executive-brief";
 
-function refreshedLabel(nowMs: number): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Riyadh", hour: "2-digit", minute: "2-digit", hour12: false,
-  }).format(new Date(nowMs));
-}
-
 function projectionFor(
   persona: DashboardPersona,
   snapshot: DashboardSnapshot,
@@ -169,7 +163,7 @@ export default async function DashboardSections({ locale, scope }: {
 
       <DashboardToolbar
         locale={locale} scope={resolved} view={resolved.view}
-        refreshedAt={refreshedLabel(scope.nowMs)}
+        refreshedAt={scope.nowMs}
       />
       {resolved.view === "strategic" ? (
         <ExecutiveBrief

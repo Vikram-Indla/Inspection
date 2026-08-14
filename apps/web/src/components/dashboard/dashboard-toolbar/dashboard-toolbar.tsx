@@ -2,6 +2,7 @@ import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmen
 import Toolbar from "@/components/saqeel/toolbar/toolbar";
 import { DASHBOARD_VIEWS, scopeToSearchParams, type DashboardScope, type DashboardView } from "@/features/dashboard/scope";
 import { getMessages } from "@/i18n/messages";
+import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./dashboard-toolbar.module.css";
@@ -11,7 +12,7 @@ export default function DashboardToolbar({ locale, scope, view, refreshedAt }: {
   locale: Locale;
   scope: DashboardScope;
   view: DashboardView;
-  refreshedAt: string;
+  refreshedAt: number;
 }) {
   const { dashboard } = getMessages(locale);
   const viewHref = (next: DashboardView) => {
@@ -29,7 +30,9 @@ export default function DashboardToolbar({ locale, scope, view, refreshedAt }: {
       trailing={
         <p className={styles.updated} title={dashboard.updated.timezone}>
           <span>{dashboard.updated.label}</span>
-          <Text as="time" role="bodyStrong" tone="secondary" numeric>{refreshedAt}</Text>
+          <Text as="time" role="bodyStrong" tone="secondary" numeric>
+            {formatDateTime(refreshedAt, locale, { hour12: true })}
+          </Text>
         </p>
       }
     >

@@ -44,14 +44,20 @@ export function formatDate(value: string | number | Date, locale: Locale): strin
   return `${day} ${month} ${year}`;
 }
 
-/** "18 Jul 2026, 11:40 (Riyadh)" */
-export function formatDateTime(value: string | number | Date, locale: Locale): string {
+/** "18 Jul 2026, 11:40 (Riyadh)"; with `{ hour12: true }`,
+ *  "18 Jul 2026, 8:28 PM (Riyadh)" / "١٨ يوليو ٢٠٢٦، ٨:٢٨ م (الرياض)". */
+export function formatDateTime(
+  value: string | number | Date,
+  locale: Locale,
+  options: { hour12?: boolean } = {},
+): string {
+  const hour12 = options.hour12 ?? false;
   const time = new Intl.DateTimeFormat(intlLocale(locale), {
     timeZone: TIME_ZONE,
     calendar: CALENDAR,
-    hour: "2-digit",
+    hour: hour12 ? "numeric" : "2-digit",
     minute: "2-digit",
-    hour12: false,
+    hour12,
   }).format(toDate(value));
   const riyadhLabel = locale === "ar" ? "الرياض" : "Riyadh";
   return `${formatDate(value, locale)}, ${time} (${riyadhLabel})`;
