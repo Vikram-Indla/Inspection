@@ -42,7 +42,6 @@ async function setPresentation(
   await page.goto("/dashboard");
   await page.evaluate((value) => {
     localStorage.setItem("saqeel-theme", value);
-    localStorage.setItem("saqeel-theme-mode", value);
   }, theme);
 }
 

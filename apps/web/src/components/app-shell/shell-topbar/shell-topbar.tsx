@@ -86,7 +86,6 @@ export default async function ShellTopbar({ view, mobileNav }: {
         <ShellLocaleToggle locale={locale} label={common.field.language} />
         <ShellThemeToggle
           labels={{
-            system: shell.theme.system,
             light: shell.theme.light,
             dark: shell.theme.dark,
           }}

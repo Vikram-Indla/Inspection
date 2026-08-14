@@ -26,7 +26,6 @@ async function applyState(
   await page.goto(`/locale?set=${state.locale}`);
   await page.goto(route);
   await page.evaluate(theme => {
-    localStorage.setItem("saqeel-theme-mode", theme);
     localStorage.setItem("saqeel-theme", theme);
   }, state.theme);
   await page.reload();

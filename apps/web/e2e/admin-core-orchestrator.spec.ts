@@ -251,7 +251,6 @@ test("the governed record drawer respects Arabic RTL, dark theme and narrow refl
   await signIn(page, "admin");
   await page.evaluate(() => {
     localStorage.setItem("saqeel-theme", "dark");
-    localStorage.setItem("saqeel-theme-mode", "dark");
     document.documentElement.setAttribute("data-theme", "dark");
   });
   await page.goto("/locale?set=ar");

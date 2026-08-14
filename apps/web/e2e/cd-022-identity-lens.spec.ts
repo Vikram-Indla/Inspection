@@ -376,7 +376,6 @@ test.describe("CD-022 graded identity search", () => {
           await page.goto(`/locale?set=${locale}`);
           await page.goto("/planning/single");
           await page.evaluate(mode => {
-            localStorage.setItem("saqeel-theme-mode", mode);
             localStorage.setItem("saqeel-theme", mode);
           }, theme);
           await page.reload();

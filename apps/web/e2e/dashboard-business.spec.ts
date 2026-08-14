@@ -76,7 +76,6 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     mkdirSync(EVIDENCE_DIR, { recursive: true });
     await page.evaluate(() => {
       localStorage.setItem("saqeel-theme", "dark");
-      localStorage.setItem("saqeel-theme-mode", "dark");
     });
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -106,14 +105,12 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
 
     await page.evaluate(() => {
       localStorage.setItem("saqeel-theme", "light");
-      localStorage.setItem("saqeel-theme-mode", "light");
     });
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.screenshot({ path: join(EVIDENCE_DIR, "strategic-en-light-desktop.png"), fullPage: true });
     await page.evaluate(() => {
       localStorage.setItem("saqeel-theme", "dark");
-      localStorage.setItem("saqeel-theme-mode", "dark");
     });
     await page.reload();
 
@@ -166,7 +163,6 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     await page.emulateMedia({ colorScheme: "light" });
     await page.addInitScript(() => {
       localStorage.setItem("saqeel-theme", "light");
-      localStorage.setItem("saqeel-theme-mode", "light");
     });
     await page.goto("/locale?set=ar");
     await page.setViewportSize({ width: 390, height: 844 });

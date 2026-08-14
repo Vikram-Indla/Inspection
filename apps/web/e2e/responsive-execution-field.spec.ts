@@ -78,7 +78,6 @@ test.describe("PKT-RESPONSIVE-EXECUTION-FIELD-004 runtime", () => {
       await page.goto("/field");
       await page.evaluate(theme => {
         localStorage.setItem("saqeel-theme", theme);
-        localStorage.setItem("saqeel-theme-mode", theme);
       }, state.theme);
       await page.reload();
       await expect(page.locator('[data-saqeel-migration="unified-execution"]')).toBeVisible();
@@ -118,7 +117,6 @@ test.describe("PKT-RESPONSIVE-EXECUTION-FIELD-004 runtime", () => {
       await page.goto("/virtual");
       await page.evaluate(theme => {
         localStorage.setItem("saqeel-theme", theme);
-        localStorage.setItem("saqeel-theme-mode", theme);
       }, state.theme);
       await page.reload();
       await expect(page.locator("nav#sqx-shell-rail")).toHaveCount(1);

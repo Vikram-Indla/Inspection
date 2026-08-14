@@ -245,7 +245,7 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
 
   test("Arabic applies document RTL and both visual themes remain operable", async ({ page }) => {
     await page.emulateMedia({ colorScheme: "light" });
-    await page.addInitScript(() => localStorage.setItem("saqeel-theme-mode", "light"));
+    await page.addInitScript(() => localStorage.setItem("saqeel-theme", "light"));
     await page.goto("/locale?set=ar");
     await page.goto("/planning");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");

@@ -2,82 +2,62 @@
 
 import { useEffect, useState } from "react";
 import IconButton from "@/components/saqeel/icon-button/icon-button";
-import type { IconName } from "@/components/saqeel/icon/icon-registry";
 
-type ThemeMode = "system" | "light" | "dark";
-type ResolvedTheme = "light" | "dark";
+// Light/dark only. Precedence is explicit stored choice > dark, matching
+// ThemeScript, ThemeChannelSync and ThemeToggle — all four have to agree or the
+// first client navigation flips the document back.
+//
+// This control used to carry a third "system" mode behind its own
+// `saqeel-theme-mode` key. Nothing else in the application read that key: the
+// pre-paint resolver and the channel sync both read `saqeel-theme`, so a user on
+// "system" had a preference only this button could see, and any navigation
+// re-resolved the document from the light/dark value instead.
+type Theme = "light" | "dark";
 
-const MODE_KEY = "saqeel-theme-mode";
-const RESOLVED_KEY = "saqeel-theme";
-const NEXT_MODE: Readonly<Record<ThemeMode, ThemeMode>> = {
-  system: "light",
-  light: "dark",
-  dark: "system",
-};
-const MODE_ICON: Readonly<Record<ThemeMode, IconName>> = {
-  system: "themeSystem",
-  light: "themeLight",
-  dark: "themeDark",
-};
+const THEME_KEY = "saqeel-theme";
+const RETIRED_MODE_KEY = "saqeel-theme-mode";
 
-function systemTheme(): ResolvedTheme {
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+function currentTheme(): Theme {
+  const applied = document.documentElement.getAttribute("data-theme");
+  if (applied === "light" || applied === "dark") return applied;
+  const stored = localStorage.getItem(THEME_KEY);
+  return stored === "light" ? "light" : "dark";
 }
 
-function readMode(): ThemeMode {
+function applyTheme(theme: Theme): void {
+  document.documentElement.setAttribute("data-theme", theme);
   try {
-    const stored = localStorage.getItem(MODE_KEY);
-    if (stored === "system" || stored === "light" || stored === "dark") return stored;
-    const legacy = localStorage.getItem(RESOLVED_KEY);
-    return legacy === "light" || legacy === "dark" ? legacy : "system";
+    localStorage.setItem(THEME_KEY, theme);
+    localStorage.removeItem(RETIRED_MODE_KEY);
   } catch {
-    return "system";
-  }
-}
-
-function applyTheme(mode: ThemeMode): void {
-  const resolved: ResolvedTheme = mode === "system" ? systemTheme() : mode;
-  document.documentElement.setAttribute("data-theme", resolved);
-  try {
-    localStorage.setItem(MODE_KEY, mode);
-    localStorage.setItem(RESOLVED_KEY, resolved);
-  } catch {
-    document.documentElement.setAttribute("data-theme", resolved);
+    /* private mode: the document attribute above still holds for this session */
   }
 }
 
 export default function ShellThemeToggle({ labels }: {
-  labels: Readonly<Record<ThemeMode, string>>;
+  labels: Readonly<Record<Theme, string>>;
 }) {
-  const [mode, setMode] = useState<ThemeMode>("dark");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    const initial = readMode();
-    setMode(initial);
-    applyTheme(initial);
+    try {
+      setTheme(currentTheme());
+    } catch {
+      setTheme("dark");
+    }
   }, []);
 
-  useEffect(() => {
-    if (mode !== "system") return;
-    const media = window.matchMedia("(prefers-color-scheme: light)");
-    const sync = () => applyTheme("system");
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, [mode]);
-
-  const next = NEXT_MODE[mode];
-
-  function cycle(): void {
-    setMode(next);
-    applyTheme(next);
-  }
+  const next: Theme = theme === "dark" ? "light" : "dark";
 
   return (
     <IconButton
-      icon={MODE_ICON[mode]}
+      icon={theme === "dark" ? "themeDark" : "themeLight"}
       label={labels[next]}
-      title={labels[mode]}
-      onClick={cycle}
+      title={labels[next]}
+      onClick={() => {
+        setTheme(next);
+        applyTheme(next);
+      }}
     />
   );
 }
