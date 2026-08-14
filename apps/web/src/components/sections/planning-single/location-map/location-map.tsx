@@ -11,7 +11,7 @@ export default function LocationMap({ lat, lng, label }: {
   lng: number;
   label: string;
 }) {
-  const markers: GeoMarkerData[] = [{ id: "official", lat, lng, label, tone: "neutral" }];
+  const markers: GeoMarkerData[] = [{ id: "official", lat, lng, label, tone: "brand" }];
   return (
     <div className={styles.frame} dir="ltr">
       <GeoMap center={[lat, lng]} zoom={15} markers={markers} height="100%" />

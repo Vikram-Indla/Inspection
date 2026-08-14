@@ -11,7 +11,7 @@ import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
 import { Heading, Text } from "@/components/saqeel/type";
 import { loadKsaRegions } from "@/lib/ksa-regions";
 
-export type GeoTone = "high" | "medium" | "low" | "neutral";
+export type GeoTone = "high" | "medium" | "low" | "neutral" | "brand";
 
 export type GeoMarkerData = {
   id: string;
@@ -168,7 +168,7 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
     map.addSource(MARKER_SOURCE, { type: "geojson", data: markerData });
     map.addLayer({ id: MARKER_LAYER, type: "circle", source: MARKER_SOURCE, slot: "top", paint: {
       "circle-radius": ["case", ["get", "selected"], 10, 7],
-      "circle-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, TONE.neutral.fill],
+      "circle-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, "brand", TONE.brand.fill, TONE.neutral.fill],
       "circle-stroke-width": 2, "circle-stroke-color": MAP_PALETTE.halo,
     } });
   }
