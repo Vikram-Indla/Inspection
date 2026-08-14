@@ -40,7 +40,44 @@ duplicate nav ids    7 → 0
 exclusion citing this record rather than re-triaging it every run.
 
 ### T-106 · clear every typography violation in migrated code
-`status: in-progress — 24 of 253 closed; 229 remain across 34 files` · `rules: WEB-000, WEB-002 §2, WEB-008, WEB-009, WEB-014 §2.1, §4.1, §5.1, §8, §11` · `est: 6h`
+`status: partial — 239 of 253 closed; the 14 that remain are two recorded decisions, not misses` · `rules: WEB-000, WEB-002 §2, WEB-008, WEB-009, WEB-014 §2.1, §4.1, §5.1, §8, §11` · `est: 6h`
+
+```
+baseline 1781 → 1542        files with violations 51 → 2
+
+sections/approvals   68 → 0     app/operations          32 → 0
+sections/regulations 63 → 0     components/dashboard     8 → 0
+sections/enforcement 52 → 0     admin/compliance-approvals 5 → 0
+shared components     9 → 0     saqeel/list-row · OpsMap  3 → 0
+card eyebrows         9 → 0     and the prop is DELETED
+```
+
+**The two survivors are deliberate.** `shell-brand` (2) is the logotype question
+raised in T-104. `factory360.module.css` (12) is **legacy `--type-*`, not
+pre-contract `--sqx-text-*`** — it belongs to `/factories/cr/[id]`, the **T-020
+structural rebuild target**, and its `.facts dt` / `.compactFacts dt` selectors
+feed **40+ `<dt>`/`<dd>` sites** across two route files. It was stripped, the
+orphan check caught that the JSX was unmigrated, and it was **restored
+byte-for-byte to HEAD**. Migrating it now is the same work twice (T-076's lesson);
+it lands with T-020.
+
+**`operations.module.css` cost nothing to clear.** All 12 classes that carried a
+font were **dead** — no `styles.X` reference from either importer — which confirms
+T-072's amended note. 30 violations, zero JSX risk.
+
+**The method that made 239 safe, and the one that nearly broke it.** Bulk regex
+transforms did the mechanical 72+14+17 substitutions, but stripping CSS ahead of
+the JSX left **21 orphaned sites in approvals** — text with no font and a green
+gate. What caught them was a **diff-driven orphan check**: parse `git diff` for
+every declaration removed, resolve the class back to its JSX, and assert a
+primitive is present. **Run that after every strip.** A first version used a
+3-line proximity window and gave false negatives (`.check`, `.value`, `.parts`,
+`.meta`, `.type`, `.comment`, `.count`, `DiffValue`); the strict version — list
+every still-used class that lost a font, no proximity heuristic — found them all.
+
+**47 class blocks deleted** once their text moved to primitives, verified unused
+in both directions with no dynamic `styles[...]` access anywhere in the three
+families.
 
 Owner-directed: clear all violations in migrated code, including the compliance
 family — `/admin/regulations`, `/admin/compliance-approvals`, `/admin/violations`,

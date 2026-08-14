@@ -31,7 +31,7 @@ export default function ExplainProvider({ strings, children }: {
   children: ReactNode;
 }) {
   const [entry, setEntry] = useState<MethodologyEntry | null>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
 
   const openEntry = useCallback((next: MethodologyEntry) => {
@@ -71,10 +71,12 @@ export default function ExplainProvider({ strings, children }: {
           >
             <header className={styles.head}>
               <span className={styles.headline}>
-                <h2 className={styles.title} id={`sqx-explain-${entry.metricId}`} tabIndex={-1} ref={headingRef}>
-                  {entry.title}
-                </h2>
-                <span className={styles.formula}>{entry.formulaId}</span>
+                <div className={styles.title} tabIndex={-1} ref={headingRef}>
+                  <Heading level={2} visual="subheading" id={`sqx-explain-${entry.metricId}`}>
+                    {entry.title}
+                  </Heading>
+                </div>
+                <Mono tone="muted">{entry.formulaId}</Mono>
               </span>
               <IconButton icon="dismiss" label={strings.close} onClick={close} />
             </header>
@@ -82,14 +84,14 @@ export default function ExplainProvider({ strings, children }: {
               {entry.blockedNote ? (
                 <div className={styles.note}>
                   <StatusPill tone="warning" ping>{strings.blockedTitle}</StatusPill>
-                  <p className={styles.noteText}>{entry.blockedNote}</p>
+                  <p className={styles.noteText}><Text as="span" tone="inherit">{entry.blockedNote}</Text></p>
                 </div>
               ) : null}
               <dl className={styles.rows}>
                 {entry.rows.map(row => (
                   <div className={styles.row} key={row.label}>
-                    <dt className={styles.rowLabel}>{row.label}</dt>
-                    <dd className={styles.rowValue}>{row.value}</dd>
+                    <dt className={styles.rowLabel}><Text as="span" role="label" tone="muted">{row.label}</Text></dt>
+                    <dd className={styles.rowValue}><Text as="span" role="bodyStrong" numeric>{row.value}</Text></dd>
                   </div>
                 ))}
               </dl>

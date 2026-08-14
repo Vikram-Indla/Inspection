@@ -23,8 +23,6 @@
   padding-inline: 14px;
   border-radius: var(--radius-xs);
   color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 650;
   text-decoration: none;
 }
 
@@ -49,23 +47,18 @@
 
 .kpiLabel {
   color: var(--text-secondary);
-  font: var(--type-caption-font);
 }
 
 .kpiValue {
   min-inline-size: 0;
   margin-block: var(--space-2);
   color: var(--text-primary);
-  font-size: clamp(1.125rem, 1.45vw, 1.5rem);
-  font-weight: 720;
-  line-height: 1.15;
   overflow-wrap: anywhere;
 }
 
 .kpiNote {
   margin: 0;
   color: var(--text-muted);
-  font: var(--type-caption-font);
 }
 
 .decisionContext {
@@ -77,7 +70,6 @@
   border-inline-start: 3px solid var(--border-strong);
   background: var(--surface-sunken);
   color: var(--text-secondary);
-  font: var(--type-caption-font);
 }
 
 .page :global(a.sq-link) {
@@ -114,7 +106,7 @@
 
 .revampPage { display: flex; flex-direction: column; gap: 24px; }
 .revampCommand { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-block-end: 6px; flex-wrap: wrap; }
-.revampFreshness { display: flex; align-items: center; gap: 12px; color: var(--text-secondary); font-size: 13px; line-height: 18px; }
+.revampFreshness { display: flex; align-items: center; gap: 12px; color: var(--text-secondary); }
 .revampFreshness > a {
   display: inline-flex;
   align-items: center;
@@ -135,7 +127,7 @@
   flex-wrap: wrap;
   margin-block-end: var(--space-4);
 }
-.detailHeading h2 { margin: 0; font-size: var(--font-size-xl); }
+.detailHeading h2 { margin: 0; }
 .detailHeading p { max-inline-size: 72ch; margin: var(--space-1) 0 0; color: var(--text-secondary); }
 .alertColumns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
 .alertColumns h3 { margin-block: 0 var(--space-3); }
@@ -151,51 +143,51 @@
 .alertCard p { margin: var(--space-1) 0; color: var(--text-secondary); }
 .contractFacts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin: 0 0 var(--space-4); }
 .contractFacts > div { padding: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); }
-.contractFacts dt { color: var(--text-secondary); font-size: var(--font-size-sm); }
+.contractFacts dt { color: var(--text-secondary); }
 .contractFacts dd { margin: var(--space-1) 0 0; overflow-wrap: anywhere; }
 .timelineVisitPicker { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-block-end: var(--space-4); }
 .timelineList { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
 .timelineList li { display: grid; grid-template-columns: minmax(150px, auto) minmax(180px, 1fr) minmax(0, 2fr); gap: var(--space-4); align-items: start; padding: var(--space-4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); }
 .timelineList div { display: grid; gap: var(--space-1); }
-.timelineList span { color: var(--text-secondary); font-size: var(--font-size-sm); }
+.timelineList span { color: var(--text-secondary); }
 .timelineList code { white-space: pre-wrap; overflow-wrap: anywhere; direction: ltr; text-align: start; }
 @media (max-width: 780px) {
   .alertColumns { grid-template-columns: 1fr; }
   .contractFacts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .timelineList li { grid-template-columns: 1fr; }
 }
-.revampSecondary { display: inline-flex; align-items: center; justify-content: center; min-block-size: 34px; padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-xs); background: var(--surface-primary); color: var(--text-primary); font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
+.revampSecondary { display: inline-flex; align-items: center; justify-content: center; min-block-size: 34px; padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-xs); background: var(--surface-primary); color: var(--text-primary); font: inherit; text-decoration: none; cursor: pointer; }
 .revampMap { position: relative; block-size: 520px; overflow: hidden; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-sunken); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
-.revampMapCrumb { position: absolute; inset-block-start: 12px; inset-inline-start: 12px; z-index: 2; padding: 6px 10px; border: 1px solid var(--border-subtle); border-radius: 6px; background: var(--surface-primary); font-size: 13px; }
+.revampMapCrumb { position: absolute; inset-block-start: 12px; inset-inline-start: 12px; z-index: 2; padding: 6px 10px; border: 1px solid var(--border-subtle); border-radius: 6px; background: var(--surface-primary); }
 .revampTableWrap { overflow-x: auto; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
-.revampTable { inline-size: 100%; min-inline-size: 880px; border-collapse: collapse; font-size: 12px; line-height: 16px; }
-.revampTable caption { padding: 12px 16px; color: var(--text-secondary); text-align: start; font-size: 14px; line-height: 20px; }
+.revampTable { inline-size: 100%; min-inline-size: 880px; border-collapse: collapse; }
+.revampTable caption { padding: 12px 16px; color: var(--text-secondary); text-align: start; }
 .revampTable th, .revampTable td { padding: 10px 8px; border-block-start: 1px solid var(--border-subtle); text-align: start; }
-.revampTable thead th { background: var(--surface-secondary); color: var(--text-secondary); font-weight: 600; }
+.revampTable thead th { background: var(--surface-secondary); color: var(--text-secondary); }
 .revampLozenge { display: inline-flex; padding: 2px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--action-primary-pressed); }
 .revampSectionHead { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
-.revampSectionHead h2 { margin: 0; font-size: 19px; line-height: 28px; font-weight: 500; }
-.revampSectionHead p, .revampSectionHead span { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 19px; }
+.revampSectionHead h2 { margin: 0; }
+.revampSectionHead p, .revampSectionHead span { margin: 0; color: var(--text-secondary); }
 .revampRegions { display: flex; flex-direction: column; gap: 12px; }
 .revampRegionGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .revampRegionCard { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); color: var(--text-primary); text-decoration: none; }
 .revampRegionCard > span { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.revampRegionCard > span b { font-size: 19px; font-weight: 500; }
-.revampRegionCard em { align-self: flex-start; padding: 2px 7px; border-radius: 999px; background: var(--surface-secondary); color: var(--text-secondary); font-size: 12px; font-style: normal; }
+
+.revampRegionCard em { align-self: flex-start; padding: 2px 7px; border-radius: 999px; background: var(--surface-secondary); color: var(--text-secondary); }
 .revampRegionCard > i { display: block; block-size: 8px; overflow: hidden; border-radius: 999px; background: var(--surface-secondary); }
 .revampRegionCard > i span { display: block; block-size: 100%; background: var(--action-primary); }
 .revampRegionCard small { color: var(--text-secondary); }
-.revampOverline { margin: 0 0 12px; color: var(--text-secondary); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.revampOverline { margin: 0 0 12px; color: var(--text-secondary); text-transform: uppercase; }
 .revampKpiRow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .revampKpi { display: flex; min-inline-size: 0; flex-direction: column; gap: 8px; padding: 14px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); }
-.revampKpi > span { color: var(--text-secondary); font-size: 13px; line-height: 18px; }
-.revampKpi > strong { font-size: 28px; line-height: 32px; font-weight: 500; }
-.revampKpi > a { margin-block-start: auto; color: var(--action-primary-pressed); font-size: 13px; font-weight: 600; text-decoration: none; }
+.revampKpi > span { color: var(--text-secondary); }
+
+.revampKpi > a { margin-block-start: auto; color: var(--action-primary-pressed); text-decoration: none; }
 .revampExceptions { display: flex; flex-direction: column; gap: 14px; padding: 20px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-base) 8%, transparent), 0 8px 18px -12px color-mix(in srgb, var(--shadow-base) 22%, transparent); }
 .revampExceptions article { display: flex; align-items: flex-start; gap: 12px; padding-block-start: 12px; border-block-start: 1px solid var(--border-subtle); }
-.revampExceptions article > em { padding: 2px 7px; border-radius: 999px; background: var(--status-critical-soft); color: var(--status-critical); font-size: 12px; font-style: normal; }
+.revampExceptions article > em { padding: 2px 7px; border-radius: 999px; background: var(--status-critical-soft); color: var(--status-critical); }
 .revampExceptions article > div { flex: 1; min-inline-size: 0; }
-.revampExceptions article p { margin: 2px 0 0; color: var(--text-secondary); font-size: 14px; line-height: 20px; }
+.revampExceptions article p { margin: 2px 0 0; color: var(--text-secondary); }
 .revampEmpty { margin: 0; color: var(--text-secondary); }
 
 @media (max-width: 1023px) {
@@ -264,11 +256,9 @@
 
   .revampTable tbody th::before,
   .revampTable tbody td::before {
-    content: attr(data-label);
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-weight: 500;
-  }
+  content: attr(data-label);
+  color: var(--text-secondary);
+}
 
   .revampTable tbody td:last-child {
     grid-column: 1 / -1;
@@ -491,7 +481,6 @@
 
 .highlightMeta {
   color: var(--text-muted);
-  font: var(--type-caption-font);
 }
 
 .performanceGrid {
