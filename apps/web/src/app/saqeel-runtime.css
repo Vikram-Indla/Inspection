@@ -957,11 +957,6 @@ button.sq-shell-scope { cursor: pointer; }
 .sq-shell-account__identity strong { font: var(--type-caption-font); color: var(--text-primary); }
 .sq-shell-account__identity small { font: var(--type-micro); color: var(--text-secondary); }
 .sq-shell-account__chevron { flex: 0 0 auto; color: var(--text-secondary); }
-.sq-notification { position: relative; }
-.sq-notification__trigger { position: relative; display: grid; place-items: center; inline-size: var(--touch-target); block-size: var(--touch-target); padding: 0; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text-secondary); cursor: pointer; }
-.sq-notification__trigger:hover { color: var(--text-primary); background: var(--surface-secondary); border-color: var(--border-subtle); }
-.sq-notification__trigger:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.sq-notification__badge { position: absolute; inset-block-start: 2px; inset-inline-end: 1px; min-inline-size: 18px; block-size: 18px; display: grid; place-items: center; padding-inline: 4px; border: 2px solid var(--surface-primary); border-radius: var(--radius-full); background: var(--status-critical); color: var(--text-on-action); font: 600 10px/1 var(--font-body); }
 .sq-shell-account__menu { position: absolute; inset-block-start: calc(100% + var(--space-2)); inset-inline-end: 0; z-index: var(--z-drawer); inline-size: min(320px, 80vw); display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-primary); box-shadow: var(--shadow-lg); }
 /* Portaled variant (DR-36/DR-51 family) — position comes from inline style
    (viewport coordinates measured off the trigger), not the static inset
