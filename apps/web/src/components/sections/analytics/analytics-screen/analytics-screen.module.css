@@ -23,7 +23,6 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--sqx-stack-section);
-  align-items: start;
   min-inline-size: 0;
 }
 
