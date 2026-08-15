@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { useMediaQuery } from "@/components/saqeel/primitives/use-media-query";
-import { seriesColour } from "../chart-palette";
+import { CHART_TRACK, seriesColour } from "../chart-palette";
 import styles from "./bar-series.module.css";
 
 const WIDE_LABEL = 132;
@@ -73,7 +73,7 @@ function AxisLabel({ x = 0, y = 0, index = 0, points }: TickProps & { points: re
  * One series, so there is no legend and no categorical colour: bars carry the
  * accent, and a point the caller marks `muted` drops to the de-emphasis grey.
  */
-export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth, series = 1 }: {
+export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth, series = 1, track = false }: {
   points: readonly BarPoint[];
   domainMax: number;
   ariaLabel: string;
@@ -81,6 +81,15 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
   labelWidth?: number;
   /** Which validated slot the bars take. Slots are fixed, never cycled. */
   series?: number;
+  /**
+   * Draws the unfilled remainder of the domain behind each bar.
+   *
+   * Set this whenever `domainMax` is a fixed scale rather than the data's own
+   * maximum — a governed 0–100 rate, say. Without it the leftover scale reads as
+   * empty layout, which invites the fix that would actually be a lie: rescaling
+   * to the largest value, so a third of the scale draws as a full bar.
+   */
+  track?: boolean;
 }) {
   const roomy = useMediaQuery("(min-width: 48rem)");
   const labels = labelWidth ?? (roomy ? WIDE_LABEL : NARROW_LABEL);
@@ -106,7 +115,14 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
             className={styles.axis}
             tick={<AxisLabel points={points} />}
           />
-          <Bar dataKey="value" radius={4} isAnimationActive={false} barSize={16} minPointSize={2}>
+          <Bar
+            dataKey="value"
+            radius={4}
+            isAnimationActive={false}
+            barSize={16}
+            minPointSize={2}
+            background={track ? { fill: CHART_TRACK, radius: 4 } : undefined}
+          >
             {points.map(point => (
               <Cell key={point.key} fill={point.muted ? "var(--sqx-chart-7)" : seriesColour(series)} />
             ))}

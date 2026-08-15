@@ -45,6 +45,8 @@ this is a wayfinding decision, not a contrast one.
 | --- | --- |
 | `components/saqeel/charts/chart-palette.ts` | `SERIES_ROLE` added, with the measurements in its TSDoc |
 | `components/saqeel/charts/gauge/gauge.tsx` | `series` prop added; was hardcoded to slot 1 |
+| `components/saqeel/charts/bar-series/bar-series.tsx` | `track` prop added (Recharts `background`) |
+| `components/sections/analytics/analytics-rates/analytics-rates.tsx` | `track` set — `domainMax` is the fixed 0–100 scale |
 | `components/saqeel/charts/bar-cell/bar-cell.module.css` | `chart-4` → `chart-2` |
 | `pipeline-breakdown`, `operations-states` | `series={SERIES_ROLE.volume}` |
 | `measure-coverage` (gauge + bars), `analytics-blocked` (gauge) | `series={SERIES_ROLE.coverage}` |
@@ -76,6 +78,34 @@ light  volume rgb( 33, 92,102)   coverage rgb(109, 40,217)   rate rgb(122, 65,  
 - [x] **axe 0 violations** — `/analytics` dark **and** light, post-change
 - [x] `npm run gates` — 77 v5 findings, unchanged
 - [ ] `npm run test:e2e` — not run
+
+## The rates band looked half-empty, and rescaling would have been a lie
+
+Owner reported dead space to the right of `/analytics` → Rates. **Measured
+first**, because there are two very different causes and only one is a bug:
+
+```
+bar-series root   863px inside a 905px card   → not a layout problem
+longest bar       34.5% ends at x=410
+plot area         ends at x=904               → 494px of unfilled scale
+```
+
+The gap **is** the remaining 65% of a 0–100 rate scale. The obvious fix —
+rescale to the largest value — would draw 34.5% as a full bar, which is exactly
+what `BarSeries`'s own TSDoc refuses: *"a governed 0–100 measure is passed
+through unchanged rather than charted against its own maximum, which would
+exaggerate a flat run."*
+
+`BarSeries` gained **`track`**, which paints the unfilled remainder behind each
+bar via Recharts' `background`, using `CHART_TRACK` — the same token `Gauge`
+already uses for the same idea. The band now fills the card and the leftover
+reads as *scale*, not as *layout*. Set it on any chart whose `domainMax` is a
+fixed scale rather than the data's own maximum; the prop's TSDoc says so, and
+says why.
+
+Rendered and checked in both themes: 5 tracks spanning **687px**, fill
+`rgb(244,246,248)` light / `rgb(14,19,26)` dark, data bars unchanged at
+`rgb(255,214,102)`. **axe 0 violations in both.**
 
 ## Parked
 

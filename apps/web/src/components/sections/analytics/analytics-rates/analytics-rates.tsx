@@ -60,7 +60,7 @@ export default function AnalyticsRates({ rates, strings, query, locale }: {
             </Link>
           ))}
         </div>
-        <BarSeries points={points} domainMax={FULL_SCALE} ariaLabel={strings.rates.ariaLabel} />
+        <BarSeries points={points} domainMax={FULL_SCALE} ariaLabel={strings.rates.ariaLabel} track />
       </CardBody>
     </Card>
   );
