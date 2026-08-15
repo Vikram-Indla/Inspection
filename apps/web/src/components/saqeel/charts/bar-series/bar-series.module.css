@@ -1,0 +1,34 @@
+.root {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.tick {
+  font: var(--sqx-text-label);
+  fill: var(--sqx-text-secondary);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.tickLink {
+  cursor: pointer;
+}
+
+.tickLink:hover .tick,
+.tickLink:focus-visible .tick {
+  fill: var(--sqx-text-primary);
+}
+
+.tickLink:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-xs);
+}
+
+.value {
+  font: var(--sqx-text-label);
+  fill: var(--sqx-text-primary);
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}

@@ -22,9 +22,7 @@ export type RibbonTrack = {
 export type RibbonStrings = {
   readonly heading: string;
   readonly tablistLabel: string;
-  readonly stateWord: string;
   readonly latestWord: string;
-  readonly sourceWord: string;
   readonly boundaryWord: string;
 };
 
@@ -80,13 +78,11 @@ export default function VisitLifecycleRibbon({ tracks, strings }: {
           <DefinitionList
             columns="two"
             items={[
-              { label: strings.stateWord, value: <StatusPill tone={current.tone} ping={false}>{current.stateLabel}</StatusPill> },
               { label: strings.latestWord, value: current.eventLabel },
-              { label: strings.sourceWord, value: current.sourceLabel },
               { label: strings.boundaryWord, value: current.boundaryLabel },
             ]}
           />
-          <Button variant="tertiary" size="sm" href={current.anchorHref} label={current.anchorLabel}>
+          <Button variant="link" size="sm" href={current.anchorHref} label={current.anchorLabel}>
             {current.anchorLabel}
           </Button>
         </div>

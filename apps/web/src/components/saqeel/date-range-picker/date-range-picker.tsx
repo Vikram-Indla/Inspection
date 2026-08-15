@@ -88,6 +88,12 @@ export type DateRangePickerProps = {
    */
   nameFrom?: string;
   nameTo?: string;
+  /**
+   * Id for the trigger, so a `Field` label can point at it with `htmlFor`.
+   * The trigger is a `<button>`, which is labelable, so the association gives
+   * the visible label click-to-focus without changing the accessible name.
+   */
+  id?: string;
 };
 
 const DEFAULT_STRINGS: DateRangeStrings = {
@@ -150,6 +156,7 @@ export default function DateRangePicker({
   timeLabels,
   nameFrom,
   nameTo,
+  id,
 }: DateRangePickerProps) {
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -255,6 +262,7 @@ export default function DateRangePicker({
       <button
         className={styles.trigger}
         ref={triggerRef}
+        id={id}
         type="button"
         data-compact={compact ? "" : undefined}
         aria-label={compact ? `${label} — ${displayValue}` : label}

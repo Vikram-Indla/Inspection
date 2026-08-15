@@ -1,7 +1,9 @@
 import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
 import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 import {
+  buildCoverage,
   buildMetricStrip,
   requirementRegisterStrings,
   unrepresented,
@@ -16,6 +18,7 @@ import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./strategic-view.module.css";
+import MeasureCoverage from "../measure-coverage/measure-coverage";
 import RequirementRegister from "../requirement-register/requirement-register";
 import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
 import ComplianceExplorer from "../compliance-explorer/compliance-explorer";
@@ -23,8 +26,8 @@ import EnforcementTrendCard from "../enforcement-trend/enforcement-trend";
 
 type DashboardMetrics = ReturnType<typeof import("@/app/(app)/dashboard/metrics").buildDashboardMetrics>;
 
-function percentOrNull(value: number | null): string | null {
-  return value === null ? null : `${value}%`;
+function percentOrNull(value: number | null, locale: Locale): string | null {
+  return value === null ? null : formatPercent(value, locale);
 }
 
 export default function StrategicView({ locale, scope, metrics, projection, factories, partialSources, enforcementTrend, roleMetricIds }: {
@@ -73,7 +76,7 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     },
     {
       ...dashboard.national.compliance,
-      value: percentOrNull(strategic.complianceRate),
+      value: percentOrNull(strategic.complianceRate, locale),
       emptyLabel: common.state.unavailable,
       example: fill(dashboard.national.compliance.example, {
         compliant: strategic.approvedCompliant,
@@ -83,7 +86,7 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     },
     {
       ...dashboard.national.approval,
-      value: percentOrNull(strategic.decisionApprovalRate),
+      value: percentOrNull(strategic.decisionApprovalRate, locale),
       emptyLabel: common.state.unavailable,
       example: fill(dashboard.national.approval.example, {
         approved: strategic.approvedScoped,
@@ -106,7 +109,7 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     },
     {
       ...dashboard.intervention.critical,
-      value: String(strategic.criticalFactories.length),
+      value: formatCount(strategic.criticalFactories.length, locale),
       emptyLabel: common.state.unavailable,
       example: fill(dashboard.intervention.critical.example, { count: strategic.criticalFactories.length }),
       href: localeHref(locale, "/factories"),
@@ -120,12 +123,9 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     },
   ];
 
-  const requirementStrip = buildMetricStrip(
-    projection,
-    unrepresented(STRATEGIC_REQUIREMENT_IDS, STRATEGIC_CARD_IDS, roleMetricIds),
-    locale,
-    partialSources,
-  );
+  const requirementIds = unrepresented(STRATEGIC_REQUIREMENT_IDS, STRATEGIC_CARD_IDS, roleMetricIds);
+  const requirementStrip = buildMetricStrip(projection, requirementIds, locale, partialSources);
+  const coverage = buildCoverage(projection, requirementIds, locale);
 
   return (
     <div className={styles.stack}>
@@ -184,6 +184,12 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
           description={dashboard.requirement.description}
         />
         <CardBody gap="tight">
+          <MeasureCoverage
+            coverage={coverage}
+            locale={locale}
+            strings={dashboard.charts.coverage}
+            headingId="dashboard-strategic-blocked"
+          />
           <RequirementRegister
             metrics={requirementStrip.metrics}
             methodology={requirementStrip.methodology}

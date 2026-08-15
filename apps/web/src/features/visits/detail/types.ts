@@ -48,7 +48,7 @@ export type VisitRow = {
 };
 
 export type AuditRow = {
-  id: string; actor: string | null; action: string;
+  id: number; actor: string | null; action: string;
   before_state: Record<string, unknown> | null;
   after_state: Record<string, unknown> | null;
   occurred_at: string;
@@ -73,3 +73,5 @@ export type AttachmentSourceRow = {
   id: string; name: string; mime: string; storage_path: string;
   uploaded_at: string; uploader: { full_name: string } | null;
 };
+
+export type ActorProfileRow = { user_id: string; full_name: string };

@@ -159,7 +159,7 @@
     "immutable": "final",
     "inspectionVersions": "Inspection & versions",
     "journeyHeading": "Journey",
-    "lifecycleHeading": "Lifecycle",
+    "lifecycleHeading": "Lifecycle events",
     "loading": "Loading visit",
     "loadingTitle": "Visit",
     "locationFactory": "factory location",
@@ -188,14 +188,17 @@
     "returnReason": "Returned — reason: {reason}",
     "returnedSections": "returned",
     "reviewPrefix": "Review",
-    "title": "Visit {id} — {factory}",
+    "title": "{reference} — {factory}",
     "unverifiedManual": "Unverified manual entry — pending reconciliation",
     "window": "Window",
     "historyTitle": "History",
     "historyDescription": "Every entry below is appended. Nothing here is edited or deleted.",
     "noLocation": "No location events recorded yet.",
     "planStatus": "Status",
-    "siblingsLabel": "Visits under this plan"
+    "siblingsLabel": "Visits under this plan",
+    "titleUnreferenced": "{factory}",
+    "factoryUnknown": "Factory unavailable",
+    "auditActorUnknown": "Unidentified user"
   },
   "notes": {
     "heading": "Notes",
@@ -224,7 +227,7 @@
       "returned": "Republish · correct · cancel"
     },
     "boundaryWord": "Allowed from here",
-    "heading": "Lifecycle — five state domains",
+    "heading": "Lifecycle",
     "inspection": "Inspection",
     "latestWord": "Latest verified event",
     "noEvent": "No verified event yet",

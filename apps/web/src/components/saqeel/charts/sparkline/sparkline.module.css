@@ -1,0 +1,8 @@
+.root {
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--sqx-space-11);
+}
+
+.root[data-size="sm"] { block-size: var(--sqx-space-10); }
+.root[data-size="md"] { block-size: var(--sqx-space-11); }

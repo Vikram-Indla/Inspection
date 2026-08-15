@@ -4,7 +4,7 @@ import { getPlanningAccess } from "@/lib/planning/access";
 import { getReasonOptions, type ReasonOption } from "@/lib/planning/lifecycle";
 import { riyadhToday } from "@/lib/dates";
 import {
-  attachmentSourceRow, auditRow, lifecycleRow, locationRow, packageLinkRow, visitDetailRow,
+  actorProfileRow, attachmentSourceRow, auditRow, lifecycleRow, locationRow, packageLinkRow, visitDetailRow,
 } from "./shapes";
 import type {
   AttachmentSourceRow, AuditRow, LifecycleRow, LocationRow, PackageLinkRow, VisitRow,
@@ -36,6 +36,7 @@ export type VisitDetailData = {
   cancelReasons: ReasonOption[];
   packageOptions: PackageOptionRow[];
   expiryRuleReason: string | null;
+  actorNames: Map<string, string>;
   siblingCount: number;
   canReassignByRole: boolean;
 };
@@ -100,6 +101,12 @@ export async function loadVisitDetail(id: string): Promise<VisitDetailResult> {
 
   const expiryRuleReason = await resolveExpiryReason(sb, visit, lifecycleRead.rows);
 
+  const actorNames = await resolveActorNames(sb, [
+    ...auditRead.rows.map(row => row.actor),
+    ...lifecycleRead.rows.map(row => row.actor),
+    ...locationRead.rows.map(row => row.actor),
+  ]);
+
   const siblingCount = visit.visit_plans
     ? (await sb.from("visits").select("id", { count: "exact", head: true })
       .eq("visit_plan_id", visit.visit_plans.id)).count ?? 0
@@ -121,6 +128,7 @@ export async function loadVisitDetail(id: string): Promise<VisitDetailResult> {
       cancelReasons: cancelReasons.options,
       packageOptions,
       expiryRuleReason,
+      actorNames,
       siblingCount,
       canReassignByRole: !planningAccess.error && planningAccess.can("planning.reassign"),
     },
@@ -128,6 +136,21 @@ export async function loadVisitDetail(id: string): Promise<VisitDetailResult> {
 }
 
 type DetailClient = Awaited<ReturnType<typeof supabaseServer>>;
+
+async function resolveActorNames(
+  sb: DetailClient,
+  actors: readonly (string | null)[],
+): Promise<Map<string, string>> {
+  const ids = [...new Set(actors.filter((actor): actor is string => actor !== null))];
+  if (!ids.length) return new Map();
+  const { data, error } = await sb.from("profiles").select("user_id, full_name").in("user_id", ids);
+  if (error) {
+    console.error("[visits.detail.actors]", error.message);
+    return new Map();
+  }
+  const read = readRows({ data, error: null }, actorProfileRow, "visits.detail.actors");
+  return new Map(read.rows.map(row => [row.user_id, row.full_name]));
+}
 
 async function loadPackageOptions(sb: DetailClient): Promise<PackageOptionRow[]> {
   const today = riyadhToday();

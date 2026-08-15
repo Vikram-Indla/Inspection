@@ -27,8 +27,11 @@ export default function VisitDetail({ data, locale, enumLabel, actions, notes, a
   const d = buildVisitDerivations(data, locale);
   const visit = data.visit;
   const plan = visit.visit_plans;
-  const actor = (value: string | null) =>
-    value ? V.detail.auditActor.replace("{who}", value.slice(0, 8)) : V.detail.auditSystem;
+  const actor = (value: string | null) => {
+    if (!value) return V.detail.auditSystem;
+    const name = data.actorNames.get(value);
+    return V.detail.auditActor.replace("{who}", name ?? V.detail.auditActorUnknown);
+  };
 
   const tracks = buildRibbonTracks(data, locale, enumLabel);
 
@@ -139,9 +142,7 @@ export default function VisitDetail({ data, locale, enumLabel, actions, notes, a
         strings={{
           heading: V.ribbon.heading,
           tablistLabel: V.ribbon.tablist,
-          stateWord: V.ribbon.stateWord,
           latestWord: V.ribbon.latestWord,
-          sourceWord: V.ribbon.sourceWord,
           boundaryWord: V.ribbon.boundaryWord,
         }}
       />

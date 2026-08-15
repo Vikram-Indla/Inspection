@@ -1,0 +1,256 @@
+{
+  "title": "Analytics",
+  "subtitle": "Governed aggregates for {from} to {to}. Values reflect only records visible to your role and scope.",
+  "loading": "Loading analytics",
+  "source": {
+    "available": "Source available",
+    "stale": "Source stale",
+    "degraded": "Source degraded",
+    "refreshed": "Refreshed {at}",
+    "degradedBody": "Affected source: {source}. Available governed results remain visible.",
+    "staleBody": "Last successful refresh: {at}."
+  },
+  "journey": {
+    "label": "Related destinations",
+    "operations": "Operations",
+    "execution": "Execution",
+    "reviews": "Review queue"
+  },
+  "filters": {
+    "legend": "Analytics filters",
+    "from": "From",
+    "to": "To",
+    "region": "Region",
+    "method": "Inspection type",
+    "status": "Status",
+    "any": "All",
+    "apply": "Apply filters",
+    "reset": "Reset",
+    "bulk": "Bulk",
+    "single": "Single",
+    "immediate": "Immediate",
+    "published": "Published",
+    "executing": "Executing",
+    "submitted": "Submitted",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "compareFrom": "Compare from",
+    "compareTo": "Compare to",
+    "period": "Period",
+    "compare": "Comparison period",
+    "anyDate": "Not set",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "pickStart": "Choose a start date",
+    "pickEnd": "Choose an end date",
+    "apply2": "Apply",
+    "clear": "Clear",
+    "presets": {
+      "today": "Today",
+      "last7Days": "Last 7 days",
+      "last30Days": "Last 30 days",
+      "last90Days": "Last 90 days",
+      "lastYear": "Last year",
+      "next7Days": "Next 7 days",
+      "next30Days": "Next 30 days"
+    }
+  },
+  "rates": {
+    "heading": "Rates",
+    "description": "Every rate on one scale, so the highest is the one to look at first.",
+    "ariaLabel": "Governed rates ranked from highest to lowest",
+    "ofTotal": "{numerator} of {denominator}"
+  },
+  "counts": {
+    "heading": "Counts",
+    "description": "Distinct records inside the selected period and scope.",
+    "groups": {
+      "visits": "Visits",
+      "coverage": "Coverage",
+      "enforcement": "Evidence and enforcement"
+    },
+    "ariaLabel": "{group} counts, ranked"
+  },
+  "breakdown": {
+    "heading": "Breakdowns",
+    "description": "Each total split by its governed categories.",
+    "ariaLabel": "{metric}: {summary}",
+    "labels": {
+      "banded": "Banded",
+      "high": "High",
+      "unbanded": "Unbanded",
+      "awaiting_disposition": "Awaiting disposition",
+      "rejected": "Rejected",
+      "adopted": "Adopted",
+      "issued": "Issued",
+      "invalidated": "Invalidated",
+      "other_status": "Other status"
+    }
+  },
+  "unavailable": {
+    "heading": "Not available in this period",
+    "summary": "{count} metrics have no governed source",
+    "summaryOne": "One metric has no governed source",
+    "body": "Nothing is inferred for these. Each carries the reason its source reported.",
+    "notApplicable": "Not applicable",
+    "notConfigured": "Not configured",
+    "decisionRequired": "Decision required",
+    "unavailable": "Unavailable"
+  },
+  "empty": {
+    "title": "No governed aggregates for this period",
+    "body": "Widen the date range or clear the filters to see results in your scope."
+  },
+  "error": {
+    "title": "Analytics could not be loaded",
+    "body": "No failed source was represented as zero. Nothing was changed.",
+    "invalidQuery": "That analytics query is not valid",
+    "reference": "Reference {id}",
+    "retry": "Try again"
+  },
+  "denied": {
+    "title": "You do not have access to analytics",
+    "body": "Analytics is limited to planning, supervisory and administrative roles."
+  },
+  "drill": "View governed records",
+  "lineage": "Lineage {trace}",
+  "compare": {
+    "notice": "Comparison period {from} to {to}. Numeric comparison stays blocked pending a decision."
+  },
+  "bottlenecks": {
+    "heading": "Blocked on a governed value",
+    "summary": "{count} capabilities are blocked",
+    "body": "Each is waiting on a value the platform may not invent — a cohort rule, a lookback, a weighting, a threshold, a target or a denominator.",
+    "planningToSubmissionCohort": "Planning-to-submission cohort",
+    "repeatViolationLineage": "Repeat violation lineage and lookback",
+    "riskToAttentionRules": "Risk-to-attention snapshot rules",
+    "healthScore": "Health Score",
+    "licenceExposure": "Licence exposure",
+    "slaUrgency": "SLA urgency",
+    "capacityUtilization": "Capacity and utilization",
+    "strategicBrief": "Strategic inspection brief",
+    "attentionQueue": "Operational attention queue",
+    "export": "Export",
+    "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
+    "attentionQueueNote": "No live AI request is made.",
+    "exportNote": "Pending a canonical audit and correlation contract."
+  },
+  "coverage": {
+    "label": "Governed metric coverage",
+    "caption": "{resolved} of {total} metrics have a source",
+    "ariaLabel": "{resolved} of {total} governed metrics have a source, {percent}",
+    "reasons": "Blocked by reason",
+    "reasonsAriaLabel": "Blocked capabilities by reason: {summary}"
+  },
+  "units": {
+    "factories": "{count} factories",
+    "inspectors": "{count} inspectors",
+    "hours": "{count} h"
+  },
+  "metrics": {
+    "approved_inspection_compliance": {
+      "title": "Approved-inspection compliance",
+      "definition": "Compliant eligible answers ÷ compliant plus non-compliant; zero denominator is N/A."
+    },
+    "latest_l2_decision_mix": {
+      "title": "Latest L2 decisions",
+      "definition": "Latest decided outcome per inspection."
+    },
+    "cancellation_rate": {
+      "title": "Cancellation rate",
+      "definition": "Cancelled visits ÷ visits in the selected planning period."
+    },
+    "active_executions": {
+      "title": "Active executions",
+      "definition": "On the way, arrived, or executing."
+    },
+    "scheduled_load_count": {
+      "title": "Scheduled load count",
+      "definition": "Visible assignments; never utilization."
+    },
+    "gps_override_count": {
+      "title": "GPS override count",
+      "definition": "Visible governed override events."
+    },
+    "compliance_result_distribution": {
+      "title": "Compliance-result distribution",
+      "definition": "Eligible compliant and non-compliant responses."
+    },
+    "factory_approved_outcome_recency": {
+      "title": "Factory approved-outcome recency",
+      "definition": "Factory count plus exact latest approved timestamp; no overdue band."
+    },
+    "visit_volume": {
+      "title": "Visit volume",
+      "definition": "Visits whose planning window opens inside the selected period and scope."
+    },
+    "published_visit_count": {
+      "title": "Published visits",
+      "definition": "Visits at planning status published, against all visits in the period."
+    },
+    "draft_backlog_count": {
+      "title": "Draft backlog",
+      "definition": "Visits still at planning status draft, against all visits in the period."
+    },
+    "expired_visit_rate": {
+      "title": "Expired-visit rate",
+      "definition": "Visits at planning status expired ÷ visits in the period; zero denominator is N/A."
+    },
+    "immediate_visit_share": {
+      "title": "Immediate-visit share",
+      "definition": "Visits planned by the immediate method, or with no plan, ÷ visits in the period."
+    },
+    "factory_coverage": {
+      "title": "Factory coverage",
+      "definition": "Distinct factories carrying at least one visit in the period and scope."
+    },
+    "inspector_coverage": {
+      "title": "Inspector coverage",
+      "definition": "Distinct inspectors holding a visible assignment; never utilization."
+    },
+    "high_risk_factory_share": {
+      "title": "High-risk factory share",
+      "definition": "Visited factories on a high or critical risk band ÷ visited factories carrying any band. Unbanded factories are excluded, never assumed low."
+    },
+    "submission_throughput": {
+      "title": "Submission throughput",
+      "definition": "Submission versions recorded against inspections of visits in the period."
+    },
+    "violation_issue_count": {
+      "title": "Violations issued",
+      "definition": "Violations still in force; invalidated ones are shown separately, never netted off."
+    },
+    "penalty_issue_count": {
+      "title": "Penalties issued",
+      "definition": "Inspection penalties at status issued. No amount is inferred."
+    },
+    "evidence_capture_count": {
+      "title": "Evidence captured",
+      "definition": "Undeleted evidence items linked to a visit or its inspection."
+    },
+    "geofence_arrival_compliance": {
+      "title": "Geofence arrival compliance",
+      "definition": "Arrival and check-in events resolved inside ÷ inside plus outside. Uncertain results are excluded from both sides."
+    },
+    "review_return_rate": {
+      "title": "Review return rate",
+      "definition": "Latest decisions that returned ÷ all latest decided reviews."
+    },
+    "review_rejection_rate": {
+      "title": "Review rejection rate",
+      "definition": "Latest decisions that rejected ÷ all latest decided reviews."
+    },
+    "review_turnaround_hours": {
+      "title": "Review turnaround",
+      "definition": "Mean hours from inspection submission to the latest review decision. Reviews missing either timestamp are excluded."
+    },
+    "notification_delivery_rate": {
+      "title": "Notification delivery rate",
+      "definition": "Delivered or read ÷ attempted notifications in the period. Notifications with no configured channel are excluded from both sides."
+    },
+    "ai_suggestion_adoption_rate": {
+      "title": "AI suggestion adoption",
+      "definition": "Adopted suggestions ÷ suggestions that have been dispositioned. Suggestions still awaiting a decision are excluded."
+    }
+  }
+}

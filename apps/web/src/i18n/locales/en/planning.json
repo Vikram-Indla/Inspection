@@ -547,7 +547,9 @@
     "portfolioStep": "Select the Industrial License / plant",
     "licenseStep": "Industrial License",
     "locationStep": "Confirm location",
-    "configStep": "Configure and propose"
+    "configStep": "Configure and propose",
+    "preselected": "Factory selected from Factory 360",
+    "changeFactory": "Change factory"
   },
   "bulk": {
     "title": "Plan bulk visits — criteria & targeting",

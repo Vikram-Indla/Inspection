@@ -340,9 +340,10 @@ export function buildDashboardMetrics(input: {
     if (end < nowMs) return false; // already overdue — counted separately, never "soon"
     return nowMs >= start + warnFraction * (end - start);
   });
-  const activeField = visits.filter(v =>
+  const activeFieldRows = visits.filter(v =>
     ["on_the_way", "arrived", "executing", "executing_inspection"].includes((v.operational_state ?? "").toLowerCase()),
-  ).length;
+  );
+  const activeField = activeFieldRows.length;
   const scopedLatestReviews = [...latest.values()].filter(r => isInScope(r.inspections?.submitted_at, scope));
   const awaitingRows = scopedLatestReviews.filter(r => r.status === "pending_review" || r.status === "under_review");
   const returnedRows = scopedLatestReviews.filter(r => r.status === "returned" || r.decision === "return");
@@ -498,6 +499,7 @@ export function buildDashboardMetrics(input: {
       expiringSoonRows,
       expiringSoon: expiringSoonRows ? expiringSoonRows.length : null,
       activeField,
+      activeFieldRows,
       awaitingRows,
       pendingApprovalsCount,
       overdueReviewRows,

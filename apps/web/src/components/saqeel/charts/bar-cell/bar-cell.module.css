@@ -1,0 +1,30 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sqx-space-3);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.track {
+  flex: 1 1 auto;
+  min-inline-size: var(--sqx-space-10);
+  max-inline-size: var(--sqx-space-13);
+  block-size: var(--sqx-space-2);
+  border-radius: var(--sqx-radius-pill);
+  background: var(--sqx-surface-sunken);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  inline-size: var(--sqx-bar-cell-fill, 0%);
+  block-size: 100%;
+  border-radius: var(--sqx-radius-pill);
+  background: var(--sqx-chart-2);
+}
+
+.track[data-muted="true"] .fill {
+  background: var(--sqx-chart-7);
+}

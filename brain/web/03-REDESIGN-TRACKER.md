@@ -13,11 +13,176 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-110.** Take T-111.
+implements the reservation. **Highest id in use: T-116.** Take T-117.
 
 ---
 
 ## NOW
+
+### T-116 · Every bar and every meter was painted in the warning colour
+`status: partial — code complete, axe clean both themes, gates unchanged; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009` · `est: 0.5h`
+`record:` [2026-08-16-T-116-series-role-palette](sessions/2026-08/2026-08-16-T-116-series-role-palette.md)
+
+**`--sqx-chart-4` is `--sqx-warning-*`.** `BarSeries` defaults to slot 1 and
+`Gauge` hardcoded it, so the whole application rendered its bars and meters in
+the token reserved for warnings — a status colour used as a series colour.
+
+**No token change request was needed:** a single-series chart does not use the
+palette for identity, so the CVD rule (series *within* a chart) does not bind
+*between* charts. Contrast measured for all four slots × both themes × both
+surfaces — lowest is **5.70:1**, against a 3:1 floor.
+
+```
+volume   slot 0 info teal    tallies — pipeline, states, workload, activity
+rate     slot 1 warning      /analytics rates band, left alone deliberately
+coverage slot 2 AI violet    measure coverage, /analytics metric coverage
+```
+
+**Parked:** whether `/analytics` rates should move off the warning token — an
+owner call on an established screen. `chart-1` (brand) is unused by any chart and
+measures the highest light-mode contrast of the four.
+
+### T-115 · Two of the four remaining dashboard sections earned a chart; two did not
+`status: partial — code complete, axe clean, gates unchanged; e2e and a native Arabic review owed` · `rules: WEB-000 … WEB-014` · `est: 1h`
+`record:` [2026-08-15-T-115-execution-state-split](sessions/2026-08/2026-08-15-T-115-execution-state-split.md)
+
+**`activeField` was a `.length` with the array discarded**, so the three states
+behind "9" were unreachable. Exposing `activeFieldRows` is three lines and no new
+query.
+
+```
+Execution status  "9" → executing 4 · on the way 4 · arrived 1     built
+Today's ops       0 visits today → self-gated, renders nothing     built
+Approvals         0 and 0 → decision mix is the right chart        parked
+High-priority     n=1 → a two-way split of one row is one bar      declined
+```
+
+The breakdown renders **inside** its own section under an `h3 subheading`, not as
+a card below it. Adding it in place would have taken `operational-view` to
+**224** lines, so the four group cards were extracted to `operational-groups`
+— **129 + 117**, both inside budget.
+
+**Overdue-by-age was rejected on principle:** bucket boundaries would read as an
+SLA banding, and the governed one is `slaWarnAtFraction`.
+
+### T-114 · Arabic numerals leak everywhere a number is not routed through a formatter
+`status: partial — code complete, /analytics measured 49 → 0; e2e and a native Arabic review owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011, WEB-013` · `est: 1.5h`
+`record:` [2026-08-15-T-114-arabic-numerals](sessions/2026-08/2026-08-15-T-114-arabic-numerals.md)
+
+Owner-reported: **the unread-notification badge in the shell header renders Latin
+digits under Arabic**, on every route. T-112 found the same shape on the
+dashboard and fixed it locally in `dashboard-format.ts` — the wrong home, since
+the shell cannot depend on a dashboard route module.
+
+The formatter moves to `i18n/numbers.ts`, which is where a locale numbering
+system belongs, and every leak found by audit is routed through it.
+
+**Kept deliberately:** the app renders `٪٥٠` (prefix). ICU's `style: "percent"`
+for `ar-SA` gives `٥٠٪؜` — suffix, plus an invisible ALM. Changing placement is a
+copy decision for the owner, not something to slip into a numerals fix.
+
+### T-113 · `/operations` was showing 4 visits and holding 49
+`status: partial — one widget shipped, five declined with evidence; axe blocked on a pre-existing map-layer defect` · `rules: WEB-000 … WEB-014` · `est: 2h`
+`record:` [2026-08-15-T-113-operations-states](sessions/2026-08/2026-08-15-T-113-operations-states.md)
+
+Same treatment as T-111 and T-112: judge every item first, build only what the
+data honestly supports.
+
+```
+tiles report   Active 4 · On the way 0 · Executing 0
+states hold    New 24 · Submitted 15 · Prepared 10  =  49 in scope
+```
+
+`counts` was already passed into the component and indexed **twice**; the other
+five states travelled the whole way and were dropped. **Five items declined** —
+two `Not configured` tiles, the map, the exception rows, and regional summaries
+(two denominators on one axis). Exceptions-by-kind is real but held back: the
+board holds one row here, so the chart would be a single bar.
+
+**Blocked:** axe reports `landmark-unique` on the map panel — two regions both
+named *"المملكة العربية السعودية"*. Pre-existing, in a file dense with
+`t(key, "English")` legacy; recorded rather than rushed.
+
+### T-112 · `/dashboard` gets a chart layer, and every Arabic bar chart stops overlapping itself
+`status: partial — code complete, static gates green, axe clean on both views in both themes; e2e, native Arabic review and the bundle number are owed` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-15-T-112-dashboard-chart-layer](sessions/2026-08/2026-08-15-T-112-dashboard-chart-layer.md)
+
+Owner-selected widget set from a design review that judged **every** dashboard
+item first: **F1** measure coverage, **C2** inspector bars, **A1** pipeline
+ranked bar, **E3** activity sparkline. Refusals recorded and honoured — thirteen
+blocked cards, four genuine zeros, the critical-factory list, inspector
+*utilisation* (daily capacity is `Not configured`, so there is no denominator),
+the compliance explorer (every row drills) and the two-period enforcement trend
+all stay exactly as they are.
+
+**The screen was computing breakdowns and discarding them.** `217` was the sum of
+a distribution the app already held — and its largest segment is the **117
+cancellations printed two cards above**.
+
+```
+pipeline  1 number → 4 ranked statuses     inspector load  15 : 1 across 8 rows
+coverage  0 → gauge + ranked reasons       activity        0 → daily series
+axe  0 violations / 0 incomplete, both views × both themes × LTR and RTL
+```
+
+**Every Arabic bar chart in the app was overlapping its own labels, since
+T-111.** RTL inverts what `text-anchor: end` means; measured **label 168→203
+against a bar starting 176** on `/analytics` *before* this task touched anything.
+Fixed centrally, 7px clear, LTR unchanged. Invisible to every gate.
+
+**`/dashboard` holds raw rows with per-row timestamps** — `window_start`,
+`submitted_at`, `decided_at`, `occurred_at` — so the time series T-111 correctly
+refused on `/analytics` is derivable here with no new RPC.
+
+**Owed before `done`:** e2e, native Arabic review of 31 keys, the first-load
+number, and a re-run under Leadership — everything was measured under a Planner
+session, where several measures are role-scoped rather than missing.
+
+### T-111 · `/analytics` gets a chart layer, and loses the data it was throwing away
+`status: partial — code complete, every static gate green; axe, e2e, native Arabic review and the bundle number are owed` · `rules: WEB-000 … WEB-014` · `est: 6h`
+`record:` [2026-08-15-T-111-analytics-rebuild](sessions/2026-08/2026-08-15-T-111-analytics-rebuild.md)
+
+**Twenty-six identical cards, ten of which said "Unavailable".** 38% of the grid was
+absence rendered at the same weight as data, and `View governed records` appeared **26
+times** — the most-repeated string on the page.
+
+```
+leaf nodes 207 → 96      KPI cards 26 → 4 meters · 2 donuts · 3 bar bands
+<main> landmarks 2 → 1   legacy classes 14 → 0    charts 0 → 11
+route file 120 → 50      i18n 0 → 163 keys × 2    Latin on the Arabic page 90 → 0
+```
+
+**`--sqx-chart-1…8` fails the categorical validator in both themes.** Slots 4↔5↔6 sit
+at **ΔE 3.0 deutan / 5.1 normal** — indistinguishable to everyone. Only slots **2, 4,
+3** pass, so `CHART_SERIES` ships **three slots with the evidence in its TSDoc**.
+Widening it is a token change request, not a code edit.
+
+**Recharts was the owner's call after I recommended against it**, and the tokens
+carried theming with zero JavaScript: `fill="var(--sqx-chart-2)"` resolves to
+`rgb(33,92,102)` light and `rgb(126,228,246)` dark, verified before building on it.
+
+**Three forms were refused as dishonest.** Line charts (the RPC has no time axis;
+`p_group_by` only *filters* rows, it does not group), a funnel (58 visits → 9 published
+are not stages of one cohort), and 2-slice donuts (an anti-pattern — a single ratio is
+a meter). Counts became **grouped small multiples** because eleven counts do not share
+a unit.
+
+**Bar-axis labels are SVG `<a>` elements** so the drill-through survives inside a chart
+library — focus lands, name reads, ring shows. Without that, restoring the drill links
+would have made them mouse-only.
+
+**I deleted a working feature and had to be caught.** The first rebuild dropped the
+**entire filter form, all 26 drill links, the 10-row bottleneck list, every lineage
+code and every definition** — a declutter that removed function. The owner asked
+whether data had been lost; the audit said yes, and all of it came back. **Ask what a
+screen does before deciding what it does not need.**
+
+**90 Latin words were leaking onto the Arabic page** — not the legends, the **26 metric
+titles and 26 definitions**, hardcoded in `metric-registry.ts`. All 52 moved to the
+namespace. **The Arabic needs a native reviewer; I wrote it.**
+
+**Owed before `done`:** axe, the manual checklist, e2e, the first-load number
+(WEB-005 §8 measurement request), and the Arabic review.
 
 ### T-110 · `/execution` leaves the legacy sheets
 `status: partial — code complete, every static gate green; axe, e2e and the rendered pass are owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-012, WEB-013, WEB-014` · `est: 4h`

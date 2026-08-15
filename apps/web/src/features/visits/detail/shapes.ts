@@ -1,6 +1,6 @@
 import type { Shape } from "@/lib/postgrest/shape";
 import type {
-  AttachmentSourceRow, AuditRow, LifecycleRow, LocationRow, PackageLinkRow, VisitRow,
+  ActorProfileRow, AttachmentSourceRow, AuditRow, LifecycleRow, LocationRow, PackageLinkRow, VisitRow,
 } from "./types";
 
 const named: Shape<{ full_name: string }> = f => ({ full_name: f.text("full_name") });
@@ -85,7 +85,7 @@ export const visitDetailRow: Shape<VisitRow> = f => ({
 });
 
 export const auditRow: Shape<AuditRow> = f => ({
-  id: f.text("id"),
+  id: f.number("id"),
   actor: f.optionalText("actor"),
   action: f.text("action"),
   before_state: f.optionalRecord("before_state"),
@@ -127,4 +127,9 @@ export const attachmentSourceRow: Shape<AttachmentSourceRow> = f => ({
   storage_path: f.text("storage_path"),
   uploaded_at: f.text("uploaded_at"),
   uploader: f.toOne("uploader", named),
+});
+
+export const actorProfileRow: Shape<ActorProfileRow> = f => ({
+  user_id: f.text("user_id"),
+  full_name: f.text("full_name"),
 });

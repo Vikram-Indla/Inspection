@@ -1,0 +1,12 @@
+.band {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.band + .band {
+  margin-block-start: var(--sqx-space-5);
+  padding-block-start: var(--sqx-space-5);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}

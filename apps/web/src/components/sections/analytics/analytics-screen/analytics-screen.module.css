@@ -1,0 +1,33 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+}
+
+.journey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+@media (min-width: 64rem) {
+  .split {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}

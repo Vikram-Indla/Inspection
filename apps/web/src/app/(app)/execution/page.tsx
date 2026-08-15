@@ -3,7 +3,7 @@ import Shell from "@/components/Shell";
 import ExecutionAccessState from "@/components/sections/execution/execution-access-state/execution-access-state";
 import ExecutionWorkspace from "@/components/sections/execution/execution-workspace/execution-workspace";
 import { loadExecution } from "@/features/execution/queries";
-import { buildDeniedStrings, buildErrorStrings, buildScreenStrings } from "@/features/execution/strings";
+import { buildDeniedStrings, buildErrorStrings } from "@/features/execution/strings";
 import { getLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export default async function ExecutionPage() {
   if (loaded.kind === "unauthenticated") redirect("/login");
 
   return (
-    <Shell current="/execution" title={buildScreenStrings(locale).title}>
+    <Shell current="/execution" title="">
       {loaded.kind === "ready" ? (
         <ExecutionWorkspace
           rows={loaded.rows}

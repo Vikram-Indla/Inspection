@@ -1,0 +1,19 @@
+.heroes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
+  gap: var(--sqx-space-4);
+  padding-block-end: var(--sqx-space-4);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.hero {
+  display: block;
+  border-radius: var(--sqx-radius-md);
+  text-decoration: none;
+  color: inherit;
+}
+
+.hero:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-space-1);
+}

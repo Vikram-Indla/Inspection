@@ -1,0 +1,5 @@
+.frame {
+  padding-inline: var(--sqx-space-6);
+  padding-block: var(--sqx-space-6);
+  min-inline-size: 0;
+}

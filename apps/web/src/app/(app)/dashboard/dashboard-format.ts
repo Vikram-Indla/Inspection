@@ -10,6 +10,7 @@
 
 import type { MetricSourceStatus, SharedMetric } from "@/lib/dashboard-kpi/contract";
 import { kpiDefinition } from "@/lib/dashboard-kpi/registry";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 
 export type Locale = "en" | "ar";
 export type DisplayTone = "critical" | "warning" | "success" | "info" | "neutral";
@@ -87,9 +88,9 @@ export function statusTone(status: MetricSourceStatus): DisplayTone {
 export function formatValue(metric: SharedMetric, locale: Locale): string | null {
   if (metric.value == null) return null;
   switch (metric.unit) {
-    case "percent": return locale === "ar" ? `٪${metric.value}` : `${metric.value}%`;
+    case "percent": return formatPercent(metric.value, locale);
     case "ratio": return metric.value.toFixed(2);
-    case "count": return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US").format(metric.value);
+    case "count": return formatCount(metric.value, locale);
     default: return String(metric.value);
   }
 }
@@ -133,7 +134,9 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
     const arrow = metric.comparison.direction === "up" ? "▲" : metric.comparison.direction === "down" ? "▼" : "—";
     sub = t(locale, `${arrow} vs previous window`, `${arrow} مقارنة بالفترة السابقة`);
   } else if (metric.numerator != null && metric.denominator != null) {
-    sub = t(locale, `${metric.numerator} of ${metric.denominator}`, `${metric.numerator} من ${metric.denominator}`);
+    const numerator = formatCount(metric.numerator, locale);
+    const denominator = formatCount(metric.denominator, locale);
+    sub = t(locale, `${numerator} of ${denominator}`, `${numerator} من ${denominator}`);
   }
   if (metric.sourceStatus === "partial") {
     sub = t(

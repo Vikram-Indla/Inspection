@@ -1,6 +1,203 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-14` · `Updated by: T-110 — /execution rebuild`
+`Last updated: 2026-08-15` · `Updated by: T-114 — Arabic numerals`
+
+## `toLocaleString("ar")` returns Latin digits. Only `"ar-SA"` returns Arabic ones (2026-08-15)
+
+```
+(58).toLocaleString("ar")     "58"
+(58).toLocaleString("ar-SA")  "٥٨"
+```
+
+The bare `ar` tag defaults to `latn` numbering. This is the entire defect behind
+**49 Latin-digit nodes on the Arabic `/analytics`**, and it is nastier than a
+missing formatter, because `value.toLocaleString(locale)` **reads as
+locale-aware code**. Two call sites looked already-correct and were not.
+
+Worse in `metric-registry.ts`: `const count = v => v.toLocaleString("en")` —
+hardcoded, so every count on the route rendered English digits in both locales,
+with *"factories"* and *"inspectors"* as English literals inside the format
+functions.
+
+**Every number now goes through `i18n/numbers.ts`**, the parallel of
+`lib/dates.ts`. Any `toLocaleString` outside it is a defect; a gate rule matching
+a bare `ar` tag is cheap and is not written yet.
+
+## A kind derived from a rendered string breaks when you translate the string (2026-08-15)
+
+`features/analytics/view.ts` classified every metric with:
+
+```ts
+kind: display.endsWith("%") ? "rate" : "count"
+```
+
+Arabic renders `٪٣٤٫٥` — the sign leads. So localising the percent sign would
+have made that test false for **all ten rates and silently moved them into the
+counts band**, restructuring the page in one locale only. Nothing would have
+failed; the screen would simply have been wrong in Arabic.
+
+Replaced with `isRateMetric(key)`, derived from the formatter each registry entry
+already declares. **The lesson generalises past i18n: a branch that reads
+rendered output is a branch that breaks the first time presentation changes.**
+
+## Absence is not the only thing a screen discards — distributions are too (2026-08-15)
+
+Three routes in a row have now been found rendering a total while holding its
+breakdown:
+
+```
+/dashboard   217 rendered   pipeline held cancelled 117 · published 52 · draft 40 · returned 8
+/operations    4 rendered   states held new 24 · submitted 15 · prepared 10  = 49 in scope
+```
+
+On `/operations` the `counts` object was already **passed into the component and
+indexed twice**; the other five states travelled the whole way and were dropped.
+
+**Before designing a chart, diff what the data layer computes against what the
+screen renders.** Both of these were free — no new query, no new RPC — and both
+were invisible until someone read the model rather than the markup.
+
+## RTL inverts `text-anchor`, and it broke every Arabic bar chart for a whole task cycle (2026-08-15)
+
+`BarSeries` sets `text-anchor: end` on its axis ticks. The SVG inherits
+`direction: rtl` from `<html dir="rtl">`, and **`text-anchor` is resolved against
+the inline base direction**, so "end" became the left side and Arabic labels
+extended *rightwards* from the axis, straight under the bars:
+
+```
+/analytics ar   label 168 → 203    bar starts 176    OVERLAP
+after fix       label 103 → 168    bar starts 176    7px clear
+```
+
+The same on the value labels — `١١٧` occupying 669-682 against a bar ending 677.
+Fixed with `direction: ltr; unicode-bidi: isolate` on `.tick` and `.value`.
+
+**It shipped with T-111 and survived that task's whole review.** No gate can see
+it: the CSS is legal, the typography is legal, the markup is correct, and the
+English render is perfect. It is only visible as a *measurement of two bounding
+boxes in RTL* — which is now the check any chart primitive owes before it is
+called done.
+
+**Caveat recorded rather than hidden:** `direction: ltr` is right for pure-Arabic
+labels and could misorder one that mixes scripts at its boundary. The
+direction-aware alternative needs a `[dir="rtl"]` rule, which WEB-002 §6 forbids.
+
+## A number is not formatted until it is formatted in both locales (2026-08-15)
+
+T-112's new widgets rendered `50%` and `2 of 4` on the Arabic dashboard, beside
+the screen's own `٠`. The cause is the ordinary one — `String(value)` and
+`` `${value}%` `` — and it was **already present in the code being extended**:
+`formatValue` held the only correct implementation, `metricDisplay`'s sub-line
+did not (`7 من 85`), and neither view's KPI values did.
+
+Extracting `formatCount` / `formatPercent` out of `formatValue` and routing every
+site through them fixed the new code **and** the old:
+
+```
+٪50 → ٪٥٠        7 من 85 → ٧ من ٨٥        9 · 10 · 0 → ٩ · ١٠ · ٠
+```
+
+**Fixing only the new widgets was the wrong option** and was rejected: it leaves
+one screen rendering two numbering systems, which reads as a bug in whichever
+half the reader notices second. When a task's fix exposes the same defect beside
+it, the blast radius is the screen, not the diff.
+
+## The gate chain has been red for everyone, and it is not a regression (2026-08-15)
+
+`npm run gates` exits **1** on `check:design-system-v5` at **77 findings** —
+`raw-input-radius-12px` 30, `emoji-as-icon` 28, `utc-slice-date-format` 19. That
+figure was 77 before T-112 began and 77 after, with **none of the 77 naming a
+file that task touched**.
+
+Worth stating plainly because the Definition of Done requires a green chain:
+**nobody can currently satisfy it**, and every task that reports "gates green" is
+either not running them or reading past the exit code.
+
+## The chart palette exists and has never been validated (2026-08-15)
+
+`--sqx-chart-1…8` have been in `saqeel.css` all along, defined for both themes. They
+are **not a categorical scale**. Run through the validator:
+
+```
+light  chart-5 ↔ chart-4   ΔE 3.0 deutan · 5.1 normal   FAIL
+dark   chart-6 ↔ chart-5   ΔE 3.0 deutan · 4.3 normal   FAIL
+       lightness band and chroma floor           FAIL in both modes
+```
+
+They are `-darker` / `-light` **status tokens** — text-grade colours pressed into
+service as fills. A normal-vision ΔE of 5.1 means a full-colour reader cannot tell the
+two apart, so this is not a colour-blindness edge case.
+
+**Only slots 2, 4 and 3 pass** (light 16.0 normal / 12.4 protan; dark 20.8 / 18.1), so
+`CHART_SERIES` ships three, with the measurements written into its TSDoc so nobody
+widens it casually. **A fourth category is never a fourth colour** — it folds into a
+rest slot or facets.
+
+Fixing the eight-slot palette is a **token change request carrying measured contrast**
+(WEB-002 §2), and until it lands every chart in this application is capped at three
+categories.
+
+## "Declutter" was read as "delete", and it removed working features (2026-08-15)
+
+T-111's first pass took `/analytics` from 26 cards to a clean chart layout and silently
+dropped **the entire filter form, all 26 drill links, the ten-row bottleneck list,
+every lineage code and every metric definition**. The route still *parsed*
+`periodFrom`/`region`/`method`, so a user was locked to the default 30-day window with
+no UI to change it.
+
+Nothing caught this. Not typecheck, not the gates, not the rendered check — the screen
+looked better. **The owner asked "have you lost any data?" and the audit said yes.**
+
+The reusable part is the audit, not the apology: `git show <pre-rebuild>:page.tsx`,
+grep it for every rendered fact, grep the rebuild for the same, and diff the lists.
+**A screen's feature set is not visible in its final render — only in its previous
+one.**
+
+## Charting is a set of refusals before it is a set of charts (2026-08-15)
+
+Three requested forms were declined with evidence rather than built:
+
+- **Line / area / sparkline** — `analytics_metric_snapshot` returns one row per metric
+  per period. `p_group_by` looked like a free second dimension; lines 518-520 show it
+  only **filters which metric rows return**. A time series needs a new RPC.
+- **Funnel** — 58 visits → 9 published → 8 active are not stages of one cohort.
+  Composing them asserts a conversion the RPC never made (WEB-002 §9).
+- **2-slice donut** — a catalogued anti-pattern. A single ratio against its own track
+  is a **meter**; circular is a gauge, and a gauge compares worse than a bar because
+  arc length also encodes radius.
+
+And one that had to be re-formed: **eleven counts do not share a unit.** 54 factories
+against 58 visits on one axis is the dual-axis error wearing a different hat, so counts
+became grouped small multiples, each scaled to its own group's maximum.
+
+## A chart library cannot make a bar a link, and that matters here (2026-08-15)
+
+Recharts draws bars as SVG `<path>` inside `<Bar>`; there is no prop that makes one a
+focusable anchor. Dropping per-metric drill-through was not an option — it was a
+restored regression — so the **axis tick is a custom renderer emitting `<a href>`**.
+SVG anchors take keyboard focus: verified live, focus lands, the name reads
+"Visit volume 58", the ring shows.
+
+Also learned the hard way: **`title` on a link becomes its accessible name.** Putting
+`title={metric.definition}` on a drill link renamed it to
+`"Visits at planning status expired ÷ visits in the period…"`. An explicit `aria-label`
+fixes the name while `title` keeps the tooltip. The accessibility tree found this; no
+grep would have.
+
+## Design-system tokens carried chart theming with zero JavaScript (2026-08-15)
+
+Recharts writes `fill="var(--sqx-chart-2)"` straight into the SVG and the browser
+resolves it per theme:
+
+```
+declared            light            dark
+var(--sqx-chart-2)  rgb(33,92,102)   rgb(126,228,246)
+```
+
+No colour-mode hook, no re-render on theme switch, no duplicated palette. **This was
+verified with a throwaway smoke test before any component was built on it** — and the
+same render immediately exposed a label overflowing the donut ring, which no amount of
+code review would have shown. The skill's rule holds: *render it and look at it.*
 
 ## `npm run gates` now typechecks — after a non-compiling file shipped (2026-08-14)
 

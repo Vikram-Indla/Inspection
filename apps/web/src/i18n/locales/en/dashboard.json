@@ -48,6 +48,7 @@
     "drill": "Open records",
     "measure": "Measure",
     "state": "State",
+    "basis": "Basis",
     "emptyTitle": "No further governed measures"
   },
   "national": {
@@ -120,6 +121,49 @@
   "requirement": {
     "title": "Strategic requirement coverage",
     "description": "Governed measures not shown above, with their current live or blocked state."
+  },
+  "charts": {
+    "coverage": {
+      "meterLabel": "Live source",
+      "meterAria": "{live} of {total} governed measures have a live source",
+      "ratio": "{live} of {total} measures",
+      "reasons": "Blocked by reason",
+      "reasonsAria": "Blocked governed measures, grouped by the reason they are blocked",
+      "allLive": "Every governed measure listed below has a live source."
+    },
+    "pipeline": {
+      "title": "Pipeline by planning status",
+      "description": "Every visit in scope, grouped by the planning status it currently holds.",
+      "aria": "Visits in scope by planning status, ranked from largest to smallest",
+      "total": "{total} visits in scope",
+      "emptyTitle": "No visits in scope",
+      "empty": "No visits match the current scope, so there is no pipeline to break down."
+    },
+    "workload": {
+      "bar": "{name} — {count} active visits"
+    },
+    "activeField": {
+      "title": "Active inspections by state",
+      "description": "Where each field inspection currently stands, inside the total above.",
+      "aria": "Active field inspections by operational state, ranked from largest to smallest",
+      "total": "{total} active inspections"
+    },
+    "todayStates": {
+      "title": "Today's schedule by state",
+      "description": "Every visit scheduled for today, grouped by the state it currently holds.",
+      "aria": "Today's visits by operational state, ranked from largest to smallest",
+      "total": "{total} visits scheduled today"
+    },
+    "activity": {
+      "title": "Governed activity",
+      "description": "Recorded governed events per day across the selected period.",
+      "aria": "Governed events per day across the selected period",
+      "unit": "events in scope",
+      "peak": "Busiest day {date} — {count} events",
+      "unbounded": "A daily trend needs a bounded period. Choose a date range to see it.",
+      "emptyTitle": "No governed activity",
+      "empty": "No governed events were recorded in this scope."
+    }
   },
   "search": {
     "heading": "Search results for “{query}”",

@@ -194,6 +194,7 @@ export default async function DashboardSections({ locale, scope }: {
         : <OperationalView
             locale={locale} metrics={metrics} projection={projection}
             partialSources={partialSources} roleMetricIds={ROLE_DASHBOARD_METRICS[persona]}
+            period={{ from: resolved.scope.fromDate, to: resolved.scope.toDate }}
           />}
       </div>
     </ExplainProvider>
