@@ -3,9 +3,24 @@
   min-inline-size: 0;
 }
 
-.axis text {
+.tick {
   font: var(--sqx-text-label);
   fill: var(--sqx-text-secondary);
+}
+
+.tickLink {
+  cursor: pointer;
+}
+
+.tickLink:hover .tick,
+.tickLink:focus-visible .tick {
+  fill: var(--sqx-text-primary);
+}
+
+.tickLink:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-xs);
 }
 
 .value {
