@@ -47,6 +47,7 @@ this is a wayfinding decision, not a contrast one.
 | `components/saqeel/charts/gauge/gauge.tsx` | `series` prop added; was hardcoded to slot 1 |
 | `components/saqeel/charts/bar-series/bar-series.tsx` | `track` prop added (Recharts `background`) |
 | `components/sections/analytics/analytics-rates/analytics-rates.tsx` | `track` set — `domainMax` is the fixed 0–100 scale |
+| `components/sections/analytics/analytics-breakdowns/analytics-breakdowns.module.css` | one column → responsive `auto-fit` pair |
 | `components/saqeel/charts/bar-cell/bar-cell.module.css` | `chart-4` → `chart-2` |
 | `pipeline-breakdown`, `operations-states` | `series={SERIES_ROLE.volume}` |
 | `measure-coverage` (gauge + bars), `analytics-blocked` (gauge) | `series={SERIES_ROLE.coverage}` |
@@ -106,6 +107,33 @@ says why.
 Rendered and checked in both themes: 5 tracks spanning **687px**, fill
 `rgb(244,246,248)` light / `rgb(14,19,26)` dark, data bars unchanged at
 `rgb(255,214,102)`. **axe 0 violations in both.**
+
+## The two breakdown donuts were stacked, wasting the width they needed
+
+`analytics-breakdowns.module.css` declared `grid-template-columns: 1fr` — one
+column at every width — so two donuts sat one above the other with roughly half
+the card empty beside each.
+
+Now `repeat(auto-fit, minmax(min(20rem, 100%), 1fr))` with `align-items: center`
+and an asymmetric `gap` (row `space-5`, column `space-7`).
+
+**The `min()` is not decoration.** This document already records that
+`minmax(20rem, 1fr)` is a **320px reflow failure** — the track floor is a hard
+minimum, so the item overflows its own grid in any container narrower than it
+(T-082). `min(20rem, 100%)` collapses instead. Measured:
+
+```
+960px   419.5 + 419.5   same row, 24px gap    card 271px tall
+768px   323.5 + 323.5   same row              0 overflow
+320px   238             stacked               0 overflow, 0 page overflow
+```
+
+`auto-fit` also means a **single** breakdown spans the full row rather than
+sitting in a half-width track — no conditional class needed.
+
+RTL verified by measurement rather than assumed: both items on one row with the
+first at `left: 500` against the second at `56`, i.e. the grid flows along the
+inline axis and mirrors on its own. **axe 0 violations** in RTL.
 
 ## Parked
 

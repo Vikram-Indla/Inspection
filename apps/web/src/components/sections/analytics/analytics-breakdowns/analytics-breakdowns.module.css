@@ -1,7 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sqx-space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  gap: var(--sqx-space-5) var(--sqx-space-7);
+  align-items: center;
 }
 
 .item {
