@@ -54,7 +54,12 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
         </nav>
       </div>
 
-      <AnalyticsFilters query={query} strings={strings} />
+      <AnalyticsFilters query={query} strings={strings} locale={locale} />
+
+      {query.compareFrom && query.compareTo ? (
+        <EmptyState variant="inline" tone="info" icon="radar"
+          title={fill(strings.compare.notice, { from: query.compareFrom, to: query.compareTo })} />
+      ) : null}
 
       {degraded && affectedSource ? (
         <EmptyState variant="inline" tone="warning" icon="risk"

@@ -33,7 +33,27 @@
     "executing": "Executing",
     "submitted": "Submitted",
     "approved": "Approved",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "compareFrom": "Compare from",
+    "compareTo": "Compare to",
+    "period": "Period",
+    "compare": "Comparison period",
+    "anyDate": "Not set",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "pickStart": "Choose a start date",
+    "pickEnd": "Choose an end date",
+    "apply2": "Apply",
+    "clear": "Clear",
+    "presets": {
+      "today": "Today",
+      "last7Days": "Last 7 days",
+      "last30Days": "Last 30 days",
+      "last90Days": "Last 90 days",
+      "lastYear": "Last year",
+      "next7Days": "Next 7 days",
+      "next30Days": "Next 30 days"
+    }
   },
   "rates": {
     "heading": "Rates",
@@ -75,5 +95,26 @@
     "body": "Analytics is limited to planning, supervisory and administrative roles."
   },
   "drill": "View governed records",
-  "lineage": "Lineage {trace}"
+  "lineage": "Lineage {trace}",
+  "compare": {
+    "notice": "Comparison period {from} to {to}. Numeric comparison stays blocked pending a decision."
+  },
+  "bottlenecks": {
+    "heading": "Blocked on a governed value",
+    "summary": "{count} capabilities are blocked",
+    "body": "Each is waiting on a value the platform may not invent — a cohort rule, a lookback, a weighting, a threshold, a target or a denominator.",
+    "planningToSubmissionCohort": "Planning-to-submission cohort",
+    "repeatViolationLineage": "Repeat violation lineage and lookback",
+    "riskToAttentionRules": "Risk-to-attention snapshot rules",
+    "healthScore": "Health Score",
+    "licenceExposure": "Licence exposure",
+    "slaUrgency": "SLA urgency",
+    "capacityUtilization": "Capacity and utilization",
+    "strategicBrief": "Strategic inspection brief",
+    "attentionQueue": "Operational attention queue",
+    "export": "Export",
+    "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
+    "attentionQueueNote": "No live AI request is made.",
+    "exportNote": "Pending a canonical audit and correlation contract."
+  }
 }

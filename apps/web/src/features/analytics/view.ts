@@ -42,7 +42,7 @@ function breakdownOf(row: AnalyticsRpcRow): readonly (readonly [string, number])
   return Object.entries(row.breakdown)
     .flatMap(([label, raw]) => {
       const value = numeric(raw);
-      return value === null ? [] : [[label.replaceAll("_", " "), value] as const];
+      return value === null ? [] : [[label, value] as const];
     })
     .sort((left, right) => right[1] - left[1])
     .slice(0, MAX_SLICES);

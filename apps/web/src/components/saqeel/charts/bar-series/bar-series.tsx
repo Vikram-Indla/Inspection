@@ -24,23 +24,24 @@ export type BarPoint = {
  * One series, so there is no legend and no categorical colour: bars carry the
  * accent, and a point the caller marks `muted` drops to the de-emphasis grey.
  */
-export default function BarSeries({ points, domainMax, ariaLabel, barSize }: {
+export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth = 104 }: {
   points: readonly BarPoint[];
   domainMax: number;
   ariaLabel: string;
   barSize?: number;
+  labelWidth?: number;
 }) {
   const height = points.length * (barSize ?? 34) + 8;
 
   return (
     <div className={styles.root} role="img" aria-label={ariaLabel} style={{ blockSize: `${height}px` }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={[...points]} layout="vertical" margin={{ top: 0, right: 48, bottom: 0, left: 0 }}>
+        <BarChart data={[...points]} layout="vertical" margin={{ top: 0, right: 44, bottom: 0, left: 0 }}>
           <XAxis type="number" domain={[0, domainMax]} hide />
           <YAxis
             type="category"
             dataKey="label"
-            width={132}
+            width={labelWidth}
             axisLine={false}
             tickLine={false}
             className={styles.axis}

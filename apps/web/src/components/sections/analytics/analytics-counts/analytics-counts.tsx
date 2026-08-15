@@ -27,7 +27,7 @@ export default function AnalyticsCounts({ counts, strings, query }: {
           {counts.map(metric => (
             <li key={metric.key}>
               <Link className={styles.tile} href={analyticsDrillHref(metric.key, query)} prefetch={false}
-                title={metric.definition}>
+                title={metric.definition} aria-label={`${metric.title} ${metric.display}`}>
                 <Text as="span" role="label" tone="secondary">{metric.title}</Text>
                 <Metric>{metric.display}</Metric>
                 <Text as="span" role="label" tone="muted">{metric.trace}</Text>

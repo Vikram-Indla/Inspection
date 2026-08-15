@@ -44,7 +44,8 @@ export default function AnalyticsRates({ rates, strings, query }: {
         <div className={styles.heroes}>
           {rates.slice(0, HERO_COUNT).map(metric => (
             <Link className={styles.hero} key={metric.key} prefetch={false}
-              href={analyticsDrillHref(metric.key, query)} title={metric.definition}>
+              href={analyticsDrillHref(metric.key, query)} title={metric.definition}
+              aria-label={`${metric.title} ${metric.display}`}>
             <Gauge
               percent={metric.value}
               display={metric.display}
