@@ -51,9 +51,11 @@ export default function AnalyticsFilters({ query, strings, locale }: {
     <Card as="section">
       <CardBody>
         <form className={styles.form} method="get" action="/analytics" aria-label={filters.legend}>
-          <Field label={filters.period}>
+          <Field label={filters.period} htmlFor="analytics-period">
           <DateRangePicker
             {...shared}
+            id="analytics-period"
+            block
             label={filters.period}
             from={period.from}
             to={period.to}
@@ -63,9 +65,11 @@ export default function AnalyticsFilters({ query, strings, locale }: {
             nameTo="periodTo"
           />
           </Field>
-          <Field label={filters.compare}>
+          <Field label={filters.compare} htmlFor="analytics-compare">
           <DateRangePicker
             {...shared}
+            id="analytics-compare"
+            block
             label={filters.compare}
             from={compare.from}
             to={compare.to}

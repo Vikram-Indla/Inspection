@@ -63,7 +63,13 @@
   },
   "counts": {
     "heading": "Counts",
-    "description": "Distinct records inside the selected period and scope."
+    "description": "Distinct records inside the selected period and scope.",
+    "groups": {
+      "visits": "Visits",
+      "coverage": "Coverage",
+      "enforcement": "Evidence and enforcement"
+    },
+    "ariaLabel": "{group} counts, ranked"
   },
   "breakdown": {
     "heading": "Breakdowns",

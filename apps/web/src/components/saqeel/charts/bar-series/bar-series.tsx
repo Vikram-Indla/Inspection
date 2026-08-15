@@ -1,8 +1,12 @@
 "use client";
 
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { useMediaQuery } from "@/components/saqeel/primitives/use-media-query";
 import { CHART_SERIES } from "../chart-palette";
 import styles from "./bar-series.module.css";
+
+const WIDE_LABEL = 132;
+const NARROW_LABEL = 120;
 
 export type BarPoint = {
   readonly key: string;
@@ -24,13 +28,15 @@ export type BarPoint = {
  * One series, so there is no legend and no categorical colour: bars carry the
  * accent, and a point the caller marks `muted` drops to the de-emphasis grey.
  */
-export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth = 104 }: {
+export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth }: {
   points: readonly BarPoint[];
   domainMax: number;
   ariaLabel: string;
   barSize?: number;
   labelWidth?: number;
 }) {
+  const roomy = useMediaQuery("(min-width: 48rem)");
+  const labels = labelWidth ?? (roomy ? WIDE_LABEL : NARROW_LABEL);
   const height = points.length * (barSize ?? 34) + 8;
 
   return (
@@ -41,7 +47,7 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
           <YAxis
             type="category"
             dataKey="label"
-            width={labelWidth}
+            width={labels}
             axisLine={false}
             tickLine={false}
             className={styles.axis}

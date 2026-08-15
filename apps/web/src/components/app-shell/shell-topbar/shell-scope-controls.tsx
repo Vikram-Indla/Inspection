@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DateRangePicker from "@/components/saqeel/date-range-picker/date-range-picker";
+import { useMediaQuery } from "@/components/saqeel/primitives/use-media-query";
 import { pastDateRangePresets, type DateRangePresetLabels } from "@/components/saqeel/date-range-picker/date-range-presets";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
 import { formatDateRange } from "@/lib/dates";
@@ -17,19 +18,6 @@ type ScopeStrings = Readonly<Record<
 >> & { readonly presets: DateRangePresetLabels };
 
 const COMPACT_SCOPE_QUERY = "(max-width: 1360px)";
-
-function useMediaQuery(query: string): boolean {
-  const subscribe = useCallback((onChange: () => void) => {
-    const list = window.matchMedia(query);
-    list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
-  }, [query]);
-  return useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(query).matches,
-    () => false,
-  );
-}
 
 export default function ShellScopeControls({ scope, regions, initialFrom, initialTo, initialRegion, locale, strings }: {
   scope: ShellScope;
