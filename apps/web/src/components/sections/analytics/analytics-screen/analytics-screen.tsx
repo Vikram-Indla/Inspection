@@ -75,8 +75,10 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
 
       {view.rates.length || view.counts.length ? (
         <>
-          <AnalyticsRates rates={view.rates} strings={strings} query={query} />
-          <AnalyticsBreakdowns breakdowns={view.breakdowns} strings={strings} locale={locale} />
+          <div className={styles.split}>
+            <AnalyticsRates rates={view.rates} strings={strings} query={query} />
+            <AnalyticsBreakdowns breakdowns={view.breakdowns} strings={strings} locale={locale} />
+          </div>
           <AnalyticsCounts counts={view.counts} strings={strings} query={query} locale={locale} />
           <AnalyticsBlocked blocked={view.blocked} strings={strings} locale={locale} />
         </>

@@ -8,7 +8,7 @@
 
 .plot {
   position: relative;
-  inline-size: var(--sqx-space-13);
+  inline-size: clamp(var(--sqx-space-12), 42%, calc(var(--sqx-space-13) * 1.75));
   aspect-ratio: 1;
   flex: none;
 }

@@ -18,3 +18,17 @@
   flex-wrap: wrap;
   gap: var(--sqx-space-2);
 }
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sqx-stack-section);
+  align-items: start;
+  min-inline-size: 0;
+}
+
+@media (min-width: 64rem) {
+  .split {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
