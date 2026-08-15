@@ -159,7 +159,7 @@
     "immutable": "نهائية",
     "inspectionVersions": "التفتيش والإصدارات",
     "journeyHeading": "الرحلة",
-    "lifecycleHeading": "دورة الحياة",
+    "lifecycleHeading": "أحداث دورة الحياة",
     "loading": "جارٍ تحميل الزيارة",
     "loadingTitle": "زيارة",
     "locationFactory": "موقع المصنع",
@@ -188,14 +188,17 @@
     "returnReason": "مُعادة — السبب: {reason}",
     "returnedSections": "مُعادة",
     "reviewPrefix": "المراجعة",
-    "title": "زيارة {id} — {factory}",
+    "title": "{reference} — {factory}",
     "unverifiedManual": "إدخال يدوي غير موثّق — بانتظار المطابقة",
     "window": "النافذة الزمنية",
     "historyTitle": "السجل",
     "historyDescription": "كل إدخال أدناه يُضاف فقط. لا يُعدَّل أي شيء هنا ولا يُحذف.",
     "noLocation": "لم تُسجَّل أي أحداث موقع بعد.",
     "planStatus": "الحالة",
-    "siblingsLabel": "الزيارات ضمن هذه الخطة"
+    "siblingsLabel": "الزيارات ضمن هذه الخطة",
+    "titleUnreferenced": "{factory}",
+    "factoryUnknown": "المصنع غير متاح",
+    "auditActorUnknown": "مستخدم غير محدَّد"
   },
   "notes": {
     "heading": "الملاحظات",
@@ -224,7 +227,7 @@
       "returned": "إعادة نشر · تصحيح · إلغاء"
     },
     "boundaryWord": "المسموح به من هنا",
-    "heading": "دورة الحياة — خمسة مجالات حالة",
+    "heading": "دورة الحياة",
     "inspection": "التفتيش",
     "latestWord": "آخر حدث موثّق",
     "noEvent": "لا يوجد حدث موثّق بعد",

@@ -73,3 +73,5 @@ export type AttachmentSourceRow = {
   id: string; name: string; mime: string; storage_path: string;
   uploaded_at: string; uploader: { full_name: string } | null;
 };
+
+export type ActorProfileRow = { user_id: string; full_name: string };

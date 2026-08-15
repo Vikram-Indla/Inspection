@@ -6,7 +6,7 @@ import { loadVisitDetail } from "@/features/visits/detail/queries";
 import { buildVisitDetailStrings } from "@/features/visits/detail/strings";
 import { buildActionBarProps, visitAttachmentRows } from "@/features/visits/detail/view";
 import { makeEnumLabel } from "@/i18n/enum-label";
-import { getMessages } from "@/i18n/messages";
+import { fill, getMessages } from "@/i18n/messages";
 import { useT } from "@/lib/i18n";
 import VisitActions from "@/components/visits/visit-actions/visit-actions";
 import Attachments from "./Attachments";
@@ -25,9 +25,10 @@ export default async function VisitDetailRoute({ params, searchParams }: {
   const data = page.data;
   const enumLabel = makeEnumLabel(locale);
   const strings = buildVisitDetailStrings(locale, enumLabel);
-  const title = V.detail.title
-    .replace("{id}", data.visit.id.slice(0, 8))
-    .replace("{factory}", data.visit.factories?.name ?? "—");
+  const factoryName = data.visit.factories?.name ?? V.detail.factoryUnknown;
+  const title = data.visit.visit_reference
+    ? fill(V.detail.title, { reference: data.visit.visit_reference, factory: factoryName })
+    : fill(V.detail.titleUnreferenced, { factory: factoryName });
   return (
     <Shell current={current} title={title}>
       <CreatedToast created={created} registeredMessage={V.detail.createdToast} unregisteredMessage={V.detail.createdToastUnregistered} />
