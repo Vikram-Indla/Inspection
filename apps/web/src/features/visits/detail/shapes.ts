@@ -85,7 +85,7 @@ export const visitDetailRow: Shape<VisitRow> = f => ({
 });
 
 export const auditRow: Shape<AuditRow> = f => ({
-  id: f.text("id"),
+  id: f.number("id"),
   actor: f.optionalText("actor"),
   action: f.text("action"),
   before_state: f.optionalRecord("before_state"),

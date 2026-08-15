@@ -153,7 +153,7 @@ export function buildAuditEntries(
   actorLabel: (actor: string | null) => string,
 ): TimedEntry[] {
   return data.audit.map(event => ({
-    id: event.id,
+    id: String(event.id),
     dateTime: event.occurred_at,
     time: formatDateTime(event.occurred_at, locale),
     title: label(event.action),
