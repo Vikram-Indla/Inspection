@@ -1,0 +1,79 @@
+{
+  "title": "Analytics",
+  "subtitle": "Governed aggregates for {from} to {to}. Values reflect only records visible to your role and scope.",
+  "loading": "Loading analytics",
+  "source": {
+    "available": "Source available",
+    "stale": "Source stale",
+    "degraded": "Source degraded",
+    "refreshed": "Refreshed {at}",
+    "degradedBody": "Affected source: {source}. Available governed results remain visible.",
+    "staleBody": "Last successful refresh: {at}."
+  },
+  "journey": {
+    "label": "Related destinations",
+    "operations": "Operations",
+    "execution": "Execution",
+    "reviews": "Review queue"
+  },
+  "filters": {
+    "legend": "Analytics filters",
+    "from": "From",
+    "to": "To",
+    "region": "Region",
+    "method": "Inspection type",
+    "status": "Status",
+    "any": "All",
+    "apply": "Apply filters",
+    "reset": "Reset",
+    "bulk": "Bulk",
+    "single": "Single",
+    "immediate": "Immediate",
+    "published": "Published",
+    "executing": "Executing",
+    "submitted": "Submitted",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "rates": {
+    "heading": "Rates",
+    "description": "Every rate on one scale, so the highest is the one to look at first.",
+    "ariaLabel": "Governed rates ranked from highest to lowest",
+    "ofTotal": "{numerator} of {denominator}"
+  },
+  "counts": {
+    "heading": "Counts",
+    "description": "Distinct records inside the selected period and scope."
+  },
+  "breakdown": {
+    "heading": "Breakdowns",
+    "description": "Each total split by its governed categories.",
+    "ariaLabel": "{metric}: {summary}"
+  },
+  "unavailable": {
+    "heading": "Not available in this period",
+    "summary": "{count} metrics have no governed source",
+    "summaryOne": "One metric has no governed source",
+    "body": "Nothing is inferred for these. Each carries the reason its source reported.",
+    "notApplicable": "Not applicable",
+    "notConfigured": "Not configured",
+    "decisionRequired": "Decision required",
+    "unavailable": "Unavailable"
+  },
+  "empty": {
+    "title": "No governed aggregates for this period",
+    "body": "Widen the date range or clear the filters to see results in your scope."
+  },
+  "error": {
+    "title": "Analytics could not be loaded",
+    "body": "No failed source was represented as zero. Nothing was changed.",
+    "invalidQuery": "That analytics query is not valid",
+    "reference": "Reference {id}"
+  },
+  "denied": {
+    "title": "You do not have access to analytics",
+    "body": "Analytics is limited to planning, supervisory and administrative roles."
+  },
+  "drill": "View governed records",
+  "lineage": "Lineage {trace}"
+}

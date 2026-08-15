@@ -1,0 +1,31 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
+.date {
+  font: inherit;
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--sqx-control-h-md);
+  padding-inline: var(--sqx-space-3);
+  color: var(--sqx-text-primary);
+  background: var(--sqx-surface-raised);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-input);
+  border-radius: var(--sqx-radius-control);
+}
+
+.date:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-space-1);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  margin-inline-start: auto;
+}

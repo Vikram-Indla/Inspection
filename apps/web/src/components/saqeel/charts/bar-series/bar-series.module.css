@@ -1,0 +1,15 @@
+.root {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.axis text {
+  font: var(--sqx-text-label);
+  fill: var(--sqx-text-secondary);
+}
+
+.value {
+  font: var(--sqx-text-label);
+  fill: var(--sqx-text-primary);
+  font-variant-numeric: tabular-nums;
+}
