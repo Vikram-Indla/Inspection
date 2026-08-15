@@ -22,7 +22,7 @@
   inline-size: var(--sqx-bar-cell-fill, 0%);
   block-size: 100%;
   border-radius: var(--sqx-radius-pill);
-  background: var(--sqx-chart-4);
+  background: var(--sqx-chart-2);
 }
 
 .track[data-muted="true"] .fill {

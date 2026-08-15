@@ -12,10 +12,10 @@ type TrackStyle = CSSProperties & Record<"--sqx-bar-cell-fill", string>;
  * against `peak`, the largest value in the column, so the column compares
  * within itself and never implies a target nobody configured.
  *
- * There is no colour decision here: length carries the meaning, and the fill
- * takes the same validated slot `BarSeries` defaults to, so a bar inside a
- * table and a bar in a chart read as the same mark. A row the caller marks
- * `muted` drops to the de-emphasis grey, the same contract `BarSeries` uses.
+ * Length carries the meaning; the fill takes the `volume` slot from
+ * `SERIES_ROLE`, so a bar inside a table and a volume bar in a chart read as the
+ * same mark. A row the caller marks `muted` drops to the de-emphasis grey, the
+ * same contract `BarSeries` uses.
  */
 export default function BarCell({ value, display, peak, muted = false }: {
   value: number;

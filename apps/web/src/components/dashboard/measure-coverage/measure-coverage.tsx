@@ -1,5 +1,6 @@
 import { formatCount, formatPercent } from "@/i18n/numbers";
 import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
+import { SERIES_ROLE } from "@/components/saqeel/charts/chart-palette";
 import Gauge from "@/components/saqeel/charts/gauge/gauge";
 import { Heading, Text } from "@/components/saqeel/type";
 import type { MeasureCoverage } from "@/features/dashboard/strip";
@@ -40,6 +41,7 @@ export default function MeasureCoverage({ coverage, locale, strings, headingId }
     <div className={styles.root}>
       <Gauge
         percent={coverage.percent}
+        series={SERIES_ROLE.coverage}
         display={formatPercent(coverage.percent, locale)}
         label={strings.meterLabel}
         caption={fill(strings.ratio, counts)}
@@ -53,6 +55,7 @@ export default function MeasureCoverage({ coverage, locale, strings, headingId }
             <BarSeries
               points={points}
               domainMax={peak}
+              series={SERIES_ROLE.coverage}
               ariaLabel={strings.reasonsAria}
               barSize={30}
               labelWidth={112}

@@ -1,5 +1,6 @@
 import { formatCount } from "@/i18n/numbers";
 import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
+import { SERIES_ROLE } from "@/components/saqeel/charts/chart-palette";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import { Text } from "@/components/saqeel/type";
 import { makeEnumLabel } from "@/i18n/enum-label";
@@ -60,6 +61,7 @@ export default function PipelineBreakdown({ slices, total, locale, strings }: {
         points={points}
         domainMax={Math.max(...ranked.map(slice => slice.value), 1)}
         ariaLabel={strings.aria}
+        series={SERIES_ROLE.volume}
       />
       <Text tone="muted">{fill(strings.total, { total: formatCount(total, locale) })}</Text>
     </>

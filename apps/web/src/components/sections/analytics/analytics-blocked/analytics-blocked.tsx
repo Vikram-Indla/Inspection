@@ -1,6 +1,7 @@
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import Donut, { type DonutSlice } from "@/components/saqeel/charts/donut/donut";
 import Gauge from "@/components/saqeel/charts/gauge/gauge";
+import { SERIES_ROLE } from "@/components/saqeel/charts/chart-palette";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
 import { ANALYTICS_BOTTLENECKS } from "@/features/analytics/bottlenecks";
@@ -51,6 +52,7 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
                 </figcaption>
                 <Gauge
                   percent={percent}
+                  series={SERIES_ROLE.coverage}
                   display={display}
                   label={strings.coverage.label}
                   caption={caption}

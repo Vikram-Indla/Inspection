@@ -13,11 +13,34 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-115.** Take T-116.
+implements the reservation. **Highest id in use: T-116.** Take T-117.
 
 ---
 
 ## NOW
+
+### T-116 · Every bar and every meter was painted in the warning colour
+`status: partial — code complete, axe clean both themes, gates unchanged; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009` · `est: 0.5h`
+`record:` [2026-08-16-T-116-series-role-palette](sessions/2026-08/2026-08-16-T-116-series-role-palette.md)
+
+**`--sqx-chart-4` is `--sqx-warning-*`.** `BarSeries` defaults to slot 1 and
+`Gauge` hardcoded it, so the whole application rendered its bars and meters in
+the token reserved for warnings — a status colour used as a series colour.
+
+**No token change request was needed:** a single-series chart does not use the
+palette for identity, so the CVD rule (series *within* a chart) does not bind
+*between* charts. Contrast measured for all four slots × both themes × both
+surfaces — lowest is **5.70:1**, against a 3:1 floor.
+
+```
+volume   slot 0 info teal    tallies — pipeline, states, workload, activity
+rate     slot 1 warning      /analytics rates band, left alone deliberately
+coverage slot 2 AI violet    measure coverage, /analytics metric coverage
+```
+
+**Parked:** whether `/analytics` rates should move off the warning token — an
+owner call on an established screen. `chart-1` (brand) is unused by any chart and
+measures the highest light-mode contrast of the four.
 
 ### T-115 · Two of the four remaining dashboard sections earned a chart; two did not
 `status: partial — code complete, axe clean, gates unchanged; e2e and a native Arabic review owed` · `rules: WEB-000 … WEB-014` · `est: 1h`

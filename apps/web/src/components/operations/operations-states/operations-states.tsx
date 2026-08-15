@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
+import { SERIES_ROLE } from "@/components/saqeel/charts/chart-palette";
 import { Text } from "@/components/saqeel/type";
 import { makeEnumLabel } from "@/i18n/enum-label";
 import { fill } from "@/i18n/messages";
@@ -58,6 +59,7 @@ export default function OperationsStates({ counts, locale, strings }: {
           points={points}
           domainMax={Math.max(...ranked.map(([, value]) => value), 1)}
           ariaLabel={strings.aria}
+          series={SERIES_ROLE.volume}
         />
         <Text tone="muted">{fill(strings.total, { total: formatCount(total, locale) })}</Text>
       </CardBody>

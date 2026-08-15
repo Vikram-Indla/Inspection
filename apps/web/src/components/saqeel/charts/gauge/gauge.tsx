@@ -2,7 +2,7 @@
 
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { Text } from "@/components/saqeel/type";
-import { CHART_SERIES, CHART_TRACK } from "../chart-palette";
+import { CHART_TRACK, seriesColour } from "../chart-palette";
 import styles from "./gauge.module.css";
 
 /**
@@ -13,13 +13,19 @@ import styles from "./gauge.module.css";
  * legend entry. `caption` carries the numerator and denominator, because the
  * percentage alone hides whether it came from 3 records or 3,000.
  */
-export default function Gauge({ percent, display, label, caption, ariaLabel, size = "md" }: {
+export default function Gauge({ percent, display, label, caption, ariaLabel, size = "md", series = 1 }: {
   percent: number;
   display: string;
   label: string;
   caption: string;
   ariaLabel: string;
   size?: "sm" | "md" | "lg";
+  /**
+   * Which validated slot the filled arc takes. Colour carries no meaning on a
+   * single ratio — the arc length does — so this is wayfinding between charts,
+   * never identity within one.
+   */
+  series?: number;
 }) {
   const filled = Math.max(0, Math.min(100, percent));
   const data = [{ key: "filled", value: filled }, { key: "track", value: 100 - filled }];
@@ -39,7 +45,7 @@ export default function Gauge({ percent, display, label, caption, ariaLabel, siz
               stroke="none"
               isAnimationActive={false}
             >
-              <Cell fill={CHART_SERIES[1]} />
+              <Cell fill={seriesColour(series)} />
               <Cell fill={CHART_TRACK} />
             </Pie>
           </PieChart>
