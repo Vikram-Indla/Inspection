@@ -105,7 +105,8 @@
     "title": "Analytics could not be loaded",
     "body": "No failed source was represented as zero. Nothing was changed.",
     "invalidQuery": "That analytics query is not valid",
-    "reference": "Reference {id}"
+    "reference": "Reference {id}",
+    "retry": "Try again"
   },
   "denied": {
     "title": "You do not have access to analytics",
