@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { useMediaQuery } from "@/components/saqeel/primitives/use-media-query";
-import { CHART_SERIES } from "../chart-palette";
+import { seriesColour } from "../chart-palette";
 import styles from "./bar-series.module.css";
 
 const WIDE_LABEL = 132;
@@ -73,12 +73,14 @@ function AxisLabel({ x = 0, y = 0, index = 0, points }: TickProps & { points: re
  * One series, so there is no legend and no categorical colour: bars carry the
  * accent, and a point the caller marks `muted` drops to the de-emphasis grey.
  */
-export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth }: {
+export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth, series = 1 }: {
   points: readonly BarPoint[];
   domainMax: number;
   ariaLabel: string;
   barSize?: number;
   labelWidth?: number;
+  /** Which validated slot the bars take. Slots are fixed, never cycled. */
+  series?: number;
 }) {
   const roomy = useMediaQuery("(min-width: 48rem)");
   const labels = labelWidth ?? (roomy ? WIDE_LABEL : NARROW_LABEL);
@@ -106,7 +108,7 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
           />
           <Bar dataKey="value" radius={4} isAnimationActive={false} barSize={16} minPointSize={2}>
             {points.map(point => (
-              <Cell key={point.key} fill={point.muted ? "var(--sqx-chart-7)" : CHART_SERIES[1]} />
+              <Cell key={point.key} fill={point.muted ? "var(--sqx-chart-7)" : seriesColour(series)} />
             ))}
             <LabelList dataKey="display" position="right" className={styles.value} />
           </Bar>

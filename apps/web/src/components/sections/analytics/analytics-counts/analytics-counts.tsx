@@ -45,6 +45,7 @@ export default function AnalyticsCounts({ counts, strings, query, locale }: {
               points={pointsOf(band.metrics)}
               domainMax={band.max}
               ariaLabel={fill(strings.counts.ariaLabel, { group: strings.counts.groups[band.group] })}
+              series={2}
             />
           </section>
         ))}
