@@ -83,13 +83,23 @@ export function statusTone(status: MetricSourceStatus): DisplayTone {
   }
 }
 
+/** A plain count in the reader's numbering system — Arabic-Indic under `ar`. */
+export function formatCount(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US").format(value);
+}
+
+/** A whole percentage, with the sign on the side the locale puts it. */
+export function formatPercent(value: number, locale: Locale): string {
+  return locale === "ar" ? `٪${formatCount(value, locale)}` : `${value}%`;
+}
+
 /** Format a live numeric value by unit. Returns null when there is no value. */
 export function formatValue(metric: SharedMetric, locale: Locale): string | null {
   if (metric.value == null) return null;
   switch (metric.unit) {
-    case "percent": return locale === "ar" ? `٪${metric.value}` : `${metric.value}%`;
+    case "percent": return formatPercent(metric.value, locale);
     case "ratio": return metric.value.toFixed(2);
-    case "count": return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US").format(metric.value);
+    case "count": return formatCount(metric.value, locale);
     default: return String(metric.value);
   }
 }
@@ -133,7 +143,9 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
     const arrow = metric.comparison.direction === "up" ? "▲" : metric.comparison.direction === "down" ? "▼" : "—";
     sub = t(locale, `${arrow} vs previous window`, `${arrow} مقارنة بالفترة السابقة`);
   } else if (metric.numerator != null && metric.denominator != null) {
-    sub = t(locale, `${metric.numerator} of ${metric.denominator}`, `${metric.numerator} من ${metric.denominator}`);
+    const numerator = formatCount(metric.numerator, locale);
+    const denominator = formatCount(metric.denominator, locale);
+    sub = t(locale, `${numerator} of ${denominator}`, `${numerator} من ${denominator}`);
   }
   if (metric.sourceStatus === "partial") {
     sub = t(

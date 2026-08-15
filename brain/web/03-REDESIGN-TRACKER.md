@@ -13,11 +13,46 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-111.** Take T-112.
+implements the reservation. **Highest id in use: T-112.** Take T-113.
 
 ---
 
 ## NOW
+
+### T-112 · `/dashboard` gets a chart layer, and every Arabic bar chart stops overlapping itself
+`status: partial — code complete, static gates green, axe clean on both views in both themes; e2e, native Arabic review and the bundle number are owed` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-15-T-112-dashboard-chart-layer](sessions/2026-08/2026-08-15-T-112-dashboard-chart-layer.md)
+
+Owner-selected widget set from a design review that judged **every** dashboard
+item first: **F1** measure coverage, **C2** inspector bars, **A1** pipeline
+ranked bar, **E3** activity sparkline. Refusals recorded and honoured — thirteen
+blocked cards, four genuine zeros, the critical-factory list, inspector
+*utilisation* (daily capacity is `Not configured`, so there is no denominator),
+the compliance explorer (every row drills) and the two-period enforcement trend
+all stay exactly as they are.
+
+**The screen was computing breakdowns and discarding them.** `217` was the sum of
+a distribution the app already held — and its largest segment is the **117
+cancellations printed two cards above**.
+
+```
+pipeline  1 number → 4 ranked statuses     inspector load  15 : 1 across 8 rows
+coverage  0 → gauge + ranked reasons       activity        0 → daily series
+axe  0 violations / 0 incomplete, both views × both themes × LTR and RTL
+```
+
+**Every Arabic bar chart in the app was overlapping its own labels, since
+T-111.** RTL inverts what `text-anchor: end` means; measured **label 168→203
+against a bar starting 176** on `/analytics` *before* this task touched anything.
+Fixed centrally, 7px clear, LTR unchanged. Invisible to every gate.
+
+**`/dashboard` holds raw rows with per-row timestamps** — `window_start`,
+`submitted_at`, `decided_at`, `occurred_at` — so the time series T-111 correctly
+refused on `/analytics` is derivable here with no new RPC.
+
+**Owed before `done`:** e2e, native Arabic review of 31 keys, the first-load
+number, and a re-run under Leadership — everything was measured under a Planner
+session, where several measures are role-scoped rather than missing.
 
 ### T-111 · `/analytics` gets a chart layer, and loses the data it was throwing away
 `status: partial — code complete, every static gate green; axe, e2e, native Arabic review and the bundle number are owed` · `rules: WEB-000 … WEB-014` · `est: 6h`

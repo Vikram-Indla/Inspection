@@ -8,6 +8,12 @@ export type DataColumn<T> = {
   readonly key: string;
   readonly header: string;
   readonly headerControl?: ReactNode;
+  /**
+   * Keeps the header out of the visual layout while leaving it in the
+   * accessibility tree. A column of controls still needs a name — an empty
+   * `<th>` leaves screen-reader users with an unlabelled column.
+   */
+  readonly headerHidden?: boolean;
   readonly cell: (row: T) => ReactNode;
   readonly align?: "start" | "end";
   readonly width?: "min" | "auto";
@@ -49,7 +55,9 @@ export default function DataTable<T>({ rows, columns, getRowId, getRowSelected, 
                 data-align={column.align ?? "start"}
                 data-width={column.width ?? "auto"}
               >
-                {column.headerControl ?? column.header}
+                {column.headerHidden
+                  ? <span className="sqx-visually-hidden">{column.header}</span>
+                  : column.headerControl ?? column.header}
               </th>
             ))}
           </tr>

@@ -19,6 +19,7 @@ const TONE: Readonly<Record<DisplayTone, StatusTone>> = {
 export type RequirementRegisterStrings = MetricStripStrings & {
   readonly measure: string;
   readonly state: string;
+  readonly basis: string;
   readonly emptyTitle: string;
 };
 
@@ -44,7 +45,7 @@ export default function RequirementRegister({ metrics, methodology, strings }: {
         : <Text as="span" role="bodyStrong" numeric>{metric.text}</Text>,
     },
     {
-      key: "basis", header: "", align: "end", width: "min",
+      key: "basis", header: strings.basis, headerHidden: true, align: "end", width: "min",
       cell: metric => {
         const entry = methodology[metric.metricId];
         if (!entry) return null;

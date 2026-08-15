@@ -6,6 +6,8 @@
 .tick {
   font: var(--sqx-text-label);
   fill: var(--sqx-text-secondary);
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .tickLink {
@@ -27,4 +29,6 @@
   font: var(--sqx-text-label);
   fill: var(--sqx-text-primary);
   font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
 }

@@ -1,6 +1,62 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-15` · `Updated by: T-111 — /analytics chart layer`
+`Last updated: 2026-08-15` · `Updated by: T-112 — /dashboard chart layer`
+
+## RTL inverts `text-anchor`, and it broke every Arabic bar chart for a whole task cycle (2026-08-15)
+
+`BarSeries` sets `text-anchor: end` on its axis ticks. The SVG inherits
+`direction: rtl` from `<html dir="rtl">`, and **`text-anchor` is resolved against
+the inline base direction**, so "end" became the left side and Arabic labels
+extended *rightwards* from the axis, straight under the bars:
+
+```
+/analytics ar   label 168 → 203    bar starts 176    OVERLAP
+after fix       label 103 → 168    bar starts 176    7px clear
+```
+
+The same on the value labels — `١١٧` occupying 669-682 against a bar ending 677.
+Fixed with `direction: ltr; unicode-bidi: isolate` on `.tick` and `.value`.
+
+**It shipped with T-111 and survived that task's whole review.** No gate can see
+it: the CSS is legal, the typography is legal, the markup is correct, and the
+English render is perfect. It is only visible as a *measurement of two bounding
+boxes in RTL* — which is now the check any chart primitive owes before it is
+called done.
+
+**Caveat recorded rather than hidden:** `direction: ltr` is right for pure-Arabic
+labels and could misorder one that mixes scripts at its boundary. The
+direction-aware alternative needs a `[dir="rtl"]` rule, which WEB-002 §6 forbids.
+
+## A number is not formatted until it is formatted in both locales (2026-08-15)
+
+T-112's new widgets rendered `50%` and `2 of 4` on the Arabic dashboard, beside
+the screen's own `٠`. The cause is the ordinary one — `String(value)` and
+`` `${value}%` `` — and it was **already present in the code being extended**:
+`formatValue` held the only correct implementation, `metricDisplay`'s sub-line
+did not (`7 من 85`), and neither view's KPI values did.
+
+Extracting `formatCount` / `formatPercent` out of `formatValue` and routing every
+site through them fixed the new code **and** the old:
+
+```
+٪50 → ٪٥٠        7 من 85 → ٧ من ٨٥        9 · 10 · 0 → ٩ · ١٠ · ٠
+```
+
+**Fixing only the new widgets was the wrong option** and was rejected: it leaves
+one screen rendering two numbering systems, which reads as a bug in whichever
+half the reader notices second. When a task's fix exposes the same defect beside
+it, the blast radius is the screen, not the diff.
+
+## The gate chain has been red for everyone, and it is not a regression (2026-08-15)
+
+`npm run gates` exits **1** on `check:design-system-v5` at **77 findings** —
+`raw-input-radius-12px` 30, `emoji-as-icon` 28, `utc-slice-date-format` 19. That
+figure was 77 before T-112 began and 77 after, with **none of the 77 naming a
+file that task touched**.
+
+Worth stating plainly because the Definition of Done requires a green chain:
+**nobody can currently satisfy it**, and every task that reports "gates green" is
+either not running them or reading past the exit code.
 
 ## The chart palette exists and has never been validated (2026-08-15)
 

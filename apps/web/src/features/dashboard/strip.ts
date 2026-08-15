@@ -1,5 +1,11 @@
-import { buildMethodology, metricDisplay, type MetricDisplay, type MethodologyEntry } from "@/app/(app)/dashboard/dashboard-format";
-import { findMetric, type DashboardKpiProjection, type SharedMetric } from "@/lib/dashboard-kpi/contract";
+import {
+  buildMethodology, isBlocked, metricDisplay, statusLabel,
+  type MetricDisplay, type MethodologyEntry,
+} from "@/app/(app)/dashboard/dashboard-format";
+import {
+  findMetric,
+  type DashboardKpiProjection, type MetricSourceStatus, type SharedMetric,
+} from "@/lib/dashboard-kpi/contract";
 import { fill, getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 
@@ -84,12 +90,60 @@ export function buildMetricStrip(
   };
 }
 
+export type CoverageReason = {
+  readonly key: string;
+  readonly label: string;
+  readonly count: number;
+};
+
+export type MeasureCoverage = {
+  readonly live: number;
+  readonly total: number;
+  readonly percent: number;
+  readonly reasons: readonly CoverageReason[];
+};
+
+/**
+ * How many of the measures in `ids` carry a live source, and what is stopping
+ * the rest — counted over the same population the register lists below it, so
+ * the meter and the table can never disagree.
+ *
+ * A metric the projection does not know about is left out of both numerator and
+ * denominator. Counting it as blocked would report a governance failure where
+ * the truth is that the measure is not registered at all.
+ */
+export function buildCoverage(
+  projection: DashboardKpiProjection,
+  ids: readonly string[],
+  locale: Locale,
+): MeasureCoverage {
+  const found = ids
+    .map(id => findMetric(projection, id))
+    .filter((metric): metric is SharedMetric => Boolean(metric));
+
+  const blocked = found.filter(metric => isBlocked(metric.sourceStatus));
+  const counts = new Map<MetricSourceStatus, number>();
+  for (const metric of blocked) {
+    counts.set(metric.sourceStatus, (counts.get(metric.sourceStatus) ?? 0) + 1);
+  }
+
+  return {
+    live: found.length - blocked.length,
+    total: found.length,
+    percent: found.length ? Math.round(((found.length - blocked.length) / found.length) * 100) : 0,
+    reasons: [...counts.entries()]
+      .map(([key, count]) => ({ key, label: statusLabel(key, locale), count }))
+      .sort((first, second) => second.count - first.count || first.label.localeCompare(second.label)),
+  };
+}
+
 export function requirementRegisterStrings(locale: Locale) {
   const { dashboard } = getMessages(locale);
   return {
     ...metricStripStrings(locale),
     measure: dashboard.metric.measure,
     state: dashboard.metric.state,
+    basis: dashboard.metric.basis,
     emptyTitle: dashboard.metric.emptyTitle,
   };
 }
