@@ -531,3 +531,19 @@ record** — see `02-SESSION-LOG.md`.
 
 A new primitive requires the six steps in `rules/WEB-002-design-system.md` §9.
 No row, no merge.
+
+### `components/saqeel/charts/` — added by T-111
+
+| Component | Kind | Lines | Contract |
+| --- | --- | --- | --- |
+| `chart-palette.ts` | data | 29 | `CHART_SERIES` is **three slots, not eight**. `--sqx-chart-1…8` fails the categorical validator in both themes — slots 4↔5↔6 measure ΔE 3.0 deutan / 5.1 normal, indistinguishable to every reader. Only 2, 4, 3 pass. **A fourth category is never a fourth colour**; widening this is a token change request (WEB-002 §2). |
+| `bar-series/bar-series.tsx` | **client** | 119 | Ranked horizontal bars on one shared axis. `domainMax` is the caller's decision because the scale is a truth question — a governed 0–100 measure passes through unchanged. Axis ticks become **SVG `<a>`** when a point carries `href`: Recharts cannot make a `<Bar>` focusable, so this is how a chart keeps keyboard-reachable drill-through. `series` indexes `CHART_SERIES` — an **index, not a colour**, so a caller cannot slip past the validated palette. |
+| `donut/donut.tsx` | **client** | 70 | Part-to-whole for **three or fewer** categories. Two slices is not a donut, it is a meter — use `Gauge`. The legend is a real `<ul>`, so the data reads without the picture. `size`: sm · md · lg. |
+| `gauge/gauge.tsx` | **client** | 57 | One governed ratio as an arc against its own track. The track is the remainder, **never a second category**, so it takes no series colour and no legend row. `caption` carries numerator and denominator, because a percentage alone hides whether it came from 3 records or 3,000. `size` uses **the same scale as `Donut`**, so the two cannot diverge when composed side by side. |
+
+### Shared primitives touched by T-111
+
+| Component | Kind | Lines | Contract |
+| --- | --- | --- | --- |
+| `primitives/use-media-query.ts` | **client** | 30 | `useSyncExternalStore` over `matchMedia` — **no effect**. Extracted from `shell-scope-controls.tsx` rather than copied. The server snapshot is `false`, so choose the query such that the safe layout is the one `false` selects. Use a CSS media query for styling; this exists for values CSS cannot reach, such as a numeric prop handed to a chart library. |
+| `date-range-picker/date-range-picker.tsx` | **client** | +7 | Gained `id`, so a `Field` label can point at the trigger with `htmlFor`. The trigger is a `<button>`, which is labelable; the accessible name still comes from `aria-label`, so this adds click-to-focus without changing what is announced. |

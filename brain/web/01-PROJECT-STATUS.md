@@ -1,6 +1,92 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-14` · `Updated by: T-110 — /execution rebuild`
+`Last updated: 2026-08-15` · `Updated by: T-111 — /analytics chart layer`
+
+## The chart palette exists and has never been validated (2026-08-15)
+
+`--sqx-chart-1…8` have been in `saqeel.css` all along, defined for both themes. They
+are **not a categorical scale**. Run through the validator:
+
+```
+light  chart-5 ↔ chart-4   ΔE 3.0 deutan · 5.1 normal   FAIL
+dark   chart-6 ↔ chart-5   ΔE 3.0 deutan · 4.3 normal   FAIL
+       lightness band and chroma floor           FAIL in both modes
+```
+
+They are `-darker` / `-light` **status tokens** — text-grade colours pressed into
+service as fills. A normal-vision ΔE of 5.1 means a full-colour reader cannot tell the
+two apart, so this is not a colour-blindness edge case.
+
+**Only slots 2, 4 and 3 pass** (light 16.0 normal / 12.4 protan; dark 20.8 / 18.1), so
+`CHART_SERIES` ships three, with the measurements written into its TSDoc so nobody
+widens it casually. **A fourth category is never a fourth colour** — it folds into a
+rest slot or facets.
+
+Fixing the eight-slot palette is a **token change request carrying measured contrast**
+(WEB-002 §2), and until it lands every chart in this application is capped at three
+categories.
+
+## "Declutter" was read as "delete", and it removed working features (2026-08-15)
+
+T-111's first pass took `/analytics` from 26 cards to a clean chart layout and silently
+dropped **the entire filter form, all 26 drill links, the ten-row bottleneck list,
+every lineage code and every metric definition**. The route still *parsed*
+`periodFrom`/`region`/`method`, so a user was locked to the default 30-day window with
+no UI to change it.
+
+Nothing caught this. Not typecheck, not the gates, not the rendered check — the screen
+looked better. **The owner asked "have you lost any data?" and the audit said yes.**
+
+The reusable part is the audit, not the apology: `git show <pre-rebuild>:page.tsx`,
+grep it for every rendered fact, grep the rebuild for the same, and diff the lists.
+**A screen's feature set is not visible in its final render — only in its previous
+one.**
+
+## Charting is a set of refusals before it is a set of charts (2026-08-15)
+
+Three requested forms were declined with evidence rather than built:
+
+- **Line / area / sparkline** — `analytics_metric_snapshot` returns one row per metric
+  per period. `p_group_by` looked like a free second dimension; lines 518-520 show it
+  only **filters which metric rows return**. A time series needs a new RPC.
+- **Funnel** — 58 visits → 9 published → 8 active are not stages of one cohort.
+  Composing them asserts a conversion the RPC never made (WEB-002 §9).
+- **2-slice donut** — a catalogued anti-pattern. A single ratio against its own track
+  is a **meter**; circular is a gauge, and a gauge compares worse than a bar because
+  arc length also encodes radius.
+
+And one that had to be re-formed: **eleven counts do not share a unit.** 54 factories
+against 58 visits on one axis is the dual-axis error wearing a different hat, so counts
+became grouped small multiples, each scaled to its own group's maximum.
+
+## A chart library cannot make a bar a link, and that matters here (2026-08-15)
+
+Recharts draws bars as SVG `<path>` inside `<Bar>`; there is no prop that makes one a
+focusable anchor. Dropping per-metric drill-through was not an option — it was a
+restored regression — so the **axis tick is a custom renderer emitting `<a href>`**.
+SVG anchors take keyboard focus: verified live, focus lands, the name reads
+"Visit volume 58", the ring shows.
+
+Also learned the hard way: **`title` on a link becomes its accessible name.** Putting
+`title={metric.definition}` on a drill link renamed it to
+`"Visits at planning status expired ÷ visits in the period…"`. An explicit `aria-label`
+fixes the name while `title` keeps the tooltip. The accessibility tree found this; no
+grep would have.
+
+## Design-system tokens carried chart theming with zero JavaScript (2026-08-15)
+
+Recharts writes `fill="var(--sqx-chart-2)"` straight into the SVG and the browser
+resolves it per theme:
+
+```
+declared            light            dark
+var(--sqx-chart-2)  rgb(33,92,102)   rgb(126,228,246)
+```
+
+No colour-mode hook, no re-render on theme switch, no duplicated palette. **This was
+verified with a throwaway smoke test before any component was built on it** — and the
+same render immediately exposed a label overflowing the donut ring, which no amount of
+code review would have shown. The skill's rule holds: *render it and look at it.*
 
 ## `npm run gates` now typechecks — after a non-compiling file shipped (2026-08-14)
 

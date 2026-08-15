@@ -13,11 +13,57 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-110.** Take T-111.
+implements the reservation. **Highest id in use: T-111.** Take T-112.
 
 ---
 
 ## NOW
+
+### T-111 · `/analytics` gets a chart layer, and loses the data it was throwing away
+`status: partial — code complete, every static gate green; axe, e2e, native Arabic review and the bundle number are owed` · `rules: WEB-000 … WEB-014` · `est: 6h`
+`record:` [2026-08-15-T-111-analytics-rebuild](sessions/2026-08/2026-08-15-T-111-analytics-rebuild.md)
+
+**Twenty-six identical cards, ten of which said "Unavailable".** 38% of the grid was
+absence rendered at the same weight as data, and `View governed records` appeared **26
+times** — the most-repeated string on the page.
+
+```
+leaf nodes 207 → 96      KPI cards 26 → 4 meters · 2 donuts · 3 bar bands
+<main> landmarks 2 → 1   legacy classes 14 → 0    charts 0 → 11
+route file 120 → 50      i18n 0 → 163 keys × 2    Latin on the Arabic page 90 → 0
+```
+
+**`--sqx-chart-1…8` fails the categorical validator in both themes.** Slots 4↔5↔6 sit
+at **ΔE 3.0 deutan / 5.1 normal** — indistinguishable to everyone. Only slots **2, 4,
+3** pass, so `CHART_SERIES` ships **three slots with the evidence in its TSDoc**.
+Widening it is a token change request, not a code edit.
+
+**Recharts was the owner's call after I recommended against it**, and the tokens
+carried theming with zero JavaScript: `fill="var(--sqx-chart-2)"` resolves to
+`rgb(33,92,102)` light and `rgb(126,228,246)` dark, verified before building on it.
+
+**Three forms were refused as dishonest.** Line charts (the RPC has no time axis;
+`p_group_by` only *filters* rows, it does not group), a funnel (58 visits → 9 published
+are not stages of one cohort), and 2-slice donuts (an anti-pattern — a single ratio is
+a meter). Counts became **grouped small multiples** because eleven counts do not share
+a unit.
+
+**Bar-axis labels are SVG `<a>` elements** so the drill-through survives inside a chart
+library — focus lands, name reads, ring shows. Without that, restoring the drill links
+would have made them mouse-only.
+
+**I deleted a working feature and had to be caught.** The first rebuild dropped the
+**entire filter form, all 26 drill links, the 10-row bottleneck list, every lineage
+code and every definition** — a declutter that removed function. The owner asked
+whether data had been lost; the audit said yes, and all of it came back. **Ask what a
+screen does before deciding what it does not need.**
+
+**90 Latin words were leaking onto the Arabic page** — not the legends, the **26 metric
+titles and 26 definitions**, hardcoded in `metric-registry.ts`. All 52 moved to the
+namespace. **The Arabic needs a native reviewer; I wrote it.**
+
+**Owed before `done`:** axe, the manual checklist, e2e, the first-load number
+(WEB-005 §8 measurement request), and the Arabic review.
 
 ### T-110 · `/execution` leaves the legacy sheets
 `status: partial — code complete, every static gate green; axe, e2e and the rendered pass are owed` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-004, WEB-008, WEB-009, WEB-011, WEB-012, WEB-013, WEB-014` · `est: 4h`
