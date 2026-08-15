@@ -2,6 +2,7 @@
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { publishSingleVisit, saveSingleDraft } from "@/app/(app)/planning/single/actions";
+import Button from "@/components/saqeel/button/button";
 import PlanningNotice from "@/components/sections/planning-single/planning-notice/planning-notice";
 import PortfolioPicker from "@/components/sections/planning-single/portfolio-picker/portfolio-picker";
 import PublishBlockers from "@/components/sections/planning-single/publish-blockers/publish-blockers";
@@ -99,6 +100,14 @@ export default function SingleVisitScreen({ data, strings, locale }: {
     setLocationConfirmed(false);
   };
 
+  const arrivedSelected = data.handoff && target !== null && portfolios.length === 0;
+
+  const changeFactory = () => {
+    setFactoryId(null);
+    setLicenceId(null);
+    reselect();
+  };
+
   async function onSaveDraft() {
     if (!target || savingDraft) return;
     setSavingDraft(true);
@@ -149,19 +158,29 @@ export default function SingleVisitScreen({ data, strings, locale }: {
         <PlanningNotice tone="info">{strings.adminPackageHandoff} <bdi>{data.adminPackageHandoff}</bdi></PlanningNotice>
       ) : null}
 
-      <FactorySearch
-        query={queryInput}
-        results={results}
-        registryUnavailable={data.registryUnavailable}
-        settled={searchSettled}
-        matchedElsewhere={portfolios.length > 0}
-        selectedId={factoryId}
-        onQueryChange={setQueryInput}
-        onSelect={id => { setFactoryId(id); setLicenceId(null); reselect(); }}
-        onRetry={() => router.refresh()}
-        strings={strings}
-        locale={locale}
-      />
+      {arrivedSelected ? (
+        <PlanningNotice tone="info" actions={
+          <Button variant="secondary" size="sm" label={strings.changeFactory} onClick={changeFactory}>
+            {strings.changeFactory}
+          </Button>
+        }>
+          {strings.preselected}
+        </PlanningNotice>
+      ) : (
+        <FactorySearch
+          query={queryInput}
+          results={results}
+          registryUnavailable={data.registryUnavailable}
+          settled={searchSettled}
+          matchedElsewhere={portfolios.length > 0}
+          selectedId={factoryId}
+          onQueryChange={setQueryInput}
+          onSelect={id => { setFactoryId(id); setLicenceId(null); reselect(); }}
+          onRetry={() => router.refresh()}
+          strings={strings}
+          locale={locale}
+        />
+      )}
 
       {searchSettled && portfolios.length > 0 ? (
         <PortfolioPicker

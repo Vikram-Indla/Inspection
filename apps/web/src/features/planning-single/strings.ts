@@ -16,6 +16,8 @@ export type SingleVisitStrings = {
   readonly context: string;
   readonly stepLabels: StepLabels;
   readonly findFactory: string;
+  readonly preselected: string;
+  readonly changeFactory: string;
   readonly searchFieldLabel: string;
   readonly searchPlaceholder: string;
   readonly searchPromptTitle: string;
@@ -130,6 +132,8 @@ export function buildSingleVisitStrings(t: Translate, locale: Locale): SingleVis
     context: t("plan.single.context", "Single visit planning"),
     stepLabels: { find: step(1), licence: step(2), location: step(3), configure: step(4) },
     findFactory: single.findFactory,
+    preselected: single.preselected,
+    changeFactory: single.changeFactory,
     searchFieldLabel: single.searchFieldLabel,
     searchPlaceholder: single.searchPlaceholder,
     searchPromptTitle: single.searchPromptTitle,
