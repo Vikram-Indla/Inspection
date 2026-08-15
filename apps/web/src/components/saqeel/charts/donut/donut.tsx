@@ -20,16 +20,17 @@ export type DonutSlice = {
  *
  * Two slices is not a donut, it is a meter. Use `Gauge` for a single ratio.
  */
-export default function Donut({ slices, total, ariaLabel }: {
+export default function Donut({ slices, total, ariaLabel, size = "md" }: {
   slices: readonly DonutSlice[];
   total: string;
   ariaLabel: string;
+  size?: "sm" | "md" | "lg";
 }) {
   const drawn = slices.filter(slice => slice.value > 0);
 
   return (
     <div className={styles.root}>
-      <div className={styles.plot} role="img" aria-label={ariaLabel}>
+      <div className={styles.plot} data-size={size} role="img" aria-label={ariaLabel}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

@@ -50,6 +50,7 @@ export default function AnalyticsRates({ rates, strings, query }: {
               percent={metric.value}
               display={metric.display}
               label={metric.title}
+              size="sm"
               caption={captionOf(metric, strings)}
               ariaLabel={`${metric.title} ${metric.display} — ${captionOf(metric, strings)}`}
             />

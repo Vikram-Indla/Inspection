@@ -9,10 +9,14 @@
 
 .plot {
   position: relative;
-  inline-size: var(--sqx-space-12);
+  inline-size: calc(var(--sqx-space-13) * 1.4);
   aspect-ratio: 1;
   flex: none;
 }
+
+.plot[data-size="sm"] { inline-size: var(--sqx-space-12); }
+.plot[data-size="md"] { inline-size: calc(var(--sqx-space-13) * 1.4); }
+.plot[data-size="lg"] { inline-size: calc(var(--sqx-space-13) * 1.9); }
 
 .centre {
   position: absolute;

@@ -74,7 +74,18 @@
   "breakdown": {
     "heading": "Breakdowns",
     "description": "Each total split by its governed categories.",
-    "ariaLabel": "{metric}: {summary}"
+    "ariaLabel": "{metric}: {summary}",
+    "labels": {
+      "banded": "Banded",
+      "high": "High",
+      "unbanded": "Unbanded",
+      "awaiting_disposition": "Awaiting disposition",
+      "rejected": "Rejected",
+      "adopted": "Adopted",
+      "issued": "Issued",
+      "invalidated": "Invalidated",
+      "other_status": "Other status"
+    }
   },
   "unavailable": {
     "heading": "Not available in this period",
@@ -122,5 +133,118 @@
     "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
     "attentionQueueNote": "No live AI request is made.",
     "exportNote": "Pending a canonical audit and correlation contract."
+  },
+  "coverage": {
+    "label": "Governed metric coverage",
+    "caption": "{resolved} of {total} metrics have a source",
+    "ariaLabel": "{resolved} of {total} governed metrics have a source, {percent}",
+    "reasons": "Blocked by reason",
+    "reasonsAriaLabel": "Blocked capabilities by reason: {summary}"
+  },
+  "metrics": {
+    "approved_inspection_compliance": {
+      "title": "Approved-inspection compliance",
+      "definition": "Compliant eligible answers ÷ compliant plus non-compliant; zero denominator is N/A."
+    },
+    "latest_l2_decision_mix": {
+      "title": "Latest L2 decisions",
+      "definition": "Latest decided outcome per inspection."
+    },
+    "cancellation_rate": {
+      "title": "Cancellation rate",
+      "definition": "Cancelled visits ÷ visits in the selected planning period."
+    },
+    "active_executions": {
+      "title": "Active executions",
+      "definition": "On the way, arrived, or executing."
+    },
+    "scheduled_load_count": {
+      "title": "Scheduled load count",
+      "definition": "Visible assignments; never utilization."
+    },
+    "gps_override_count": {
+      "title": "GPS override count",
+      "definition": "Visible governed override events."
+    },
+    "compliance_result_distribution": {
+      "title": "Compliance-result distribution",
+      "definition": "Eligible compliant and non-compliant responses."
+    },
+    "factory_approved_outcome_recency": {
+      "title": "Factory approved-outcome recency",
+      "definition": "Factory count plus exact latest approved timestamp; no overdue band."
+    },
+    "visit_volume": {
+      "title": "Visit volume",
+      "definition": "Visits whose planning window opens inside the selected period and scope."
+    },
+    "published_visit_count": {
+      "title": "Published visits",
+      "definition": "Visits at planning status published, against all visits in the period."
+    },
+    "draft_backlog_count": {
+      "title": "Draft backlog",
+      "definition": "Visits still at planning status draft, against all visits in the period."
+    },
+    "expired_visit_rate": {
+      "title": "Expired-visit rate",
+      "definition": "Visits at planning status expired ÷ visits in the period; zero denominator is N/A."
+    },
+    "immediate_visit_share": {
+      "title": "Immediate-visit share",
+      "definition": "Visits planned by the immediate method, or with no plan, ÷ visits in the period."
+    },
+    "factory_coverage": {
+      "title": "Factory coverage",
+      "definition": "Distinct factories carrying at least one visit in the period and scope."
+    },
+    "inspector_coverage": {
+      "title": "Inspector coverage",
+      "definition": "Distinct inspectors holding a visible assignment; never utilization."
+    },
+    "high_risk_factory_share": {
+      "title": "High-risk factory share",
+      "definition": "Visited factories on a high or critical risk band ÷ visited factories carrying any band. Unbanded factories are excluded, never assumed low."
+    },
+    "submission_throughput": {
+      "title": "Submission throughput",
+      "definition": "Submission versions recorded against inspections of visits in the period."
+    },
+    "violation_issue_count": {
+      "title": "Violations issued",
+      "definition": "Violations still in force; invalidated ones are shown separately, never netted off."
+    },
+    "penalty_issue_count": {
+      "title": "Penalties issued",
+      "definition": "Inspection penalties at status issued. No amount is inferred."
+    },
+    "evidence_capture_count": {
+      "title": "Evidence captured",
+      "definition": "Undeleted evidence items linked to a visit or its inspection."
+    },
+    "geofence_arrival_compliance": {
+      "title": "Geofence arrival compliance",
+      "definition": "Arrival and check-in events resolved inside ÷ inside plus outside. Uncertain results are excluded from both sides."
+    },
+    "review_return_rate": {
+      "title": "Review return rate",
+      "definition": "Latest decisions that returned ÷ all latest decided reviews."
+    },
+    "review_rejection_rate": {
+      "title": "Review rejection rate",
+      "definition": "Latest decisions that rejected ÷ all latest decided reviews."
+    },
+    "review_turnaround_hours": {
+      "title": "Review turnaround",
+      "definition": "Mean hours from inspection submission to the latest review decision. Reviews missing either timestamp are excluded."
+    },
+    "notification_delivery_rate": {
+      "title": "Notification delivery rate",
+      "definition": "Delivered or read ÷ attempted notifications in the period. Notifications with no configured channel are excluded from both sides."
+    },
+    "ai_suggestion_adoption_rate": {
+      "title": "AI suggestion adoption",
+      "definition": "Adopted suggestions ÷ suggestions that have been dispositioned. Suggestions still awaiting a decision are excluded."
+    }
   }
 }

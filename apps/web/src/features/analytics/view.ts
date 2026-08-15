@@ -1,5 +1,7 @@
 import { ANALYTICS_METRICS } from "@/lib/analytics/metric-registry";
 import type { AnalyticsRpcRow } from "@/lib/analytics/contract";
+import type { Locale } from "@/lib/i18n";
+import { analyticsMessages } from "./strings";
 
 export type MetricKind = "rate" | "count";
 
@@ -48,7 +50,8 @@ function breakdownOf(row: AnalyticsRpcRow): readonly (readonly [string, number])
     .slice(0, MAX_SLICES);
 }
 
-export function buildAnalyticsView(rows: readonly AnalyticsRpcRow[]): AnalyticsView {
+export function buildAnalyticsView(rows: readonly AnalyticsRpcRow[], locale: Locale): AnalyticsView {
+  const copy: Readonly<Record<string, { title: string; definition: string }>> = analyticsMessages(locale).metrics;
   const rates: ResolvedMetric[] = [];
   const counts: ResolvedMetric[] = [];
   const breakdowns: ResolvedMetric[] = [];
@@ -59,7 +62,7 @@ export function buildAnalyticsView(rows: readonly AnalyticsRpcRow[]): AnalyticsV
     if (!row || !RESOLVED.has(row.source_status) || row.value === null) {
       blocked.push({
         key: metric.key,
-        title: metric.title,
+        title: copy[metric.key]?.title ?? metric.title,
         trace: metric.trace,
         status: row?.source_status ?? "missing",
       });
@@ -69,8 +72,8 @@ export function buildAnalyticsView(rows: readonly AnalyticsRpcRow[]): AnalyticsV
     const display = metric.format(row.value);
     const resolved: ResolvedMetric = {
       key: metric.key,
-      title: metric.title,
-      definition: metric.definition,
+      title: copy[metric.key]?.title ?? metric.title,
+      definition: copy[metric.key]?.definition ?? metric.definition,
       trace: metric.trace,
       kind: display.endsWith("%") ? "rate" : "count",
       value: row.value,

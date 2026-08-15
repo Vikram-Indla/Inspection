@@ -25,7 +25,7 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
   refreshedAt: string;
 }) {
   const strings = analyticsMessages(locale);
-  const view = buildAnalyticsView(rows);
+  const view = buildAnalyticsView(rows, locale);
   const sourceTone = degraded ? "warning" : stale ? "neutral" : "success";
   const sourceLabel = degraded
     ? strings.source.degraded
@@ -80,7 +80,8 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
             <AnalyticsBreakdowns breakdowns={view.breakdowns} strings={strings} locale={locale} />
           </div>
           <AnalyticsCounts counts={view.counts} strings={strings} query={query} locale={locale} />
-          <AnalyticsBlocked blocked={view.blocked} strings={strings} locale={locale} />
+          <AnalyticsBlocked blocked={view.blocked} resolved={view.rates.length + view.counts.length}
+            strings={strings} locale={locale} />
         </>
       ) : (
         <EmptyState icon="radar" title={strings.empty.title} description={strings.empty.body} />

@@ -8,10 +8,14 @@
 
 .plot {
   position: relative;
-  inline-size: clamp(var(--sqx-space-12), 42%, calc(var(--sqx-space-13) * 1.75));
+  inline-size: calc(var(--sqx-space-13) * 1.4);
   aspect-ratio: 1;
   flex: none;
 }
+
+.plot[data-size="sm"] { inline-size: var(--sqx-space-12); }
+.plot[data-size="md"] { inline-size: calc(var(--sqx-space-13) * 1.4); }
+.plot[data-size="lg"] { inline-size: calc(var(--sqx-space-13) * 1.9); }
 
 .centre {
   position: absolute;
@@ -27,6 +31,7 @@
 }
 
 .legend {
+  text-align: start;
   display: flex;
   flex-direction: column;
   gap: var(--sqx-space-2);

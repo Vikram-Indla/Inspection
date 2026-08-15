@@ -17,7 +17,9 @@ export default function AnalyticsBreakdowns({ breakdowns, strings, locale }: {
   locale: Locale;
 }) {
   if (!breakdowns.length) return null;
-  const enumLabel = makeEnumLabel(locale);
+  const governed = makeEnumLabel(locale);
+  const labels: Readonly<Record<string, string>> = strings.breakdown.labels;
+  const enumLabel = (value: string) => labels[value] ?? governed(value);
 
   return (
     <Card as="section" labelledBy="analytics-breakdowns">

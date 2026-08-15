@@ -13,19 +13,20 @@ import styles from "./gauge.module.css";
  * legend entry. `caption` carries the numerator and denominator, because the
  * percentage alone hides whether it came from 3 records or 3,000.
  */
-export default function Gauge({ percent, display, label, caption, ariaLabel }: {
+export default function Gauge({ percent, display, label, caption, ariaLabel, size = "md" }: {
   percent: number;
   display: string;
   label: string;
   caption: string;
   ariaLabel: string;
+  size?: "sm" | "md" | "lg";
 }) {
   const filled = Math.max(0, Math.min(100, percent));
   const data = [{ key: "filled", value: filled }, { key: "track", value: 100 - filled }];
 
   return (
     <figure className={styles.root}>
-      <div className={styles.plot} role="img" aria-label={ariaLabel}>
+      <div className={styles.plot} data-size={size} role="img" aria-label={ariaLabel}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
