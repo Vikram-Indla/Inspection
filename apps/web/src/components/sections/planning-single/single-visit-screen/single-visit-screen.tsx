@@ -100,7 +100,7 @@ export default function SingleVisitScreen({ data, strings, locale }: {
     setLocationConfirmed(false);
   };
 
-  const arrivedSelected = data.handoff && target !== null && portfolios.length === 0;
+  const arrivedSelected = data.handoff && target !== null;
 
   const changeFactory = () => {
     setFactoryId(null);
@@ -164,7 +164,7 @@ export default function SingleVisitScreen({ data, strings, locale }: {
             {strings.changeFactory}
           </Button>
         }>
-          {strings.preselected}
+          {portfolios.length > 0 ? strings.prefilledHandoff : strings.preselected}
         </PlanningNotice>
       ) : (
         <FactorySearch
@@ -185,7 +185,7 @@ export default function SingleVisitScreen({ data, strings, locale }: {
       {searchSettled && portfolios.length > 0 ? (
         <PortfolioPicker
           portfolios={portfolios}
-          handoff={data.handoff}
+          handoff={data.handoff && !arrivedSelected}
           selectedLicenceId={licenceId}
           onSelect={id => { setLicenceId(id); setFactoryId(null); reselect(); }}
           strings={strings}
