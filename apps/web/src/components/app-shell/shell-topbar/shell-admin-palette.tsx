@@ -6,6 +6,7 @@ import Icon from "@/components/saqeel/icon/icon";
 import Kbd from "@/components/saqeel/kbd/kbd";
 import { Text } from "@/components/saqeel/type";
 import type { ShellNavItem } from "@/features/shell/types";
+import { formatCount } from "@/i18n/numbers";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./shell-topbar.module.css";
 
@@ -87,7 +88,7 @@ export default function ShellAdminPalette({ items, locale, strings }: {
             />
             <Text id={`${dialogId}-count`} live="status" tone="muted">
               {(matches.length === 1 ? strings.resultsOne : strings.resultsOther)
-                .replace("{count}", String(matches.length))}
+                .replace("{count}", formatCount(matches.length, locale))}
             </Text>
             <div className={styles.paletteResults} role="listbox" aria-label={strings.title}>
               {matches.map(item => (

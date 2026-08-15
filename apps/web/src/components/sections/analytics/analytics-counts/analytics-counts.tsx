@@ -5,6 +5,7 @@ import { bandCounts } from "@/features/analytics/groups";
 import type { AnalyticsMessages } from "@/features/analytics/strings";
 import type { ResolvedMetric } from "@/features/analytics/view";
 import { fill } from "@/i18n/messages";
+import { formatCount } from "@/i18n/numbers";
 import { analyticsDrillHref } from "@/lib/analytics/drills";
 import type { AnalyticsQuery } from "@/lib/analytics/contract";
 import type { Locale } from "@/lib/i18n";
@@ -23,7 +24,7 @@ export default function AnalyticsCounts({ counts, strings, query, locale }: {
     key: metric.key,
     label: metric.title,
     value: metric.value,
-    display: metric.value.toLocaleString(locale),
+    display: formatCount(metric.value, locale),
     muted: metric.value === 0,
     href: analyticsDrillHref(metric.key, query),
     title: metric.definition,

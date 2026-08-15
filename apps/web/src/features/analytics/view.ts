@@ -1,4 +1,4 @@
-import { ANALYTICS_METRICS } from "@/lib/analytics/metric-registry";
+import { ANALYTICS_METRICS, isRateMetric } from "@/lib/analytics/metric-registry";
 import type { AnalyticsRpcRow } from "@/lib/analytics/contract";
 import type { Locale } from "@/lib/i18n";
 import { analyticsMessages } from "./strings";
@@ -69,13 +69,13 @@ export function buildAnalyticsView(rows: readonly AnalyticsRpcRow[], locale: Loc
       continue;
     }
 
-    const display = metric.format(row.value);
+    const display = metric.format(row.value, locale);
     const resolved: ResolvedMetric = {
       key: metric.key,
       title: copy[metric.key]?.title ?? metric.title,
       definition: copy[metric.key]?.definition ?? metric.definition,
       trace: metric.trace,
-      kind: display.endsWith("%") ? "rate" : "count",
+      kind: isRateMetric(metric.key) ? "rate" : "count",
       value: row.value,
       display,
       numerator: numeric(row.numerator),

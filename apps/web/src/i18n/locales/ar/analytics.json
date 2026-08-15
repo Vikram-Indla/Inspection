@@ -142,6 +142,11 @@
     "reasons": "المحجوب بحسب السبب",
     "reasonsAriaLabel": "القدرات المحجوبة بحسب السبب: {summary}"
   },
+  "units": {
+    "factories": "{count} مصنعاً",
+    "inspectors": "{count} مفتشاً",
+    "hours": "{count} ساعة"
+  },
   "metrics": {
     "approved_inspection_compliance": {
       "title": "الامتثال في التفتيشات المعتمدة",

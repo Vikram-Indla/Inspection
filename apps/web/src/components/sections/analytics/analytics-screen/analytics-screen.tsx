@@ -11,7 +11,7 @@ import { analyticsMessages } from "@/features/analytics/strings";
 import { buildAnalyticsView } from "@/features/analytics/view";
 import { fill } from "@/i18n/messages";
 import type { AnalyticsQuery, AnalyticsRpcRow } from "@/lib/analytics/contract";
-import { formatDateTime } from "@/lib/dates";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-screen.module.css";
 
@@ -37,7 +37,7 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
         <span>
           <Heading level={1}>{strings.title}</Heading>
           <Text tone="secondary">
-            {fill(strings.subtitle, { from: query.periodFrom, to: query.periodTo })}
+            {fill(strings.subtitle, { from: formatDate(query.periodFrom, locale), to: formatDate(query.periodTo, locale) })}
           </Text>
         </span>
         <nav className={styles.journey} aria-label={strings.journey.label}>
@@ -76,7 +76,7 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
       {view.rates.length || view.counts.length ? (
         <>
           <div className={styles.split}>
-            <AnalyticsRates rates={view.rates} strings={strings} query={query} />
+            <AnalyticsRates rates={view.rates} strings={strings} query={query} locale={locale} />
             <AnalyticsBreakdowns breakdowns={view.breakdowns} strings={strings} locale={locale} />
           </div>
           <AnalyticsCounts counts={view.counts} strings={strings} query={query} locale={locale} />

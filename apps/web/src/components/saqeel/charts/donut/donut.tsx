@@ -9,6 +9,11 @@ export type DonutSlice = {
   readonly key: string;
   readonly label: string;
   readonly value: number;
+  /**
+   * The count as the reader sees it. Supplied by the caller, because the
+   * numbering system is a locale decision and a primitive has no locale.
+   */
+  readonly display: string;
 };
 
 /**
@@ -61,7 +66,7 @@ export default function Donut({ slices, total, ariaLabel, size = "md" }: {
           <li className={styles.item} key={slice.key}>
             <span className={styles.swatch} style={{ background: seriesColour(index) }} aria-hidden="true" />
             <Text as="span" role="label">{slice.label}</Text>
-            <Text as="span" role="label" tone="muted" numeric>{slice.value}</Text>
+            <Text as="span" role="label" tone="muted" numeric>{slice.display}</Text>
           </li>
         ))}
       </ul>

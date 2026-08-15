@@ -10,6 +10,7 @@ import { Heading } from "@/components/saqeel/type/heading";
 import { Text } from "@/components/saqeel/type/text";
 import type { NotificationStrings } from "@/features/shell/notification-strings";
 import { fill } from "@/i18n/messages";
+import { formatCount } from "@/i18n/numbers";
 import type { Locale } from "@/lib/i18n";
 import { notificationHref } from "@/lib/notification-read";
 import { eventLabel, notificationContent } from "./notification-content";
@@ -86,7 +87,9 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
         className={styles.trigger}
         type="button"
         ref={triggerRef}
-        aria-label={unread > 0 ? fill(strings.triggerLabelWithUnread, { count: unread }) : strings.triggerLabel}
+        aria-label={unread > 0
+          ? fill(strings.triggerLabelWithUnread, { count: formatCount(unread, locale) })
+          : strings.triggerLabel}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-controls={panelId}
@@ -98,7 +101,13 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
         <Icon name="notify" size="md" />
         {unread > 0 ? (
           <span className={styles.badge}>
-            <CountBadge value={unread > BADGE_CEILING ? `${BADGE_CEILING}+` : unread} tone="danger" superscript />
+            <CountBadge
+              value={unread > BADGE_CEILING
+                ? `${formatCount(BADGE_CEILING, locale)}+`
+                : formatCount(unread, locale)}
+              tone="danger"
+              superscript
+            />
           </span>
         ) : null}
       </button>
@@ -119,7 +128,7 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
               <Heading level={2} visual="subheading">{strings.heading}</Heading>
               {unread > 0 ? (
                 <Text role="label" tone="muted" as="span" numeric>
-                  {fill(strings.unreadCount, { count: unread })}
+                  {fill(strings.unreadCount, { count: formatCount(unread, locale) })}
                 </Text>
               ) : null}
             </span>

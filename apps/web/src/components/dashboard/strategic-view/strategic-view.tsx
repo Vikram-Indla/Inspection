@@ -1,7 +1,7 @@
 import { Card, CardBody, CardGrid, CardHeader } from "@/components/saqeel/card/card";
 import type { SegmentedItem } from "@/components/saqeel/segmented-control/segmented-control";
 import { complianceBreakdown, type FactoryRef, type ResponseRow } from "@/app/(app)/dashboard/metrics";
-import { formatCount, formatPercent } from "@/app/(app)/dashboard/dashboard-format";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 import {
   buildCoverage,
   buildMetricStrip,

@@ -6,6 +6,7 @@ import Stack from "@/components/saqeel/stack/stack";
 import OperationsEntryTable from "@/components/operations/operations-entry-table/operations-entry-table";
 import OperationsExceptions from "@/components/operations/operations-exceptions/operations-exceptions";
 import OperationsMapPanel from "@/components/operations/operations-map-panel/operations-map-panel";
+import OperationsStates from "@/components/operations/operations-states/operations-states";
 import { OperationsRegions, OperationsSummary } from "@/components/operations/operations-summary/operations-summary";
 import OperationsToolbar from "@/components/operations/operations-toolbar/operations-toolbar";
 import { fill, getMessages } from "@/i18n/messages";
@@ -153,6 +154,8 @@ export default function RevampOperationsCenter({
       ) : null}
 
       <OperationsSummary title={operations.summary.title} stats={summary} />
+
+      <OperationsStates counts={counts} locale={locale} strings={operations.states} />
 
       <OperationsExceptions
         rows={highlights}

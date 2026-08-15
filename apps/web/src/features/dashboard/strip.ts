@@ -137,6 +137,30 @@ export function buildCoverage(
   };
 }
 
+const MIN_DISTINCT_STATES = 2;
+
+/**
+ * A set of visits grouped by the governed operational state each one holds.
+ *
+ * Returns an empty list below two distinct states, so a caller can drop the
+ * chart entirely: one bar restates the tile that already shows the number, and
+ * no bars reads as a broken plot rather than an empty one.
+ */
+export function stateSlices(
+  rows: readonly { readonly operational_state: string }[],
+): readonly { readonly label: string; readonly value: number }[] {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const state = (row.operational_state ?? "").trim().toLowerCase();
+    if (!state) continue;
+    counts.set(state, (counts.get(state) ?? 0) + 1);
+  }
+  if (counts.size < MIN_DISTINCT_STATES) return [];
+  return [...counts.entries()]
+    .map(([label, value]) => ({ label, value }))
+    .sort((first, second) => second.value - first.value);
+}
+
 export function requirementRegisterStrings(locale: Locale) {
   const { dashboard } = getMessages(locale);
   return {

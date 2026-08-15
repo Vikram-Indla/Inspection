@@ -13,11 +13,72 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-112.** Take T-113.
+implements the reservation. **Highest id in use: T-115.** Take T-116.
 
 ---
 
 ## NOW
+
+### T-115 · Two of the four remaining dashboard sections earned a chart; two did not
+`status: partial — code complete, axe clean, gates unchanged; e2e and a native Arabic review owed` · `rules: WEB-000 … WEB-014` · `est: 1h`
+`record:` [2026-08-15-T-115-execution-state-split](sessions/2026-08/2026-08-15-T-115-execution-state-split.md)
+
+**`activeField` was a `.length` with the array discarded**, so the three states
+behind "9" were unreachable. Exposing `activeFieldRows` is three lines and no new
+query.
+
+```
+Execution status  "9" → executing 4 · on the way 4 · arrived 1     built
+Today's ops       0 visits today → self-gated, renders nothing     built
+Approvals         0 and 0 → decision mix is the right chart        parked
+High-priority     n=1 → a two-way split of one row is one bar      declined
+```
+
+The breakdown renders **inside** its own section under an `h3 subheading`, not as
+a card below it. Adding it in place would have taken `operational-view` to
+**224** lines, so the four group cards were extracted to `operational-groups`
+— **129 + 117**, both inside budget.
+
+**Overdue-by-age was rejected on principle:** bucket boundaries would read as an
+SLA banding, and the governed one is `slaWarnAtFraction`.
+
+### T-114 · Arabic numerals leak everywhere a number is not routed through a formatter
+`status: partial — code complete, /analytics measured 49 → 0; e2e and a native Arabic review owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011, WEB-013` · `est: 1.5h`
+`record:` [2026-08-15-T-114-arabic-numerals](sessions/2026-08/2026-08-15-T-114-arabic-numerals.md)
+
+Owner-reported: **the unread-notification badge in the shell header renders Latin
+digits under Arabic**, on every route. T-112 found the same shape on the
+dashboard and fixed it locally in `dashboard-format.ts` — the wrong home, since
+the shell cannot depend on a dashboard route module.
+
+The formatter moves to `i18n/numbers.ts`, which is where a locale numbering
+system belongs, and every leak found by audit is routed through it.
+
+**Kept deliberately:** the app renders `٪٥٠` (prefix). ICU's `style: "percent"`
+for `ar-SA` gives `٥٠٪؜` — suffix, plus an invisible ALM. Changing placement is a
+copy decision for the owner, not something to slip into a numerals fix.
+
+### T-113 · `/operations` was showing 4 visits and holding 49
+`status: partial — one widget shipped, five declined with evidence; axe blocked on a pre-existing map-layer defect` · `rules: WEB-000 … WEB-014` · `est: 2h`
+`record:` [2026-08-15-T-113-operations-states](sessions/2026-08/2026-08-15-T-113-operations-states.md)
+
+Same treatment as T-111 and T-112: judge every item first, build only what the
+data honestly supports.
+
+```
+tiles report   Active 4 · On the way 0 · Executing 0
+states hold    New 24 · Submitted 15 · Prepared 10  =  49 in scope
+```
+
+`counts` was already passed into the component and indexed **twice**; the other
+five states travelled the whole way and were dropped. **Five items declined** —
+two `Not configured` tiles, the map, the exception rows, and regional summaries
+(two denominators on one axis). Exceptions-by-kind is real but held back: the
+board holds one row here, so the chart would be a single bar.
+
+**Blocked:** axe reports `landmark-unique` on the map panel — two regions both
+named *"المملكة العربية السعودية"*. Pre-existing, in a file dense with
+`t(key, "English")` legacy; recorded rather than rushed.
 
 ### T-112 · `/dashboard` gets a chart layer, and every Arabic bar chart stops overlapping itself
 `status: partial — code complete, static gates green, axe clean on both views in both themes; e2e, native Arabic review and the bundle number are owed` · `rules: WEB-000 … WEB-014` · `est: 5h`

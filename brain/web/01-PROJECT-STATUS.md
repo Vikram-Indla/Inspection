@@ -1,6 +1,61 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-15` · `Updated by: T-112 — /dashboard chart layer`
+`Last updated: 2026-08-15` · `Updated by: T-114 — Arabic numerals`
+
+## `toLocaleString("ar")` returns Latin digits. Only `"ar-SA"` returns Arabic ones (2026-08-15)
+
+```
+(58).toLocaleString("ar")     "58"
+(58).toLocaleString("ar-SA")  "٥٨"
+```
+
+The bare `ar` tag defaults to `latn` numbering. This is the entire defect behind
+**49 Latin-digit nodes on the Arabic `/analytics`**, and it is nastier than a
+missing formatter, because `value.toLocaleString(locale)` **reads as
+locale-aware code**. Two call sites looked already-correct and were not.
+
+Worse in `metric-registry.ts`: `const count = v => v.toLocaleString("en")` —
+hardcoded, so every count on the route rendered English digits in both locales,
+with *"factories"* and *"inspectors"* as English literals inside the format
+functions.
+
+**Every number now goes through `i18n/numbers.ts`**, the parallel of
+`lib/dates.ts`. Any `toLocaleString` outside it is a defect; a gate rule matching
+a bare `ar` tag is cheap and is not written yet.
+
+## A kind derived from a rendered string breaks when you translate the string (2026-08-15)
+
+`features/analytics/view.ts` classified every metric with:
+
+```ts
+kind: display.endsWith("%") ? "rate" : "count"
+```
+
+Arabic renders `٪٣٤٫٥` — the sign leads. So localising the percent sign would
+have made that test false for **all ten rates and silently moved them into the
+counts band**, restructuring the page in one locale only. Nothing would have
+failed; the screen would simply have been wrong in Arabic.
+
+Replaced with `isRateMetric(key)`, derived from the formatter each registry entry
+already declares. **The lesson generalises past i18n: a branch that reads
+rendered output is a branch that breaks the first time presentation changes.**
+
+## Absence is not the only thing a screen discards — distributions are too (2026-08-15)
+
+Three routes in a row have now been found rendering a total while holding its
+breakdown:
+
+```
+/dashboard   217 rendered   pipeline held cancelled 117 · published 52 · draft 40 · returned 8
+/operations    4 rendered   states held new 24 · submitted 15 · prepared 10  = 49 in scope
+```
+
+On `/operations` the `counts` object was already **passed into the component and
+indexed twice**; the other five states travelled the whole way and were dropped.
+
+**Before designing a chart, diff what the data layer computes against what the
+screen renders.** Both of these were free — no new query, no new RPC — and both
+were invisible until someone read the model rather than the markup.
 
 ## RTL inverts `text-anchor`, and it broke every Arabic bar chart for a whole task cycle (2026-08-15)
 

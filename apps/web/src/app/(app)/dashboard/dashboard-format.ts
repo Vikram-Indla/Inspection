@@ -10,6 +10,7 @@
 
 import type { MetricSourceStatus, SharedMetric } from "@/lib/dashboard-kpi/contract";
 import { kpiDefinition } from "@/lib/dashboard-kpi/registry";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 
 export type Locale = "en" | "ar";
 export type DisplayTone = "critical" | "warning" | "success" | "info" | "neutral";
@@ -81,16 +82,6 @@ export function statusTone(status: MetricSourceStatus): DisplayTone {
     case "live": return "success";
     default: return "neutral";
   }
-}
-
-/** A plain count in the reader's numbering system — Arabic-Indic under `ar`. */
-export function formatCount(value: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US").format(value);
-}
-
-/** A whole percentage, with the sign on the side the locale puts it. */
-export function formatPercent(value: number, locale: Locale): string {
-  return locale === "ar" ? `٪${formatCount(value, locale)}` : `${value}%`;
 }
 
 /** Format a live numeric value by unit. Returns null when there is no value. */

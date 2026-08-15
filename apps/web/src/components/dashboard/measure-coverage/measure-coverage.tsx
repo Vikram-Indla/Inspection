@@ -1,4 +1,4 @@
-import { formatCount, formatPercent } from "@/app/(app)/dashboard/dashboard-format";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
 import Gauge from "@/components/saqeel/charts/gauge/gauge";
 import { Heading, Text } from "@/components/saqeel/type";

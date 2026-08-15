@@ -8,6 +8,7 @@ import { blockedLabel } from "@/features/analytics/strings";
 import type { AnalyticsMessages } from "@/features/analytics/strings";
 import type { BlockedMetric } from "@/features/analytics/view";
 import { fill } from "@/i18n/messages";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-blocked.module.css";
 
@@ -23,18 +24,18 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
   const bottlenecks = strings.bottlenecks;
   const total = resolved + blocked.length;
   const percent = total > 0 ? (resolved / total) * PERCENT : 0;
-  const display = `${percent.toFixed(1)}%`;
-  const caption = fill(strings.coverage.caption, { resolved, total });
+  const display = formatPercent(percent, locale, 1);
+  const caption = fill(strings.coverage.caption, { resolved: formatCount(resolved, locale), total: formatCount(total, locale) });
 
   const slices: DonutSlice[] = REASON_ORDER.flatMap(status => {
     const value = ANALYTICS_BOTTLENECKS.filter(item => item.status === status).length;
-    return value ? [{ key: status, label: blockedLabel(status, locale), value }] : [];
+    return value ? [{ key: status, label: blockedLabel(status, locale), value, display: formatCount(value, locale) }] : [];
   });
   const summary = slices.map(slice => `${slice.label} ${slice.value}`).join(", ");
 
   const sources = blocked.length === 1
     ? strings.unavailable.summaryOne
-    : fill(strings.unavailable.summary, { count: blocked.length });
+    : fill(strings.unavailable.summary, { count: formatCount(blocked.length, locale) });
   const uniformStatus = blocked.length > 0
     && blocked.every(metric => metric.status === blocked[0].status);
 
@@ -70,7 +71,7 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
                 </figcaption>
                 <Donut
                   slices={slices}
-                  total={String(ANALYTICS_BOTTLENECKS.length)}
+                  total={formatCount(ANALYTICS_BOTTLENECKS.length, locale)}
                   size="lg"
                   ariaLabel={fill(strings.coverage.reasonsAriaLabel, { summary })}
                 />
@@ -106,7 +107,7 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
           <details className={styles.group}>
             <summary className={styles.summaryRow}>
               <Text as="span" role="bodyStrong">
-                {fill(bottlenecks.summary, { count: ANALYTICS_BOTTLENECKS.length })}
+                {fill(bottlenecks.summary, { count: formatCount(ANALYTICS_BOTTLENECKS.length, locale) })}
               </Text>
             </summary>
             <Text tone="muted">{bottlenecks.body}</Text>

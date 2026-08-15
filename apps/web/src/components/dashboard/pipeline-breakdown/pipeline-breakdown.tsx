@@ -1,4 +1,4 @@
-import { formatCount } from "@/app/(app)/dashboard/dashboard-format";
+import { formatCount } from "@/i18n/numbers";
 import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import { Text } from "@/components/saqeel/type";
@@ -9,8 +9,9 @@ import type { Locale } from "@/lib/i18n";
 export type PipelineStrings = {
   readonly aria: string;
   readonly total: string;
-  readonly emptyTitle: string;
-  readonly empty: string;
+  /** Omit both to render nothing at all rather than an empty state. */
+  readonly emptyTitle?: string;
+  readonly empty?: string;
 };
 
 export type PipelineSlice = {
@@ -41,7 +42,9 @@ export default function PipelineBreakdown({ slices, total, locale, strings }: {
     .sort((first, second) => second.value - first.value);
 
   if (!ranked.length) {
-    return <EmptyState icon="visits" title={strings.emptyTitle} description={strings.empty} />;
+    return strings.emptyTitle
+      ? <EmptyState icon="visits" title={strings.emptyTitle} description={strings.empty} />
+      : null;
   }
 
   const points: readonly BarPoint[] = ranked.map(slice => ({

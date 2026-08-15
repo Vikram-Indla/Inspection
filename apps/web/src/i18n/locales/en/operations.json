@@ -23,6 +23,12 @@
   "summary": {
     "title": "Operational summary"
   },
+  "states": {
+    "title": "Visits by operational state",
+    "description": "Every visit in scope, grouped by the operational state it currently holds.",
+    "aria": "Visits in scope by operational state, ranked from largest to smallest",
+    "total": "{total} visits in scope"
+  },
   "regions": {
     "title": "National performance by region",
     "description": "Selecting a region drills to its factories and active visits.",

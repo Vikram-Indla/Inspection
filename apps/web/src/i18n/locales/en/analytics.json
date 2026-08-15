@@ -142,6 +142,11 @@
     "reasons": "Blocked by reason",
     "reasonsAriaLabel": "Blocked capabilities by reason: {summary}"
   },
+  "units": {
+    "factories": "{count} factories",
+    "inspectors": "{count} inspectors",
+    "hours": "{count} h"
+  },
   "metrics": {
     "approved_inspection_compliance": {
       "title": "Approved-inspection compliance",

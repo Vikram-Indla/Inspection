@@ -5,6 +5,7 @@ import type { AnalyticsMessages } from "@/features/analytics/strings";
 import type { ResolvedMetric } from "@/features/analytics/view";
 import { makeEnumLabel } from "@/i18n/enum-label";
 import { fill } from "@/i18n/messages";
+import { formatCount } from "@/i18n/numbers";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-breakdowns.module.css";
 
@@ -33,16 +34,16 @@ export default function AnalyticsBreakdowns({ breakdowns, strings, locale }: {
         <div className={styles.grid}>
           {breakdowns.map(metric => {
             const total = totalOf(metric);
-            const summary = metric.breakdown.map(([label, value]) => `${enumLabel(label)} ${value}`).join(", ");
+            const summary = metric.breakdown.map(([label, value]) => `${enumLabel(label)} ${formatCount(value, locale)}`).join(", ");
             return (
               <figure className={styles.item} key={metric.key}>
                 <figcaption className={styles.head}>
                   <Text as="span" role="bodyStrong">{metric.title}</Text>
                 </figcaption>
                 <Donut
-                  total={total.toLocaleString(locale)}
+                  total={formatCount(total, locale)}
                   ariaLabel={fill(strings.breakdown.ariaLabel, { metric: metric.title, summary })}
-                  slices={metric.breakdown.map(([label, value]) => ({ key: label, label: enumLabel(label), value }))}
+                  slices={metric.breakdown.map(([label, value]) => ({ key: label, label: enumLabel(label), value, display: formatCount(value, locale) }))}
                 />
               </figure>
             );

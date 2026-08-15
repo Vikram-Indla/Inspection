@@ -1,4 +1,4 @@
-import { formatCount } from "@/app/(app)/dashboard/dashboard-format";
+import { formatCount } from "@/i18n/numbers";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import Sparkline, { type SparkPoint } from "@/components/saqeel/charts/sparkline/sparkline";
 import { Metric, Text } from "@/components/saqeel/type";
