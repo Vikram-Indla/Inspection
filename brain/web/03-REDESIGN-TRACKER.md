@@ -13,11 +13,50 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-123.** Take T-124.
+implements the reservation. **Highest id in use: T-124.** Take T-125 — the package designer, already scoped in T-124's record.
 
 ---
 
 ## NOW
+
+### T-124 · `/admin/packages` — eleven impact reports rendered at once
+`status: partial — register, states and naming done; the designer components are T-125` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-16-T-124-packages-register](sessions/2026-08/2026-08-16-T-124-packages-register.md)
+
+`open={version.status === "draft" || index === 0}` opened the first version of
+**every** package, so the screen was eleven expanded publish-impact reports
+stacked vertically. That plus 22 prose blocks was the screen, at **479 leaf
+nodes** — the most cluttered route measured so far.
+
+```
+route file       574 → 40 lines     impact panels open  11 → 0
+typography       +11 removed        38 remain, all T-125 files
+screen names      4 → 1             tabs 4 (3 off-route) + journey → 4 states
+```
+
+**No chart fits, and that is the finding.** Six candidates judged against
+**10 packages · 11 versions · 9 items**; every distribution has ≤2 non-zero
+categories on a single-digit denominator. This is a configuration workbench, not
+an analytics surface — T-113/T-115's test rules out all of them.
+
+**Effective-date windows were evaluated in UTC.** `currentPublished` used
+`toISOString().slice(0,10)`, so between 21:00 and midnight Riyadh the "currently
+published" version could resolve to the wrong one. Now `riyadhToday()`.
+
+**Stated rather than hidden: `<details>` collapses the impact panel visually,
+it does not remove it from the DOM** — ~498 KB still crosses the wire. Genuine
+on-demand impact needs a per-version server action. Parked.
+
+**Two mistakes, both caught by measuring, neither by a gate.** Deleting
+`packages.module.css` returned a **500** because `DraftEditor.tsx:6` still
+imports it (T-093's lesson; one grep would have caught it). And making the
+states mutually exclusive silently changed what "Draft" counts — **0 where the
+old screen said 2** — because a package with both a publish and an open draft
+counted only as published. **A filter is not a partition.**
+
+**Parked:** the rail still says *Survey Configuration*; unlike T-123's entry it
+carries a `businessTab` grouping key, so renaming the label alone would leave
+the two inconsistent. Owner call.
 
 ### T-123 · `/admin/localization`, and a screen that shipped 1,821 rows to draw 12
 `status: partial — code complete, static gates green, payload and states measured; axe, Arabic review and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`

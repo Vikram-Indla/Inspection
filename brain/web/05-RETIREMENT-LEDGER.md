@@ -30,7 +30,7 @@ The banner on line 1 of a marked file, exact form:
 | `app/(app)/operations/sections/operations-details.tsx` (29 lines) | `design/final-cut/saqeel-revamp.html` | 2026-08-08 | `e2e/web-admin-m3-operations.spec.ts` (readFileSync composition assertion) | 0-imports |
 | `app/(app)/visits/VisitsBoard.tsx` (707 lines) | `components/sections/visits/visit-board/visit-board` | 2026-08-09 | **none — zero importers** | 0-imports |
 | `app/(app)/admin/compliance-approvals/**` (page, layout, loading, error) | `app/(app)/compliance/approvals` | 2026-08-10 | **none — `middleware.ts` rewrites this path unconditionally, so the segment never runs** | 0-imports |
-| `app/(app)/admin/_components/AdminDestinationFrame.tsx` | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-16 | `/admin/integrations`, `/admin/packages`, `/admin/risk` — **`/admin/access` (T-122) and `/admin/localization` (T-123) migrated** | 0-imports |
+| `app/(app)/admin/_components/AdminDestinationFrame.tsx` | `components/app-shell/shell-page-frame/shell-page-frame` | 2026-08-16 | `/admin/integrations`, `/admin/risk` — **`/admin/access` (T-122), `/admin/localization` (T-123) and `/admin/packages` (T-124) migrated** | 0-imports |
 | `components/ContextualAiPanel.tsx` (76 lines) | `components/sections/ai/ai-advisory/ai-advisory` | 2026-08-10 | `/factories/[id]`, `/factories/cr/[id]`, `/field/factory-360/[id]`, `/field/inspection/[id]`, `/field/[visitId]`, `sections/visits/visit-ai-summary` — **6 of 7 consumers remain**; `/planning/bulk` migrated | 0-imports |
 
 `VisitsBoard.tsx` is the **only** row whose `pending` list is empty. It is still

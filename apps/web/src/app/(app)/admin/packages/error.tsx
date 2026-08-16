@@ -1,22 +1,45 @@
 "use client";
 
-import { useEffect } from "react";
+import { useSyncExternalStore } from "react";
+import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
+import Button from "@/components/saqeel/button/button";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import { Mono } from "@/components/saqeel/type";
+import { adminPackagesMessages } from "@/features/admin-packages/strings";
+import { fill } from "@/i18n/messages";
+import type { Locale } from "@/lib/i18n";
 
-export default function PackageError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  useEffect(() => { console.error("[admin packages boundary]", error); }, [error]);
-  const ar = typeof document !== "undefined" && !document.cookie.includes("locale=en");
-  const copy = ar
-    ? { title: "تعذّر تحميل مكتبة الحزم", body: "لم يكتمل الطلب. لا يمكننا معرفة ما إذا كانت القائمة فارغة أو حدث خطأ.", retry: "إعادة المحاولة" }
-    : { title: "Couldn’t load the package library", body: "The request didn’t finish. Try again.", retry: "Try again" };
+const NEVER_CHANGES = () => () => undefined;
+const readDocumentLocale = (): Locale => document.documentElement.lang === "ar" ? "ar" : "en";
+const serverLocale = (): Locale => "en";
+
+export default function PackagesError({ error, reset }: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  const locale = useSyncExternalStore(NEVER_CHANGES, readDocumentLocale, serverLocale);
+  const strings = adminPackagesMessages(locale);
+
   return (
-    <main className="sq-content" style={{ padding: "var(--space-8)" }}>
-      <div className="sq-banner sq-banner--critical" role="alert">
-        <div>
-          <h2>{copy.title}</h2>
-          <p>{copy.body}</p>
-          <button type="button" className="btn btn-primary btn-lg btn-touch" onClick={reset}>{copy.retry}</button>
-        </div>
-      </div>
-    </main>
+    <ShellPageFrame
+      breadcrumbLabel={strings.breadcrumb.label}
+      breadcrumbs={[
+        { label: strings.breadcrumb.administration, href: "/admin" },
+        { label: strings.breadcrumb.hub },
+      ]}
+    >
+      <EmptyState
+        action={
+          <>
+            {error.digest ? <Mono>{fill(strings.error.reference, { id: error.digest })}</Mono> : null}
+            <Button onClick={reset} variant="secondary">{strings.error.retry}</Button>
+          </>
+        }
+        description={strings.error.body}
+        icon="risk"
+        title={strings.error.title}
+        tone="danger"
+      />
+    </ShellPageFrame>
   );
 }

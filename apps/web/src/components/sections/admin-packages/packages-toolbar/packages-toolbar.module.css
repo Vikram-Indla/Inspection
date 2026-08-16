@@ -1,0 +1,34 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+}
+
+.search {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sqx-space-2);
+  flex: 1 1 var(--sqx-grid-min-sm);
+  min-inline-size: 0;
+}
+
+.search > :first-child {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+@media (max-width: 48rem) {
+  .toolbar,
+  .search {
+    flex-basis: 100%;
+  }
+}

@@ -1,6 +1,50 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-16` · `Updated by: T-123 — /admin/localization migration`
+`Last updated: 2026-08-16` · `Updated by: T-124 — /admin/packages register`
+
+## A collapsed `<details>` is a visual fix, not a payload fix (2026-08-16)
+
+T-124 took `/admin/packages` from eleven simultaneously-expanded publish-impact
+reports to eleven collapsed disclosures. The screen reads completely differently.
+**The document is still ~498 KB**, because `<details>` hides content, it does not
+withhold it.
+
+**Say which one you fixed.** Collapsing is the right first move — it costs
+nothing and it is what the reader experiences — but a task that reports
+"decluttered" while the payload is unchanged has answered a different question
+from the one WEB-005 asks. Genuine deferral needs the content to not be rendered
+at all, which for per-row detail means a server action.
+
+## Charts: sometimes the honest answer is none (2026-08-16)
+
+T-124 judged six chart candidates for `/admin/packages` and built **zero**.
+
+```
+10 packages · 11 versions · 9 items
+version status   9 published / 2 draft / 0 locked   2 non-zero, one dominant
+items in use     denominator 9                      the sentence says more
+by scope         free text, not a governed enum     charting invents a taxonomy
+items/package    10 bars of config counts           nothing a designer can act on
+```
+
+**A configuration workbench is not an analytics surface.** The reader's job is
+to assemble and publish a package, and no distribution helps with that. The two
+gauges on `/admin/localization` earned their place because they were governed
+ratios that changed what the reader understood — that is the bar, and it is
+worth failing openly rather than shipping a gauge on a denominator of nine.
+
+## A filter is not a partition (2026-08-16)
+
+T-124 rebuilt the package states as mutually exclusive, so a package holding
+**both** a current publish and an open draft counted only as published — and the
+Draft filter read **0** where the old screen said **2**.
+
+Mutual exclusivity is right for a *badge* and wrong for a *filter*: filters are
+views, they may overlap, and they do not have to sum to the total. `draft` now
+means *has an open draft*, which is the question a configuration author actually
+asks. **No gate can see this** — it was found by comparing the rendered count
+against the screen being replaced, which is the audit T-111 established.
+
 
 ## A screen can ship 1,821 rows to draw 12, and nothing will tell you (2026-08-16)
 
