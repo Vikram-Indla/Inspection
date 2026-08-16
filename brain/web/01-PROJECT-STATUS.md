@@ -23,6 +23,42 @@ route that supplies none sits flush against the viewport edge. That is a
 one-line shell fix serving every route at once, and it was deliberately **not**
 taken — the owner's brief said not to touch the shell.
 
+## A hyphenated JSX attribute is never type-checked, so `aria-*` on a primitive silently vanishes (2026-08-16)
+
+T-122's first `Breadcrumb` put `aria-current="page"` on `<Text>`, whose prop API
+is deliberately closed (WEB-002: no escape hatch). **TypeScript accepted it and
+the attribute never rendered** — JSX attributes containing a hyphen are exempt
+from prop-type checking. `tsc` clean, gates green, and the current page unmarked
+in the accessibility tree.
+
+**No check in this repository can see this.** It was found by reading the
+rendered markup. The rule: an `aria-*` or `data-*` prop on a design-system
+primitive is a no-op unless that primitive declares it — put it on an element you
+control, or extend the primitive deliberately.
+
+## `usePathname()` disagrees with the server wherever middleware rewrites (2026-08-16)
+
+Owner-reported hydration error on `/admin/access`, and it predates the migration
+that surfaced it. `AdminScreenRegistry` matched `usePathname()` against a table
+of unprefixed routes:
+
+```
+server   /admin/access      ADM-S01        middleware rewrites /en/admin/x → /admin/x
+client   /en/admin/access   ADM-UNMAPPED   usePathname() reads the browser URL
+```
+
+Every `/admin/*` route reached with a locale prefix hydrated mismatched. Fixed
+with `stripLocale(usePathname())` — the helper already existed for exactly this.
+**Any client component in this app that branches on `usePathname()` has the same
+defect**, because the locale prefix is stripped by middleware on every route.
+
+**Found while checking it: the `/ar/` path prefix does not switch the locale at
+all** — `/ar/dashboard` and `/ar/analytics` both render `lang="en"` `dir="ltr"`
+in a session whose `locale` cookie is `en`, though `middleware.ts` reads
+`pathLocale` **before** the cookie. Platform-wide, pre-existing, and unrelated to
+any current task — but it means **a path-prefixed Arabic URL is not a way to
+review Arabic**; use the language toggle.
+
 ## The 146-spec tax arrived on the very first migration after it was predicted (2026-08-16)
 
 T-119 recorded that 146 of 252 specs assert the spelling of source files, and

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { stripLocale } from "@/lib/locale-path";
 
 const ADMIN_SCREENS = [
   ["/admin/access", "ADM-S01"],
@@ -48,7 +49,7 @@ function matchesRoute(pathname: string, route: string): boolean {
 }
 
 export default function AdminScreenRegistry({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const pathname = stripLocale(usePathname());
   const screen = ADMIN_SCREENS.find(([route]) => route === pathname)
     ?? ADMIN_SCREENS.find(([route]) => matchesRoute(pathname, route));
 

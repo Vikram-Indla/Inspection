@@ -27,12 +27,13 @@ export default function AccessFrame({ strings, metrics, tabs, children }: {
 }) {
   return (
     <ShellPageFrame
-      title={strings.title}
-      description={strings.subtitle}
+      breadcrumbLabel={strings.breadcrumb.label}
       breadcrumbs={[
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
       ]}
+      description={strings.subtitle}
+      title={strings.title}
     >
       {metrics?.length ? (
         <div className={styles.metrics}>

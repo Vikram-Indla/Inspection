@@ -171,6 +171,40 @@ page gutter       padding-inline 32px / 32px  (was 0px / 0px)
 - `shell-page-frame` gains its **first importer**, which is the ledger's stated
   goal for it.
 
+## Follow-up in the same task — a hydration mismatch and a centralised breadcrumb
+
+**Owner-reported hydration error, and it was not this migration.**
+`AdminScreenRegistry` (the **parent** `/admin` layout, untouched here) matched
+`usePathname()` against a table of unprefixed routes:
+
+```
+server  /admin/access       ADM-S01      middleware rewrites /en/admin/x → /admin/x
+client  /en/admin/access    ADM-UNMAPPED usePathname() reads the browser URL
+```
+
+So `data-saqeel-admin-screen` and `data-saqeel-admin-route` differed across the
+boundary on **every `/admin/*` route reached with a locale prefix**. The fix is
+`stripLocale(usePathname())` — the helper already existed in `lib/locale-path.ts`
+for exactly this. Verified: `/admin/access`, `/en/admin/access` and
+`/ar/admin/access` all now resolve to `ADM-S01` / `/admin/access`.
+
+**A hyphenated JSX attribute bypasses prop type-checking entirely.** The first
+`Breadcrumb` put `aria-current` on `<Text>`, whose prop API is deliberately
+closed (WEB-002: no escape hatch). TypeScript **accepted it and the attribute
+vanished** — attributes containing a hyphen are not checked against the
+component's props type. `tsc` was clean, the gate was green, and the current
+page was unmarked in the accessibility tree. Caught by reading the rendered
+markup, not by any check. **`aria-*` on a primitive is a silent no-op; put it on
+the element you control.**
+
+`Breadcrumb` now lives at `components/saqeel/breadcrumb/`. The existing
+`navigation/Breadcrumb` was **not** reused, on T-104's test — it has zero
+importers and is `"use client"` for no reason, emits a raw `<a>`, carries an
+inline `style` and the frozen-sheet `.breadcrumb` global, keys by array index,
+and hardcodes an English `aria-label`. `shell-page-frame` now composes the new
+one and its three inline breadcrumb CSS rules are deleted; it gained
+`breadcrumbLabel` so the landmark name comes from a resource key.
+
 ## Parked
 
 - **`/admin/loading.tsx` renders `RouteLoading`, which puts a second `<main>`

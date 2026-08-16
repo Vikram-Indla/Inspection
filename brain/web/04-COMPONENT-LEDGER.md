@@ -547,3 +547,10 @@ No row, no merge.
 | --- | --- | --- | --- |
 | `primitives/use-media-query.ts` | **client** | 30 | `useSyncExternalStore` over `matchMedia` — **no effect**. Extracted from `shell-scope-controls.tsx` rather than copied. The server snapshot is `false`, so choose the query such that the safe layout is the one `false` selects. Use a CSS media query for styling; this exists for values CSS cannot reach, such as a numeric prop handed to a chart library. |
 | `date-range-picker/date-range-picker.tsx` | **client** | +7 | Gained `id`, so a `Field` label can point at the trigger with `htmlFor`. The trigger is a `<button>`, which is labelable; the accessible name still comes from `aria-label`, so this adds click-to-focus without changing what is announced. |
+
+### Primitives added by T-122
+
+| Component | Kind | Lines | Contract |
+| --- | --- | --- | --- |
+| `breadcrumb/breadcrumb.tsx` | server | 53 | The trail of ancestors for the current page. **The last item is never a link**, whether or not it carries an `href` — a link to the page you are already on is a control that does nothing — and it is the only item carrying `aria-current="page"`. `label` names the landmark and has **no default**: a hardcoded `"Breadcrumb"` would be an English literal in every locale (WEB-013), so the caller supplies the key. Separator is a CSS `::before` on `.crumb + .crumb`, not a DOM node, so it is never announced and never focusable. Keyed by `href + label` rather than index, so reordering a trail cannot reuse a node. **Supersedes `navigation/Breadcrumb`**, which is `"use client"` for no reason, emits a raw `<a>`, carries an inline `style` and the frozen-sheet `.breadcrumb` global, keys by array index, and hardcodes its English `aria-label`. |
+| `app-shell/shell-page-frame/shell-page-frame.tsx` | server | 44 → 40 | Its inline breadcrumb `<ol>` and the three CSS rules behind it are **deleted**; it composes `Breadcrumb` and gained `breadcrumbLabel`. The trail now renders identically wherever the frame is used, which is the point of having one. |

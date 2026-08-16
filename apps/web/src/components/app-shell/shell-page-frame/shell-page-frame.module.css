@@ -16,26 +16,6 @@
   gap: var(--sqx-space-3);
 }
 
-.breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sqx-space-3);
-  padding: 0;
-  color: var(--sqx-text-muted);
-  list-style: none;
-}
-
-.breadcrumb a {
-  color: var(--sqx-text-muted);
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
-}
-
-.breadcrumb li[aria-current="page"] {
-  color: var(--sqx-text-secondary);
-}
-
 .titleRow {
   display: flex;
   flex-wrap: wrap;

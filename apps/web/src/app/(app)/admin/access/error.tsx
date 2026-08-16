@@ -22,6 +22,7 @@ export default function AccessError({ error, reset }: {
 
   return (
     <ShellPageFrame
+      breadcrumbLabel={strings.breadcrumb.label}
       breadcrumbs={[
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },

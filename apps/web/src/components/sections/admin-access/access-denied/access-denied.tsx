@@ -10,6 +10,7 @@ export default function AccessDenied({ locale }: { locale: Locale }) {
 
   return (
     <ShellPageFrame
+      breadcrumbLabel={strings.breadcrumb.label}
       breadcrumbs={[
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
