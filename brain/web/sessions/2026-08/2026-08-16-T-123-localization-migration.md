@@ -263,6 +263,41 @@ this reason. This dialog uses `--sqx-prose-max`, which is real and defensible
 for a column of text fields, but a `--sqx-dialog-*` width belongs in
 `saqeel.css` and is a change request.
 
+## Owner follow-up 3 — `CountBadge` renders a raw number, and five other screens have the same defect
+
+Owner-reported: the filter tab counts stayed Latin under Arabic. The cause is one
+line — `<CountBadge value={counts[filter]} />` — and the tell is the one T-114
+already named: **a number reaching JSX without passing a formatter.**
+
+```
+before   جميع المفاتيح1821 · العربية مفقودة24 · مسودة1797
+after    جميع المفاتيح١٬٨٢١ · العربية مفقودة٢٤ · مسودة١٬٧٩٧
+measured Latin-digit nodes on the Arabic page  →  0
+```
+
+**The primitive is the amplifier.** `CountBadge` renders `{value}` verbatim and
+takes `number | string`, so any caller passing a number ships Latin digits in
+Arabic. Five other consumers do exactly that today:
+
+```
+regulation-authority-nav   value={total}
+review-tabs                value={tab.count}
+factories-scope-bar        value={shown}
+more-filters               value={activeCount}
+approval-request-rail      value={entries.length}
+```
+
+So `/regulations`, `/reviews/[id]`, `/factories`, `/planning` and the approvals
+queue all render Latin counts under Arabic right now. **Not fixed here — five
+routes this task does not own (WEB-006 §1).**
+
+**The change request that closes the class, not the instance:** narrow
+`CountBadge`'s `value` to `string`. The prop already accepts one, so every call
+site is forced to format and the compiler finds all of them. This follows T-114's
+ruling on `Donut`, which gained a `display` slot rather than a locale, **because
+a design-system primitive must not acquire one** — the same reasoning says the
+badge should receive a formatted string, never a number it cannot localise.
+
 ## Parked
 
 - **The shell rail calls this route "Lookup Management"** while the page is now

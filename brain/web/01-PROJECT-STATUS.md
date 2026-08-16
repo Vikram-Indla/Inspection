@@ -27,6 +27,30 @@ rows, anything it used to *build* from them breaks. CSV export was
 handler, which is better on every axis — no DOM mutation, no JavaScript, and the
 file now honours the current filter rather than client memory.
 
+## `CountBadge` cannot localise its own number, and five screens are wrong today (2026-08-16)
+
+T-123 shipped Latin digits into the Arabic filter tabs from one line —
+`<CountBadge value={counts[filter]} />`. Fixed with `formatCount`, and the
+Arabic page now measures **0 Latin-digit nodes**. The instance is trivial; the
+class is not.
+
+`CountBadge` renders `{value}` verbatim and accepts `number | string`, so **every
+caller passing a number ships Latin digits under Arabic**:
+
+```
+regulation-authority-nav  value={total}          /regulations
+review-tabs               value={tab.count}      /reviews/[id]
+factories-scope-bar       value={shown}          /factories
+more-filters              value={activeCount}    /planning
+approval-request-rail     value={entries.length} approvals queue
+```
+
+**The fix that closes the class is a one-word API change**: narrow `value` to
+`string`. It already accepts one, so the compiler then finds all eleven call
+sites for you. This is T-114's `Donut` ruling applied again — a design-system
+primitive must not acquire a locale, so it must be handed text that is already
+formatted.
+
 ## Charts: the honest answer is usually fewer than the data suggests (2026-08-16)
 
 T-123 judged six candidates and built two.
