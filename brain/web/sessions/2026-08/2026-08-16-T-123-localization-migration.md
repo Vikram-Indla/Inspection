@@ -167,6 +167,45 @@ headings    H1 → H2 → H2, no skip     legacy classes 0     reconstruction no
 `AdminDestinationFrame`'s `pending` list loses `/admin/localization`; three
 routes remain (`/admin/integrations`, `/admin/packages`, `/admin/risk`).
 
+## Owner follow-up — one action per row, and the rail name settled
+
+**Every row carried a Save button whether or not anything had been edited.**
+Twelve rows × (Save + Mark reviewed + History) = **36 buttons in one viewport**,
+three visual weights competing, with the primary weight on a control that in
+eleven rows out of twelve did nothing.
+
+```
+buttons in the list   36 → 24
+steady-state row      Save · Draft · Mark reviewed · History  →  Draft · Mark reviewed · History
+dirty row             the same four                            →  Draft · Unsaved change · Save · History
+```
+
+**Save now renders only when the field is dirty**, and `canReview` gained
+`!unsaved` — so the two actions can never both claim the row. A row asks for
+exactly one thing at a time: *save what you typed*, or *review what is saved*.
+The state cell reads status → action → disclosure, in descending weight: a
+`StatusPill`, a secondary button, a link.
+
+**This is the same defect as the tab that pointed at its own page** (T-123) and
+the breadcrumb link to the current page (T-122): **a control that cannot do
+anything is still charging the reader attention.** Three instances in two tasks
+is a pattern worth naming — *if it is always visible, prove it is ever useful.*
+
+**The rail name is settled.** `shell-navigation.ts:201` said *Lookup
+Management* while the page said *Language & translations*. The catalogue is
+`lib/`, not `components/app-shell/`, so this was a copy change rather than a
+shell redesign, and it is now `Language & translations` / `اللغة والترجمات` in
+both places. Two specs asserting the old label were updated with it.
+
+**A spec constant can pin history rather than behaviour, and I edited the wrong
+one.** `admin-core-orchestrator.spec.ts` holds `MIGRATION_TITLES`, which asserts
+the text a **already-applied database migration** seeded — its own comment says
+so — beside a separate list for runtime headings. Changing it made the spec
+demand a string the migration file does not contain, and the static suite went
+408 → 407. Restored; the runtime list was the correct target and was already
+changed. **Before editing a spec constant, read what it is pinned to: a
+migration that has run is a historical fact, not a value you may update.**
+
 ## Parked
 
 - **The shell rail calls this route "Lookup Management"** while the page is now

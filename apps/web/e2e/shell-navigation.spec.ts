@@ -57,7 +57,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     const administration = groups.find(group => group.id === "administration");
     expect(administration?.items.map(item => [item.labelEn, item.href])).toEqual([
       ["Users & roles", "/admin/access"],
-      ["Lookup Management", "/admin/localization"],
+      ["Language & translations", "/admin/localization"],
       ["Survey Configuration", "/admin/packages"],
       ["Planning Expiry Rules", "/admin/planning/expiry"],
       ["Planning Lookups", "/admin/planning/lookups"],

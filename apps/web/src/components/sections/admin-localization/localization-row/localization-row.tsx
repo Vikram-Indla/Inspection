@@ -51,7 +51,9 @@ export default function LocalizationRow({ row, strings, locale }: {
   const errorTokens = new Set(missing);
   const runsLong = arabic.trim() !== "" && row.en.trim() !== "" && arabic.length > row.en.length * 1.3;
   const state = stateOf(row);
-  const canReview = !row.orphaned && row.status !== "reviewed" && arabic.trim() !== "" && missing.length === 0;
+  const unsaved = arabic !== (row.ar ?? "");
+  const canReview = !unsaved && !row.orphaned && row.status !== "reviewed"
+    && arabic.trim() !== "" && missing.length === 0;
 
   return (
     <article className={styles.row} data-orphaned={row.orphaned ? "" : undefined}>
@@ -75,9 +77,11 @@ export default function LocalizationRow({ row, strings, locale }: {
               value={arabic}
             />
           </span>
-          <Button busy={savePending} disabled={savePending || missing.length > 0} type="submit" variant="primary">
-            {savePending ? strings.row.saving : strings.row.save}
-          </Button>
+          {unsaved || savePending ? (
+            <Button busy={savePending} disabled={savePending || missing.length > 0} type="submit" variant="primary">
+              {savePending ? strings.row.saving : strings.row.save}
+            </Button>
+          ) : null}
         </form>
         {missing.length > 0 ? (
           <Text live="alert" role="label" tone="danger">
@@ -92,7 +96,12 @@ export default function LocalizationRow({ row, strings, locale }: {
       </div>
 
       <div className={styles.state}>
-        <StatusPill ping={false} tone={TONE[state]}>{strings.states[state]}</StatusPill>
+        <div className={styles.stateHead}>
+          <StatusPill ping={false} tone={TONE[state]}>{strings.states[state]}</StatusPill>
+          {unsaved ? (
+            <Text role="label" tone="warning">{strings.row.unsaved}</Text>
+          ) : null}
+        </div>
         {canReview ? (
           <form action={reviewAction}>
             <input name="key" type="hidden" value={row.key} />

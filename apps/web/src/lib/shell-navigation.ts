@@ -198,7 +198,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     //    not a gap.
     items: [
       { id: "adm-users", labelKey: "shell.nav.usersRoles", labelEn: "Users & roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: allPresentationRoles, businessTab: "Users & roles", visibility: "canonical-admin" },
-      { id: "adm-lookup", labelKey: "shell.nav.lookupManagement", labelEn: "Lookup Management", labelAr: "إدارة القوائم المرجعية", href: "/admin/localization", icon: "library", roles: allPresentationRoles, businessTab: "Lookup Management", visibility: "canonical-admin" },
+      { id: "adm-lookup", labelKey: "shell.nav.languageTranslations", labelEn: "Language & translations", labelAr: "اللغة والترجمات", href: "/admin/localization", icon: "library", roles: allPresentationRoles, businessTab: "Lookup Management", visibility: "canonical-admin" },
       { id: "adm-survey", labelKey: "shell.nav.surveyConfiguration", labelEn: "Survey Configuration", labelAr: "تهيئة الاستبيانات", href: "/admin/packages", icon: "forms", roles: allPresentationRoles, businessTab: "Survey Configuration", visibility: "canonical-admin" },
       { id: "adm-planning-expiry", labelKey: "shell.nav.planningExpiry", labelEn: "Planning Expiry Rules", labelAr: "قواعد انتهاء صلاحية التخطيط", href: "/admin/planning/expiry", icon: "calendar", roles: allPresentationRoles, businessTab: "Planning Expiry Rules", visibility: "canonical-admin" },
       { id: "adm-planning-lookups", labelKey: "shell.nav.planningLookups", labelEn: "Planning Lookups", labelAr: "القوائم المرجعية للتخطيط", href: "/admin/planning/lookups", icon: "library", roles: allPresentationRoles, businessTab: "Planning Lookups", visibility: "canonical-admin" },

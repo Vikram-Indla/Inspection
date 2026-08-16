@@ -59,9 +59,18 @@ went red in a run.
 three times in this repo and walked into anyway. The re-point script now
 normalises line endings before matching.
 
-**Parked:** the shell rail still calls this route *Lookup Management* while the
-page is now *Language & translations* — an owner call, and out of scope under
-"do not touch the shell".
+**Owner follow-up:** every row carried a Save button whether or not anything had
+been edited — **36 buttons in one viewport**, primary weight on a control that
+did nothing in 11 rows of 12. Save now renders only when the field is dirty and
+`canReview` gained `!unsaved`, so a row asks for exactly one thing at a time:
+**buttons 36 → 24**. **The rail name is settled** — `shell-navigation.ts` is
+`lib/`, not the shell component, so *Lookup Management* → *Language &
+translations* was copy, not redesign.
+
+**Caught editing a spec constant that pins history:** `MIGRATION_TITLES` asserts
+what an already-applied migration seeded, beside a separate runtime list. Editing
+it made the spec demand a string the migration does not contain (408 → 407).
+Restored. **Read what a spec constant is pinned to before changing it.**
 
 ### T-122 · `/admin/access` onto SAQEEL, and six ways of saying the same thing become one
 `status: partial — code complete, static gates green, gutter and dedupe measured; axe, Arabic review and e2e owed` · `rules: WEB-000 … WEB-014` · `est: 3h`
