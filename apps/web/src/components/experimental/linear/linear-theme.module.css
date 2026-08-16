@@ -1,0 +1,131 @@
+.root {
+  --lnr-void: #08090a;
+  --lnr-carbon: #0f1011;
+  --lnr-obsidian: #161718;
+  --lnr-graphite: #23252a;
+  --lnr-smoke: #383b3f;
+  --lnr-ash: #62666d;
+  --lnr-fog: #8a8f98;
+  --lnr-mist: #d0d6e0;
+  --lnr-bone: #e5e5e6;
+  --lnr-paper: #ffffff;
+  --lnr-acid-lime: #e4f222;
+  --lnr-pulse-green: #27a644;
+  --lnr-coral-red: #eb5757;
+  --lnr-signal-teal: #02b8cc;
+  --lnr-iris-violet: #6366f1;
+  --lnr-lavender: #8b5cf6;
+
+  --lnr-canvas: var(--lnr-void);
+  --lnr-surface: var(--lnr-carbon);
+  --lnr-surface-raised: var(--lnr-obsidian);
+  --lnr-surface-tint: rgba(255, 255, 255, 0.02);
+  --lnr-surface-tint-strong: rgba(255, 255, 255, 0.05);
+
+  --lnr-text: var(--lnr-paper);
+  --lnr-text-body: var(--lnr-mist);
+  --lnr-text-muted: var(--lnr-fog);
+
+  --lnr-hairline: var(--lnr-graphite);
+  --lnr-hairline-strong: var(--lnr-smoke);
+  --lnr-control-edge: var(--lnr-ash);
+
+  --lnr-accent: var(--lnr-acid-lime);
+  --lnr-accent-ink: var(--lnr-void);
+
+  --lnr-font-ui: "Inter Variable", "Inter", var(--font-plex-arabic, "IBM Plex Sans Arabic"), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --lnr-font-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --lnr-font-features: "cv01" on, "ss03" on, "zero" on;
+
+  --lnr-text-caption: 13px;
+  --lnr-leading-caption: 1.2;
+  --lnr-tracking-caption: 0;
+  --lnr-text-body-sm: 15px;
+  --lnr-leading-body-sm: 1.6;
+  --lnr-tracking-body-sm: -0.165px;
+  --lnr-text-control: 14px;
+  --lnr-leading-control: 1.4;
+  --lnr-tracking-control: -0.154px;
+  --lnr-text-body-lg: 20px;
+  --lnr-leading-body-lg: 1.33;
+  --lnr-tracking-body-lg: -0.24px;
+  --lnr-text-subheading: 24px;
+  --lnr-leading-subheading: 1.33;
+  --lnr-tracking-subheading: -0.288px;
+  --lnr-text-heading-sm: 32px;
+  --lnr-leading-heading-sm: 1.13;
+  --lnr-tracking-heading-sm: -0.704px;
+
+  --lnr-weight-light: 300;
+  --lnr-weight-regular: 400;
+  --lnr-weight-medium: 510;
+  --lnr-weight-strong: 590;
+
+  --lnr-space-4: 4px;
+  --lnr-space-8: 8px;
+  --lnr-space-12: 12px;
+  --lnr-space-16: 16px;
+  --lnr-space-20: 20px;
+  --lnr-space-24: 24px;
+  --lnr-space-32: 32px;
+  --lnr-space-40: 40px;
+  --lnr-space-48: 48px;
+  --lnr-space-64: 64px;
+
+  --lnr-radius-small: 2px;
+  --lnr-radius-badges: 4px;
+  --lnr-radius-inputs: 6px;
+  --lnr-radius-buttons: 6px;
+  --lnr-radius-cards: 12px;
+  --lnr-radius-pills: 9999px;
+
+  --lnr-shadow-sm: rgba(0, 0, 0, 0.4) 0px 2px 4px 0px;
+  --lnr-shadow-inset-edge: var(--lnr-hairline) 0px 0px 0px 1px inset;
+  --lnr-shadow-xl: rgba(8, 9, 10, 0.6) 0px 4px 32px 0px;
+
+  --lnr-page-max: 1200px;
+  --lnr-card-padding: var(--lnr-space-24);
+  --lnr-element-gap: var(--lnr-space-8);
+
+  color: var(--lnr-text-body);
+  background: var(--lnr-canvas);
+  font-family: var(--lnr-font-ui);
+  font-feature-settings: var(--lnr-font-features);
+  font-variant-numeric: tabular-nums;
+}
+
+:global([data-theme="light"]) .root {
+  --lnr-canvas: var(--lnr-paper);
+  --lnr-surface: var(--lnr-paper);
+  --lnr-surface-raised: #fafafa;
+  --lnr-surface-tint: rgba(8, 9, 10, 0.02);
+  --lnr-surface-tint-strong: rgba(8, 9, 10, 0.05);
+
+  --lnr-text: var(--lnr-void);
+  --lnr-text-body: var(--lnr-smoke);
+  --lnr-text-muted: var(--lnr-ash);
+
+  --lnr-hairline: var(--lnr-bone);
+  --lnr-hairline-strong: var(--lnr-mist);
+  --lnr-control-edge: var(--lnr-ash);
+
+  --lnr-shadow-sm: rgba(8, 9, 10, 0.08) 0px 2px 4px 0px;
+  --lnr-shadow-xl: rgba(8, 9, 10, 0.12) 0px 4px 32px 0px;
+}
+
+.root :is(h1, h2, h3, h4, h5, h6, p, ul, ol, figure) {
+  margin: 0;
+}
+
+.root :focus-visible {
+  outline: 2px solid var(--lnr-accent);
+  outline-offset: 2px;
+}
+
+:global([dir="rtl"]) .root {
+  --lnr-tracking-control: 0;
+  --lnr-tracking-body-sm: 0;
+  --lnr-tracking-body-lg: 0;
+  --lnr-tracking-subheading: 0;
+  --lnr-tracking-heading-sm: 0;
+}

@@ -1,0 +1,75 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-16);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--lnr-space-12);
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--lnr-space-12);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  inline-size: 100%;
+  min-inline-size: 1040px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colVersion { inline-size: 6%; }
+.colStatus { inline-size: 12%; }
+.colOffset { inline-size: 8%; }
+.colReason { inline-size: 21%; }
+.colReasonWide { inline-size: 29%; }
+.colNotify { inline-size: 14%; }
+.colScope { inline-size: 13%; }
+.colEffective { inline-size: 12%; }
+.colActions { inline-size: 14%; }
+
+.table caption {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.table th {
+  text-align: start;
+  vertical-align: bottom;
+  padding-block: var(--lnr-space-8);
+  padding-inline: var(--lnr-space-12);
+  border-block-end: 1px solid var(--lnr-hairline-strong);
+}
+
+.table td {
+  vertical-align: top;
+  padding-block: var(--lnr-space-12);
+  padding-inline: var(--lnr-space-12);
+  border-block-end: 1px solid var(--lnr-hairline);
+}
+
+.table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-4);
+}

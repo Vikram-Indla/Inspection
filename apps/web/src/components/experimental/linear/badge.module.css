@@ -1,0 +1,29 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lnr-space-8);
+  padding-block: 2px;
+  padding-inline: var(--lnr-space-8);
+  border-radius: var(--lnr-radius-badges);
+  background: var(--lnr-surface-tint-strong);
+  color: var(--lnr-text-body);
+  font-family: var(--lnr-font-ui);
+  font-feature-settings: var(--lnr-font-features);
+  font-size: var(--lnr-text-caption);
+  line-height: var(--lnr-leading-caption);
+  font-weight: var(--lnr-weight-regular);
+  white-space: nowrap;
+}
+
+.live {
+  color: var(--lnr-text);
+  font-weight: var(--lnr-weight-medium);
+}
+
+.dot {
+  inline-size: var(--lnr-space-8);
+  block-size: var(--lnr-space-8);
+  border-radius: var(--lnr-radius-pills);
+  background: var(--lnr-accent);
+  flex: none;
+}

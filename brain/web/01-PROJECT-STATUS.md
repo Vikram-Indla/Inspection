@@ -1,6 +1,71 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-16` · `Updated by: T-126 — /admin/packages workbench`
+`Last updated: 2026-08-17` · `Updated by: T-127 — /admin/planning/expiry Linear experiment`
+
+## A style reference is not a design system until someone measures it (2026-08-17)
+
+T-127 built `/admin/planning/expiry` in the experimental Linear language at
+`apps/web/experimental/`. **Two of its own specifications fail WCAG AA**, and
+both were found by measuring the rendered page, not by reading the palette:
+
+```
+badge spec   rgba(255,255,255,0.05) ground + #8a8f98 text   3.25:1   FAIL at 13px
+"muted body text" role   ash #62666d on void                3.45:1   large-text only
+```
+
+The badge number is the nastier one: **the tint lightens the ground**, so a pair
+that measures 5.86:1 on the card measures 3.25:1 inside the badge. A palette
+check against surface colours would have passed it. **Composite the alpha against
+the real ancestor chain, or the number is fiction.**
+
+Three more results worth carrying forward. **The light theme needed no invention
+— the ladder inverts**: `fog` is muted text on dark, `ash` is muted text on
+light, `graphite`/`smoke` hairlines become `bone`/`mist`, all from the reference's
+own 16 colours. **The accent survives both themes only as a fill**: `#e4f222` is
+1.23:1 as text on white and 16.15:1 as a fill with near-black ink. And
+**decorative hairlines are not control borders** — `graphite` on `void` is 1.30:1,
+correct for a divider under 1.4.11 and insufficient for an input edge.
+
+## Four token names collided with the frozen sheet, and a `:root` block would have hit every route (2026-08-17)
+
+`apps/web/experimental/variables.css` defines `--radius-sm`, `--radius-md`,
+`--shadow-sm` and `--shadow-md` — **all four already exist in `src/app/tokens.css`**.
+Dropped into `:root` as written, an experiment scoped to one route would have
+changed radii and shadows application-wide.
+
+**Prefix and class-scope any parallel token set before it renders once.** T-127
+uses `--lnr-*` on a wrapper class, so deleting the directory removes the
+experiment completely. Also discarded: `experimental/theme.css` is a **Tailwind
+v4 `@theme` block** duplicating `variables.css` verbatim, and this repo has no
+Tailwind (WEB-002 §3).
+
+## A font claim is a width measurement — and the headline typeface is not rendering (2026-08-17)
+
+T-095's rule paid out again. The experimental system's identity is *"Inter
+Variable with cv01, ss03 and zero on"*; measured:
+
+```
+as declared   500.20      ← identical to Plex Arabic: that is what renders
+plexArabic    500.20
+Inter         435.25      ← absent, not resolving
+```
+
+`app/layout.tsx` self-hosts IBM Plex Sans Arabic **deliberately**, so the build
+never depends on a Google fetch — which means Inter cannot simply be linked; it
+must be self-hosted the same way. **Anyone judging the experiment today is seeing
+its colour, spacing, shape and hierarchy in the ministry typeface, not its
+typography.** Say so before asking for a verdict.
+
+## `hasText` is a substring match, and `cd-044` was one version away from failing (2026-08-17)
+
+`section(page).locator("tr", { hasText: "v1" })` matches any row containing
+`v1` — including `v10`. The spec's own create-version test grows that section on
+every run and it is **already at v9**, so the next run fails Playwright strict
+mode with an error indistinguishable from a migration regression.
+
+**Found only because the rebuilt page was read in the browser.** Re-pointed to an
+exact cell match. Worth a sweep: any `hasText` carrying a short prefixed
+identifier (`v1`, `P1`, `R1`) has this defect latent in it.
 
 ## A component that compiles, typechecks and passes every gate can still be rendered by nothing (2026-08-16)
 

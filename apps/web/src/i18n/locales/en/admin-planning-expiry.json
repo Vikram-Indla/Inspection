@@ -1,0 +1,103 @@
+{
+  "title": "Planning Expiry Rules",
+  "subtitle": "Rules that expire visits which were never acknowledged, dated, started or completed",
+  "loading": "Loading planning expiry rules",
+  "governance": {
+    "heading": "One enabled version per rule type.",
+    "body": "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently, and every change is recorded in the audit trail."
+  },
+  "scheduler": {
+    "note": "These rules are checked every 15 minutes. Only the enabled version of each rule applies, and a change takes effect at the next check."
+  },
+  "readOnly": {
+    "heading": "You can view these rules but not change them",
+    "body": "A security administrator can give your role permission to edit them, under Users & roles."
+  },
+  "error": {
+    "heading": "Couldn’t load expiry rules",
+    "body": "Nothing was changed. Try again.",
+    "retry": "Try again",
+    "reference": "Reference"
+  },
+  "ruleType": {
+    "no_acknowledgement": "No acknowledgement",
+    "no_execution_date": "No execution date",
+    "no_execution_start": "No execution start",
+    "not_completed_at_window_end": "Not completed at window end"
+  },
+  "column": {
+    "version": "Version",
+    "status": "Status",
+    "offset": "Offset",
+    "reason": "Reason",
+    "notify": "Notify",
+    "scope": "Scope",
+    "effective": "Effective",
+    "actions": "Actions"
+  },
+  "versionLabel": "v{version}",
+  "status": {
+    "live": "Enabled",
+    "superseded": "Superseded",
+    "liveSummary": "v{version} in force",
+    "noneLive": "No enabled version",
+    "noneLiveNote": "No rule of this type applies until you enable a version."
+  },
+  "action": {
+    "enable": "Enable",
+    "disable": "Disable",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "newVersion": "New version",
+    "createVersion": "Create version (disabled)",
+    "working": "Applying…"
+  },
+  "field": {
+    "offset": "Offset (minutes)",
+    "offsetHint": "Whole minutes, 0 to 525600",
+    "reason": "Reason (recorded in audit)",
+    "visitType": "Visit type",
+    "executionMode": "Execution mode",
+    "priority": "Priority"
+  },
+  "notify": {
+    "planCreator": "Notify plan creator",
+    "inspector": "Notify inspector",
+    "none": "No one"
+  },
+  "scope": {
+    "any": "Any",
+    "allVisits": "All visits"
+  },
+  "visitType": {
+    "periodic": "Periodic",
+    "follow_up": "Follow-up",
+    "complaint": "Complaint"
+  },
+  "executionMode": {
+    "physical": "Physical",
+    "virtual": "Virtual",
+    "administrative": "Administrative"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "empty": {
+    "heading": "No versions yet",
+    "body": "No versions of this rule type exist yet."
+  },
+  "units": {
+    "minutes": "min",
+    "effectiveFrom": "from",
+    "ongoing": "ongoing"
+  },
+  "a11y": {
+    "versionsTable": "{rule} versions",
+    "editorFor": "Editing {rule} v{version}",
+    "newVersionFor": "New version of {rule}"
+  }
+}

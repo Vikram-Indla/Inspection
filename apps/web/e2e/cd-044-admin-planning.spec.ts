@@ -163,25 +163,25 @@ test.describe("CD-044 planning expiry rules governance (PLN-CON-013)", () => {
 
   test("v1 rule disables and re-enables with the single-enabled invariant intact", async ({ page }) => {
     await page.goto("/admin/planning/expiry");
-    const v1 = section(page).locator("tr", { hasText: "v1" });
+    const v1 = section(page).locator("tr").filter({ has: page.getByRole("cell", { name: "v1", exact: true }) });
     await expect(v1).toBeVisible();
 
     // A previous run (or reseed) may have left every version disabled;
     // establish the enabled baseline through the same governed UI first.
     if (await v1.getByRole("button", { name: "Enable" }).count()) {
       await v1.getByRole("button", { name: "Enable" }).click();
-      await expect(page.locator(".sq-banner--success")).toBeVisible({ timeout: 20_000 });
+      await expect(section(page).getByRole("status")).toBeVisible({ timeout: 20_000 });
     }
     let row = must(await rest("GET", V1_QUERY, adminJwt), "verify enabled baseline");
     expect(row[0].enabled).toBe(true);
 
-    await section(page).locator("tr", { hasText: "v1" }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator(".sq-banner--success")).toBeVisible({ timeout: 20_000 });
+    await section(page).locator("tr").filter({ has: page.getByRole("cell", { name: "v1", exact: true }) }).getByRole("button", { name: "Disable" }).click();
+    await expect(section(page).getByRole("status")).toBeVisible({ timeout: 20_000 });
     row = must(await rest("GET", V1_QUERY, adminJwt), "verify disabled");
     expect(row[0].enabled).toBe(false);
 
-    await section(page).locator("tr", { hasText: "v1" }).getByRole("button", { name: "Enable" }).click();
-    await expect(page.locator(".sq-banner--success")).toBeVisible({ timeout: 20_000 });
+    await section(page).locator("tr").filter({ has: page.getByRole("cell", { name: "v1", exact: true }) }).getByRole("button", { name: "Enable" }).click();
+    await expect(section(page).getByRole("status")).toBeVisible({ timeout: 20_000 });
     row = must(await rest("GET", V1_QUERY, adminJwt), "verify re-enabled");
     expect(row[0].enabled).toBe(true);
   });

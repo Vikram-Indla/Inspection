@@ -13,11 +13,56 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-126.** Take T-127.
+implements the reservation. **Highest id in use: T-127.** Take T-128.
 
 ---
 
 ## NOW
+
+### T-127 · `/admin/planning/expiry` in the experimental Linear system — an A/B trial, not a migration
+`status: partial — code complete, rendered and measured in both themes and both locales; axe, 320px/200% zoom and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`
+`record:` [2026-08-17-T-127-expiry-linear-experiment](sessions/2026-08/2026-08-17-T-127-expiry-linear-experiment.md)
+
+```
+route file        107 → 14 lines     hardcoded copy  ~60 → 0  (67 keys × en/ar)
+legacy classes     17 → 0            inline styles   ~20 → 0
+smallest text   11.5px → 13px        heading outline  no h1 → h1 + 4× h2
+client tree     1 whole screen → 3 leaves            named tables  0/4 → 4/4
+```
+
+**Built in `apps/web/experimental/`'s Linear language, not SAQEEL** — owner's
+brief, so a manager can judge it against the current transformation. **The old
+`ExpiryAdmin.tsx` is deliberately left on disk as the control arm**; reverting is
+one line in `page.tsx`.
+
+**Tokens are prefixed `--lnr-*` and class-scoped, never `:root`.** Four of the
+experimental token names — `--radius-sm`, `--radius-md`, `--shadow-sm`,
+`--shadow-md` — **already exist in the frozen `tokens.css`**, so a global block
+would have changed radii and shadows on every route in the app.
+
+**The experimental system's own rule fixed the screen's worst defect.**
+`design.md` says twice that green and red are *not* status colours — and the old
+screen painted every superseded version `sq-lozenge--critical`, so a page whose
+normal state is "one enabled version among many" rendered mostly red.
+
+**Two accessibility failures in `design.md` itself, found by measuring.** Its
+badge spec composites to **3.25:1**, and it assigns `ash #62666d` to muted body
+text at **3.45:1** on `void`. Both fixed and recorded; every pair now passes AA in
+**both** themes (light was derived from their own 16 colours — `design.md` is
+dark-only).
+
+**Inter is not rendering and cannot without a self-hosted font file.** Measured
+by width: as-declared **500.20px** ≡ Plex Arabic **500.20px** vs Inter's 435.25.
+The manager is seeing Linear's colour, spacing and shape in the ministry
+typeface, not its typography.
+
+**A latent `cd-044` bug was fixed in passing.** `hasText: "v1"` is a substring
+match and that section is **already at v9**; at v10 it matches `v1` and `v10` and
+fails strict mode. The next run would have gone red and looked like this task.
+
+**Parked:** Inter self-hosting · an Arabic ruling for a reference system with no
+Arabic story · the gate exemption for `components/experimental/linear/` must be
+deleted with the directory if the experiment is rejected.
 
 ### T-126 · the register stops being the editor
 `status: partial — structure, states and specs done; axe, native Arabic review and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 5h`

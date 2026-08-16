@@ -1,0 +1,71 @@
+.text {
+  font-family: var(--lnr-font-ui);
+  font-feature-settings: var(--lnr-font-features);
+  margin: 0;
+}
+
+.caption {
+  font-size: var(--lnr-text-caption);
+  line-height: var(--lnr-leading-caption);
+  letter-spacing: var(--lnr-tracking-caption);
+}
+
+.body {
+  font-size: var(--lnr-text-body-sm);
+  line-height: var(--lnr-leading-body-sm);
+  letter-spacing: var(--lnr-tracking-body-sm);
+}
+
+.bodyLg {
+  font-size: var(--lnr-text-body-lg);
+  line-height: var(--lnr-leading-body-lg);
+  letter-spacing: var(--lnr-tracking-body-lg);
+}
+
+.subheading {
+  font-size: var(--lnr-text-subheading);
+  line-height: var(--lnr-leading-subheading);
+  letter-spacing: var(--lnr-tracking-subheading);
+}
+
+.headingSm {
+  font-size: var(--lnr-text-heading-sm);
+  line-height: var(--lnr-leading-heading-sm);
+  letter-spacing: var(--lnr-tracking-heading-sm);
+}
+
+.mono {
+  font-family: var(--lnr-font-mono);
+  font-size: var(--lnr-text-caption);
+  line-height: var(--lnr-leading-body-sm);
+  letter-spacing: -0.013px;
+  font-variant-numeric: tabular-nums;
+}
+
+.regular {
+  font-weight: var(--lnr-weight-regular);
+}
+
+.medium {
+  font-weight: var(--lnr-weight-medium);
+}
+
+.strong {
+  font-weight: var(--lnr-weight-strong);
+}
+
+.toneDefault {
+  color: var(--lnr-text-body);
+}
+
+.toneStrong {
+  color: var(--lnr-text);
+}
+
+.toneMuted {
+  color: var(--lnr-text-muted);
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}

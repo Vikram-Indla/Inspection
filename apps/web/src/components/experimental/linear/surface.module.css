@@ -1,0 +1,37 @@
+.card {
+  background: var(--lnr-surface);
+  border-radius: var(--lnr-radius-cards);
+  box-shadow: var(--lnr-shadow-inset-edge);
+  padding: var(--lnr-card-padding);
+}
+
+.flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.notice {
+  display: flex;
+  gap: var(--lnr-space-12);
+  padding-block: var(--lnr-space-12);
+  padding-inline: var(--lnr-space-16);
+  border-radius: var(--lnr-radius-inputs);
+  background: var(--lnr-surface-tint);
+  box-shadow: var(--lnr-shadow-inset-edge);
+  border-inline-start: 2px solid var(--lnr-hairline-strong);
+}
+
+.noticeAccent {
+  border-inline-start-color: var(--lnr-accent);
+}
+
+.noticeDanger {
+  border-inline-start-color: var(--lnr-coral-red);
+}
+
+.divider {
+  block-size: 1px;
+  background: var(--lnr-hairline);
+  border: 0;
+  margin: 0;
+}
