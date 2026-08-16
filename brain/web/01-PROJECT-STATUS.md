@@ -1,6 +1,52 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-16` · `Updated by: T-121 — the ESLint ratchet`
+`Last updated: 2026-08-16` · `Updated by: T-122 — /admin/access migration`
+
+## `shell-page-frame` was the route-owned frame all along (2026-08-16)
+
+T-122 needed a frame that owns the page gutter. It built one — and two thirds of
+it already existed. **`shell-page-frame` has sat at zero importers since T-004**,
+which `05-RETIREMENT-LEDGER.md` records as its *expected* state, and it already
+implements the gutter clamp, the breadcrumb, the title and the description.
+
+```
+padding-inline: clamp(var(--sqx-page-inline-sm), 4vw, var(--sqx-page-inline))
+measured on /admin/access   0px / 0px  →  32px / 32px
+```
+
+`access-frame` composes it and adds only what is route-specific. **This is the
+swap the ledger has prescribed all along and the first one anyone has taken.**
+The next migration should reach for it before writing a `padding-inline`.
+
+**Corollary worth generalising: `app-shell`'s `.main` has no padding**, so a
+route that supplies none sits flush against the viewport edge. That is a
+one-line shell fix serving every route at once, and it was deliberately **not**
+taken — the owner's brief said not to touch the shell.
+
+## The 146-spec tax arrived on the very first migration after it was predicted (2026-08-16)
+
+T-119 recorded that 146 of 252 specs assert the spelling of source files, and
+that every migration would break the ones pinned to its markup. T-122 broke
+**two**, and only one was found by the pre-flight sweep — the other surfaced as
+3 new static failures after the code was already written.
+
+**The sweep missed it because the grep was route-path-shaped** (`/admin/access`)
+and the spec's assertions are file-path-shaped. **Add "grep `e2e/` for the source
+paths, not the route paths" to every migration inventory** — it is one command
+and it is the difference between re-pointing a spec deliberately and discovering
+it in a failure list.
+
+## A gate banner nobody gated (2026-08-16)
+
+`/admin/access` rendered *"Role changes are guarded and audited — every write is
+checked again on the server"* **unconditionally**, to read-only viewers who
+cannot write at all. Not a fabrication like T-110's outage banner, but the same
+family: **a reassurance about a capability the reader does not have.**
+
+Found by asking, per surface, *who is this sentence for?* — which also collapsed
+**six restatements of three facts into one role-aware card**, and deleted a
+"Reconstruction note" that was **internal build commentary rendered to ministry
+users**.
 
 ## `npm run lint` exists now, and it is a ratchet because it had to be (2026-08-16)
 

@@ -1,0 +1,25 @@
+.picker {
+  max-inline-size: var(--sqx-grid-min-sm);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pill {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+@media (max-width: 48rem) {
+  .picker {
+    max-inline-size: none;
+  }
+}

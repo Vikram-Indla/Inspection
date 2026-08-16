@@ -13,11 +13,55 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-121.** Take T-122.
+implements the reservation. **Highest id in use: T-122.** Take T-123.
 
 ---
 
 ## NOW
+
+### T-122 · `/admin/access` onto SAQEEL, and six ways of saying the same thing become one
+`status: partial — code complete, static gates green, gutter and dedupe measured; axe, Arabic review and e2e owed` · `rules: WEB-000 … WEB-014` · `est: 3h`
+`record:` [2026-08-16-T-122-admin-access-migration](sessions/2026-08/2026-08-16-T-122-admin-access-migration.md)
+
+```
+route file        391 → 25 lines      typography debt   13 → 0
+i18n keys           0 → 109 × 2       t(key,"English") 120 → 0
+native <select>     4 → 0             getElementById     3 → 0
+governance copies   6 → 1             page gutter      0px → 32px
+error.tsx        absent → present     eslint (new tree)  0 findings
+```
+
+**The route-owned frame was two thirds already built.** `shell-page-frame` has
+sat at **zero importers** since T-004 — which the retirement ledger calls its
+expected state — and already owns the gutter, breadcrumb and title.
+`access-frame` composes it and adds only the metric band and tabs. **This is the
+swap the ledger prescribes, taken for the first time.**
+
+**`AdminDestinationFrame` was marked, not edited** — 5 consumers, and editing it
+would have restyled four routes nobody asked about. Banner added, the four named
+`pending`. The shared `AdminRouteBoundary` likewise untouched; `/admin/access`
+gets its own `AccessDenied`, which **is reachable** because the parent admits
+`supervisor` and this route admits `admin` only.
+
+**The gate banner was unconditional**, so read-only viewers were told writes are
+guarded when they cannot write. The governance card is now role-aware.
+
+**A role is not a status** — the admin badge was `badge-warning`, T-116's defect
+again. **Nothing formats inline**: `formatDate` and `formatCount` everywhere; the
+old code called `toLocaleDateString()` with no locale at all.
+
+**`Text as="h3"` does not typecheck**, which is the primitive refusing to let a
+heading be faked — the `h1 → h3` skip is fixed by construction.
+
+**Two source-text specs had to be re-pointed** (`admin-access-route-aware`,
+`execution-access-contract`); one was missed in the first sweep and showed up as
+3 new failures. **This is the 146-spec tax T-119 predicted, charged on the first
+migration after it.**
+
+**Blocked:** the pane's `visibilityState` is `hidden`, which stalls the transition
+and holds the parent `/admin` fallback open (T-096's caveat). Measurements came
+from the server payload and a computed-style probe — real, but not a settled DOM.
+axe, a native Arabic review of 109 keys, the 320px pass and e2e are owed.
 
 ### T-121 · `npm run lint` exists, runs, and is a ratchet rather than a wall
 `status: done` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-006, WEB-014` · `est: 1h`

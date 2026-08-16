@@ -1,0 +1,71 @@
+.picker {
+  max-inline-size: var(--sqx-grid-min-sm);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pill {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.grantRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
+.grantRow > :first-child {
+  flex: 1 1 var(--sqx-grid-min-sm);
+  min-inline-size: 0;
+}
+
+.confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  padding: var(--sqx-space-4);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-border-accent);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-sunken);
+}
+
+.confirmActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+@media (max-width: 48rem) {
+  .picker,
+  .grantRow > :first-child {
+    max-inline-size: none;
+    flex-basis: 100%;
+  }
+}
