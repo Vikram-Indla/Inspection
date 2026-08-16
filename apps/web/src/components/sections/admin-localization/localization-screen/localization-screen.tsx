@@ -33,7 +33,7 @@ export default function LocalizationScreen({ data, query, locale }: {
     >
       <LocalizationCoverage data={data} locale={locale} strings={strings} />
 
-      <LocalizationFilters counts={data.counts} query={query} strings={strings} />
+      <LocalizationFilters counts={data.counts} locale={locale} query={query} strings={strings} />
 
       <LocalizationToolbar
         actions={

@@ -206,6 +206,63 @@ demand a string the migration file does not contain, and the static suite went
 changed. **Before editing a spec constant, read what it is pinned to: a
 migration that has run is a historical fact, not a value you may update.**
 
+## Owner follow-up 2 — the add-key panel, alignment, and a measured responsive pass
+
+**The add-key form had four fields and no visible labels.** `TextInput`'s
+`label` prop is `aria-label` only, so every field showed a placeholder and
+nothing else — and a placeholder disappears the moment you type, which is the
+classic reason placeholder-as-label fails. `Field` already existed and renders a
+real `<label htmlFor>` plus a hint. Four fields, four visible labels, four hints
+where the field is optional.
+
+**The Close button is gone and the panel is a real modal.** It was an inline
+panel with a button floating above it; it is now a native `<dialog>` opened with
+`showModal()` — the T-110 pattern — which brings Escape, focus containment,
+background inertness and focus restoration as platform guarantees.
+
+**Backdrop dismissal took three attempts and the first two were wrong.**
+`onClick` on `<dialog>` trips `jsx-a11y/no-noninteractive-element-interactions`;
+narrowing that rule then tripped `click-events-have-key-events`. **Both rules
+were right about the same thing** — a click-only interaction — and my rule
+change was dodging them, so it was reverted. The listener is now attached to the
+node in an effect with a cleanup: external DOM synchronisation is the permitted
+`useEffect` category (WEB-004 §1) and the cleanup satisfies WEB-010. No JSX
+handler, no rule weakened, and `eslint.config.mjs` ends the task unchanged.
+
+```
+opened modally        true        closed on backdrop click   true
+inputs labelled       4 of 4      Escape                     native to showModal()
+```
+
+**The state cell is `align-items: flex-start`.** It was centring the pill, the
+button and the link against each other at three different widths.
+
+**Responsive and RTL, measured rather than eyeballed:**
+
+```
+                 320px    390px    768px    1024px   1440px
+page overflow-x      0        0        0         0        0
+elements outside     0        —        —         —        0   (measured at 320 and 1440)
+row grid         1 column                          3 columns
+gauges           stacked, 246px                    side by side, 134px arc
+
+Arabic (dir=rtl, lang=ar)
+digits           ٪٩٩ · ١٬٧٩٧ من ١٬٨٢١        Arabic-Indic throughout
+filter order     1029 → 897 → 789 → 669       mirrors right-to-left
+gauge order      787 then 428                 mirrors
+overflow-x       0 at both 1440 and 320
+```
+
+**The gauges are deliberately not mirrored.** T-117 flipped *bar* charts because
+a bar reads along the text axis; a radial arc does not, and its container
+mirrors correctly. Recorded so nobody "fixes" it later.
+
+**Token gap raised, not filled (WEB-002 §2):** there is **no dialog-width
+token**. `execution-dialog.module.css:2` carries a literal `38rem` for exactly
+this reason. This dialog uses `--sqx-prose-max`, which is real and defensible
+for a column of text fields, but a `--sqx-dialog-*` width belongs in
+`saqeel.css` and is a change request.
+
 ## Parked
 
 - **The shell rail calls this route "Lookup Management"** while the page is now

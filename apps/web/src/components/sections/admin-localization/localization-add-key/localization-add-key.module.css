@@ -1,16 +1,38 @@
-.panel {
-  flex-basis: 100%;
-  min-inline-size: 0;
+.dialog {
+  inline-size: min(100% - var(--sqx-space-8), var(--sqx-prose-max));
+  padding: var(--sqx-space-6);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-raised);
+  color: var(--sqx-text-secondary);
+}
+
+.dialog::backdrop {
+  background: var(--sqx-surface-overlay);
 }
 
 .form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-  gap: var(--sqx-space-3);
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  margin-block-start: var(--sqx-space-5);
+  min-inline-size: 0;
 }
 
 .arabic {
   display: block;
   min-inline-size: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+@media (max-width: 48rem) {
+  .dialog {
+    padding: var(--sqx-space-4);
+  }
 }
