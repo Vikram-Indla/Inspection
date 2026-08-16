@@ -1,0 +1,22 @@
+.gauges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--sqx-stack-tight);
+  align-items: center;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  padding-inline-start: var(--sqx-space-4);
+  border-inline-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+@media (max-width: 48rem) {
+  .aside {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+}

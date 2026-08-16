@@ -1,14 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import LocalizationSkeleton from "@/components/sections/admin-localization/localization-skeleton/localization-skeleton";
+import { adminLocalizationMessages } from "@/features/admin-localization/strings";
+import { getLocale } from "@/lib/i18n";
 
-// Route-level loading fallback follows the active locale and announces busy
-// state through the shared, accessible route-loading contract.
-export default function Loading() {
-  return (
-    <RouteLoading
-      en="Loading localization registry…"
-      ar="جارٍ تحميل سجل الترجمات…"
-      bodyEn="Loading the translation dictionary, limited to what you can see."
-      bodyAr="جارٍ تحميل قاموس الترجمات، بما يقتصر على ما يُسمح لك برؤيته."
-    />
-  );
+export default async function LocalizationLoading() {
+  const locale = await getLocale();
+  return <LocalizationSkeleton label={adminLocalizationMessages(locale).loading} />;
 }

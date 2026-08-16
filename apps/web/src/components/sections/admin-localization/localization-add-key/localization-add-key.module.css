@@ -1,0 +1,16 @@
+.panel {
+  flex-basis: 100%;
+  min-inline-size: 0;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--sqx-space-3);
+  align-items: end;
+}
+
+.arabic {
+  display: block;
+  min-inline-size: 0;
+}

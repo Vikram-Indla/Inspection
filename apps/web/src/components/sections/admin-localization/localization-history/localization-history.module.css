@@ -1,0 +1,29 @@
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  padding: var(--sqx-space-3);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-subtle);
+}
+
+.revision {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  padding-block-end: var(--sqx-space-3);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.revision:last-of-type {
+  padding-block-end: 0;
+  border-block-end: 0;
+}

@@ -17,7 +17,7 @@ test.describe("TASK-ADMIN-DEVELOPMENT-CLOSURE-20260802", () => {
     const items = readWeb("src/app/(app)/admin/items/page.tsx");
     const packages = readWeb("src/app/(app)/admin/packages/page.tsx");
     const violations = readWeb("src/app/(app)/admin/violations/page.tsx");
-    const localization = readWeb("src/app/(app)/admin/localization/page.tsx");
+    const localization = readWeb("src/features/admin-localization/queries.ts");
     for (const source of [guard, regulations, items, packages, violations]) {
       expect(source).toContain("compliance_admin");
       expect(source).toContain("form_admin");

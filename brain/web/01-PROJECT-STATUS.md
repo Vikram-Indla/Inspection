@@ -1,6 +1,51 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-16` · `Updated by: T-122 — /admin/access migration`
+`Last updated: 2026-08-16` · `Updated by: T-123 — /admin/localization migration`
+
+## A screen can ship 1,821 rows to draw 12, and nothing will tell you (2026-08-16)
+
+`/admin/localization` kept search, filter and pagination in `useState`, so the
+entire `ui_strings` dictionary was serialised into the document for the client to
+slice:
+
+```
+document        755 KB → 336 KB     rows in payload  1,845 → 41
+```
+
+**No gate can see this.** Typecheck, typography, lint and the design-system gate
+were all silent; the number appears only if you measure the response. WEB-004's
+ladder already put URL state above `useState` and WEB-005's budgets already made
+755 KB indefensible — the rules were right and nothing enforced them.
+
+**The measurement is one line and belongs in every migration inventory:**
+`fetch(route).then(r => r.text()).then(h => h.length)`. A route whose document
+runs to hundreds of KB is paginating in the wrong place.
+
+**Second-order consequence worth expecting:** once the client stops holding the
+rows, anything it used to *build* from them breaks. CSV export was
+`document.createElement("a").click()` over the in-memory array; it became a route
+handler, which is better on every axis — no DOM mutation, no JavaScript, and the
+file now honours the current filter rather than client memory.
+
+## Charts: the honest answer is usually fewer than the data suggests (2026-08-16)
+
+T-123 judged six candidates and built two.
+
+```
+built     Arabic coverage 99%  ·  Reviewed 0%     two Gauges, two governed ratios
+declined  status distribution  5 states, 2 non-zero, one at 98.7%
+declined  donut of statuses    same skew, Donut caps at 3
+declined  activity over time   updated_at is last-touched, not an event log
+declined  length histogram     bands past the existing 1.3 ratio would be invented
+```
+
+The pair earns its place because together they say what the screen hid:
+**everything is translated and nothing is reviewed.**
+
+**The reusable test is the one T-113 and T-115 already used:** count the non-zero
+categories before choosing a form. Two non-zero states, one at 98.7%, is not a
+distribution — it is a headline and a footnote.
+
 
 ## `shell-page-frame` was the route-owned frame all along (2026-08-16)
 

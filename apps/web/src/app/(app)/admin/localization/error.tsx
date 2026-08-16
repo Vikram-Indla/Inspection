@@ -1,30 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import EmptyState from "@/components/EmptyState";
-import { IconGlobe } from "@/app/icons";
+import { useSyncExternalStore } from "react";
+import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
+import Button from "@/components/saqeel/button/button";
+import EmptyState from "@/components/saqeel/empty-state/empty-state";
+import { Mono } from "@/components/saqeel/type";
+import { adminLocalizationMessages } from "@/features/admin-localization/strings";
+import { fill } from "@/i18n/messages";
+import type { Locale } from "@/lib/i18n";
 
-export default function LocalizationError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  const [locale, setLocale] = useState<"en" | "ar">("en");
+const NEVER_CHANGES = () => () => undefined;
+const readDocumentLocale = (): Locale => document.documentElement.lang === "ar" ? "ar" : "en";
+const serverLocale = (): Locale => "en";
 
-  useEffect(() => {
-    setLocale(document.documentElement.lang === "ar" ? "ar" : "en");
-  }, []);
+export default function LocalizationError({ error, reset }: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  const locale = useSyncExternalStore(NEVER_CHANGES, readDocumentLocale, serverLocale);
+  const strings = adminLocalizationMessages(locale);
 
-  const isArabic = locale === "ar";
   return (
-    <main className="sq-content" role="alert">
+    <ShellPageFrame
+      breadcrumbLabel={strings.breadcrumb.label}
+      breadcrumbs={[
+        { label: strings.breadcrumb.administration, href: "/admin" },
+        { label: strings.breadcrumb.hub },
+      ]}
+    >
       <EmptyState
-        icon={<IconGlobe size={28} />}
-        title={isArabic ? "تعذّر فتح سجل الترجمات" : "The localization registry could not be opened"}
-        body={isArabic
-          ? "تعذّر التحقق من الهوية أو الصلاحيات أو تحميل البيانات. لم يتغيّر شيء."
-          : "Identity, permission, or registry data could not be verified. Nothing was changed."}
-      >
-        <button type="button" className="btn btn-primary btn-touch" onClick={reset}>
-          {isArabic ? "إعادة المحاولة" : "Try again"}
-        </button>
-      </EmptyState>
-    </main>
+        action={
+          <>
+            {error.digest ? <Mono>{fill(strings.error.reference, { id: error.digest })}</Mono> : null}
+            <Button onClick={reset} variant="secondary">{strings.error.retry}</Button>
+          </>
+        }
+        description={strings.error.body}
+        icon="risk"
+        title={strings.error.title}
+        tone="danger"
+      />
+    </ShellPageFrame>
   );
 }

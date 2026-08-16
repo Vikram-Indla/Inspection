@@ -13,11 +13,55 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-122.** Take T-123.
+implements the reservation. **Highest id in use: T-123.** Take T-124.
 
 ---
 
 ## NOW
+
+### T-123 · `/admin/localization`, and a screen that shipped 1,821 rows to draw 12
+`status: partial — code complete, static gates green, payload and states measured; axe, Arabic review and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`
+`record:` [2026-08-16-T-123-localization-migration](sessions/2026-08/2026-08-16-T-123-localization-migration.md)
+
+**The screen serialised the whole dictionary so the browser could slice it.**
+Search, filter and pagination were `useState`, so all 1,821 `ui_strings` crossed
+to the client to render 12 rows.
+
+```
+document        755 KB → 336 KB     rows in payload  1,845 → 41
+route file      248 → 32 lines      largest component  531 → 122
+typography      31 → 0              i18n  0 → 92 keys × 2
+```
+
+Moved to **URL state with server-side slicing** (WEB-004 rung 2). **Search is a
+plain GET form**, so it works with no JavaScript. **CSV export became a route
+handler** — the client no longer holds the rows — which also deleted a
+`document.createElement("a").click()` and made the export honour the current filter.
+
+**Two gauges earned their place; four charts did not.** Arabic coverage 99% and
+Reviewed 0% together say what the screen was hiding: everything is translated,
+nothing is reviewed. Declined: status distribution (5 states, 2 non-zero, one at
+98.7%), a donut (same skew, caps at 3), a time series (`updated_at` is
+last-touched, not an event log), a length histogram (bands would be invented).
+
+**The 1.3 layout-risk ratio was computed per row and never aggregated** — nobody
+could know the count without opening 1,821 keys. One reduce, no new query.
+
+**Two tabs pointed at the same URL** and a third left the route — T-122's defect
+again. The tab row is now the five translation states.
+
+**Both WEB-008 sweeps paid out on their first real use:** the data-vs-render diff
+found the discarded state counts and the risk ratio; the `e2e/` source-path grep
+found **6 pinned specs**, four re-pointed **before** the code changed, so none
+went red in a run.
+
+**Caught myself in the CRLF zero-match trap** while re-pointing them — recorded
+three times in this repo and walked into anyway. The re-point script now
+normalises line endings before matching.
+
+**Parked:** the shell rail still calls this route *Lookup Management* while the
+page is now *Language & translations* — an owner call, and out of scope under
+"do not touch the shell".
 
 ### T-122 · `/admin/access` onto SAQEEL, and six ways of saying the same thing become one
 `status: partial — code complete, static gates green, gutter and dedupe measured; axe, Arabic review and e2e owed` · `rules: WEB-000 … WEB-014` · `est: 3h`
