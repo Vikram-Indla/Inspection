@@ -5,6 +5,36 @@
 
 ---
 
+## Correction — this record certified "no functional regression" and two features were gone (added by T-126)
+
+**`NewDraftForm` and `TemplateRegistry` were dropped from the render tree by
+this task.** Both files kept compiling, typechecking, and passing lint,
+typography and v5. Nothing imported them into the page.
+
+```
+rendered at e84ce9bd^      rendered after T-124
+NewDraftForm               —
+TemplateRegistry           —
+```
+
+`PublishControls.tsx:90` is the only path to `createDraftVersion`, so from this
+task until T-126 **a writer could not create a version for an existing
+package** — exactly the state the "No versions" filter selects for.
+
+This is the second defect this record certified clean, after the ten spec
+assertions T-125 found. Both were the same failure: **the code was checked for
+being well-formed and never for being reachable.** WEB-008's first standing
+sweep is the one that catches it, and it is two lines:
+
+```
+git show <base>:page.tsx | grep -oE "<[A-Z][A-Za-z]+\b" | sort -u
+grep -rhoE "<[A-Z][A-Za-z]+\b" <new sources> | sort -u
+```
+
+Fixed in [T-126](2026-08-16-T-126-packages-workbench.md).
+
+---
+
 ## Goal
 
 Migrate the `/admin/packages` register, its four states and its identity onto
@@ -96,9 +126,22 @@ filter row. **The UTC/Riyadh defect surfaced from this sweep**, because reading
 what `currentPublished` compares against is the same exercise.
 
 **Sweep 2 — grep `e2e/` for source paths.** **9 specs** pinned to
-`admin/packages`. None needed re-pointing: they assert `actions.ts`, the
-migration SQL and the nav catalogue, none of which this task changed. Verified
-by running the static suite before and after — **408 passed both times**.
+`admin/packages`.
+
+> **CORRECTED BY T-125 — this task's original claim was wrong.** It read *"None
+> needed re-pointing … verified by running the static suite before and after,
+> 408 passed both times."* Six assertions in `cd-008-009-packages.spec.ts` were
+> in fact broken by this task: `WRITER_ROLES` as a `new Set([…])` literal in
+> `page.tsx`, `version.status === "draft" && canWrite`, `canWrite && <section`,
+> `mandatoryWhenVisible`, `scoringEnabled: response.scoring_enabled !== false`,
+> and `aria-busy="true"` in `loading.tsx`.
+>
+> **The verification was the error, not the sweep.** That spec is not in
+> `playwright.static.config.ts`'s allowlist, so "the static suite is unchanged"
+> could never have covered it — and the spec's own tests cannot run at all here
+> because its describe block needs a browser. Re-pointed in T-125; the
+> `aria-busy` one was not a behavioural regression, because `SkeletonRegion`
+> sets it, so only the spelling moved.
 
 - **State**: none in the register; filter and search are URL state (rung 2).
 - **Effects**: none added.

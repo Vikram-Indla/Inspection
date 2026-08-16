@@ -1,6 +1,67 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-16` · `Updated by: T-124 — /admin/packages register`
+`Last updated: 2026-08-16` · `Updated by: T-126 — /admin/packages workbench`
+
+## A component that compiles, typechecks and passes every gate can still be rendered by nothing (2026-08-16)
+
+T-124 rebuilt `/admin/packages` and **stopped rendering two components**.
+`NewDraftForm` and `TemplateRegistry` kept compiling, kept typechecking, kept
+passing lint, typography and v5. Nothing pointed at them.
+
+```
+git show <base>:page.tsx  →  NewDraftForm  TemplateRegistry  + 6 others
+grep the new sources      →  6 others
+```
+
+`PublishControls.tsx:90` is the only path to `createDraftVersion`, so for two
+sessions **a writer could not create a version for an existing package** —
+exactly the state the "No versions" filter selects for. T-124's record certified
+"no functional regression."
+
+**Every gate in this repo asks whether the code is well-formed. None asks
+whether it is reachable.** WEB-008's first standing sweep is the one that does —
+*diff what the page loads against what it renders* — and it is the two-line grep
+above. Run it on any task that moves a render tree, and run it **before**
+claiming no regression, not after review.
+
+## `getBoundingClientRect()` is not a visibility test (2026-08-16)
+
+T-126 measured the rebuilt register and read **12 visible required fields** on a
+page whose forms are all inside closed disclosures. `checkVisibility()` reports
+**0**, and it is right: content under `content-visibility: hidden` keeps a
+layout box and a non-null `offsetParent` while being unrendered and unfocusable.
+
+**Ask the browser the question you mean.** `checkVisibility({ checkVisibilityCSS: true })`
+for "can the user see it", rects only for "how big is it".
+
+The same session twice read a **mid-compile dev-server state as a defect** — a
+second `<main>` from the loading boundary, and a route that looked wedged. Both
+were gone on a settled load. **Re-measure before filing; a dev server mid-compile
+is not evidence.**
+
+## "The static suite is unchanged" does not mean the pinned specs still pass (2026-08-16)
+
+T-124 ran the WEB-008 sweep, found **9 specs** pinned to `admin/packages`,
+concluded none needed re-pointing, and verified it by running
+`npm run test:static` before and after — **408 passed both times**. The
+conclusion was wrong: it had broken **ten** assertions in
+`cd-008-009-packages.spec.ts` — T-125 found and re-pointed all ten.
+
+**The sweep worked. The verification did not.** That spec is not in
+`playwright.static.config.ts`'s hand-maintained allowlist, so the static suite
+was never going to execute it — and the spec cannot be run here at all, because
+its describe block needs a browser this workstation does not have.
+
+```
+sweep says      9 specs pinned
+static covers   only the ~70 in the allowlist
+therefore       "static unchanged" ⊅ "the pinned specs pass"
+```
+
+**When a sweep names a spec the static config does not run, check the assertions
+directly** — read the file and grep the strings against the new source. That is
+a five-line script and it is the only thing that settles it while the browser
+half of the suite is blocked (T-119).
 
 ## A collapsed `<details>` is a visual fix, not a payload fix (2026-08-16)
 

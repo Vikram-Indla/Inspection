@@ -19,13 +19,6 @@
   min-inline-size: 0;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sqx-space-2);
-}
-
 @media (max-width: 48rem) {
   .toolbar,
   .search {

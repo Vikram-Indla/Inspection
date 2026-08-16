@@ -2,46 +2,39 @@
 
 import type { ReactNode } from "react";
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import Button from "@/components/saqeel/button/button";
+import Choice from "@/components/saqeel/choice/choice";
+import Field from "@/components/saqeel/field/field";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
+import SaqeelSelect from "@/components/saqeel/select/select";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import TextInput from "@/components/saqeel/text-input/text-input";
+import { Heading, Mono, Text } from "@/components/saqeel/type";
+import { ActionFormsPane, ArabicField, ItemRulePanel } from "./_designer/designer-panes";
+import {
+  fill,
+  nextFreeKey,
+  type ActionForm,
+  type CatalogItem,
+  type Definition,
+  type DraftEditorStrings,
+  type ItemRule,
+  type Section,
+  type SelectChoice,
+} from "./_designer/designer-types";
 import { saveDraftDefinition, type PkgResult } from "./actions";
 import styles from "./packages.module.css";
 
-type ItemRule = {
-  requirement?: "required" | "optional" | "conditional";
-  conditional?: { visible_when?: string; mandatory_when_visible?: boolean };
-  evidence_rule?: { on?: string; type?: string; min?: number; mandatory?: boolean } | null;
-  scoring_enabled?: boolean;
-  score_weight?: number | null;
-  response_mapping?: Record<string, { result?: string; violation?: string; action_form?: string }>;
-};
-type Section = { key: string; title?: string; title_en?: string; title_ar?: string; items?: string[]; mandatory?: boolean; fields?: string[] };
-type ActionForm = { key: string; title: string; blocking?: boolean; fields?: string[]; template_version_id?: string };
-type Definition = { sections?: Section[]; action_forms?: ActionForm[]; item_rules?: Record<string, ItemRule>; template_refs?: string[] };
-type CatalogItem = { code: string; title: string };
-type Choice = { id: string; label: string };
-
-export type DraftEditorStrings = {
-  heading: string; editableWhileDraft: string; mandatory: string;
-  structure: string; fieldCanvas: string; preview: string; sectionTitleAria: string;
-  sectionTitleEn: string; sectionTitleAr: string; moveUp: string; moveDown: string;
-  removeAria: string; addItem: string; addItemAria: string; newSectionTitle: string;
-  newSectionTitleAr: string; addSection: string; draftSaved: string; saving: string; save: string;
-  noChanges: string; unsaved: string; emptyTitle: string; emptyBody: string;
-  itemCount: string; validationTitle: string; validationClear: string;
-  duplicateItem: string; blankSection: string; bilingualSection: string;
-  relationship: string; requirement: string; required: string; optional: string; conditional: string;
-  visibleWhen: string; mandatoryWhenVisible: string; evidence: string; inheritEvidence: string;
-  scoring: string; scoreWeight: string; violation: string; actionForm: string; none: string;
-  forms: string; formKey: string; formTitle: string; blocking: string; template: string;
-  addForm: string; removeForm: string; circularCheck: string;
-  evidencePhoto: string; evidenceVideo: string; evidenceDocument: string; evidenceComment: string;
-};
-
-const fill = (template: string, values: Record<string, string | number>) =>
-  Object.entries(values).reduce((value, [key, replacement]) => value.split(`{${key}}`).join(String(replacement)), template);
+export type { DraftEditorStrings } from "./_designer/designer-types";
 
 export default function DraftEditor({ versionId, definition, catalog, violations, templates, strings: s, preview }: {
-  versionId: string; definition: Definition; catalog: CatalogItem[]; violations: Choice[]; templates: Choice[];
-  strings: DraftEditorStrings; preview: ReactNode;
+  versionId: string;
+  definition: Definition;
+  catalog: CatalogItem[];
+  violations: SelectChoice[];
+  templates: SelectChoice[];
+  strings: DraftEditorStrings;
+  preview: ReactNode;
 }) {
   const normalized = useMemo<Definition>(() => {
     const sections = (definition.sections ?? []).map(section => ({ ...section, title_en: section.title_en ?? section.title }));
@@ -82,44 +75,199 @@ export default function DraftEditor({ versionId, definition, catalog, violations
   const moveSection = (delta: number) => { if (!selected || selectedIndex < 0) return; const to = selectedIndex + delta; if (to < 0 || to >= sections.length) return; const next = [...sections]; [next[selectedIndex], next[to]] = [next[to], next[selectedIndex]]; setSections(next); };
   const moveItem = (code: string, delta: number) => { if (!selected) return; const items = [...(selected.items ?? [])]; const at = items.indexOf(code); const to = at + delta; if (at < 0 || to < 0 || to >= items.length) return; [items[at], items[to]] = [items[to], items[at]]; patchSelected({ items }); };
   const patchRule = (patch: Partial<ItemRule>) => { if (!selectedItem) return; setDef(current => ({ ...current, item_rules: { ...(current.item_rules ?? {}), [selectedItem]: { requirement: "required", scoring_enabled: true, ...(current.item_rules?.[selectedItem] ?? {}), ...patch } } })); };
-  const addSection = () => { const en = newSectionEn.trim(), ar = newSectionAr.trim(); if (!en || !ar) return; const base = en.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 24) || "section"; let key = `s${sections.length + 1}-${base}`; let suffix = 2; while (sections.some(section => section.key === key)) key = `s${sections.length + 1}-${base}-${suffix++}`; setSections([...sections, { key, title: en, title_en: en, title_ar: ar, items: [] }]); setSelectedKey(key); setNewSectionEn(""); setNewSectionAr(""); };
+  const addSection = () => { const en = newSectionEn.trim(), ar = newSectionAr.trim(); if (!en || !ar) return; const base = en.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 24) || "section"; const taken = new Set(sections.map(section => section.key)); const stem = `s${sections.length + 1}-${base}`; const key = taken.has(stem) ? nextFreeKey(stem, taken) : stem; setSections([...sections, { key, title: en, title_en: en, title_ar: ar, items: [] }]); setSelectedKey(key); setNewSectionEn(""); setNewSectionAr(""); };
+  const addItem = (code: string) => { if (!code || !selected) return; patchSelected({ items: [...(selected.items ?? []), code] }); setDef(current => ({ ...current, item_rules: { ...(current.item_rules ?? {}), [code]: current.item_rules?.[code] ?? { requirement: "required", scoring_enabled: true } } })); setSelectedItem(code); };
   const addForm = () => { const n = (def.action_forms?.length ?? 0) + 1; setDef(current => ({ ...current, action_forms: [...(current.action_forms ?? []), { key: `action-${n}`, title: `Action ${n}`, blocking: false, fields: [] }] })); };
   const patchForm = (index: number, patch: Partial<ActionForm>) => setDef(current => { const forms = [...(current.action_forms ?? [])]; forms[index] = { ...forms[index], ...patch }; const refs = forms.flatMap(form => form.template_version_id ? [form.template_version_id] : []); return { ...current, action_forms: forms, template_refs: [...new Set(refs)] }; });
+  const removeForm = (index: number) => setDef(current => ({ ...current, action_forms: (current.action_forms ?? []).filter((_, at) => at !== index) }));
 
-  return <form action={formAction} className={styles.editorForm} aria-labelledby={`designer-${versionId}`}>
-    <input type="hidden" name="version_id" value={versionId} /><input type="hidden" name="definition" value={serialized} />
-    <div className={styles.versionHeading}><h4 id={`designer-${versionId}`} style={{ margin: 0 }}>{s.heading}</h4><span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>{dirty && <span className="badge badge-warning" role="status">● {s.unsaved}</span>}<span className="badge badge-info">✎ {s.editableWhileDraft}</span></span></div>
-    <div className={styles.designerStudio}>
-      <aside className={`${styles.studioPane} ${styles.editorCanvas}`}><h5 style={{ margin: 0 }}>{s.structure}</h5>
-        {sections.length === 0 ? <div className="sq-state"><strong>{s.emptyTitle}</strong><p className="t-caption">{s.emptyBody}</p></div> : <ol className={styles.structureList}>{sections.map((section, index) => <li key={section.key}><button type="button" className={styles.structureButton} aria-current={section.key === selected?.key ? "true" : undefined} onClick={() => { setSelectedKey(section.key); setSelectedItem(""); }}><strong>{index + 1}. {section.title_en ?? section.title ?? section.key}</strong><br/><span className="t-caption">{section.title_ar ?? "—"} · {fill(s.itemCount, { n: section.items?.length ?? 0 })}</span></button></li>)}</ol>}
-        <label className="sq-field"><span className="sq-field__label">{s.newSectionTitle}</span><input className="sq-input" value={newSectionEn} onChange={e => setNewSectionEn(e.target.value)} /></label>
-        <label className="sq-field"><span className="sq-field__label">{s.newSectionTitleAr}</span><input className="sq-input" dir="rtl" value={newSectionAr} onChange={e => setNewSectionAr(e.target.value)} /></label>
-        <button type="button" className="btn btn-primary btn-touch" disabled={!newSectionEn.trim() || !newSectionAr.trim()} onClick={addSection}>{s.addSection}</button>
-      </aside>
-      <section className={`${styles.studioPane} ${styles.editorCanvas}`}><h5 style={{ margin: 0 }}>{s.fieldCanvas}</h5>
-        {selected ? <>
-          <div className="row" style={{ gap: 8 }}><button type="button" className="btn btn-primary btn-touch" onClick={() => moveSection(-1)} disabled={selectedIndex === 0}>{s.moveUp}</button><button type="button" className="btn btn-primary btn-touch" onClick={() => moveSection(1)} disabled={selectedIndex === sections.length - 1}>{s.moveDown}</button></div>
-          <label className="sq-field"><span className="sq-field__label">{s.sectionTitleEn}</span><input className="sq-input" value={selected.title_en ?? selected.title ?? ""} onChange={e => patchSelected({ title: e.target.value, title_en: e.target.value })} /></label>
-          <label className="sq-field"><span className="sq-field__label">{s.sectionTitleAr}</span><input className="sq-input" dir="rtl" value={selected.title_ar ?? ""} onChange={e => patchSelected({ title_ar: e.target.value })} /></label>
-          <label className="sq-choice" style={{ display: "flex", minBlockSize: 44 }}><input type="checkbox" checked={!!selected.mandatory} onChange={e => patchSelected({ mandatory: e.target.checked })} /><span>{s.mandatory}</span></label>
-          <ol className="stack" style={{ paddingInlineStart: 20 }}>{(selected.items ?? []).map((code, index) => <li key={code}><div className="row" style={{ gap: 6, flexWrap: "wrap" }}><button type="button" className="btn btn-ghost btn-touch" onClick={() => setSelectedItem(code)}><bdi dir="ltr">{code}</bdi></button><button type="button" className="btn btn-primary btn-touch" aria-label={`${s.moveUp} ${code}`} disabled={index === 0} onClick={() => moveItem(code, -1)}>↑</button><button type="button" className="btn btn-primary btn-touch" aria-label={`${s.moveDown} ${code}`} disabled={index === (selected.items?.length ?? 0) - 1} onClick={() => moveItem(code, 1)}>↓</button><button type="button" className="btn btn-primary btn-touch" aria-label={`${s.removeAria} ${code}`} onClick={() => { patchSelected({ items: (selected.items ?? []).filter(item => item !== code) }); setSelectedItem(""); }}>✕</button></div></li>)}</ol>
-          <label className="sq-field"><span className="sq-field__label">{s.addItemAria}</span><select className="sq-select" value="" onChange={e => { const code = e.target.value; if (!code) return; patchSelected({ items: [...(selected.items ?? []), code] }); setDef(current => ({ ...current, item_rules: { ...(current.item_rules ?? {}), [code]: current.item_rules?.[code] ?? { requirement: "required", scoring_enabled: true } } })); setSelectedItem(code); }}><option value="">{s.addItem}</option>{catalog.filter(item => !(selected.items ?? []).includes(item.code)).map(item => <option key={item.code} value={item.code}>{item.code} — {item.title}</option>)}</select></label>
-        </> : <p className="t-caption">{s.emptyBody}</p>}
-        {selectedItem && rule && <fieldset className="sq-panel stack" style={{ padding: 16 }}><legend><strong>{s.relationship}: <bdi dir="ltr">{selectedItem}</bdi></strong></legend>
-          <label className="sq-field"><span className="sq-field__label">{s.requirement}</span><select className="sq-select" value={rule.requirement ?? "required"} onChange={e => patchRule({ requirement: e.target.value as ItemRule["requirement"], conditional: e.target.value === "conditional" ? (rule.conditional ?? {}) : undefined })}><option value="required">{s.required}</option><option value="optional">{s.optional}</option><option value="conditional">{s.conditional}</option></select></label>
-          {rule.requirement === "conditional" && <><label className="sq-field"><span className="sq-field__label">{s.visibleWhen}</span><input className="sq-input numeric" value={rule.conditional?.visible_when ?? ""} placeholder="ITEM-001=compliant" onChange={e => patchRule({ conditional: { ...(rule.conditional ?? {}), visible_when: e.target.value } })} /></label><label className="sq-choice"><input type="checkbox" checked={!!rule.conditional?.mandatory_when_visible} onChange={e => patchRule({ conditional: { ...(rule.conditional ?? {}), mandatory_when_visible: e.target.checked } })}/>{s.mandatoryWhenVisible}</label></>}
-          <label className="sq-field"><span className="sq-field__label">{s.evidence}</span><select className="sq-select" value={rule.evidence_rule === undefined ? "inherit" : rule.evidence_rule?.type ?? "none"} onChange={e => patchRule({ evidence_rule: e.target.value === "inherit" ? undefined : e.target.value === "none" ? null : { on: "non_compliant", type: e.target.value, min: 1, mandatory: true } })}><option value="inherit">{s.inheritEvidence}</option><option value="none">{s.none}</option><option value="photo">{s.evidencePhoto}</option><option value="video">{s.evidenceVideo}</option><option value="document">{s.evidenceDocument}</option><option value="comment">{s.evidenceComment}</option></select></label>
-          <label className="sq-choice"><input type="checkbox" checked={rule.scoring_enabled !== false} onChange={e => patchRule({ scoring_enabled: e.target.checked })}/>{s.scoring}</label>{rule.scoring_enabled !== false && <label className="sq-field"><span className="sq-field__label">{s.scoreWeight}</span><input className="sq-input" type="number" min="0" step="any" value={rule.score_weight ?? ""} onChange={e => patchRule({ score_weight: e.target.value === "" ? null : Number(e.target.value) })}/></label>}
-          <label className="sq-field"><span className="sq-field__label">{s.violation}</span><select className="sq-select" value={rule.response_mapping?.non_compliant?.violation ?? ""} onChange={e => patchRule({ response_mapping: { ...(rule.response_mapping ?? {}), non_compliant: { ...(rule.response_mapping?.non_compliant ?? {}), result: "non_compliant", violation: e.target.value || undefined } } })}><option value="">{s.none}</option>{violations.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}</select></label>
-          <label className="sq-field"><span className="sq-field__label">{s.actionForm}</span><select className="sq-select" value={rule.response_mapping?.non_compliant?.action_form ?? ""} onChange={e => patchRule({ response_mapping: { ...(rule.response_mapping ?? {}), non_compliant: { ...(rule.response_mapping?.non_compliant ?? {}), result: "non_compliant", action_form: e.target.value || undefined } } })}><option value="">{s.none}</option>{(def.action_forms ?? []).map(f => <option key={f.key} value={f.key}>{f.key} — {f.title}</option>)}</select></label>
-        </fieldset>}
-        <div className="sq-panel" style={{ padding: 12 }}><strong>{s.validationTitle}</strong>{validationIssues.length ? <ul className="t-caption" role="alert">{validationIssues.map(issue => <li key={issue}>{issue}</li>)}</ul> : <p className="t-caption" role="status">✓ {s.validationClear} {s.circularCheck}</p>}</div>
-        <div ref={feedbackRef} tabIndex={-1}>{state.error && <div className="sq-banner sq-banner--critical" role="alert"><div style={{ whiteSpace: "pre-line" }}>{state.error}</div></div>}{state.ok && <div className="sq-banner sq-banner--success" role="status"><div>{s.draftSaved}</div></div>}</div>
-        <div className={styles.actionRow}>{!dirty && !state.ok && <span className="t-caption">{s.noChanges}</span>}<button className="btn btn-primary btn-lg btn-touch" disabled={pending || !dirty || validationIssues.length > 0}>{pending ? s.saving : s.save}</button></div>
-      </section>
-      <aside className={`${styles.studioPane} ${styles.previewPane}`}><h5 style={{ margin: 0 }}>{s.preview}</h5>{preview}
-        <section className="stack"><div className="row" style={{ justifyContent: "space-between" }}><strong>{s.forms}</strong><button type="button" className="btn btn-primary btn-touch" onClick={addForm}>{s.addForm}</button></div>{(def.action_forms ?? []).map((form, index) => <fieldset key={`${form.key}-${index}`} className="sq-panel stack" style={{ padding: 12 }}><label className="sq-field"><span className="sq-field__label">{s.formKey}</span><input className="sq-input" value={form.key} onChange={e => patchForm(index, { key: e.target.value })}/></label><label className="sq-field"><span className="sq-field__label">{s.formTitle}</span><input className="sq-input" value={form.title} onChange={e => patchForm(index, { title: e.target.value })}/></label><label className="sq-choice"><input type="checkbox" checked={!!form.blocking} onChange={e => patchForm(index, { blocking: e.target.checked })}/>{s.blocking}</label><label className="sq-field"><span className="sq-field__label">{s.template}</span><select className="sq-select" value={form.template_version_id ?? ""} onChange={e => patchForm(index, { template_version_id: e.target.value || undefined })}><option value="">{s.none}</option>{templates.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}</select></label><button type="button" className="btn btn-primary btn-touch" onClick={() => setDef(current => ({ ...current, action_forms: (current.action_forms ?? []).filter((_, at) => at !== index) }))}>{s.removeForm}</button></fieldset>)}</section>
-      </aside>
-    </div>
-  </form>;
+  return (
+    <form action={formAction} aria-labelledby={`designer-${versionId}`} className={styles.editorForm}>
+      <input name="version_id" type="hidden" value={versionId} />
+      <input name="definition" type="hidden" value={serialized} />
+
+      <div className={styles.versionHeading}>
+        <Heading id={`designer-${versionId}`} level={3} visual="subheading">{s.heading}</Heading>
+        <span className={styles.pills}>
+          {dirty ? <StatusPill tone="warning">{s.unsaved}</StatusPill> : null}
+          <StatusPill ping={false} tone="info">{s.editableWhileDraft}</StatusPill>
+        </span>
+      </div>
+
+      <div className={styles.designerStudio}>
+        <aside className={`${styles.studioPane} ${styles.editorCanvas}`}>
+          <Heading level={4} visual="subheading">{s.structure}</Heading>
+          {sections.length === 0 ? (
+            <div className={styles.paneNote}>
+              <Text role="bodyStrong">{s.emptyTitle}</Text>
+              <Text role="label" tone="muted">{s.emptyBody}</Text>
+            </div>
+          ) : (
+            <ol className={styles.structureList}>
+              {sections.map((section, index) => (
+                <li key={section.key}>
+                  <button
+                    aria-current={section.key === selected?.key ? "true" : undefined}
+                    className={styles.structureButton}
+                    onClick={() => { setSelectedKey(section.key); setSelectedItem(""); }}
+                    type="button"
+                  >
+                    <Text as="span" role="bodyStrong">{index + 1}. {section.title_en ?? section.title ?? section.key}</Text>
+                    <Text as="span" role="label" tone="muted">
+                      {section.title_ar ?? "—"} · {fill(s.itemCount, { n: section.items?.length ?? 0 })}
+                    </Text>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+          <Field htmlFor={`new-section-en-${versionId}`} label={s.newSectionTitle}>
+            <TextInput id={`new-section-en-${versionId}`} onChange={setNewSectionEn} value={newSectionEn} />
+          </Field>
+          <ArabicField
+            id={`new-section-ar-${versionId}`}
+            label={s.newSectionTitleAr}
+            onChange={setNewSectionAr}
+            value={newSectionAr}
+          />
+          <Button
+            disabled={!newSectionEn.trim() || !newSectionAr.trim()}
+            onClick={addSection}
+            type="button"
+            variant="primary"
+          >
+            {s.addSection}
+          </Button>
+        </aside>
+
+        <section className={`${styles.studioPane} ${styles.editorCanvas}`}>
+          <Heading level={4} visual="subheading">{s.fieldCanvas}</Heading>
+          {selected ? (
+            <>
+              <div className={styles.paneActions}>
+                <Button disabled={selectedIndex === 0} onClick={() => moveSection(-1)} type="button">{s.moveUp}</Button>
+                <Button disabled={selectedIndex === sections.length - 1} onClick={() => moveSection(1)} type="button">{s.moveDown}</Button>
+              </div>
+              <Field htmlFor={`section-en-${versionId}`} label={s.sectionTitleEn}>
+                <TextInput
+                  id={`section-en-${versionId}`}
+                  onChange={next => patchSelected({ title: next, title_en: next })}
+                  value={selected.title_en ?? selected.title ?? ""}
+                />
+              </Field>
+              <ArabicField
+                id={`section-ar-${versionId}`}
+                label={s.sectionTitleAr}
+                onChange={next => patchSelected({ title_ar: next })}
+                value={selected.title_ar ?? ""}
+              />
+              <Choice
+                checked={!!selected.mandatory}
+                kind="checkbox"
+                label={s.mandatory}
+                name={`mandatory-${versionId}`}
+                onChange={next => patchSelected({ mandatory: next })}
+                value="1"
+              />
+              <ol className={styles.itemList}>
+                {(selected.items ?? []).map((code, index) => (
+                  <li className={styles.itemRow} key={code}>
+                    <button className={styles.itemCode} onClick={() => setSelectedItem(code)} type="button">
+                      <Mono tone={code === selectedItem ? "primary" : "muted"}>{code}</Mono>
+                    </button>
+                    <IconButton
+                      disabled={index === 0}
+                      icon="moveUp"
+                      label={`${s.moveUp} ${code}`}
+                      onClick={() => moveItem(code, -1)}
+                      size="sm"
+                    />
+                    <IconButton
+                      disabled={index === (selected.items?.length ?? 0) - 1}
+                      icon="moveDown"
+                      label={`${s.moveDown} ${code}`}
+                      onClick={() => moveItem(code, 1)}
+                      size="sm"
+                    />
+                    <IconButton
+                      icon="remove"
+                      label={`${s.removeAria} ${code}`}
+                      onClick={() => { patchSelected({ items: (selected.items ?? []).filter(item => item !== code) }); setSelectedItem(""); }}
+                      size="sm"
+                    />
+                  </li>
+                ))}
+              </ol>
+              <SaqeelSelect
+                label={s.addItemAria}
+                onChange={addItem}
+                options={catalog
+                  .filter(item => !(selected.items ?? []).includes(item.code))
+                  .map(item => ({ value: item.code, label: `${item.code} — ${item.title}` }))}
+                placeholder={s.addItem}
+                value=""
+              />
+            </>
+          ) : <Text role="label" tone="muted">{s.emptyBody}</Text>}
+
+          {selectedItem && rule ? (
+            <ItemRulePanel
+              code={selectedItem}
+              forms={def.action_forms ?? []}
+              onPatch={patchRule}
+              rule={rule}
+              strings={s}
+              versionId={versionId}
+              violations={violations}
+            />
+          ) : null}
+
+          <div className={styles.paneNote}>
+            <Text role="bodyStrong">{s.validationTitle}</Text>
+            {validationIssues.length ? (
+              <ul role="alert">
+                {validationIssues.map(issue => (
+                  <li key={issue}><Text as="span" role="label" tone="danger">{issue}</Text></li>
+                ))}
+              </ul>
+            ) : (
+              <Text live="status" role="label" tone="success">{s.validationClear} {s.circularCheck}</Text>
+            )}
+          </div>
+
+          <div className={styles.feedback} ref={feedbackRef} tabIndex={-1}>
+            {state.error ? <span className={styles.multiline}><Text live="alert" role="label" tone="danger">{state.error}</Text></span> : null}
+            {state.ok ? <StatusPill tone="success">{s.draftSaved}</StatusPill> : null}
+          </div>
+
+          <div className={styles.actionRow}>
+            {!dirty && !state.ok ? <Text as="span" role="label" tone="muted">{s.noChanges}</Text> : null}
+            <Button
+              busy={pending}
+              disabled={pending || !dirty || validationIssues.length > 0}
+              size="lg"
+              type="submit"
+              variant="primary"
+            >
+              {pending ? s.saving : s.save}
+            </Button>
+          </div>
+        </section>
+
+        <aside className={`${styles.studioPane} ${styles.previewPane}`}>
+          <Heading level={4} visual="subheading">{s.preview}</Heading>
+          {preview}
+          <ActionFormsPane
+            forms={def.action_forms ?? []}
+            onAdd={addForm}
+            onPatch={patchForm}
+            onRemove={removeForm}
+            strings={s}
+            templates={templates}
+            versionId={versionId}
+          />
+        </aside>
+      </div>
+    </form>
+  );
 }

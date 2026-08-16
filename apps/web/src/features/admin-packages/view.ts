@@ -55,12 +55,24 @@ export type PackageState = "published" | "draft" | "empty";
 
 export type PackageFilter = "all" | PackageState;
 
+export type PackagesTab = "designer" | "preview" | "impact" | "versions";
+
 export type PackagesQuery = {
   readonly filter: PackageFilter;
   readonly search: string;
+  readonly packageId: string;
+  readonly versionId: string;
+  readonly tab: PackagesTab | null;
+};
+
+export type PackageSelection = {
+  readonly pkg: PackageRow;
+  readonly version: VersionRow | null;
 };
 
 const FILTERS: readonly PackageFilter[] = ["all", "published", "draft", "empty"];
+
+const TABS: readonly PackagesTab[] = ["designer", "preview", "impact", "versions"];
 
 export function orderedVersions(pkg: PackageRow): readonly VersionRow[] {
   return [...(pkg.package_versions ?? [])].sort((a, b) => {
@@ -109,6 +121,9 @@ export function parsePackagesQuery(
   return {
     filter: FILTERS.find(candidate => candidate === one(params.filter)) ?? "all",
     search: (one(params.q) ?? "").trim(),
+    packageId: (one(params.package) ?? "").trim(),
+    versionId: (one(params.version) ?? "").trim(),
+    tab: TABS.find(candidate => candidate === one(params.tab)) ?? null,
   };
 }
 
@@ -116,8 +131,42 @@ export function packagesHref(query: Partial<PackagesQuery>): string {
   const params = new URLSearchParams();
   if (query.filter && query.filter !== "all") params.set("filter", query.filter);
   if (query.search) params.set("q", query.search);
+  if (query.packageId) params.set("package", query.packageId);
+  if (query.versionId) params.set("version", query.versionId);
+  if (query.tab) params.set("tab", query.tab);
   const search = params.toString();
   return search ? `/admin/packages?${search}` : "/admin/packages";
+}
+
+export function registerHref(query: PackagesQuery): string {
+  return packagesHref({ filter: query.filter, search: query.search });
+}
+
+export function resolveSelection(
+  packages: readonly PackageRow[],
+  query: PackagesQuery,
+): PackageSelection | null {
+  if (!query.packageId) return null;
+  const pkg = packages.find(candidate => candidate.id === query.packageId);
+  if (!pkg) return null;
+  const versions = orderedVersions(pkg);
+  return {
+    pkg,
+    version: versions.find(version => version.id === query.versionId) ?? versions[0] ?? null,
+  };
+}
+
+export function isEditableDraft(version: VersionRow | null, canWrite: boolean): boolean {
+  return !!version && version.status === "draft" && canWrite;
+}
+
+export function availableTabs(canDesign: boolean): readonly PackagesTab[] {
+  return canDesign ? TABS : TABS.filter(tab => tab !== "designer");
+}
+
+export function resolveTab(query: PackagesQuery, canDesign: boolean): PackagesTab {
+  const tabs = availableTabs(canDesign);
+  return tabs.find(tab => tab === query.tab) ?? tabs[0];
 }
 
 export type PackageCounts = Readonly<Record<PackageFilter, number>>;

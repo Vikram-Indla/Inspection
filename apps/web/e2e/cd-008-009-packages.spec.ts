@@ -20,39 +20,57 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("/locale?set=en");
 });
 
+// T-126 split the register from the workbench: /admin/packages lists packages,
+// and the designer opens on ?package=&version=&tab= query state. Every claim
+// below is unchanged — only its address is.
+const openWorkbench = async (page: import("@playwright/test").Page, code: RegExp) => {
+  await page.goto("/admin/packages");
+  await page.locator('[role="listitem"] a').filter({ hasText: code }).first().click();
+  await expect(page.getByRole("navigation", { name: "Package workbench" })).toBeVisible();
+};
+
 test.describe("CD-008 package library — version-led runtime", () => {
-  test("S01 renders package groups, version rows and boundary disclosure", async ({ page }) => {
+  test("S01 lists every package once with its version state and the immutability rule", async ({ page }) => {
     await page.goto("/admin/packages");
-    await expect(page.getByRole("heading", { name: "Inspection Forms" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Inspection packages, tracked by version/i })).toBeVisible();
-    const group = page.locator("details > summary").filter({ hasText: /PKG-|TST-PKG/ }).first();
-    await expect(group).toBeVisible();
-    await group.click();
-    await expect(page.getByText(/Published v|Draft · editable/i).first()).toBeVisible();
-    await expect(page.getByText(/Published packages can’t be changed/).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Inspection packages", level: 1 })).toBeVisible();
+    const rows = page.locator('[role="listitem"]');
+    expect(await rows.count()).toBeGreaterThan(0);
+    await expect(rows.filter({ hasText: /PKG-|TST-PKG/ }).first()).toBeVisible();
+    await expect(page.getByText(/cannot have its structure edited/i).first()).toBeVisible();
+    await expect(page.locator("form").filter({ hasText: /Deactivation reason/i })).toHaveCount(0);
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-en-light-1440.png"), fullPage: true });
   });
 
   test("S05/S06 published versions remain immutable while the authorized writer sees draft controls", async ({ page }) => {
-    await page.goto("/admin/packages");
-    const group = page.locator("details > summary").filter({ hasText: /PKG-UAT-GOLDEN/ }).first();
-    await group.click();
-    await expect(page.getByText("Published version — locked", { exact: false }).locator("visible=true").first()).toBeVisible();
+    await openWorkbench(page, /PKG-UAT-GOLDEN/);
+    await page.getByRole("link", { name: "Versions", exact: true }).click();
+    await expect(page.getByRole("heading", { name: /Versions of this package/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Create a new version/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create draft/i }).locator("visible=true").first()).toBeVisible();
+    await expect(page.getByText(/Deactivate version/i).first()).toBeVisible();
+  });
+
+  test("deactivation is disclosed, never armed on arrival", async ({ page }) => {
+    await openWorkbench(page, /PKG-UAT-GOLDEN/);
+    await page.getByRole("link", { name: "Versions", exact: true }).click();
+    await expect(page.locator("details[open]").filter({ hasText: /Deactivate version/i })).toHaveCount(0);
+    await expect(page.getByLabel(/Deactivation reason/i)).toBeHidden();
   });
 
   test("published history exposes governed effective and supersede lineage read-only", async ({ page }) => {
-    await page.goto("/admin/packages");
-    const derived = page.getByText(/older than current publish \(derived\)/i);
-    if (await derived.count()) await expect(derived.first()).toBeVisible();
-    await expect(page.getByRole("button", { name: /schedule|effective date|supersede/i })).toHaveCount(0);
+    await openWorkbench(page, /PKG-UAT-GOLDEN/);
+    await page.getByRole("link", { name: "Versions", exact: true }).click();
+    await expect(page.getByText(/Effective /i).first()).toBeVisible();
+    const superseded = page.getByText(/Older than the current publish/i);
+    if (await superseded.count()) await expect(superseded.first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /schedule|supersede/i })).toHaveCount(0);
   });
 });
 
 test.describe("CD-009 read-only field projection", () => {
   test("preview exposes item semantics while every inspector input remains inert", async ({ page }) => {
-    await page.goto("/admin/packages");
-    await page.locator("details > summary").filter({ hasText: /PKG-UAT-GOLDEN/ }).first().click();
+    await openWorkbench(page, /PKG-UAT-GOLDEN/);
+    await page.getByRole("link", { name: "Field preview", exact: true }).click();
     const toggle = page.getByRole("button", { name: /Open field preview|Preview as inspector/i }).locator("visible=true").first();
     await expect(toggle).toBeVisible();
     await toggle.click();
@@ -68,9 +86,9 @@ test.describe("CD-009 read-only field projection", () => {
 
 test.describe("CD-008 publish impact truth", () => {
   test("S08 impact failure is unavailable, never fabricated as numeric zero", async ({ page }) => {
-    await page.goto("/admin/packages");
-    await page.locator("details > summary").filter({ hasText: /PKG-UAT-GOLDEN/ }).first().click();
-    const impact = page.locator(".sq-impact:visible").first();
+    await openWorkbench(page, /PKG-UAT-GOLDEN/);
+    await page.getByRole("link", { name: "Publish impact", exact: true }).click();
+    const impact = page.getByRole("region", { name: "Publish impact" }).first();
     await expect(impact).toBeVisible();
     const unavailable = impact.getByText(/aren’t available|unavailable|outside what you can see/i);
     if (await unavailable.count()) {
@@ -99,6 +117,7 @@ test.describe("CD-008/009 a11y, RTL, theme and responsive semantics", () => {
     await page.goto("/admin/packages");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByText(/PKG-|TST-PKG/).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "حزم التفتيش", level: 1 })).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-ar-rtl-1440.png"), fullPage: true });
   });
 
@@ -117,15 +136,24 @@ test.describe("CD-008/009 a11y, RTL, theme and responsive semantics", () => {
 });
 
 test.describe("CD-008/009 source wiring — writer, no-op, validation and hard states", () => {
-  const page = PKG("page.tsx");
+  // T-124 moved the reads to a feature query module and the editor wiring to
+  // PackagesEditors; T-125 moved the designer onto primitives. Every claim below
+  // is unchanged — only its address is.
+  const editors = PKG("PackagesEditors.tsx");
+  const queries = SRC("src/features/admin-packages/queries.ts");
   const editor = PKG("DraftEditor.tsx");
   const preview = PKG("PackagePreview.tsx");
+  const panes = PKG("_designer/designer-panes.tsx");
   const actions = PKG("actions.ts");
+  const view = SRC("src/features/admin-packages/view.ts");
+  const versionList = SRC("src/components/sections/admin-packages/version-list/version-list.tsx");
 
   test("writer controls are role-mirrored while RLS/server guard remain authoritative", () => {
-    expect(page).toContain('const WRITER_ROLES = new Set(["admin", "compliance_admin", "form_admin"])');
-    expect(page).toContain('version.status === "draft" && canWrite');
-    expect(page).toContain("canWrite && <section");
+    expect(queries).toContain('const WRITER_ROLES = ["admin", "compliance_admin", "form_admin"] as const');
+    expect(view).toContain('version.status === "draft" && canWrite');
+    expect(editors).toContain("isEditableDraft(version, data.canWrite)");
+    expect(versionList).toContain("canWrite ? versions");
+    expect(versionList).toContain('.filter(version => version.status !== "draft")');
     expect(actions).toContain("requireConfigurationWriter");
   });
 
@@ -136,9 +164,9 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     }
     expect(editor).toContain("moveItem");
     expect(editor).toContain("moveSection");
-    expect(editor).toContain("score_weight");
-    expect(editor).toContain("evidence_rule");
-    expect(editor).toContain("response_mapping");
+    expect(panes).toContain("score_weight");
+    expect(panes).toContain("evidence_rule");
+    expect(panes).toContain("response_mapping");
   });
 
   test("no-op draft save is disabled and stale/non-draft writes are rejected server-side", () => {
@@ -158,8 +186,8 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
   });
 
   test("field projection includes the backend-supported item requirement and scoring semantics", () => {
-    expect(page).toContain("mandatoryWhenVisible");
-    expect(page).toContain("scoringEnabled: response.scoring_enabled !== false");
+    expect(editors).toContain("mandatoryWhenVisible");
+    expect(editors).toContain("scoringEnabled: response.scoring_enabled !== false");
     expect(preview).toContain("it.requirement");
     expect(preview).toContain("!it.scoringEnabled");
   });
@@ -167,18 +195,28 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
   test("loading, fatal error, true-empty, partial degradation and recovery are distinct", () => {
     const loading = PKG("loading.tsx");
     const error = PKG("error.tsx");
-    expect(loading).toContain('aria-busy="true"');
-    expect(error).toContain("لا يمكننا معرفة ما إذا كانت القائمة فارغة أو حدث خطأ");
-    expect(page).toContain("packageUnavailable");
-    expect(page).toContain("itemBankUnavailable");
-    expect(page).toContain("pkgs.length === 0");
-    expect(page).toContain('href="/admin/packages"');
+    // aria-busy is now a guarantee of the SkeletonRegion primitive rather than
+    // a literal in the route file, so the claim is asserted where it is kept.
+    expect(loading).toContain("PackagesSkeleton");
+    expect(SRC("src/components/sections/admin-packages/packages-skeleton/packages-skeleton.tsx"))
+      .toContain("SkeletonRegion");
+    expect(SRC("src/components/saqeel/skeleton/skeleton.tsx")).toContain('aria-busy="true"');
+    // Every state sentence is a resource key now, so the Arabic is asserted in
+    // the resource rather than as a literal inside the boundary component.
+    expect(error).toContain("adminPackagesMessages");
+    expect(JSON.parse(SRC("src/i18n/locales/ar/admin-packages.json")).error.body)
+      .toContain("لم يتغيّر أي حزمة أو إصدار أو تعريف بند");
+    expect(queries).toContain('return { kind: "error" }');
+    expect(queries).toContain("itemBankUnavailable");
+    expect(SRC("src/components/sections/admin-packages/packages-register/packages-register.tsx"))
+      .toContain("data.packages.length");
+    expect(SRC("src/features/admin-packages/view.ts")).toContain('"/admin/packages"');
   });
 
   test("rich package authoring is wired to the authoritative definition contract", () => {
     for (const token of ["item_rules", "action_forms", "template_refs", "mandatory_when_visible", "visible_when"]) expect(editor).toContain(token);
-    expect(page).toContain("configuration_templates");
-    expect(page).toContain("violation_codes");
+    expect(queries).toContain("configuration_templates");
+    expect(queries).toContain("violation_codes");
     expect(actions).toContain("Circular visibility rule");
   });
 });

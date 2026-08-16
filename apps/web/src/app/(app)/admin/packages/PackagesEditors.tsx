@@ -1,25 +1,21 @@
+import DesignerScreen from "@/components/sections/admin-packages/designer-screen/designer-screen";
 import PackagesScreen from "@/components/sections/admin-packages/packages-screen/packages-screen";
 import type { EditorStringBags } from "@/features/admin-packages/editor-strings";
 import type { PackagesData } from "@/features/admin-packages/queries";
-import type { PackagesQuery, VersionRow } from "@/features/admin-packages/view";
+import { isEditableDraft, type PackagesQuery, type VersionRow } from "@/features/admin-packages/view";
 import type { Locale } from "@/lib/i18n";
 import DraftEditor from "./DraftEditor";
 import type { ImpactData } from "./ImpactPanel";
 import ImpactPanel from "./ImpactPanel";
 import PackagePreview, { type PreviewItem } from "./PackagePreview";
-import { ApprovePublish, DeactivatePackage, NewPackageForm } from "./PublishControls";
+import { ApprovePublish, DeactivatePackage, NewDraftForm, NewPackageForm } from "./PublishControls";
+import TemplateRegistry from "./TemplateRegistry";
 
 const EMPTY_IMPACT: ImpactData = { pinned: null, referencing: [], diff: null };
 
-export default function PackagesEditors({ data, query, locale, bags, impact }: {
-  data: PackagesData;
-  query: PackagesQuery;
-  locale: Locale;
-  bags: EditorStringBags;
-  impact: Map<string, ImpactData>;
-}) {
+function toPreviewItems(items: PackagesData["items"], locale: Locale): Record<string, PreviewItem> {
   const previewItems: Record<string, PreviewItem> = {};
-  for (const item of data.items) {
+  for (const item of items) {
     const response = (item.response_model ?? {}) as {
       responses?: string[];
       mapping?: Record<string, { violation?: string; action_form?: string }>;
@@ -50,10 +46,22 @@ export default function PackagesEditors({ data, query, locale, bags, impact }: {
       ncActionForm: nonCompliant?.action_form ?? null,
     };
   }
+  return previewItems;
+}
+
+export default function PackagesEditors({ data, query, locale, bags, impact }: {
+  data: PackagesData;
+  query: PackagesQuery;
+  locale: Locale;
+  bags: EditorStringBags;
+  impact: Map<string, ImpactData>;
+}) {
+  const previewItems = toPreviewItems(data.items, locale);
 
   const previewFor = (version: VersionRow) => (
     <PackagePreview
       actionForms={(version.definition.action_forms ?? []).map(form => ({ ...form }))}
+      headingLevel={isEditableDraft(version, data.canWrite) ? 5 : 3}
       itemMap={previewItems}
       sections={(version.definition.sections ?? []).map(section => ({
         key: section.key,
@@ -64,51 +72,57 @@ export default function PackagesEditors({ data, query, locale, bags, impact }: {
     />
   );
 
-  const editorFor = (version: VersionRow) => {
-    if (version.status === "draft" && data.canWrite && !data.itemBankUnavailable) {
-      return (
-        <>
-          <DraftEditor
-            catalog={data.items.filter(item => item.active).map(item => ({ code: item.code, title: item.title }))}
-            definition={version.definition}
-            preview={previewFor(version)}
-            strings={bags.draft}
-            templates={data.templates
-              .filter(template => ["published", "locked"].includes(template.status))
-              .map(template => ({
-                id: template.id,
-                label: `${template.template_key} · ${template.version_label}`,
-              }))}
-            versionId={version.id}
-            violations={data.violations.map(violation => ({
-              id: violation.code,
-              label: `${violation.code} — ${violation.title}`,
-            }))}
-          />
-          <ApprovePublish strings={bags.publish} versionId={version.id} />
-        </>
-      );
-    }
-    if (data.itemBankUnavailable) return null;
+  if (data.selection) {
+    const { version } = data.selection;
+    const canDesign = isEditableDraft(version, data.canWrite) && !data.itemBankUnavailable;
+
     return (
-      <>
-        {previewFor(version)}
-        {data.canWrite && version.status !== "draft"
-          ? <DeactivatePackage strings={bags.publish} versionId={version.id} />
-          : null}
-      </>
+      <DesignerScreen
+        data={data}
+        deactivateFor={target => <DeactivatePackage strings={bags.publish} versionId={target.id} />}
+        designer={canDesign && version ? (
+          <>
+            <DraftEditor
+              catalog={data.items.filter(item => item.active).map(item => ({ code: item.code, title: item.title }))}
+              definition={version.definition}
+              preview={previewFor(version)}
+              strings={bags.draft}
+              templates={data.templates
+                .filter(template => ["published", "locked"].includes(template.status))
+                .map(template => ({
+                  id: template.id,
+                  label: `${template.template_key} · ${template.version_label}`,
+                }))}
+              versionId={version.id}
+              violations={data.violations.map(violation => ({
+                id: violation.code,
+                label: `${violation.code} — ${violation.title}`,
+              }))}
+            />
+            <ApprovePublish strings={bags.publish} versionId={version.id} />
+          </>
+        ) : null}
+        impact={<ImpactPanel data={(version && impact.get(version.id)) ?? EMPTY_IMPACT} strings={bags.impact} />}
+        locale={locale}
+        newDraftForm={<NewDraftForm packageId={data.selection.pkg.id} strings={bags.publish} />}
+        preview={version ? previewFor(version) : null}
+        query={query}
+        selection={data.selection}
+      />
     );
-  };
+  }
 
   return (
     <PackagesScreen
       data={data}
-      editorFor={editorFor}
-      impactFor={version => <ImpactPanel data={impact.get(version.id) ?? EMPTY_IMPACT} strings={bags.impact} />}
       locale={locale}
       newPackageForm={<NewPackageForm strings={bags.newPackage} />}
+      notFound={query.packageId !== ""}
       query={query}
       readAt={Date.now()}
+      templateRegistry={data.canWrite && !data.templatesUnavailable
+        ? <TemplateRegistry strings={bags.template} templates={data.templates} />
+        : null}
     />
   );
 }

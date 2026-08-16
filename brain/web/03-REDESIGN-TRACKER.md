@@ -13,11 +13,95 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-124.** Take T-125 — the package designer, already scoped in T-124's record.
+implements the reservation. **Highest id in use: T-126.** Take T-127.
 
 ---
 
 ## NOW
+
+### T-126 · the register stops being the editor
+`status: partial — structure, states and specs done; axe, native Arabic review and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-16-T-126-packages-workbench](sessions/2026-08/2026-08-16-T-126-packages-workbench.md)
+
+```
+register height     6,810px → 1,977px    tallest card 1,597px → ~100px row
+inputs rendered       103 → 32           visible required 20 → 0
+open destructive        9 → 0            inline designers 2 → 0
+buttons                61 → 6            forms 15 → 5   leaf nodes 332 → 129
+heading-order skips     2 → 0            legacy classes (designer) 40 → 5
+spec assertions         5 re-pointed + 4 runtime blocks rewritten
+```
+
+**Two features were missing and T-124 certified it clean.** `NewDraftForm` and
+`TemplateRegistry` compiled, passed every gate, and were rendered by nothing —
+so a writer could not create a version for an existing package at all, which is
+exactly what the "No versions" filter selects for. **My T-124 record claimed "no
+functional regression"; that was wrong**, and it is the second uncaught T-124
+defect after the ten spec assertions. Both components are rendered again.
+
+**The register and the workbench are now separate surfaces on query state.**
+`/admin/packages` lists one row per package; the designer opens on
+`?package=&version=&tab=` — routes are fixed and CLAUDE.md names query state as
+the sanctioned mechanism, so nothing was nested. Four tabs: Designer (only when
+the version is an editable draft), Field preview, Publish impact, Versions.
+
+**Nine armed deactivation forms are now zero.** Deactivation moved to the
+Versions tab behind a closed disclosure. Verified with `checkVisibility()`, not
+`getBoundingClientRect()` — content under `content-visibility: hidden` still
+reports a layout box, so a rect-based check reads 12 visible required fields
+where there are none.
+
+**`PackagePreview` keeps the field-workspace look** — the owner's ruling,
+settling T-125's parked question. It gained `headingLevel` so the same component
+sits at H3 in its own tab and H5 inside the designer's third pane.
+
+**T-125's parked legacy classes are cleared in `DraftEditor`** — `sq-field`,
+`sq-input`, `sq-select`, `sq-choice`, `sq-panel` and 22 `btn` are now `Field`,
+`TextInput`, `SaqeelSelect`, `Choice`, `Button` and `IconButton`. The five that
+remain are `PackagePreview`'s, which the ruling protects.
+
+**Parked:** `PackagesEditors` + `editor-strings.ts` still bridge to
+`t(key, "English")` string bags — roughly 120 keys owed to the `admin-packages`
+namespace (WEB-013). The route directory holds 15 files against a cap of 12.
+
+### T-125 · the package designer reaches zero typography, and T-124's spec claim is corrected
+`status: partial — typography 0 and specs re-pointed; legacy component classes remain in two files` · `rules: WEB-000 … WEB-014` · `est: 3h`
+`record:` [2026-08-16-T-125-packages-designer](sessions/2026-08/2026-08-16-T-125-packages-designer.md)
+
+```
+typography (route)  38 → 0        gate 77 → 115 removed
+eslint              gate 81 → 97  v5  77 → 76
+packages.module.css 226 → 100     18 of 27 classes deleted
+spec assertions     10 re-pointed — T-124's debt
+```
+
+**T-124 reported "9 specs pinned, none needed re-pointing." That was wrong** — it
+had broken **ten** assertions in `cd-008-009-packages.spec.ts`. **The sweep
+worked; the verification did not:** T-124 checked with *"the static suite is
+unchanged at 408"*, but that spec is **not in the static allowlist**, so the run
+could never have executed it — and it cannot run here at all because its
+describe block needs a browser. What settles it is a five-line script that greps
+the asserted strings against the new source. The T-124 record and session log
+now carry the correction inline.
+
+**`TextInputType` gained `"date"`** — T-080's ruling applied: fill the primitive
+rather than work around it. Three forms need a date that submits in a plain
+`<form action>`, and `DatePicker` is controlled and does not submit.
+
+**`PackagePreview` was migrated surgically, not rebuilt** — it deliberately
+mimics the field workspace's `ipad-q` language so a checker previews what an
+inspector sees. Those are component classes, not type classes; rewriting them
+would change what the preview previews. Only its 12 typography violations moved.
+
+**Two process notes, both recorded rather than buried.** I hit the
+**zero-match-reports-success** shape again (an import anchored to a line the file
+does not contain; the script logged success), and I reached for **`git
+checkout`** — a never-run command — to restore a baseline I had mutated to take
+a measurement. Restored with `git show` and confirmed byte-identical.
+
+**Parked:** legacy component classes remain — `DraftEditor` (`sq-input` 8,
+`sq-field__label` 14) is a straight swap; **`PackagePreview` needs a ruling**
+on whether the preview should look like SAQEEL or like the field workspace.
 
 ### T-124 · `/admin/packages` — eleven impact reports rendered at once
 `status: partial — register, states and naming done; the designer components are T-125` · `rules: WEB-000 … WEB-014` · `est: 5h`

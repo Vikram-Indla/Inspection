@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Heading, Mono, Text } from "@/components/saqeel/type";
+import type { HeadingLevel } from "@/components/saqeel/type/heading";
 
 // M09-028 — "Preview" renders a package version EXACTLY as the inspector will
 // see it in the field workspace: sections in order, each item with its response
@@ -43,13 +45,15 @@ export type PreviewStrings = {
   evTypeLabels: Record<string, string>;
 };
 
-export default function PackagePreview({ sections, actionForms, itemMap, strings: s }: {
+export default function PackagePreview({ sections, actionForms, itemMap, strings: s, headingLevel = 3, defaultOpen = false }: {
   sections: PreviewSection[];
   actionForms: PreviewActionForm[];
   itemMap: Record<string, PreviewItem>;
   strings: PreviewStrings;
+  headingLevel?: HeadingLevel;
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const formByKey = Object.fromEntries(actionForms.map(f => [f.key, f]));
 
   return (
@@ -64,8 +68,8 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
       {open && (
         <div className="ipad-preview panel" role="region" aria-label={s.title} style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-6)", background: "var(--surface-sunken)", borderRadius: "var(--radius-md)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-            <strong style={{ font: "var(--type-body-strong)" }}>{s.title}</strong>
-            <span className="t-caption">{s.asInspector}</span>
+            <Text as="span" role="bodyStrong">{s.title}</Text>
+            <Text as="span" role="label" tone="muted">{s.asInspector}</Text>
           </div>
 
           {sections.map(sec => {
@@ -73,10 +77,10 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
             return (
               <section key={sec.key} className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                 <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-                  <h4 style={{ font: "var(--type-heading)" }}>{sec.title}</h4>
+                  <Heading level={headingLevel} visual="subheading">{sec.title}</Heading>
                   {sec.mandatory && <span className="badge badge-critical">{s.sectionMandatory}</span>}
                 </div>
-                {codes.length === 0 && <p className="t-caption">{s.emptySection}</p>}
+                {codes.length === 0 && <Text role="label" tone="muted">{s.emptySection}</Text>}
                 {codes.map(code => {
                   const it = itemMap[code];
                   if (!it || it.missing) {
@@ -86,8 +90,8 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                   return (
                     <div key={code} className="ipad-q" style={{ border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", padding: "var(--space-6)", background: "var(--surface-primary)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                       <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "baseline" }}>
-                        <p style={{ font: "var(--type-field)", fontWeight: 600 }}>{it.code} · {it.title}</p>
-                        {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
+                        <Text role="bodyStrong">{it.code} · {it.title}</Text>
+                        {it.clause && <Text as="span" role="label" tone="muted">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</Text>}
                         {it.conditional && <span className="badge badge-info" title={`${s.conditionalWhen} ${it.conditional}`}>{s.conditionalBadge}</span>}
                         <span className={`sq-lozenge ${it.requirement === "required" ? "sq-lozenge--critical" : "sq-lozenge--info"}`}>
                           <span aria-hidden="true">{it.requirement === "required" ? "● " : "○ "}</span>
@@ -96,8 +100,8 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                         {it.mandatoryWhenVisible && <span className="badge badge-warning">{s.mandatoryWhenVisible}</span>}
                         {!it.scoringEnabled && <span className="badge badge-info">{s.scoringDisabled}</span>}
                       </div>
-                      {it.conditional && <p className="t-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
-                      {it.guidance && <p className="t-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}
+                      {it.conditional && <Text role="label" tone="muted">{s.conditionalWhen} <Mono>{it.conditional}</Mono></Text>}
+                      {it.guidance && <Text role="label" tone="muted">{s.guidanceLabel}: {it.guidance}</Text>}
 
                       <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
                         {it.isDate ? (
@@ -129,7 +133,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                             <strong>{form.title}</strong>
                             <span className={`sq-lozenge ${form.blocking ? "sq-lozenge--critical" : "sq-lozenge--info"}`}>{form.blocking ? s.formBlocking : s.formNonBlocking}</span>
                           </div>
-                          <p className="t-caption">{s.formAppearsWhen}</p>
+                          <Text role="label" tone="muted">{s.formAppearsWhen}</Text>
                           <div className="sq-grid-2">
                             {(form.fields ?? []).map(f => (
                               <label key={f} className="sq-field" style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>

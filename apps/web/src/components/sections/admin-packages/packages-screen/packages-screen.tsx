@@ -5,23 +5,27 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import { Text } from "@/components/saqeel/type";
 import type { PackagesData } from "@/features/admin-packages/queries";
 import { adminPackagesMessages } from "@/features/admin-packages/strings";
-import type { PackagesQuery, VersionRow } from "@/features/admin-packages/view";
+import type { PackagesQuery } from "@/features/admin-packages/view";
 import { fill } from "@/i18n/messages";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
+import PackagesDisclosure from "../packages-disclosure/packages-disclosure";
 import PackagesFilters from "../packages-filters/packages-filters";
+import PackagesNotices from "../packages-notices/packages-notices";
 import PackagesRegister from "../packages-register/packages-register";
 import PackagesToolbar from "../packages-toolbar/packages-toolbar";
 import styles from "./packages-screen.module.css";
 
-export default function PackagesScreen({ data, query, locale, readAt, newPackageForm, impactFor, editorFor }: {
+export default function PackagesScreen({
+  data, query, locale, readAt, notFound, newPackageForm, templateRegistry,
+}: {
   data: PackagesData;
   query: PackagesQuery;
   locale: Locale;
   readAt: number;
+  notFound: boolean;
   newPackageForm: ReactNode;
-  impactFor: (version: VersionRow) => ReactNode;
-  editorFor: (version: VersionRow) => ReactNode;
+  templateRegistry: ReactNode;
 }) {
   const strings = adminPackagesMessages(locale);
 
@@ -38,7 +42,6 @@ export default function PackagesScreen({ data, query, locale, readAt, newPackage
       <PackagesFilters counts={data.counts} locale={locale} query={query} strings={strings} />
 
       <PackagesToolbar
-        actions={data.canWrite ? newPackageForm : null}
         canWrite={data.canWrite}
         locale={locale}
         matched={data.packages.length}
@@ -47,54 +50,29 @@ export default function PackagesScreen({ data, query, locale, readAt, newPackage
         total={data.counts.all}
       />
 
-      {data.permissionUnknown ? (
+      {notFound ? (
         <EmptyState
-          description={strings.notices.permissionUnknownBody}
+          description={strings.workbench.notFoundBody}
           icon="risk"
-          title={strings.notices.permissionUnknownTitle}
+          title={strings.workbench.notFoundTitle}
           tone="warning"
           variant="inline"
         />
       ) : null}
 
-      {!data.canWrite && !data.permissionUnknown ? (
-        <EmptyState
-          description={strings.notices.readOnlyBody}
-          icon="restricted"
-          title={strings.notices.readOnlyTitle}
-          tone="info"
-          variant="inline"
-        />
+      <PackagesNotices data={data} strings={strings} />
+
+      {data.canWrite ? (
+        <PackagesDisclosure summary={strings.toolbar.newPackage}>{newPackageForm}</PackagesDisclosure>
       ) : null}
 
-      {data.itemBankUnavailable ? (
-        <EmptyState
-          description={strings.notices.itemBankBody}
-          icon="risk"
-          title={strings.notices.itemBankTitle}
-          tone="warning"
-          variant="inline"
-        />
-      ) : null}
+      <PackagesRegister data={data} locale={locale} query={query} strings={strings} />
 
-      {data.templatesUnavailable ? (
-        <EmptyState
-          description={strings.notices.templatesBody}
-          icon="risk"
-          title={strings.notices.templatesTitle}
-          tone="warning"
-          variant="inline"
-        />
+      {templateRegistry ? (
+        <PackagesDisclosure hint={strings.templates.hint} summary={strings.templates.summary}>
+          {templateRegistry}
+        </PackagesDisclosure>
       ) : null}
-
-      <PackagesRegister
-        data={data}
-        editorFor={editorFor}
-        impactFor={impactFor}
-        locale={locale}
-        query={query}
-        strings={strings}
-      />
 
       <Card>
         <CardHeader level="h2" title={strings.governance.heading} />

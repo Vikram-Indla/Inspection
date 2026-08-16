@@ -4,8 +4,10 @@ import { riyadhToday } from "@/lib/dates";
 import {
   countStates,
   matchesQuery,
+  resolveSelection,
   type PackageCounts,
   type PackageRow,
+  type PackageSelection,
   type PackagesQuery,
 } from "./view";
 
@@ -28,6 +30,7 @@ export type TemplateRow = {
 
 export type PackagesData = {
   readonly packages: readonly PackageRow[];
+  readonly selection: PackageSelection | null;
   readonly counts: PackageCounts;
   readonly items: readonly ItemRow[];
   readonly templates: readonly TemplateRow[];
@@ -109,6 +112,7 @@ export async function loadPackages(query: PackagesQuery): Promise<PackagesResult
     kind: "ok",
     data: {
       packages: all.filter(pkg => matchesQuery(pkg, query, today)),
+      selection: resolveSelection(all, query),
       counts: countStates(all, today),
       items: (itemRead.data ?? []).map(toItemRow),
       templates: (templateRead.data ?? []).map(toTemplateRow),

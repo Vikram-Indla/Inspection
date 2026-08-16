@@ -8,6 +8,7 @@ import {
   Eye,
   EyeOff,
   ChevronDown,
+  ChevronUp,
   ChevronLeft,
   ChevronRight,
   CircleUser,
@@ -88,6 +89,9 @@ export const ICONS = {
   attachment: Paperclip,
   savedViews: Bookmark,
   externalLink: ArrowUpRight,
+  moveUp: ChevronUp,
+  moveDown: ChevronDown,
+  remove: X,
 } as const;
 
 export type IconName = keyof typeof ICONS;
