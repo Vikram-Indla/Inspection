@@ -30,6 +30,42 @@ type TickProps = {
   index?: number;
 };
 
+type ValueProps = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  value?: string | number;
+};
+
+const VALUE_GAP = 6;
+
+/**
+ * The count at the growing tip of its bar.
+ *
+ * Hand-placed because Recharts resolves `LabelList position` against the bar's
+ * own origin, and a `reversed` axis moves that origin to the **base** — so
+ * `"left"` and `"right"` both land there, on top of the axis labels.
+ *
+ * Measured rather than reasoned about: under `reversed`, Recharts keeps `x` at
+ * the base and makes `width` **negative**. `x + width` is therefore the growing
+ * tip in both directions, and only the gap and the anchor flip.
+ */
+function ValueLabel({ x = 0, y = 0, width = 0, height = 0, value, rtl = false }: ValueProps & { rtl?: boolean }) {
+  const tip = x + width;
+  return (
+    <text
+      className={styles.value}
+      x={rtl ? tip - VALUE_GAP : tip + VALUE_GAP}
+      y={y + height / 2}
+      textAnchor={rtl ? "end" : "start"}
+      dominantBaseline="middle"
+    >
+      {value}
+    </text>
+  );
+}
+
 function wrapLabel(label: string): readonly string[] {
   return label.split(" ").reduce<string[]>((lines, word) => {
     const last = lines[lines.length - 1];
@@ -40,13 +76,22 @@ function wrapLabel(label: string): readonly string[] {
   }, []);
 }
 
-function AxisLabel({ x = 0, y = 0, index = 0, points }: TickProps & { points: readonly BarPoint[] }) {
+function AxisLabel({ x = 0, y = 0, index = 0, points, rtl = false }: TickProps & {
+  points: readonly BarPoint[];
+  rtl?: boolean;
+}) {
   const point = points[index];
   if (!point) return null;
   const lines = wrapLabel(point.label);
   const top = y - ((lines.length - 1) * LINE_HEIGHT) / 2;
   const text = (
-    <text className={styles.tick} x={x} y={top} textAnchor="end" dominantBaseline="middle">
+    <text
+      className={styles.tick}
+      x={x}
+      y={top}
+      textAnchor={rtl ? "start" : "end"}
+      dominantBaseline="middle"
+    >
       {lines.map((line, row) => (
         <tspan key={line} x={x} dy={row === 0 ? 0 : LINE_HEIGHT}>{line}</tspan>
       ))}
@@ -73,7 +118,7 @@ function AxisLabel({ x = 0, y = 0, index = 0, points }: TickProps & { points: re
  * One series, so there is no legend and no categorical colour: bars carry the
  * accent, and a point the caller marks `muted` drops to the de-emphasis grey.
  */
-export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth, series = 1, track = false }: {
+export default function BarSeries({ points, domainMax, ariaLabel, barSize, labelWidth, series = 1, track = false, rtl = false }: {
   points: readonly BarPoint[];
   domainMax: number;
   ariaLabel: string;
@@ -90,6 +135,17 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
    * to the largest value, so a third of the scale draws as a full bar.
    */
   track?: boolean;
+  /**
+   * Mirrors the whole plot for a right-to-left reader: category labels move to
+   * the right edge, bars grow leftwards from there, and the value sits at the
+   * left end of each bar.
+   *
+   * Recharts has no writing-mode support, so this cannot come from CSS — the
+   * axis side, the numeric direction and the label position are all separate
+   * props and every one of them has to flip together. The caller passes it
+   * because only the caller knows the locale.
+   */
+  rtl?: boolean;
 }) {
   const roomy = useMediaQuery("(min-width: 48rem)");
   const labels = labelWidth ?? (roomy ? WIDE_LABEL : NARROW_LABEL);
@@ -104,16 +160,21 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
       style={{ blockSize: `${height}px` }}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={[...points]} layout="vertical" margin={{ top: 0, right: 44, bottom: 0, left: 0 }}>
-          <XAxis type="number" domain={[0, domainMax]} hide />
+        <BarChart
+          data={[...points]}
+          layout="vertical"
+          margin={{ top: 0, right: rtl ? 0 : 44, bottom: 0, left: rtl ? 44 : 0 }}
+        >
+          <XAxis type="number" domain={[0, domainMax]} hide reversed={rtl} />
           <YAxis
             type="category"
             dataKey="label"
             width={labels}
+            orientation={rtl ? "right" : "left"}
             axisLine={false}
             tickLine={false}
             className={styles.axis}
-            tick={<AxisLabel points={points} />}
+            tick={<AxisLabel points={points} rtl={rtl} />}
           />
           <Bar
             dataKey="value"
@@ -126,7 +187,7 @@ export default function BarSeries({ points, domainMax, ariaLabel, barSize, label
             {points.map(point => (
               <Cell key={point.key} fill={point.muted ? "var(--sqx-chart-7)" : seriesColour(series)} />
             ))}
-            <LabelList dataKey="display" position="right" className={styles.value} />
+            <LabelList dataKey="display" content={<ValueLabel rtl={rtl} />} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

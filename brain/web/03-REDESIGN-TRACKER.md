@@ -13,11 +13,29 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-116.** Take T-117.
+implements the reservation. **Highest id in use: T-117.** Take T-118.
 
 ---
 
 ## NOW
+
+### T-117 · The bar charts read left-to-right in Arabic
+`status: partial — code complete, measured both directions, axe clean; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011` · `est: 1h`
+`record:` [2026-08-16-T-117-bar-series-rtl](sessions/2026-08/2026-08-16-T-117-bar-series-rtl.md)
+
+T-112 fixed the label *collision*; the plot itself still ran left-to-right.
+**There is no CSS route** — Recharts has no writing-mode support, so `dir` on an
+ancestor does nothing. Four props flip together: `YAxis orientation`,
+`XAxis reversed`, the chart margin, and the tick `textAnchor`.
+
+**`LabelList position` is useless under `reversed`** — `"left"` and `"right"`
+both resolve to the bar's base, dropping the value onto the axis labels. Replaced
+with a custom `ValueLabel`. Under `reversed`, Recharts keeps `x` at the base and
+makes **`width` negative**, so `x + width` is the tip in both directions.
+
+**`isRtl` cannot live in `lib/i18n`** — that module imports `next/headers` and a
+client component reaching for it 500s the dev server. It lives in
+`i18n/direction.ts`.
 
 ### T-116 · Every bar and every meter was painted in the warning colour
 `status: partial — code complete, axe clean both themes, gates unchanged; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009` · `est: 0.5h`

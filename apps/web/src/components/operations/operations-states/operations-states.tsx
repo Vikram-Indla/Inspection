@@ -5,6 +5,7 @@ import { Text } from "@/components/saqeel/type";
 import { makeEnumLabel } from "@/i18n/enum-label";
 import { fill } from "@/i18n/messages";
 import { formatCount } from "@/i18n/numbers";
+import { isRtl } from "@/i18n/direction";
 import type { Locale } from "@/lib/i18n";
 
 export type OperationsStatesStrings = {
@@ -60,6 +61,7 @@ export default function OperationsStates({ counts, locale, strings }: {
           domainMax={Math.max(...ranked.map(([, value]) => value), 1)}
           ariaLabel={strings.aria}
           series={SERIES_ROLE.volume}
+          rtl={isRtl(locale)}
         />
         <Text tone="muted">{fill(strings.total, { total: formatCount(total, locale) })}</Text>
       </CardBody>

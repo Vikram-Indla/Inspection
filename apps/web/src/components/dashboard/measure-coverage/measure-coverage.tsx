@@ -5,6 +5,7 @@ import Gauge from "@/components/saqeel/charts/gauge/gauge";
 import { Heading, Text } from "@/components/saqeel/type";
 import type { MeasureCoverage } from "@/features/dashboard/strip";
 import { fill } from "@/i18n/messages";
+import { isRtl } from "@/i18n/direction";
 import type { Locale } from "@/lib/i18n";
 import styles from "./measure-coverage.module.css";
 
@@ -57,6 +58,7 @@ export default function MeasureCoverage({ coverage, locale, strings, headingId }
               domainMax={peak}
               series={SERIES_ROLE.coverage}
               ariaLabel={strings.reasonsAria}
+              rtl={isRtl(locale)}
               barSize={30}
               labelWidth={112}
             />

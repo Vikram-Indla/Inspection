@@ -8,6 +8,7 @@ import { fill } from "@/i18n/messages";
 import { formatCount } from "@/i18n/numbers";
 import { analyticsDrillHref } from "@/lib/analytics/drills";
 import type { AnalyticsQuery } from "@/lib/analytics/contract";
+import { isRtl } from "@/i18n/direction";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-rates.module.css";
 
@@ -60,7 +61,7 @@ export default function AnalyticsRates({ rates, strings, query, locale }: {
             </Link>
           ))}
         </div>
-        <BarSeries points={points} domainMax={FULL_SCALE} ariaLabel={strings.rates.ariaLabel} track />
+        <BarSeries points={points} domainMax={FULL_SCALE} ariaLabel={strings.rates.ariaLabel} track rtl={isRtl(locale)} />
       </CardBody>
     </Card>
   );
