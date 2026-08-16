@@ -1,6 +1,142 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-15` · `Updated by: T-114 — Arabic numerals`
+`Last updated: 2026-08-16` · `Updated by: T-121 — the ESLint ratchet`
+
+## `npm run lint` exists now, and it is a ratchet because it had to be (2026-08-16)
+
+ESLint 9 flat config expressing WEB-000, with the rule citation in every
+message. **A fresh run reports 8,114 errors**, so a threshold gate would have
+been red on day one — the exact defect already recorded against `npm run gates`.
+`check-eslint.mjs` mirrors `check-typography.mjs` key-for-key, and **WEB-014 §8
+carries over verbatim: the baseline may only go down.**
+
+```
+web/no-comments 7,334 · no-restricted-syntax 413 · non-null 123 · max-lines 97
+```
+
+**Migrated code is nearly clean, which is why enforcement costs nothing today:**
+`max-lines` is **already 0** across the design system, `features/*`, `i18n`,
+`lib` and every migrated section, and **`jsx-a11y/alt-text` is 0 across all 814
+`.tsx` files**. The debt is 90% comments, densest in `/field` and `i18n + lib`.
+
+**Two rule tallies were artifacts, and both are findings:**
+
+```
+189  <Text role="bodyStrong">   SAQEEL's typography `role` prop collides with ARIA
+124  useT()                     an async SERVER helper named like a React hook
+```
+
+The first is fixed with `ignoreNonDOM`. The second is demoted to `warn` because
+**the rule is right and the name is wrong** — renaming `useT` across 81+ call
+sites is its own task.
+
+**The ratchet was proved by injecting a defect, not by reading an exit code.**
+Probe with a `let`, an `as unknown as` and a needless binding → exit 1, all three
+named with citations → probe deleted → PASSED. The injection was confirmed to
+have landed (T-090/T-107's shape, hit four times before).
+
+## There are two `package.json` files and nothing links them (2026-08-16)
+
+The repository root and `apps/web` are **separate npm projects with no
+`workspaces` field**. T-121's install landed at the root and had to be undone.
+
+**Use `npm --prefix apps/web` for every npm command in this repository.**
+
+## CORRECTION — `/field` was never blocked by a token override (2026-08-16)
+
+**The entry below headed *"`/field` is a second design system, and the baseline
+does not know it"* is wrong on its central claim, and it has been holding back
+43% of the typography baseline since 2026-08-12.** It states that migrating
+`/field` is work against a live override because `public/saqeel-ds` redefines the
+tokens the primitives consume. Measured, both directions:
+
+```
+tokens defined by public/saqeel-ds/**       113
+tokens defined by src/app/saqeel.css        479
+  ↳ intersection                              0     ← the claimed override
+tokens of the FROZEN src/app/tokens.css
+  ↳ intersection                            109     ← the actual one
+occurrences of "sqx" in public/saqeel-ds      0
+```
+
+The primitives consume `--sqx-*`. The parallel system **has never heard of
+them** — it overrides the frozen legacy sheet, which is being deleted anyway.
+`saqeel.css` is imported at `src/app/layout.tsx:2`, above `/field` like every
+other route.
+
+The parallel sheet styles **element** selectors (`body`, `h1`–`h6`, `p`, `a`,
+`::selection`); a primitive's CSS Module **class** beats all of them on
+specificity, load order irrelevant. So it governs bare elements and legacy `t-*`
+classes — *exactly what a migration removes* — and stops governing each element
+the moment that element becomes a primitive. **The migration is incremental and
+self-limiting; the `<link>` comes out last, not first.**
+
+**The measurement still owed** (this is a specificity argument, and T-095's rule
+is that a font claim is a width measurement or it is a guess): one computed-style
+read of a primitive on `/field` against the same primitive on `/dashboard`.
+Blocked only on an Inspector session — see below.
+
+## The whole e2e suite is unrunnable, and it is not the production build (2026-08-16)
+
+Three separate causes, found while closing T-111 … T-117's owed e2e:
+
+```
+browsers    npx playwright install never run — chromium-1228 has no binary
+credentials SAQEEL_TEST_PASSWORD and SAQEEL_TEST_<ROLE>_EMAIL unset; no .env.local
+specs       146 of 252 assert the spelling of source files
+```
+
+Every spec in the `e2e` project depends on `auth.setup.ts`, and `personas.ts`
+fails closed on the missing password, so **nothing authenticated runs at all**.
+
+**Correction to a standing assumption:** the suite does *not* need a production
+build. `playwright.config.ts` runs `node .next/standalone/server.js`, but
+`reuseExistingServer` defaults on and reuses a dev server on 127.0.0.1:3000.
+**WEB-006 §3 does not block e2e — missing credentials do.**
+
+**The structural cost, which matters most for the migration about to scale up:
+146 of 252 specs assert source text.** Every screen migration breaks the ones
+pinned to its markup, nothing re-points them, and the red is indistinguishable
+from a real regression. A spec asserting `className="kpi-grid"` proves nothing
+about what a user sees — the class of assertion T-063 and T-078 each retired
+once already.
+
+## A guard can fail on Windows and pass on CI, for reasons unrelated to what it guards (2026-08-16)
+
+`platform-design-system-contract.spec.ts` compared `path.relative(root, file)`
+against `"src/app/layout.tsx"`. On Windows that is `src\app\layout.tsx`, so
+**two tests failed on a workstation and passed on Linux CI**, and the message
+pointed at the design system rather than at path separators.
+
+Repairing it exposed a real finding no gate can see: **`src/app/global-error.tsx`
+carries 7 literal hex colours.** It is **allowlisted rather than stripped** — it
+renders its own `<html>`/`<body>` for the case where the root layout itself
+threw, so no stylesheet is guaranteed loaded and no `var(--sqx-*)` is guaranteed
+to resolve. Same argument that admits `layout.tsx`; the only other such file.
+
+## Two committed files still carry plaintext credentials (2026-08-16)
+
+```
+scripts/verify-admin.mjs:8        admin@mim.gov.sa   1 password
+scripts/audit-v5-a11y.mjs:14-19   five personas      5 passwords
+```
+
+`e2e/personas.ts` was deliberately rewritten to remove exactly this, and its own
+header explains the consequence: **the values are in git history, so this needs
+rotation, not deletion.** Neither file was wired into an npm script by T-118.
+
+## `verify`, `lint`, `test`, `unit`, `budgets` now exist — two of them cannot pass (2026-08-16)
+
+Closing the gap this document recorded on 2026-08-14. **`lint` is a failing stub
+because ESLint is absent, not unwired** — no dependency, no config, no binary,
+and `next lint` is gone in Next 15, so a script cannot create a toolchain.
+**`budgets` is a failing stub for a structural reason**: WEB-005 §1's numbers
+come from a production build, which is human-only, so it is a measurement
+request and can never be an agent command. `verify` excludes both deliberately —
+a permanently red `verify` is an ignored one.
+
+**`npm run gates` is still red for everyone** at the same 77 pre-existing
+`check:design-system-v5` findings. Nobody can satisfy WEB-006 §5.
 
 ## `toLocaleString("ar")` returns Latin digits. Only `"ar-SA"` returns Arabic ones (2026-08-15)
 

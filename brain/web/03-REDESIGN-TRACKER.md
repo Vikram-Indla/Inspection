@@ -13,11 +13,116 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-117.** Take T-118.
+implements the reservation. **Highest id in use: T-121.** Take T-122.
 
 ---
 
 ## NOW
+
+### T-121 · `npm run lint` exists, runs, and is a ratchet rather than a wall
+`status: done` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-006, WEB-014` · `est: 1h`
+`record:` [2026-08-16-T-121-eslint-ratchet](sessions/2026-08/2026-08-16-T-121-eslint-ratchet.md)
+
+ESLint 9 flat config, 7 devDependencies, expressing WEB-000 in rule messages
+that cite the law they enforce. **A fresh run reports 8,114 errors**, so it is a
+**ratchet mirroring `check-typography.mjs` exactly** — same `file::rule` keys,
+same `--update`, same output. WEB-014 §8 carries over verbatim: **the baseline
+may only go down.**
+
+```
+web/no-comments 7,334 · no-restricted-syntax 413 · non-null 123 · max-lines 97
+```
+
+**Zero-comments is a custom inline rule** (no new dependency) honouring both
+sanctioned exceptions — the `@retiring` banner and TSDoc under
+`components/saqeel/` only.
+
+**325 of the first run's 8,439 were artifacts, and both diagnoses are findings:**
+`<Text role="bodyStrong">` — SAQEEL's typography `role` prop collides with the
+ARIA attribute (189, fixed with `ignoreNonDOM`) — and **`useT()` is an async
+server helper named like a React hook** (124, demoted to `warn`; the name is the
+defect).
+
+**`max-lines` is already 0** across the design system, `features/*`, `i18n`,
+`lib` and every migrated section. **`jsx-a11y/alt-text` is already 0** across all
+814 `.tsx`. **The ratchet was proved by injecting a defect** (exit 1, all three
+named), then deleting it.
+
+**Two package manifests, no workspaces field** — the install first landed at the
+repo root and was undone. **Use `npm --prefix apps/web` here, always.**
+
+**Parked:** rename `useT` (81+ sites); 16 already-dead `eslint-disable`
+directives in `src/`; `e2e/m9-challenger.js` does not parse; type-aware linting
+deferred until the baseline is falling.
+
+### T-120 · `/field`'s parallel design system does not override SAQEEL
+`status: done — measurement complete; the ruling is the owner's` · `rules: WEB-002, WEB-005, WEB-014` · `est: 0.5h`
+`record:` [2026-08-16-T-120-field-design-system-ruling](sessions/2026-08/2026-08-16-T-120-field-design-system-ruling.md)
+
+**The blocker this document recorded on 2026-08-12 does not exist.**
+`public/saqeel-ds` defines **113 tokens and not one `--sqx-*`**; the string
+`sqx` does not appear in it at all. It overrides **109 tokens of the frozen
+`tokens.css`** — the sheet being deleted anyway.
+
+```
+saqeel-ds ∩ saqeel.css     0 tokens      ← the claimed override
+saqeel-ds ∩ tokens.css   109 tokens      ← the actual one
+```
+
+It styles element selectors (`body`, `h1`–`h6`, `p`, `a`); a primitive's CSS
+Module class beats every one of them on specificity. So each migrated file is a
+file the parallel sheet no longer reaches — **incremental, no cutover, and the
+`<link>` comes out last, not first.**
+
+**658 violations (43% of the baseline) have been held back on a false premise.**
+Owed: one computed-style measurement on a `/field` route under an Inspector
+session — a specificity argument is not a measurement, per this repo's own rule.
+
+### T-119 · the specs were pinned to markup seven tasks had already deleted
+`status: partial — source-contract half closed; browser half blocked on browsers and credentials` · `rules: WEB-002, WEB-006, WEB-008, WEB-013` · `est: 1h`
+`record:` [2026-08-16-T-119-stale-source-contract-specs](sessions/2026-08/2026-08-16-T-119-stale-source-contract-specs.md)
+
+"E2E owed" was three debts, not one: **browsers never installed**, **persona
+credentials absent**, and **specs asserting deleted markup**. Only the third was
+an agent's to close.
+
+```
+playwright.static   35 failed → 33      405 passed → 407
+analytics-journey    2 tests  →  5      every ANL-S01 claim re-pointed to its new home
+platform-design      2 failed →  0
+```
+
+**The suite does not need a production build** — `reuseExistingServer` reuses a
+running dev server, so WEB-006 §3 does not block e2e. It is blocked on
+credentials.
+
+**`platform-design-system-contract` failed on Windows only**: `path.relative`
+returns backslashes, so every `"src/app/…"` comparison missed. It passed on
+Linux CI and failed on a workstation, in two tests.
+
+**146 of 252 specs assert the spelling of source files.** Every migration breaks
+the ones pinned to its markup, and the red is indistinguishable from a real
+regression. This is a tax on the migration about to be scaled up.
+
+### T-118 · the five commands the rules require and nobody could run
+`status: partial — verify/test/unit wired and green; lint and budgets exist but cannot pass` · `rules: WEB-005, WEB-006, WEB-008` · `est: 0.5h`
+`record:` [2026-08-16-T-118-missing-npm-scripts](sessions/2026-08/2026-08-16-T-118-missing-npm-scripts.md)
+
+`verify`, `lint`, `test`, `unit` and `budgets` now exist. **`lint` is a failing
+stub, not an install**: ESLint is absent entirely — no dependency, no config, no
+binary — and `next lint` is gone in Next 15. Adding four devDependencies to this
+repo is an owner call; amending WEB-006 to match the gap is a bigger one.
+
+**`budgets` is structurally an agent-forbidden command**: WEB-005 §1's numbers
+come from a production build, which is human-only. The script now says so.
+
+**`verify` excludes both deliberately** — a permanently red `verify` is an
+ignored `verify`. It is `gates → verify:dates → test`.
+
+⚠ **Plaintext credentials in two committed files**: `scripts/verify-admin.mjs:8`
+(1 password) and `scripts/audit-v5-a11y.mjs:14-19` (**all five personas**).
+`e2e/personas.ts` was deliberately scrubbed of exactly this. They are in git
+history — **rotation, not deletion**. Neither was wired to npm for that reason.
 
 ### T-117 · The bar charts read left-to-right in Arabic
 `status: partial — code complete, measured both directions, axe clean; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011` · `est: 1h`

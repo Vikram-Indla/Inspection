@@ -11,12 +11,22 @@
     "seed:kpi": "node scripts/seed-dashboard-kpis.mjs",
     "geo:regions": "node scripts/fetch-ksa-regions.mjs",
     "typecheck": "tsc --noEmit",
+    "lint": "node scripts/check-eslint.mjs",
+    "lint:update": "node scripts/check-eslint.mjs --update",
+    "lint:raw": "eslint .",
+    "budgets": "node -e \"console.error('Per-route JS and CSS budgets (WEB-005 section 1) are read from a production build, and npm run build is a human-only command (WEB-006 section 3). This is a measurement request, not an agent command: run npm run build and record first-load JS per route. Tracked as T-118 in brain/web/03-REDESIGN-TRACKER.md.'); process.exit(1)\"",
+    "test": "npm run test:unit && npm run test:static",
+    "unit": "npm run test:unit",
+    "test:unit": "playwright test -c playwright.unit.config.ts",
+    "test:static": "playwright test -c playwright.static.config.ts",
     "test:e2e": "playwright test",
+    "verify": "npm run gates && npm run lint && npm run verify:dates && npm run test",
     "gates": "npm run typecheck && npm run gates:typography && npm run check:design-system-v5",
     "gates:typography": "node scripts/check-typography.mjs",
     "gates:typography:update": "node scripts/check-typography.mjs --update",
     "check:design-system-v5": "node scripts/check-design-system-v5.mjs",
-    "verify:dates": "node scripts/verify-dates.mjs"
+    "verify:dates": "node scripts/verify-dates.mjs",
+    "verify:touch-targets": "node scripts/verify-touch-targets.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
@@ -36,6 +46,8 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
+    "@eslint/js": "^9.39.5",
+    "@next/eslint-plugin-next": "^15.5.23",
     "@playwright/test": "^1.61.1",
     "@types/geojson": "^7946.0.16",
     "@types/leaflet": "^1.9.21",
@@ -43,6 +55,11 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.2.3",
     "@types/web-push": "^3.6.4",
-    "typescript": "^5.9.3"
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0"
   }
 }
