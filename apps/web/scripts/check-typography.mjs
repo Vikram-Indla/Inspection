@@ -21,7 +21,7 @@ const FROZEN_SHEETS = [
 
 const TYPE_PRIMITIVE = "src/components/saqeel/type/";
 
-const EXPERIMENTAL_TYPE_LAYER = "src/components/experimental/linear/";
+const EXPERIMENTAL_TYPE_LAYER = "src/components/experimental/linear";
 
 const LEGACY_TYPE_CLASSES = [
   "t-display",

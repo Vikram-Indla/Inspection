@@ -14,6 +14,8 @@
   padding-block: var(--lnr-space-8);
   padding-inline: var(--lnr-space-12);
   min-block-size: var(--lnr-space-32);
+  inline-size: fit-content;
+  max-inline-size: 100%;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;

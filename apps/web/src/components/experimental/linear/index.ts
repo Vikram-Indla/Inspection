@@ -3,7 +3,7 @@ export type { LinearTextRole, LinearHeadingRole, LinearTone, LinearWeight, Linea
 export { Badge } from "./badge";
 export { Button } from "./button";
 export type { LinearButtonVariant } from "./button";
-export { Card, Notice, Divider } from "./surface";
+export { Card, CardHeader, CardBody, Notice, Divider } from "./surface";
 export type { LinearNoticeTone } from "./surface";
 export { Field, TextInput, NumberInput, Select, Checkbox } from "./field";
 export type { SelectOption } from "./field";

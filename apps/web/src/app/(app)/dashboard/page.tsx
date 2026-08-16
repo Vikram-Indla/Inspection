@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import Shell from "@/components/Shell";
+import DashboardScreen from "@/components/experimental/dashboard/dashboard-screen";
+import DashboardSkeleton from "@/components/experimental/dashboard/dashboard-skeleton";
 import { readDashboardScope, type DashboardScopeInput } from "@/features/dashboard/scope";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
-import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton/dashboard-skeleton";
-import DashboardSections from "@/components/dashboard/dashboard-sections/dashboard-sections";
 
 export default async function DashboardPage({ searchParams }: {
   searchParams: Promise<DashboardScopeInput>;
@@ -14,10 +13,8 @@ export default async function DashboardPage({ searchParams }: {
   const scope = readDashboardScope(params, Date.now());
 
   return (
-    <Shell current="/dashboard" title="">
-      <Suspense fallback={<DashboardSkeleton label={dashboard.loading} />}>
-        <DashboardSections locale={locale} scope={scope} />
-      </Suspense>
-    </Shell>
+    <Suspense fallback={<DashboardSkeleton label={dashboard.loading} />}>
+      <DashboardScreen locale={locale} scope={scope} />
+    </Suspense>
   );
 }

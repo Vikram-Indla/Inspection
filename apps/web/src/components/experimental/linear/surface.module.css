@@ -29,6 +29,27 @@
   border-inline-start-color: var(--lnr-coral-red);
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-4);
+  margin-block-end: var(--lnr-space-16);
+}
+
+.headerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--lnr-space-12);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-16);
+}
+
 .divider {
   block-size: 1px;
   background: var(--lnr-hairline);

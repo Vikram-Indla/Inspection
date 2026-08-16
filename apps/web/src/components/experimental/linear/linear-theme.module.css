@@ -33,6 +33,11 @@
   --lnr-accent: var(--lnr-acid-lime);
   --lnr-accent-ink: var(--lnr-void);
 
+  --lnr-chart-1: var(--lnr-iris-violet);
+  --lnr-chart-2: var(--lnr-pulse-green);
+  --lnr-chart-3: var(--lnr-fog);
+  --lnr-chart-track: var(--lnr-surface-tint-strong);
+
   --lnr-font-ui: "Inter Variable", "Inter", var(--font-plex-arabic, "IBM Plex Sans Arabic"), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --lnr-font-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --lnr-font-features: "cv01" on, "ss03" on, "zero" on;

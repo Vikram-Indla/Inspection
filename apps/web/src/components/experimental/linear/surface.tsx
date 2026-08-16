@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Heading, Text, type LinearHeadingLevel } from "./text";
 import styles from "./surface.module.css";
 
 export type LinearNoticeTone = "neutral" | "accent" | "danger";
@@ -33,6 +34,28 @@ export function Notice({ tone = "neutral", live, children }: {
       {children}
     </div>
   );
+}
+
+export function CardHeader({ level, titleId, title, description, actions }: {
+  level: LinearHeadingLevel;
+  titleId: string;
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+}) {
+  return (
+    <div className={styles.header}>
+      <div className={styles.headerRow}>
+        <Heading level={level} role="bodyLg" id={titleId}>{title}</Heading>
+        {actions}
+      </div>
+      {description ? <Text role="caption" tone="muted">{description}</Text> : null}
+    </div>
+  );
+}
+
+export function CardBody({ children }: { children: ReactNode }) {
+  return <div className={styles.body}>{children}</div>;
 }
 
 export function Divider() {

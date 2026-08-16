@@ -13,11 +13,57 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-127.** Take T-128.
+implements the reservation. **Highest id in use: T-128.** Take T-129.
 
 ---
 
 ## NOW
+
+### T-128 · `/dashboard` in the experimental Linear system — the fairness test
+`status: partial — code complete, both perspectives rendered and measured in dark, light, English and Arabic; axe, 320px/200% zoom and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`
+`record:` [2026-08-17-T-128-dashboard-linear-experiment](sessions/2026-08/2026-08-17-T-128-dashboard-linear-experiment.md)
+
+```
+client islands   4 → 1        data layer rewritten  0 of 21 files
+h1 count         0 → 1        chart palette  3 slots, measured
+route file      23 → 20       dashboard feature typography  0
+```
+
+**Chosen because it is the best-migrated SAQEEL screen in the app** — charts, two
+perspectives, personas, ~18 components. A weak comparison screen would have
+biased the verdict either way.
+
+**The whole data layer was reused unchanged.** `features/dashboard/*` (21 files),
+`metrics.ts`, `dashboard-format.ts`, `lib/dashboard-kpi/*`. The comparison is
+about design, and the governed KPI contract was never touched.
+
+**The explain popover became a `<details>` disclosure**, which kept every
+methodology row (formula, numerator, denominator, exclusions, drill) and removed
+**two client islands**. The dashboard is now Server Components except
+`ExecutiveBrief`.
+
+**The parity audit found two silent feature losses and restored both.**
+`ExecutiveBrief` (carries `MVP2-REQ-0056/0057` — removing it is a contract change,
+T-109's ruling) and `SearchResults` (without it `?q=` renders nothing). **No gate
+in this repo can see a component that is simply no longer rendered** — the same
+hole behind T-124's false "no functional regression".
+
+**Chart palette capped at 3, measured:** `iris~lavender` ΔE **1.6** deutan,
+`green~red` ΔE **5.8**, `acid-lime` **1.23:1** as a light-theme fill,
+`signal-teal` **2.41:1`. The three that survive are ≥3:1 in both themes with min
+pairwise ΔE 19.7.
+
+**Owner-reported and fixed: status labels rendered as full-width bars.**
+`inline-flex` inside a **column** flex container stretches, because
+`align-items` defaults to `stretch`. Fixed on `Badge` and `Button` with
+`inline-size: fit-content`, chosen over `align-self` because it does not break
+baseline alignment in row containers.
+
+**`/dashboard` had no `h1` at all** — the route passed `title=""` to `Shell`.
+
+**Parked:** `ExecutiveBrief` is an unported SAQEEL surface and a visible seam ·
+Inter still not rendering (T-127) · `DashboardView.tsx` + 5 siblings (~1,900
+lines) were already dead before this task.
 
 ### T-127 · `/admin/planning/expiry` in the experimental Linear system — an A/B trial, not a migration
 `status: partial — code complete, rendered and measured in both themes and both locales; axe, 320px/200% zoom and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`

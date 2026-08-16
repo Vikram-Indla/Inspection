@@ -1,6 +1,8 @@
 .badge {
   display: inline-flex;
   align-items: center;
+  inline-size: fit-content;
+  max-inline-size: 100%;
   gap: var(--lnr-space-8);
   padding-block: 2px;
   padding-inline: var(--lnr-space-8);

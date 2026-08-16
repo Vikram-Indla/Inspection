@@ -1,6 +1,65 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-127 — /admin/planning/expiry Linear experiment`
+`Last updated: 2026-08-17` · `Updated by: T-128 — /dashboard Linear experiment`
+
+## `inline-flex` inside a column flex container is full-width, and it looked like a design choice (2026-08-17)
+
+Owner-reported on `/dashboard`: every status label — *Not configured*,
+*Unavailable*, *Decision required* — rendered as a **full-width bar** instead of
+a chip. The badge was `display: inline-flex`, which reads as "hugs its content",
+but a flex item's cross size defaults to `stretch`, and in a **column** container
+the cross axis is the inline one.
+
+```
+before   badge 225px in a 225px card
+after    badge 118–145px in a 225–257px card
+```
+
+**Fixed with `inline-size: fit-content`, not `align-self: flex-start`** — the
+latter fixes the column case and silently breaks baseline alignment wherever the
+same primitive sits in a row. Applied to `Badge` and `Button` so the whole class
+is closed at the primitive.
+
+**No gate can see this**, and it does not look like a bug in a screenshot — it
+looks like a deliberately full-width status strip.
+
+## Two features vanished again, and again only the T-111 audit saw them (2026-08-17)
+
+T-128 rebuilt `/dashboard` and dropped **`ExecutiveBrief`** and
+**`SearchResults`** without noticing. Typecheck, lint, typography, v5 and the
+408-test static suite were all green on the result.
+
+`ExecutiveBrief` carries `MVP2-REQ-0056,MVP2-REQ-0057,SCR-WEB-010`, so removing
+it is a **contract change, not a design one** (T-109). `SearchResults` is the
+only thing that renders for `?q=`, so the topbar search would have gone silently
+dead.
+
+This is the fourth instance of the same shape — T-111, T-124, T-126, now T-128.
+**The audit is the only control that has ever caught it:** diff the *old*
+component tree against the new, because a screen's feature set is visible only in
+its previous version. It is now cheap enough that there is no excuse:
+
+```
+ls the old component directory  →  18 live components
+grep the new tree for each      →  2 with no counterpart
+```
+
+## A categorical palette is three colours, twice now, for measured reasons (2026-08-17)
+
+The Linear reference offers six accent colours. Run through contrast-as-fill and
+pairwise ΔE with deutan/protan simulation, **three survive**:
+
+```
+iris ~ lavender     ΔE 1.6 deutan     indistinguishable
+green ~ red         ΔE 5.8 deutan     the classic pair
+acid-lime           1.23:1 on light   invisible as a fill
+signal-teal         2.41:1 on light   fails
+```
+
+`iris`, `pulse-green` and `fog` are ≥3:1 as fills in **both** themes with a
+minimum pairwise ΔE of 19.7. **SAQEEL's own palette capped at three for the same
+reason** — this is not a quirk of one system, it is what a two-theme categorical
+scale costs. A fourth category folds into a rest slot or facets.
 
 ## A style reference is not a design system until someone measures it (2026-08-17)
 

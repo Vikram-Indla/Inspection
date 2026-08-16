@@ -1,0 +1,36 @@
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--lnr-space-20);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-8);
+  min-inline-size: 0;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lnr-space-4);
+  padding-block: var(--lnr-space-8);
+  padding-inline: var(--lnr-space-12);
+  border-radius: var(--lnr-radius-inputs);
+  text-decoration: none;
+  box-shadow: var(--lnr-shadow-inset-edge);
+}
+
+.row:hover {
+  background: var(--lnr-surface-tint-strong);
+}
