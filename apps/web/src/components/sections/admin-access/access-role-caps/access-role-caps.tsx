@@ -8,10 +8,11 @@ import {
 } from "@/app/(app)/admin/access/role-capability-actions";
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import SaqeelSelect from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { Heading, Mono, Text } from "@/components/saqeel/type";
+import { Heading, Text } from "@/components/saqeel/type";
 import type { AdminAccessMessages } from "@/features/admin-access/strings";
 import type { RoleRow } from "@/features/admin-access/view";
 import { fill } from "@/i18n/messages";
@@ -21,11 +22,13 @@ import styles from "./access-role-caps.module.css";
 
 const SEPARATION_OF_DUTIES = "admin.access.manage";
 
-type Pending = { readonly kind: "revoke" | "grantSod"; readonly permissionKey: string };
+type Pending = { readonly kind: "revoke" | "grantSod"; readonly permissionKey: string; readonly name: string };
+
+export type PermissionOption = { readonly permissionKey: string; readonly label: string };
 
 export default function AccessRoleCaps({ roles, permissions, grants, strings }: {
   roles: readonly RoleRow[];
-  permissions: readonly { permissionKey: string; title: string }[];
+  permissions: readonly PermissionOption[];
   grants: readonly { roleKey: string; permissionKey: string }[];
   strings: AdminAccessMessages;
 }) {
@@ -36,6 +39,43 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
 
   const held = grants.filter(grant => grant.roleKey === roleKey);
   const heldKeys = new Set(held.map(grant => grant.permissionKey));
+  const labels = new Map(permissions.map(permission => [permission.permissionKey, permission.label]));
+  const nameOf = (permissionKey: string) => labels.get(permissionKey) || permissionKey;
+  const roleNameOf = (key: string) => roles.find(role => role.role_key === key)?.title || key;
+
+  const columns: readonly DataColumn<{ permissionKey: string }>[] = [
+    {
+      key: "capability",
+      header: strings.roleCaps.capability,
+      isRowHeader: true,
+      cell: grant => (
+        <span className={styles.name}>
+          <Text as="span" clamp={2} role="bodyStrong">{nameOf(grant.permissionKey)}</Text>
+          {grant.permissionKey === SEPARATION_OF_DUTIES ? (
+            <StatusPill ping={false} tone="accent">{strings.roleCaps.separationOfDuties}</StatusPill>
+          ) : null}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: strings.roleCaps.actions,
+      align: "end",
+      width: "min",
+      headerHidden: true,
+      cell: grant => (
+        <Button
+          disabled={pending}
+          label={fill(strings.roleCaps.revokeGrant, { name: nameOf(grant.permissionKey) })}
+          onClick={() => setConfirming({ kind: "revoke", permissionKey: grant.permissionKey, name: nameOf(grant.permissionKey) })}
+          size="sm"
+          variant="tertiary"
+        >
+          {strings.roleCaps.revoke}
+        </Button>
+      ),
+    },
+  ];
 
   const run = (action: (data: FormData) => Promise<RoleCapabilityResult>, permissionKey: string) => {
     const data = new FormData();
@@ -48,7 +88,7 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
 
   const requestGrant = (permissionKey: string) => {
     if (permissionKey === SEPARATION_OF_DUTIES) {
-      setConfirming({ kind: "grantSod", permissionKey });
+      setConfirming({ kind: "grantSod", permissionKey, name: nameOf(permissionKey) });
       return;
     }
     run(grantRoleCapability, permissionKey);
@@ -82,31 +122,13 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
         {roleKey ? (
           <>
             <Heading level={3} visual="subheading">{strings.roleCaps.grantedTitle}</Heading>
-            {held.length ? (
-              <ul className={styles.pills}>
-                {held.map(grant => (
-                  <li className={styles.pill} key={grant.permissionKey}>
-                    <StatusPill
-                      ping={false}
-                      tone={grant.permissionKey === SEPARATION_OF_DUTIES ? "accent" : "neutral"}
-                    >
-                      <Mono tone="inherit">{grant.permissionKey}</Mono>
-                    </StatusPill>
-                    <Button
-                      disabled={pending}
-                      label={fill(strings.roleCaps.revokeGrant, { key: grant.permissionKey })}
-                      onClick={() => setConfirming({ kind: "revoke", permissionKey: grant.permissionKey })}
-                      size="sm"
-                      variant="danger"
-                    >
-                      {strings.roleCaps.revoke}
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <Text tone="secondary">{strings.roleCaps.noGrants}</Text>
-            )}
+            <DataTable
+              columns={columns}
+              density="compact"
+              empty={{ icon: "access", title: strings.roleCaps.noGrants }}
+              getRowId={grant => grant.permissionKey}
+              rows={held}
+            />
 
             <AccessGrantRow
               action={requestGrant}
@@ -118,7 +140,7 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
                 .filter(permission => !heldKeys.has(permission.permissionKey))
                 .map(permission => ({
                   value: permission.permissionKey,
-                  label: `${permission.permissionKey} — ${permission.title}`,
+                  label: nameOf(permission.permissionKey),
                 }))}
             />
           </>
@@ -127,7 +149,7 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
         <AccessConfirm
           cancelLabel={strings.roleCaps.cancel}
           confirmLabel={strings.roleCaps.confirm}
-          message={confirmMessage(confirming, roleKey, strings)}
+          message={confirmMessage(confirming, roleNameOf(roleKey), strings)}
           onCancel={() => setConfirming(null)}
           onConfirm={onConfirm}
           pending={pending}
@@ -146,7 +168,7 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
 function confirmMessage(pending: Pending | null, role: string, strings: AdminAccessMessages): string {
   if (!pending) return "";
   if (pending.kind === "revoke") {
-    return fill(strings.roleCaps.confirmRevoke, { permission: pending.permissionKey, role });
+    return fill(strings.roleCaps.confirmRevoke, { permission: pending.name, role });
   }
   return fill(strings.roleCaps.confirmGrantSod, { role });
 }

@@ -13,13 +13,13 @@ import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import SaqeelSelect from "@/components/saqeel/select/select";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { Heading, Mono, Text } from "@/components/saqeel/type";
+import { Heading, Text } from "@/components/saqeel/type";
 import type { AdminAccessMessages } from "@/features/admin-access/strings";
 import type { RoleRow, UserAccess } from "@/features/admin-access/view";
 import { fill } from "@/i18n/messages";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
-import AccessCapabilities from "./access-capabilities";
+import AccessCapabilities, { type CapabilityOption } from "./access-capabilities";
 import AccessConfirm, { type PendingChange } from "./access-confirm";
 import AccessGrantRow from "./access-grant-row";
 import styles from "./access-manager.module.css";
@@ -29,7 +29,7 @@ export default function AccessManager({
 }: {
   users: readonly { userId: string; name: string; email: string | null }[];
   roles: readonly RoleRow[];
-  capabilities: readonly { capabilityKey: string }[];
+  capabilities: readonly CapabilityOption[];
   access: readonly UserAccess[];
   currentUserId: string;
   initialUserId: string;
@@ -62,7 +62,7 @@ export default function AccessManager({
 
   const requestGrantRole = (roleKey: string) => {
     if (roles.find(role => role.role_key === roleKey)?.is_admin) {
-      setConfirming({ kind: "grantAdminRole", key: roleKey });
+      setConfirming({ kind: "grantAdminRole", key: roleKey, name: roleNameOf(roleKey) });
       return;
     }
     run(grantRole, "role_key", roleKey);
@@ -75,8 +75,9 @@ export default function AccessManager({
     else run(revokeCapability, "capability_key", confirming.key);
   };
 
+  const roleNameOf = (roleKey: string) =>
+    roles.find(role => role.role_key === roleKey)?.title || roleKey;
   const heldRoles = new Set(selected?.roles.map(grant => grant.roleKey) ?? []);
-  const heldGrants = new Set(selected?.directGrants.map(grant => grant.capabilityKey) ?? []);
 
   return (
     <Card>
@@ -107,16 +108,14 @@ export default function AccessManager({
               <ul className={styles.pills}>
                 {selected.roles.map(grant => (
                   <li className={styles.pill} key={grant.roleKey}>
-                    <StatusPill ping={false} tone="neutral">
-                      <Mono tone="inherit">{grant.roleKey}</Mono>
-                    </StatusPill>
+                    <StatusPill ping={false} tone="neutral">{roleNameOf(grant.roleKey)}</StatusPill>
                     <Text as="span" role="label" tone="muted">
                       {fill(strings.manage.grantedAt, { date: formatDate(grant.grantedAt, locale) })}
                     </Text>
                     <Button
                       disabled={disabled}
-                      label={fill(strings.manage.revokeRole, { key: grant.roleKey })}
-                      onClick={() => setConfirming({ kind: "revokeRole", key: grant.roleKey })}
+                      label={fill(strings.manage.revokeRole, { name: roleNameOf(grant.roleKey) })}
+                      onClick={() => setConfirming({ kind: "revokeRole", key: grant.roleKey, name: roleNameOf(grant.roleKey) })}
                       size="sm"
                       variant="danger"
                     >
@@ -136,20 +135,18 @@ export default function AccessManager({
                   .map(role => ({
                     value: role.role_key,
                     label: role.is_admin
-                      ? fill(strings.manage.adminSuffix, { key: role.role_key })
-                      : role.role_key,
+                      ? fill(strings.manage.adminSuffix, { name: role.title || role.role_key })
+                      : role.title || role.role_key,
                   }))}
               />
             </section>
 
             <AccessCapabilities
+              catalogue={capabilities}
               disabled={disabled}
               effective={selected.effective}
-              grantable={capabilities
-                .map(entry => entry.capabilityKey)
-                .filter(key => !heldGrants.has(key))}
               onGrant={key => run(grantCapability, "capability_key", key)}
-              onRevoke={key => setConfirming({ kind: "revokeCapability", key })}
+              onRevoke={(key, name) => setConfirming({ kind: "revokeCapability", key, name })}
               strings={strings}
             />
           </>
@@ -178,7 +175,7 @@ export default function AccessManager({
 
 function confirmMessage(pending: PendingChange | null, strings: AdminAccessMessages): string {
   if (!pending) return "";
-  if (pending.kind === "revokeRole") return fill(strings.manage.confirmRevokeRole, { key: pending.key });
-  if (pending.kind === "grantAdminRole") return fill(strings.manage.confirmGrantAdminRole, { key: pending.key });
-  return fill(strings.manage.confirmRevokeCapability, { key: pending.key });
+  if (pending.kind === "revokeRole") return fill(strings.manage.confirmRevokeRole, { name: pending.name });
+  if (pending.kind === "grantAdminRole") return fill(strings.manage.confirmGrantAdminRole, { name: pending.name });
+  return fill(strings.manage.confirmRevokeCapability, { name: pending.name });
 }

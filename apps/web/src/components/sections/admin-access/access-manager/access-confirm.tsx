@@ -7,6 +7,7 @@ import styles from "./access-manager.module.css";
 export type PendingChange = {
   readonly kind: "revokeRole" | "grantAdminRole" | "revokeCapability";
   readonly key: string;
+  readonly name: string;
 };
 
 export default function AccessConfirm({

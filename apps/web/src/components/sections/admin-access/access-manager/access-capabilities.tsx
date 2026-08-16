@@ -3,29 +3,36 @@
 import Button from "@/components/saqeel/button/button";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { Heading, Mono, Text } from "@/components/saqeel/type";
+import { Heading, Text } from "@/components/saqeel/type";
 import type { AdminAccessMessages } from "@/features/admin-access/strings";
 import type { EffectiveCapability } from "@/features/admin-access/view";
 import { fill } from "@/i18n/messages";
 import AccessGrantRow from "./access-grant-row";
 import styles from "./access-manager.module.css";
 
+export type CapabilityOption = { readonly capabilityKey: string; readonly label: string };
+
 export default function AccessCapabilities({
-  effective, grantable, strings, disabled, onRevoke, onGrant,
+  effective, catalogue, strings, disabled, onRevoke, onGrant,
 }: {
   effective: readonly EffectiveCapability[];
-  grantable: readonly string[];
+  catalogue: readonly CapabilityOption[];
   strings: AdminAccessMessages;
   disabled: boolean;
-  onRevoke: (capabilityKey: string) => void;
+  onRevoke: (capabilityKey: string, label: string) => void;
   onGrant: (capabilityKey: string) => void;
 }) {
+  const labels = new Map(catalogue.map(entry => [entry.capabilityKey, entry.label]));
+  const nameOf = (capabilityKey: string) => labels.get(capabilityKey) || capabilityKey;
+  const held = new Set(effective.map(entry => entry.capabilityKey));
+  const anyRevocable = effective.some(entry => entry.direct);
+
   const columns: readonly DataColumn<EffectiveCapability>[] = [
     {
       key: "capability",
       header: strings.manage.capability,
       isRowHeader: true,
-      cell: row => <Mono tone="primary">{row.capabilityKey}</Mono>,
+      cell: row => <Text as="span" clamp={2} role="bodyStrong">{nameOf(row.capabilityKey)}</Text>,
     },
     {
       key: "source",
@@ -41,7 +48,10 @@ export default function AccessCapabilities({
         </span>
       ),
     },
-    {
+  ];
+
+  const withActions: readonly DataColumn<EffectiveCapability>[] = anyRevocable
+    ? [...columns, {
       key: "actions",
       header: strings.manage.actions,
       align: "end",
@@ -50,23 +60,24 @@ export default function AccessCapabilities({
       cell: row => row.direct ? (
         <Button
           disabled={disabled}
-          label={fill(strings.manage.revokeCapability, { key: row.capabilityKey })}
-          onClick={() => onRevoke(row.capabilityKey)}
+          label={fill(strings.manage.revokeCapability, { name: nameOf(row.capabilityKey) })}
+          onClick={() => onRevoke(row.capabilityKey, nameOf(row.capabilityKey))}
           size="sm"
-          variant="danger"
+          variant="tertiary"
         >
           {strings.manage.revoke}
         </Button>
       ) : null,
-    },
-  ];
+    }]
+    : columns;
 
   return (
     <section className={styles.section}>
       <Heading level={3} visual="subheading">{strings.manage.capabilitiesTitle}</Heading>
       <Text tone="secondary">{strings.manage.capabilitiesHint}</Text>
       <DataTable
-        columns={columns}
+        columns={withActions}
+        density="compact"
         empty={{ icon: "access", title: strings.manage.noCapabilities }}
         getRowId={row => row.capabilityKey}
         rows={effective}
@@ -77,7 +88,9 @@ export default function AccessCapabilities({
         disabled={disabled}
         emptyLabel={strings.manage.noGrantableCapabilities}
         label={strings.manage.selectCapabilityToGrant}
-        options={grantable.map(capabilityKey => ({ value: capabilityKey, label: capabilityKey }))}
+        options={catalogue
+          .filter(entry => !held.has(entry.capabilityKey))
+          .map(entry => ({ value: entry.capabilityKey, label: nameOf(entry.capabilityKey) }))}
       />
     </section>
   );

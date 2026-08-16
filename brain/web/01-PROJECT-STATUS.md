@@ -23,6 +23,33 @@ route that supplies none sits flush against the viewport edge. That is a
 one-line shell fix serving every route at once, and it was deliberately **not**
 taken — the owner's brief said not to touch the shell.
 
+## Checking the payload is not checking the render, and it cost two rounds (2026-08-16)
+
+T-122 wired a secondary line into two dropdowns and verified it by asserting the
+**RSC payload** carried `{label, note}` for all 30 options. It did. The rendered
+result was `Manage Access Grantsadmin.access.manage` — `MenuRow` puts `note`
+inside `.label` as a bare `<span>` with **no margin, no separator and no
+display**, so the two strings concatenate.
+
+**The owner found it by looking; the payload check could never have.** This
+document already says *render it and look at it* (T-090 … T-097, four tasks),
+and the check that was run was one level short of that: it proved the data
+reached the component, not that the component drew it.
+
+**A prop is verified when it is measured on screen.** For a menu, that means
+opening it in the pane and reading `getComputedStyle`, not reading the flight
+data. The measurement that settles it:
+
+```
+before  note display inline · onOwnLine false · rows concatenated
+after   note display block  · onOwnLine true  · row height 40px
+```
+
+**`.note` was broken for its own documented purpose too** — the TSDoc calls it
+"a short reason shown beside a disabled label", which would have rendered
+`Riyadhoption Not available`. It has exactly two consumers (`Select`, itself),
+so nothing else was relying on the old behaviour.
+
 ## A hyphenated JSX attribute is never type-checked, so `aria-*` on a primitive silently vanishes (2026-08-16)
 
 T-122's first `Breadcrumb` put `aria-current="page"` on `<Text>`, whose prop API

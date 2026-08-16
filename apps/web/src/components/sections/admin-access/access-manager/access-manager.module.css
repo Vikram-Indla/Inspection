@@ -69,3 +69,10 @@
     flex-basis: 100%;
   }
 }
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}

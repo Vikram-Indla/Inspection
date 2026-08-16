@@ -205,6 +205,72 @@ and hardcodes an English `aria-label`. `shell-page-frame` now composes the new
 one and its three inline breadcrumb CSS rules are deleted; it gained
 `breadcrumbLabel` so the landmark name comes from a resource key.
 
+## Owner ruling — two of the four tabs were not tabs
+
+*Access review* → `/admin/security-access` and *Trusted devices* → `/admin/devices`
+were rendered in the tab row and **navigated away from the route**. A tab is a
+promise that the panel below it changes; these replaced the whole screen, so they
+were links wearing tab semantics, on a route the shell names *Users & roles*.
+
+Removed on the owner's call, and the check that made it safe is that **both are
+already in the shell rail** — `shell-navigation.spec.ts:77-78` asserts exactly
+that, so this deleted a third path to two pages rather than a route to them. No
+spec asserted either tab on this screen; the two `tabs.*` keys came out of both
+locale files with them.
+
+```
+tabs 4 → 2      tabs leaving the route  2 → 0      i18n keys 109 → 107
+```
+
+**The general rule this leaves:** WEB-002 §8 already says tabs and filters are
+query state, never subroutes. The inverse is worth writing down — **a tab whose
+`href` leaves the route is not a tab**, and the tell is an entry in the tab array
+with no `current` expression, because nothing about it can ever be current.
+
+## Owner ruling — a machine identifier is not a label, anywhere
+
+Three rounds on the same surface, and the ruling that settled it is the general
+one: **`view_factory_360` and `planning.reassign` say nothing to a reader, so
+they do not belong on screen at all** — not as the label, and not as a muted
+second line beside it.
+
+```
+round 1   key rendered, title discarded          → title primary, key secondary
+round 2   secondary line concatenated in menus   → MenuRow .note repaired
+round 3   secondary line removed outright        ← the owner's ruling
+```
+
+Every key is now **submitted and never rendered**: it stays the `SelectOption`
+value, the `getRowId`, and the `FormData` field the guarded RPCs read. What
+changed is only what a human sees.
+
+**The sweep had to reach further than the two panels.** Confirmations and
+button names carried the key too, so a screen reader still heard
+*"Revoke capability create_inspection"* and the confirm still read *"Revoke the
+role 'admin'"*. `PendingChange` gained a `name` alongside `key` — the key goes to
+the RPC, the name goes to the sentence — and every `{key}` placeholder in both
+locale files became `{name}`. Role keys went the same way in the roster, the
+catalogue and the roles picker: **`admin` → `Admin`**.
+
+**`confirmGrantSod` named `admin.access.manage` inside its warning sentence** and
+now names the capability by its label. That one was copy, not a component.
+
+Verified in the pane, both views, list and menu:
+
+```
+list rows containing a raw key      19 → 0
+menu options containing a raw key   11 → 0
+page mentions of platform.read · view_factory_360 · admin.mode_eligibility · planning.view
+                                     4 → 0
+roster roles column                 admin → Admin
+```
+
+**The reusable rule:** a governed identifier earns a place on screen only where
+the reader acts on the identifier itself — an audit reference, a trace code, a
+support ticket. In a picker or a permissions list the reader acts on the
+*capability*, so the key is noise with an authoritative tone, which is worse than
+noise.
+
 ## Parked
 
 - **`/admin/loading.tsx` renders `RouteLoading`, which puts a second `<main>`

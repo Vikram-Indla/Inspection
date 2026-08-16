@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { CellMuted, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { Mono, Text } from "@/components/saqeel/type";
+import { Text } from "@/components/saqeel/type";
 import type { AdminAccessMessages } from "@/features/admin-access/strings";
 import { roleKeysOf, type ProfileRow, type RoleRow } from "@/features/admin-access/view";
 import styles from "./access-roster.module.css";
@@ -13,6 +13,7 @@ export default function AccessRoster({ profiles, roles, strings, rolesUnavailabl
   rolesUnavailable: boolean;
 }) {
   const isAdminRole = (roleKey: string) => roles.find(role => role.role_key === roleKey)?.is_admin === true;
+  const roleTitle = (roleKey: string) => roles.find(role => role.role_key === roleKey)?.title || roleKey;
 
   const columns: readonly DataColumn<ProfileRow>[] = [
     {
@@ -38,7 +39,7 @@ export default function AccessRoster({ profiles, roles, strings, rolesUnavailabl
       header: strings.roster.roles,
       cell: row => rolesUnavailable
         ? <Text as="span" tone="muted">{strings.unavailable}</Text>
-        : <RoleKeys keys={roleKeysOf(row)} isAdminRole={isAdminRole} strings={strings} />,
+        : <RoleKeys keys={roleKeysOf(row)} isAdminRole={isAdminRole} roleTitle={roleTitle} strings={strings} />,
     },
   ];
 
@@ -57,9 +58,10 @@ export default function AccessRoster({ profiles, roles, strings, rolesUnavailabl
   );
 }
 
-function RoleKeys({ keys, isAdminRole, strings }: {
+function RoleKeys({ keys, isAdminRole, roleTitle, strings }: {
   keys: readonly string[];
   isAdminRole: (roleKey: string) => boolean;
+  roleTitle: (roleKey: string) => string;
   strings: AdminAccessMessages;
 }) {
   if (!keys.length) return <Text as="span" tone="muted">{strings.notConfigured}</Text>;
@@ -73,7 +75,7 @@ function RoleKeys({ keys, isAdminRole, strings }: {
           title={isAdminRole(roleKey) ? strings.roster.adminRole : strings.roster.standardRole}
           tone={isAdminRole(roleKey) ? "accent" : "neutral"}
         >
-          <Mono tone="inherit">{roleKey}</Mono>
+          {roleTitle(roleKey)}
         </StatusPill>
       ))}
     </span>

@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import { Mono, Text } from "@/components/saqeel/type";
+import { Text } from "@/components/saqeel/type";
 import type { AdminAccessMessages } from "@/features/admin-access/strings";
 import type { RoleRow } from "@/features/admin-access/view";
 import styles from "./access-catalogue.module.css";
@@ -19,7 +19,6 @@ export default function AccessCatalogue({ roles, strings }: {
             {roles.map(role => (
               <li className={styles.role} key={role.role_key}>
                 <Text as="span" role="bodyStrong">{role.title || role.role_key}</Text>
-                <Mono>{role.role_key}</Mono>
                 <StatusPill ping={false} tone={role.is_admin ? "accent" : "neutral"}>
                   {role.is_admin ? strings.roster.adminRole : strings.roster.standardRole}
                 </StatusPill>

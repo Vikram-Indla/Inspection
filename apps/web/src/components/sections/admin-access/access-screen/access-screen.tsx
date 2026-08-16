@@ -46,8 +46,6 @@ export default function AccessScreen({ data, view, targetUserId, locale }: {
   const tabs: readonly FrameTab[] = [
     { key: "users", label: strings.tabs.users, href: "/admin/access?view=users", current: view === "users" },
     { key: "roles", label: strings.tabs.roles, href: "/admin/access?view=roles", current: view === "roles" },
-    { key: "review", label: strings.tabs.review, href: "/admin/security-access" },
-    { key: "devices", label: strings.tabs.devices, href: "/admin/devices" },
   ];
 
   return (
@@ -110,7 +108,10 @@ function UsersView({ data, targetUserId, locale }: {
       {data.canManage && data.currentUserId && !data.rolesUnavailable && !data.manageSourcesUnavailable ? (
         <AccessManager
           access={data.access}
-          capabilities={data.capabilities.map(entry => ({ capabilityKey: entry.capability_key }))}
+          capabilities={data.capabilities.map(entry => ({
+            capabilityKey: entry.capability_key,
+            label: entry.description,
+          }))}
           currentUserId={data.currentUserId}
           initialUserId={targetUserId}
           locale={locale}
@@ -163,7 +164,7 @@ function RolesView({ data, locale }: { data: AdminAccessData; locale: Locale }) 
           }))}
           permissions={data.permissions.map(permission => ({
             permissionKey: permission.permission_key,
-            title: permission.title,
+            label: permission.title || permission.description,
           }))}
           roles={data.roles}
           strings={strings}
