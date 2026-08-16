@@ -79,6 +79,40 @@ flips, and it is not: SVG resolves `text-anchor` against the inline base
 direction, so without it `"start"` in an RTL context extends the label leftwards
 into the bars — the T-112 defect, re-created. The two work together.
 
+## The degraded banner leaked a database identifier, and said the same thing twice
+
+Owner asked whether the `/analytics` "Source degraded" block was junk and should
+go. **Checked before touching it, because two of those words are separable:**
+
+- **The banner is not junk and stays.** It is gated on
+  `degraded && affectedSource`, both derived from `source_status === "unavailable"`
+  in the RPC rows — data-driven, not the T-110 always-on-banner shape. Verified
+  live: it renders when the source is degraded and disappears when it recovers.
+  Deleting it would hide a real degradation.
+- **`reviews_role_scope` is junk.** `affectedSource` is
+  `unavailable_reason ?? metric_key`, piped straight from the RPC into a
+  sentence — a raw database object name in front of a ministry user. WEB-008 §2:
+  never render a raw database value as a label. It is also unlocalised by
+  construction and mildly discloses schema.
+- **"Source degraded" rendered twice** — once as the header `StatusPill`
+  (`analytics-screen.tsx:43`) and again as the banner's own title, verbatim.
+
+The banner now carries the part the pill does not: *what it means for the
+figures*. The failing source is `console.warn`ed for an operator instead of being
+shown, so the diagnostic survives without being copy, and `affectedSource` is
+gone from the loader's return type and both view layers.
+
+```
+before   pill "Source degraded" ×1  +  banner titled "Source degraded"
+         body: "Affected source: reviews_role_scope. …"
+after    pill ×1, banner titled "Some governed sources could not be read"
+         body: "Every figure below is still governed. Metrics with no source
+                are listed as blocked, never as zero."
+```
+
+Measured in Arabic with the source genuinely degraded: pill occurrences **1**,
+new title and body present, raw identifiers **0**.
+
 ## Parked
 
 - **`Donut` and `Gauge` were not touched.** They are radial and symmetric, and
