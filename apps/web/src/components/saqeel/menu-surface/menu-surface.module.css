@@ -78,6 +78,7 @@
   gap: var(--sqx-space-3);
   flex: none;
   min-block-size: var(--sqx-menu-row-h);
+  padding-block: var(--sqx-space-1);
   padding-inline: var(--sqx-space-3);
   font: var(--sqx-text-label);
   letter-spacing: var(--sqx-text-label-tracking);
@@ -102,9 +103,13 @@
 }
 
 .note {
-  font: var(--sqx-text-body);
+  display: block;
+  overflow: hidden;
+  font: var(--sqx-text-mono);
+  letter-spacing: var(--sqx-text-mono-tracking);
   color: var(--sqx-text-muted);
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .row:not([data-disabled]):hover {

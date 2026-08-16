@@ -1,8 +1,20 @@
 "use client";
-import { useActionState, useEffect, useRef } from "react";
-import { createPackage, createDraftVersion, approveAndPublish, deactivatePackageVersion, type PkgResult } from "./actions";
 
-// INSP-747 / CC-ADMIN-PACKAGE-CREATION-20260805
+import { useActionState, useEffect, useRef } from "react";
+import Button from "@/components/saqeel/button/button";
+import Field from "@/components/saqeel/field/field";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import TextInput from "@/components/saqeel/text-input/text-input";
+import { Text } from "@/components/saqeel/type";
+import {
+  approveAndPublish,
+  createDraftVersion,
+  createPackage,
+  deactivatePackageVersion,
+  type PkgResult,
+} from "./actions";
+import styles from "./publish-controls.module.css";
+
 export type NewPackageStrings = {
   heading: string;
   codeLabel: string; codePlaceholder: string;
@@ -11,37 +23,6 @@ export type NewPackageStrings = {
   create: string; creating: string; created: string;
 };
 
-export function NewPackageForm({ strings: s }: { strings: NewPackageStrings }) {
-  const [state, formAction, pending] = useActionState<PkgResult, FormData>(createPackage, {});
-  const feedbackRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (state.error || state.ok) feedbackRef.current?.focus(); }, [state]);
-  return (
-    <section className="panel stack" aria-labelledby="pkg-create-heading">
-      <h3 id="pkg-create-heading" style={{ margin: 0 }}>{s.heading}</h3>
-      <form action={formAction} className="row" aria-busy={pending} style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <div className="sq-field">
-          <label className="sq-field__label" htmlFor="new-package-code">{s.codeLabel}</label>
-          <input id="new-package-code" className="sq-input" name="code" placeholder={s.codePlaceholder} required autoComplete="off" />
-        </div>
-        <div className="sq-field">
-          <label className="sq-field__label" htmlFor="new-package-title">{s.titleLabel}</label>
-          <input id="new-package-title" className="sq-input" name="title" placeholder={s.titlePlaceholder} required autoComplete="off" />
-        </div>
-        <div className="sq-field">
-          <label className="sq-field__label" htmlFor="new-package-scope">{s.scopeLabel}</label>
-          <input id="new-package-scope" className="sq-input" name="scope" placeholder={s.scopePlaceholder} autoComplete="off" />
-        </div>
-        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
-        <div ref={feedbackRef} tabIndex={-1}>
-          {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
-          {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.created}</span>}
-        </div>
-      </form>
-    </section>
-  );
-}
-
-// SCR-ADM-030/031 — client controls consume server-built strings only (SB19).
 export type PublishStrings = {
   newDraftLabel: string;
   creating: string;
@@ -56,46 +37,114 @@ export type PublishStrings = {
   effectiveTo: string; deactivationReason: string; deactivate: string; deactivating: string; deactivated: string;
 };
 
+function useFeedbackFocus(state: PkgResult) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (state.error || state.ok) ref.current?.focus();
+  }, [state]);
+  return ref;
+}
+
+function Feedback({ state, done, innerRef }: {
+  state: PkgResult;
+  done: string;
+  innerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  return (
+    <div className={styles.feedback} ref={innerRef} tabIndex={-1}>
+      {state.error ? <Text live="alert" role="label" tone="danger">{state.error}</Text> : null}
+      {state.ok ? <StatusPill tone="success">{done}</StatusPill> : null}
+    </div>
+  );
+}
+
+export function NewPackageForm({ strings: s }: { strings: NewPackageStrings }) {
+  const [state, formAction, pending] = useActionState<PkgResult, FormData>(createPackage, {});
+  const feedbackRef = useFeedbackFocus(state);
+
+  return (
+    <form action={formAction} aria-busy={pending} className={styles.row}>
+      <Field htmlFor="new-package-code" label={s.codeLabel}>
+        <TextInput autoComplete="off" id="new-package-code" name="code" placeholder={s.codePlaceholder} required />
+      </Field>
+      <Field htmlFor="new-package-title" label={s.titleLabel}>
+        <TextInput autoComplete="off" id="new-package-title" name="title" placeholder={s.titlePlaceholder} required />
+      </Field>
+      <Field htmlFor="new-package-scope" label={s.scopeLabel}>
+        <TextInput autoComplete="off" id="new-package-scope" name="scope" placeholder={s.scopePlaceholder} />
+      </Field>
+      <Button busy={pending} disabled={pending} type="submit" variant="primary">
+        {pending ? s.creating : s.create}
+      </Button>
+      <Feedback done={s.created} innerRef={feedbackRef} state={state} />
+    </form>
+  );
+}
+
 export function NewDraftForm({ packageId, strings: s }: { packageId: string; strings: PublishStrings }) {
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(createDraftVersion, {});
-  const feedbackRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (state.error || state.ok) feedbackRef.current?.focus(); }, [state]);
+  const feedbackRef = useFeedbackFocus(state);
+
   return (
-    <form action={formAction} className="row" aria-busy={pending} style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
-      <input type="hidden" name="package_id" value={packageId} />
-      <div className="sq-field">
-        <label className="sq-field__label" htmlFor={`version-label-${packageId}`}>{s.newDraftLabel}</label>
-        <input id={`version-label-${packageId}`} className="sq-input numeric" name="version_label" placeholder={s.versionPlaceholder} required autoComplete="off" />
-      </div>
-      <div className="sq-field"><label className="sq-field__label" htmlFor={`effective-from-${packageId}`}>{s.effectiveFrom}</label><input id={`effective-from-${packageId}`} className="sq-input numeric" type="date" name="effective_from" required /></div>
-      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.creating : s.createDraft}</button>
-      <div ref={feedbackRef} tabIndex={-1}>
-        {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
-        {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.draftCreated}</span>}
-      </div>
+    <form action={formAction} aria-busy={pending} className={styles.row}>
+      <input name="package_id" type="hidden" value={packageId} />
+      <Field htmlFor={`version-label-${packageId}`} label={s.newDraftLabel}>
+        <TextInput
+          autoComplete="off"
+          id={`version-label-${packageId}`}
+          name="version_label"
+          placeholder={s.versionPlaceholder}
+          required
+        />
+      </Field>
+      <Field htmlFor={`effective-from-${packageId}`} label={s.effectiveFrom}>
+        <TextInput id={`effective-from-${packageId}`} name="effective_from" required type="date" />
+      </Field>
+      <Button busy={pending} disabled={pending} type="submit" variant="primary">
+        {pending ? s.creating : s.createDraft}
+      </Button>
+      <Feedback done={s.draftCreated} innerRef={feedbackRef} state={state} />
     </form>
   );
 }
 
 export function DeactivatePackage({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(deactivatePackageVersion, {});
-  return <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}><input type="hidden" name="version_id" value={versionId}/><label className="sq-field"><span className="sq-field__label">{s.effectiveTo}</span><input className="sq-input" type="date" name="effective_to" required/></label><label className="sq-field"><span className="sq-field__label">{s.deactivationReason}</span><input className="sq-input" name="deactivation_reason" required/></label><button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>{state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}{state.ok && <span className="badge badge-compliant" role="status">✓ {s.deactivated}</span>}</form>;
+  const feedbackRef = useFeedbackFocus(state);
+
+  return (
+    <form action={formAction} aria-busy={pending} className={styles.row}>
+      <input name="version_id" type="hidden" value={versionId} />
+      <Field htmlFor={`effective-to-${versionId}`} label={s.effectiveTo}>
+        <TextInput id={`effective-to-${versionId}`} name="effective_to" required type="date" />
+      </Field>
+      <Field htmlFor={`deactivation-reason-${versionId}`} label={s.deactivationReason}>
+        <TextInput id={`deactivation-reason-${versionId}`} name="deactivation_reason" required />
+      </Field>
+      <Button busy={pending} disabled={pending} type="submit" variant="danger">
+        {pending ? s.deactivating : s.deactivate}
+      </Button>
+      <Feedback done={s.deactivated} innerRef={feedbackRef} state={state} />
+    </form>
+  );
 }
 
 export function ApprovePublish({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(approveAndPublish, {});
-  const feedbackRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (state.error || state.ok) feedbackRef.current?.focus(); }, [state]);
+  const feedbackRef = useFeedbackFocus(state);
+
   return (
-    <form action={formAction} aria-busy={pending} style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", alignItems: "flex-start" }}>
-      <input type="hidden" name="version_id" value={versionId} />
-      <p className="t-caption">{s.publishHint}</p>
-      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>
+    <form action={formAction} aria-busy={pending} className={styles.publish}>
+      <input name="version_id" type="hidden" value={versionId} />
+      <Text role="label" tone="muted">{s.publishHint}</Text>
+      <Button busy={pending} disabled={pending} type="submit" variant="primary">
         {pending ? s.publishing : s.approvePublish}
-      </button>
-      <div ref={feedbackRef} tabIndex={-1}>
-        {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div style={{ whiteSpace: "pre-line" }}>{state.error}</div></div>}
-        {state.ok && <div className="sq-banner sq-banner--success" role="status"><div><span aria-hidden="true">✓ </span>{s.published}</div></div>}
+      </Button>
+      <div className={styles.feedback} ref={feedbackRef} tabIndex={-1}>
+        {state.error ? (
+          <span className={styles.multiline}><Text live="alert" role="label" tone="danger">{state.error}</Text></span>
+        ) : null}
+        {state.ok ? <StatusPill tone="success">{s.published}</StatusPill> : null}
       </div>
     </form>
   );

@@ -7,7 +7,8 @@
     "stale": "Source stale",
     "degraded": "Source degraded",
     "refreshed": "Refreshed {at}",
-    "degradedBody": "Affected source: {source}. Available governed results remain visible.",
+    "degradedTitle": "Some governed sources could not be read",
+    "degradedBody": "Every figure below is still governed. Metrics with no source are listed as blocked, never as zero.",
     "staleBody": "Last successful refresh: {at}."
   },
   "journey": {

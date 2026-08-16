@@ -1,3 +1,4 @@
+/* @retiring 2026-08-16 · replaced-by components/app-shell/shell-page-frame/shell-page-frame · pending /admin/integrations,/admin/localization,/admin/packages,/admin/risk · delete-when 0-imports */
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Shell from "@/components/Shell";

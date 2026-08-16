@@ -18,6 +18,40 @@ does not give you is a gap to report, not a blank to fill. Governed values —
 risk weights, penalties, SLAs, approval rules — are never invented under any
 circumstances; absent data renders as a state.
 
+### Two sweeps every task owes before it writes a line
+
+**1 · Diff what the data layer loads against what the screen renders.** List
+every field the queries select, then find each one in the markup. The gap is the
+finding. This has paid out **five times** and never cost more than one pass:
+
+```
+/dashboard    pipeline held cancelled 117 · published 52 · draft 40 · returned 8, rendered "217"
+/operations   counts held 5 more states, indexed twice, the rest dropped
+/dashboard    activeField was a .length with the filtered array discarded
+/admin/access permissions.title loaded for all 30, rendered the machine key
+/admin/access capabilities.description loaded for all 23, rendered the machine key
+```
+
+It is **not chart-specific** — the last two were a permissions table. The tell is
+a `.map()` in the route or screen that narrows a row to fewer fields than the
+query asked for. **A field that is selected and not rendered is either a defect
+or a deletion; both need a decision, and silence is neither.**
+
+**2 · Grep `e2e/` for the source paths you are about to change, not the route
+path.** 146 of 252 specs assert the *spelling* of source files, so a migration
+breaks every spec pinned to its markup. Route-path greps miss them — the
+assertions carry file paths:
+
+```
+grep -rl "app/(app)/<segment>" e2e/          the files the specs read
+grep -rl "components/<family>" e2e/          and the components they read
+```
+
+T-122 swept by route path, missed `admin-access-route-aware.spec.ts`, and found
+it as three red tests after the code was written. **Re-pointing a spec
+deliberately costs minutes; discovering it in a failure list costs the trust that
+the suite means anything.**
+
 ---
 
 ## 2 · Always true

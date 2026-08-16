@@ -15,13 +15,12 @@ import { formatDate, formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-screen.module.css";
 
-export default function AnalyticsScreen({ rows, query, locale, degraded, stale, affectedSource, refreshedAt }: {
+export default function AnalyticsScreen({ rows, query, locale, degraded, stale, refreshedAt }: {
   rows: readonly AnalyticsRpcRow[];
   query: AnalyticsQuery;
   locale: Locale;
   degraded: boolean;
   stale: boolean;
-  affectedSource: string | null;
   refreshedAt: string;
 }) {
   const strings = analyticsMessages(locale);
@@ -61,10 +60,10 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
           title={fill(strings.compare.notice, { from: query.compareFrom, to: query.compareTo })} />
       ) : null}
 
-      {degraded && affectedSource ? (
+      {degraded ? (
         <EmptyState variant="inline" tone="warning" icon="risk"
-          title={strings.source.degraded}
-          description={fill(strings.source.degradedBody, { source: affectedSource })} />
+          title={strings.source.degradedTitle}
+          description={strings.source.degradedBody} />
       ) : null}
 
       {stale ? (

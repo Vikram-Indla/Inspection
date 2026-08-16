@@ -8,6 +8,7 @@ import { fill } from "@/i18n/messages";
 import { formatCount } from "@/i18n/numbers";
 import { analyticsDrillHref } from "@/lib/analytics/drills";
 import type { AnalyticsQuery } from "@/lib/analytics/contract";
+import { isRtl } from "@/i18n/direction";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-counts.module.css";
 
@@ -46,6 +47,7 @@ export default function AnalyticsCounts({ counts, strings, query, locale }: {
               points={pointsOf(band.metrics)}
               domainMax={band.max}
               ariaLabel={fill(strings.counts.ariaLabel, { group: strings.counts.groups[band.group] })}
+              rtl={isRtl(locale)}
               series={2}
             />
           </section>

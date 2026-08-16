@@ -1,0 +1,112 @@
+{
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration",
+    "hub": "Rules & content"
+  },
+  "title": "Inspection packages",
+  "subtitle": "Versioned inspection forms, their sections, items and response rules",
+  "loading": "Loading inspection packages",
+  "filters": {
+    "label": "Package state",
+    "all": "All",
+    "published": "Published",
+    "draft": "Draft",
+    "empty": "No versions"
+  },
+  "toolbar": {
+    "search": "Search package code, title or scope",
+    "searchAction": "Search",
+    "showing": "{matched} of {total} packages",
+    "newPackage": "New package",
+    "writer": "Configuration writer",
+    "reader": "Read-only access",
+    "readAt": "Read from source at {time}"
+  },
+  "register": {
+    "caption": "Packages you can see",
+    "noVersions": "No versions yet",
+    "noScope": "No scope recorded",
+    "sections": "{sections} sections · {items} items",
+    "actionForms": "{count} action forms",
+    "effective": "Effective {from} to {to}",
+    "openEnded": "open-ended",
+    "supersededNote": "Older than the current publish",
+    "publishedOn": "Published {date}",
+    "impact": "Publish impact",
+    "preview": "Field preview",
+    "newDraft": "New draft",
+    "immutable": "Published version — the definition and label are locked. To change this package, create a new draft.",
+    "emptyTitle": "No packages match this view",
+    "emptyBody": "Adjust the search or choose another state.",
+    "noneTitle": "No packages configured",
+    "noneBody": "No packages exist yet.",
+    "noneBodyWriter": "No packages exist yet. Create the first one to begin.",
+    "stateVersion": "{state} {version}",
+    "listLabel": "Inspection packages",
+    "openLabel": "Open {title}",
+    "startFirstVersion": "Create the first version"
+  },
+  "workbench": {
+    "back": "All inspection packages",
+    "tabsLabel": "Package workbench",
+    "designer": "Designer",
+    "preview": "Field preview",
+    "impact": "Publish impact",
+    "versions": "Versions",
+    "notFoundTitle": "That package is no longer available",
+    "notFoundBody": "It may have been removed since this link was made. Return to the register to choose another.",
+    "noVersionTitle": "This package has no versions yet",
+    "noVersionBody": "Create the first version to open the designer, the field preview and publish impact.",
+    "immutableTitle": "This version is published and locked",
+    "immutableBody": "Its definition and label cannot change. Create a new draft version to make changes.",
+    "readOnlyTitle": "Editing needs a configuration role",
+    "readOnlyBody": "You can read the structure through the field preview. Saving and publishing need the compliance or form administrator role.",
+    "versionsHeading": "Versions of this package",
+    "newVersionHeading": "Create a new version",
+    "deactivateSummary": "Deactivate version {version}",
+    "deactivateHint": "Deactivation ends the effective window of this version. Work already pinned to it keeps running on the version it downloaded."
+  },
+  "templates": {
+    "summary": "Action-form templates",
+    "hint": "Governed, versioned templates that package action forms and penalty mappings can reference."
+  },
+  "states": {
+    "published": "Published",
+    "draft": "Draft",
+    "locked": "Locked",
+    "empty": "No versions"
+  },
+  "governance": {
+    "heading": "Governance on this surface",
+    "validate": "Publishing revalidates sections, items, response mappings, evidence and action-form dependencies.",
+    "maker": "Maker-checker approval is enforced by the publish actions and database guards.",
+    "runtime": "Execution consumes only the locked package version pinned to the visit.",
+    "immutable": "A package used by a published visit cannot have its structure edited. Changes create a new draft, and past inspections stay pinned to their original version."
+  },
+  "notices": {
+    "readOnlyTitle": "Read-only package access",
+    "readOnlyBody": "You can view versions, previews and publish impact. Creating, saving or publishing needs the compliance or form administrator role.",
+    "permissionUnknownTitle": "Write permissions could not be checked",
+    "permissionUnknownBody": "Every edit control is hidden until your role can be read again. Reload to try again.",
+    "itemBankTitle": "The item catalogue is unavailable",
+    "itemBankBody": "Versions and publish impact still show. Editing and field preview are paused because the item data they depend on could not be read.",
+    "templatesTitle": "The template registry is unavailable",
+    "templatesBody": "Packages still show. Template references cannot be added or changed until it can be read again."
+  },
+  "denied": {
+    "title": "Inspection packages are restricted",
+    "body": "No package data has been loaded. This screen requires a configuration role, so nothing here is shown rather than hidden.",
+    "back": "Back to administration",
+    "request": "Request access"
+  },
+  "error": {
+    "title": "The package library could not be loaded",
+    "body": "No package, version or item definition was changed. Retry, or quote the reference below to support.",
+    "reference": "ref {id}",
+    "retry": "Try again",
+    "libraryTitle": "The package library could not be read",
+    "libraryBody": "Nothing was changed. Reload the page to try again."
+  },
+  "notConfigured": "Not configured"
+}

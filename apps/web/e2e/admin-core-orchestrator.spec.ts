@@ -49,7 +49,7 @@ const OWNED_DESTINATIONS = [
 
 const PINNED_DESTINATIONS = [
   { label: "Users & roles", href: "/admin/access" },
-  { label: "Lookup Management", href: "/admin/localization" },
+  { label: "Language & translations", href: "/admin/localization" },
   { label: "Risk Configuration", href: "/admin/risk" },
   { label: "Survey Configuration", href: "/admin/packages" },
   { label: "Notification Configuration", href: "/admin/notifications" },

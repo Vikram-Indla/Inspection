@@ -135,22 +135,23 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
   });
 
   test("the registered design is traceable and existing localization behavior remains wired", () => {
-    const manager = source("src/app/(app)/admin/localization/Manager.tsx");
+    const registry = source("src/components/sections/admin-localization/localization-registry/localization-registry.tsx");
+    const row = source("src/components/sections/admin-localization/localization-row/localization-row.tsx");
+    const history = source("src/components/sections/admin-localization/localization-history/localization-history.tsx");
+    const addKeyPanel = source("src/components/sections/admin-localization/localization-add-key/localization-add-key.tsx");
+    const sync = source("src/components/sections/admin-localization/localization-sync/localization-sync.tsx");
+    const exportRoute = source("src/app/(app)/admin/localization/export/route.ts");
     const actions = source("src/app/(app)/admin/localization/actions.ts");
 
-    expect(manager).toContain('data-saqeel-design="WA-DES-010"');
-    expect(manager).toContain("11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d");
-    for (const behavior of [
-      "saveTranslation",
-      "markReviewed",
-      "addKey",
-      "syncFromCode",
-      "getHistory",
-      "restoreRevision",
-      "exportCsv",
-    ]) {
-      expect(manager).toContain(behavior);
-    }
+    expect(registry).toContain('data-saqeel-design="WA-DES-010"');
+    expect(registry).toContain("11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d");
+    expect(row).toContain("saveTranslation");
+    expect(row).toContain("markReviewed");
+    expect(addKeyPanel).toContain("addKey");
+    expect(sync).toContain("syncFromCode");
+    expect(history).toContain("getHistory");
+    expect(history).toContain("restoreRevision");
+    expect(exportRoute).toContain('"content-type": "text/csv;charset=utf-8"');
     expect(actions).toContain('.from("ui_string_revisions")');
     expect(actions).toContain('status: "draft"');
     expect(actions).toContain("requireLocalizationManager");
@@ -161,37 +162,47 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
   });
 
   test("permission is checked before configuration rows are loaded", () => {
-    const pageSource = source("src/app/(app)/admin/localization/page.tsx");
-    const roleGuard = pageSource.indexOf("getUserRoles(user.id)");
-    const dictionaryRead = pageSource.indexOf('.from("ui_strings")');
+    const queries = source("src/features/admin-localization/queries.ts");
+    const roleGuard = queries.indexOf("canManageLocalization()");
+    const dictionaryRead = queries.indexOf('.from("ui_strings")');
     expect(roleGuard).toBeGreaterThan(0);
     expect(dictionaryRead).toBeGreaterThan(roleGuard);
-    expect(pageSource).toContain('"compliance_admin", "security_admin", "workflow_admin"');
-    expect(pageSource).toContain("No localization data has been loaded");
+    expect(queries).toContain('"compliance_admin", "security_admin", "workflow_admin"');
+    expect(queries).toContain('return { kind: "unauthorized" }');
+    const copy = JSON.parse(source("src/i18n/locales/en/admin-localization.json"));
+    expect(copy.denied.body).toContain("No translation data has been loaded");
   });
 
   test("the registry pages through the complete governed dictionary", () => {
-    const pageSource = source("src/app/(app)/admin/localization/page.tsx");
-    expect(pageSource).toContain("UI_STRINGS_PAGE_SIZE = 1000");
-    expect(pageSource).toContain(".range(from, from + UI_STRINGS_PAGE_SIZE - 1)");
-    expect(pageSource).toContain("if (page.length < UI_STRINGS_PAGE_SIZE) break");
-    expect(pageSource).toContain("updated_at");
+    const queries = source("src/features/admin-localization/queries.ts");
+    expect(queries).toContain("PAGE_READ_SIZE = 1000");
+    expect(queries).toContain(".range(from, from + PAGE_READ_SIZE - 1)");
+    expect(queries).toContain("if (page.length < PAGE_READ_SIZE) break");
+    expect(queries).toContain("updated_at");
+    expect(source("src/app/(app)/admin/localization/export/route.ts"))
+      .toContain("if (page.length < PAGE_READ_SIZE) break");
   });
 
   test("loading, empty, degraded and unexpected-error states remain explicit and bilingual", () => {
+    // T-123: every state is now a resource key rendered through a primitive,
+    // so each claim is asserted against the resource in BOTH locales rather
+    // than against a literal embedded in a component.
     const pageSource = source("src/app/(app)/admin/localization/page.tsx");
-    const manager = source("src/app/(app)/admin/localization/Manager.tsx");
-    const loading = source("src/app/(app)/admin/localization/loading.tsx");
-    const unexpectedError = source("src/app/(app)/admin/localization/error.tsx");
+    const registry = source("src/components/sections/admin-localization/localization-registry/localization-registry.tsx");
+    const en = JSON.parse(source("src/i18n/locales/en/admin-localization.json"));
+    const ar = JSON.parse(source("src/i18n/locales/ar/admin-localization.json"));
 
-    expect(pageSource).toContain("loadFailed");
-    expect(pageSource).toContain("Nothing was changed");
-    expect(manager).toContain("rows.length === 0");
-    expect(manager).toContain("filtered.length === 0");
-    expect(loading).toContain("Loading localization registry");
-    expect(loading).toContain("جارٍ تحميل سجل الترجمات");
-    expect(unexpectedError).toContain("Identity, permission, or registry data could not be verified");
-    expect(unexpectedError).toContain("تعذّر التحقق من الهوية أو الصلاحيات أو تحميل البيانات");
+    expect(pageSource).toContain('result.kind === "error"');
+    expect(en.error.dictionaryBody).toContain("Nothing was changed");
+    expect(registry).toContain("data.rows.length");
+    expect(registry).toContain("strings.empty.noMatchTitle");
+    expect(en.loading).toBe("Loading the translation registry");
+    expect(ar.loading).toBe("جارٍ تحميل سجل الترجمات");
+    expect(en.error.title).toBe("The translation registry could not be loaded");
+    expect(ar.error.title).toBeTruthy();
+    for (const group of ["error", "empty", "denied"]) {
+      expect(Object.keys(ar[group])).toEqual(Object.keys(en[group]));
+    }
   });
 });
 

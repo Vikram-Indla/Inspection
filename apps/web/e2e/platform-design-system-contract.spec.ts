@@ -8,6 +8,10 @@ import path from "node:path";
 const root = path.resolve(__dirname, "..");
 const appRoot = path.join(root, "src/app");
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
+// path.relative yields backslashes on Windows, so every comparison against a
+// forward-slash literal below silently missed. The guard passed on Linux CI and
+// failed on a Windows workstation for reasons unrelated to what it tests.
+const relativePosix = (file: string) => path.relative(root, file).split(path.sep).join("/");
 
 function files(dir: string, suffix: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -46,8 +50,8 @@ test.describe("Platform-wide government design-system contract", () => {
     const pages = files(appRoot, "page.tsx");
     expect(pages.length).toBeGreaterThanOrEqual(55);
     for (const page of pages) {
-      const relative = path.relative(root, page);
-      if (relative.startsWith(path.join("src/app", "(app)") + path.sep)) continue;
+      const relative = relativePosix(page);
+      if (relative.startsWith("src/app/(app)/")) continue;
       const source = fs.readFileSync(page, "utf8");
       if (/\bShell\b/.test(source)) continue;
       expect(approvedExceptions[relative], `${relative} must use Shell or be a governed exception`).toBeDefined();
@@ -60,8 +64,13 @@ test.describe("Platform-wide government design-system contract", () => {
     const tsx = files(path.join(root, "src"), ".tsx");
     const rawColour = /#(?:[0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{3})(?![\w-])/;
     const rawColourFiles = tsx.filter(file => rawColour.test(fs.readFileSync(file, "utf8")))
-      .map(file => path.relative(root, file));
-    expect(rawColourFiles).toEqual(["src/app/layout.tsx"]);
+      .map(relativePosix).sort();
+    // global-error.tsx replaces the whole document — it renders its own <html>
+    // and <body> for the case where the root layout itself threw, so no
+    // stylesheet is guaranteed to have loaded and no var(--sqx-*) is guaranteed
+    // to resolve. That is the same argument that admits layout.tsx, and it is
+    // the only other file in src/**.tsx allowed to carry a literal colour.
+    expect(rawColourFiles).toEqual(["src/app/global-error.tsx", "src/app/layout.tsx"]);
     const palette = read("src/lib/map-palette.ts");
     expect(palette).toContain("governed semantic palette in saqeel.css");
     expect(palette).toContain("export const MAP_PALETTE");

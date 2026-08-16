@@ -13,11 +13,354 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-116.** Take T-117.
+implements the reservation. **Highest id in use: T-126.** Take T-127.
 
 ---
 
 ## NOW
+
+### T-126 · the register stops being the editor
+`status: partial — structure, states and specs done; axe, native Arabic review and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-16-T-126-packages-workbench](sessions/2026-08/2026-08-16-T-126-packages-workbench.md)
+
+```
+register height     6,810px → 1,977px    tallest card 1,597px → ~100px row
+inputs rendered       103 → 32           visible required 20 → 0
+open destructive        9 → 0            inline designers 2 → 0
+buttons                61 → 6            forms 15 → 5   leaf nodes 332 → 129
+heading-order skips     2 → 0            legacy classes (designer) 40 → 5
+spec assertions         5 re-pointed + 4 runtime blocks rewritten
+```
+
+**Two features were missing and T-124 certified it clean.** `NewDraftForm` and
+`TemplateRegistry` compiled, passed every gate, and were rendered by nothing —
+so a writer could not create a version for an existing package at all, which is
+exactly what the "No versions" filter selects for. **My T-124 record claimed "no
+functional regression"; that was wrong**, and it is the second uncaught T-124
+defect after the ten spec assertions. Both components are rendered again.
+
+**The register and the workbench are now separate surfaces on query state.**
+`/admin/packages` lists one row per package; the designer opens on
+`?package=&version=&tab=` — routes are fixed and CLAUDE.md names query state as
+the sanctioned mechanism, so nothing was nested. Four tabs: Designer (only when
+the version is an editable draft), Field preview, Publish impact, Versions.
+
+**Nine armed deactivation forms are now zero.** Deactivation moved to the
+Versions tab behind a closed disclosure. Verified with `checkVisibility()`, not
+`getBoundingClientRect()` — content under `content-visibility: hidden` still
+reports a layout box, so a rect-based check reads 12 visible required fields
+where there are none.
+
+**`PackagePreview` keeps the field-workspace look** — the owner's ruling,
+settling T-125's parked question. It gained `headingLevel` so the same component
+sits at H3 in its own tab and H5 inside the designer's third pane.
+
+**T-125's parked legacy classes are cleared in `DraftEditor`** — `sq-field`,
+`sq-input`, `sq-select`, `sq-choice`, `sq-panel` and 22 `btn` are now `Field`,
+`TextInput`, `SaqeelSelect`, `Choice`, `Button` and `IconButton`. The five that
+remain are `PackagePreview`'s, which the ruling protects.
+
+**Parked:** `PackagesEditors` + `editor-strings.ts` still bridge to
+`t(key, "English")` string bags — roughly 120 keys owed to the `admin-packages`
+namespace (WEB-013). The route directory holds 15 files against a cap of 12.
+
+### T-125 · the package designer reaches zero typography, and T-124's spec claim is corrected
+`status: partial — typography 0 and specs re-pointed; legacy component classes remain in two files` · `rules: WEB-000 … WEB-014` · `est: 3h`
+`record:` [2026-08-16-T-125-packages-designer](sessions/2026-08/2026-08-16-T-125-packages-designer.md)
+
+```
+typography (route)  38 → 0        gate 77 → 115 removed
+eslint              gate 81 → 97  v5  77 → 76
+packages.module.css 226 → 100     18 of 27 classes deleted
+spec assertions     10 re-pointed — T-124's debt
+```
+
+**T-124 reported "9 specs pinned, none needed re-pointing." That was wrong** — it
+had broken **ten** assertions in `cd-008-009-packages.spec.ts`. **The sweep
+worked; the verification did not:** T-124 checked with *"the static suite is
+unchanged at 408"*, but that spec is **not in the static allowlist**, so the run
+could never have executed it — and it cannot run here at all because its
+describe block needs a browser. What settles it is a five-line script that greps
+the asserted strings against the new source. The T-124 record and session log
+now carry the correction inline.
+
+**`TextInputType` gained `"date"`** — T-080's ruling applied: fill the primitive
+rather than work around it. Three forms need a date that submits in a plain
+`<form action>`, and `DatePicker` is controlled and does not submit.
+
+**`PackagePreview` was migrated surgically, not rebuilt** — it deliberately
+mimics the field workspace's `ipad-q` language so a checker previews what an
+inspector sees. Those are component classes, not type classes; rewriting them
+would change what the preview previews. Only its 12 typography violations moved.
+
+**Two process notes, both recorded rather than buried.** I hit the
+**zero-match-reports-success** shape again (an import anchored to a line the file
+does not contain; the script logged success), and I reached for **`git
+checkout`** — a never-run command — to restore a baseline I had mutated to take
+a measurement. Restored with `git show` and confirmed byte-identical.
+
+**Parked:** legacy component classes remain — `DraftEditor` (`sq-input` 8,
+`sq-field__label` 14) is a straight swap; **`PackagePreview` needs a ruling**
+on whether the preview should look like SAQEEL or like the field workspace.
+
+### T-124 · `/admin/packages` — eleven impact reports rendered at once
+`status: partial — register, states and naming done; the designer components are T-125` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-16-T-124-packages-register](sessions/2026-08/2026-08-16-T-124-packages-register.md)
+
+`open={version.status === "draft" || index === 0}` opened the first version of
+**every** package, so the screen was eleven expanded publish-impact reports
+stacked vertically. That plus 22 prose blocks was the screen, at **479 leaf
+nodes** — the most cluttered route measured so far.
+
+```
+route file       574 → 40 lines     impact panels open  11 → 0
+typography       +11 removed        38 remain, all T-125 files
+screen names      4 → 1             tabs 4 (3 off-route) + journey → 4 states
+```
+
+**No chart fits, and that is the finding.** Six candidates judged against
+**10 packages · 11 versions · 9 items**; every distribution has ≤2 non-zero
+categories on a single-digit denominator. This is a configuration workbench, not
+an analytics surface — T-113/T-115's test rules out all of them.
+
+**Effective-date windows were evaluated in UTC.** `currentPublished` used
+`toISOString().slice(0,10)`, so between 21:00 and midnight Riyadh the "currently
+published" version could resolve to the wrong one. Now `riyadhToday()`.
+
+**Stated rather than hidden: `<details>` collapses the impact panel visually,
+it does not remove it from the DOM** — ~498 KB still crosses the wire. Genuine
+on-demand impact needs a per-version server action. Parked.
+
+**Two mistakes, both caught by measuring, neither by a gate.** Deleting
+`packages.module.css` returned a **500** because `DraftEditor.tsx:6` still
+imports it (T-093's lesson; one grep would have caught it). And making the
+states mutually exclusive silently changed what "Draft" counts — **0 where the
+old screen said 2** — because a package with both a publish and an open draft
+counted only as published. **A filter is not a partition.**
+
+**Parked:** the rail still says *Survey Configuration*; unlike T-123's entry it
+carries a `businessTab` grouping key, so renaming the label alone would leave
+the two inconsistent. Owner call.
+
+### T-123 · `/admin/localization`, and a screen that shipped 1,821 rows to draw 12
+`status: partial — code complete, static gates green, payload and states measured; axe, Arabic review and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`
+`record:` [2026-08-16-T-123-localization-migration](sessions/2026-08/2026-08-16-T-123-localization-migration.md)
+
+**The screen serialised the whole dictionary so the browser could slice it.**
+Search, filter and pagination were `useState`, so all 1,821 `ui_strings` crossed
+to the client to render 12 rows.
+
+```
+document        755 KB → 336 KB     rows in payload  1,845 → 41
+route file      248 → 32 lines      largest component  531 → 122
+typography      31 → 0              i18n  0 → 92 keys × 2
+```
+
+Moved to **URL state with server-side slicing** (WEB-004 rung 2). **Search is a
+plain GET form**, so it works with no JavaScript. **CSV export became a route
+handler** — the client no longer holds the rows — which also deleted a
+`document.createElement("a").click()` and made the export honour the current filter.
+
+**Two gauges earned their place; four charts did not.** Arabic coverage 99% and
+Reviewed 0% together say what the screen was hiding: everything is translated,
+nothing is reviewed. Declined: status distribution (5 states, 2 non-zero, one at
+98.7%), a donut (same skew, caps at 3), a time series (`updated_at` is
+last-touched, not an event log), a length histogram (bands would be invented).
+
+**The 1.3 layout-risk ratio was computed per row and never aggregated** — nobody
+could know the count without opening 1,821 keys. One reduce, no new query.
+
+**Two tabs pointed at the same URL** and a third left the route — T-122's defect
+again. The tab row is now the five translation states.
+
+**Both WEB-008 sweeps paid out on their first real use:** the data-vs-render diff
+found the discarded state counts and the risk ratio; the `e2e/` source-path grep
+found **6 pinned specs**, four re-pointed **before** the code changed, so none
+went red in a run.
+
+**Caught myself in the CRLF zero-match trap** while re-pointing them — recorded
+three times in this repo and walked into anyway. The re-point script now
+normalises line endings before matching.
+
+**Owner follow-up:** every row carried a Save button whether or not anything had
+been edited — **36 buttons in one viewport**, primary weight on a control that
+did nothing in 11 rows of 12. Save now renders only when the field is dirty and
+`canReview` gained `!unsaved`, so a row asks for exactly one thing at a time:
+**buttons 36 → 24**. **The rail name is settled** — `shell-navigation.ts` is
+`lib/`, not the shell component, so *Lookup Management* → *Language &
+translations* was copy, not redesign.
+
+**Caught editing a spec constant that pins history:** `MIGRATION_TITLES` asserts
+what an already-applied migration seeded, beside a separate runtime list. Editing
+it made the spec demand a string the migration does not contain (408 → 407).
+Restored. **Read what a spec constant is pinned to before changing it.**
+
+### T-122 · `/admin/access` onto SAQEEL, and six ways of saying the same thing become one
+`status: partial — code complete, static gates green, gutter and dedupe measured; axe, Arabic review and e2e owed` · `rules: WEB-000 … WEB-014` · `est: 3h`
+`record:` [2026-08-16-T-122-admin-access-migration](sessions/2026-08/2026-08-16-T-122-admin-access-migration.md)
+
+```
+route file        391 → 25 lines      typography debt   13 → 0
+i18n keys           0 → 109 × 2       t(key,"English") 120 → 0
+native <select>     4 → 0             getElementById     3 → 0
+governance copies   6 → 1             page gutter      0px → 32px
+error.tsx        absent → present     eslint (new tree)  0 findings
+```
+
+**The route-owned frame was two thirds already built.** `shell-page-frame` has
+sat at **zero importers** since T-004 — which the retirement ledger calls its
+expected state — and already owns the gutter, breadcrumb and title.
+`access-frame` composes it and adds only the metric band and tabs. **This is the
+swap the ledger prescribes, taken for the first time.**
+
+**`AdminDestinationFrame` was marked, not edited** — 5 consumers, and editing it
+would have restyled four routes nobody asked about. Banner added, the four named
+`pending`. The shared `AdminRouteBoundary` likewise untouched; `/admin/access`
+gets its own `AccessDenied`, which **is reachable** because the parent admits
+`supervisor` and this route admits `admin` only.
+
+**The gate banner was unconditional**, so read-only viewers were told writes are
+guarded when they cannot write. The governance card is now role-aware.
+
+**A role is not a status** — the admin badge was `badge-warning`, T-116's defect
+again. **Nothing formats inline**: `formatDate` and `formatCount` everywhere; the
+old code called `toLocaleDateString()` with no locale at all.
+
+**`Text as="h3"` does not typecheck**, which is the primitive refusing to let a
+heading be faked — the `h1 → h3` skip is fixed by construction.
+
+**Two source-text specs had to be re-pointed** (`admin-access-route-aware`,
+`execution-access-contract`); one was missed in the first sweep and showed up as
+3 new failures. **This is the 146-spec tax T-119 predicted, charged on the first
+migration after it.**
+
+**Blocked:** the pane's `visibilityState` is `hidden`, which stalls the transition
+and holds the parent `/admin` fallback open (T-096's caveat). Measurements came
+from the server payload and a computed-style probe — real, but not a settled DOM.
+axe, a native Arabic review of 109 keys, the 320px pass and e2e are owed.
+
+### T-121 · `npm run lint` exists, runs, and is a ratchet rather than a wall
+`status: done` · `rules: WEB-000, WEB-001, WEB-002, WEB-003, WEB-006, WEB-014` · `est: 1h`
+`record:` [2026-08-16-T-121-eslint-ratchet](sessions/2026-08/2026-08-16-T-121-eslint-ratchet.md)
+
+ESLint 9 flat config, 7 devDependencies, expressing WEB-000 in rule messages
+that cite the law they enforce. **A fresh run reports 8,114 errors**, so it is a
+**ratchet mirroring `check-typography.mjs` exactly** — same `file::rule` keys,
+same `--update`, same output. WEB-014 §8 carries over verbatim: **the baseline
+may only go down.**
+
+```
+web/no-comments 7,334 · no-restricted-syntax 413 · non-null 123 · max-lines 97
+```
+
+**Zero-comments is a custom inline rule** (no new dependency) honouring both
+sanctioned exceptions — the `@retiring` banner and TSDoc under
+`components/saqeel/` only.
+
+**325 of the first run's 8,439 were artifacts, and both diagnoses are findings:**
+`<Text role="bodyStrong">` — SAQEEL's typography `role` prop collides with the
+ARIA attribute (189, fixed with `ignoreNonDOM`) — and **`useT()` is an async
+server helper named like a React hook** (124, demoted to `warn`; the name is the
+defect).
+
+**`max-lines` is already 0** across the design system, `features/*`, `i18n`,
+`lib` and every migrated section. **`jsx-a11y/alt-text` is already 0** across all
+814 `.tsx`. **The ratchet was proved by injecting a defect** (exit 1, all three
+named), then deleting it.
+
+**Two package manifests, no workspaces field** — the install first landed at the
+repo root and was undone. **Use `npm --prefix apps/web` here, always.**
+
+**Parked:** rename `useT` (81+ sites); 16 already-dead `eslint-disable`
+directives in `src/`; `e2e/m9-challenger.js` does not parse; type-aware linting
+deferred until the baseline is falling.
+
+### T-120 · `/field`'s parallel design system does not override SAQEEL
+`status: done — measurement complete; the ruling is the owner's` · `rules: WEB-002, WEB-005, WEB-014` · `est: 0.5h`
+`record:` [2026-08-16-T-120-field-design-system-ruling](sessions/2026-08/2026-08-16-T-120-field-design-system-ruling.md)
+
+**The blocker this document recorded on 2026-08-12 does not exist.**
+`public/saqeel-ds` defines **113 tokens and not one `--sqx-*`**; the string
+`sqx` does not appear in it at all. It overrides **109 tokens of the frozen
+`tokens.css`** — the sheet being deleted anyway.
+
+```
+saqeel-ds ∩ saqeel.css     0 tokens      ← the claimed override
+saqeel-ds ∩ tokens.css   109 tokens      ← the actual one
+```
+
+It styles element selectors (`body`, `h1`–`h6`, `p`, `a`); a primitive's CSS
+Module class beats every one of them on specificity. So each migrated file is a
+file the parallel sheet no longer reaches — **incremental, no cutover, and the
+`<link>` comes out last, not first.**
+
+**658 violations (43% of the baseline) have been held back on a false premise.**
+Owed: one computed-style measurement on a `/field` route under an Inspector
+session — a specificity argument is not a measurement, per this repo's own rule.
+
+### T-119 · the specs were pinned to markup seven tasks had already deleted
+`status: partial — source-contract half closed; browser half blocked on browsers and credentials` · `rules: WEB-002, WEB-006, WEB-008, WEB-013` · `est: 1h`
+`record:` [2026-08-16-T-119-stale-source-contract-specs](sessions/2026-08/2026-08-16-T-119-stale-source-contract-specs.md)
+
+"E2E owed" was three debts, not one: **browsers never installed**, **persona
+credentials absent**, and **specs asserting deleted markup**. Only the third was
+an agent's to close.
+
+```
+playwright.static   35 failed → 33      405 passed → 407
+analytics-journey    2 tests  →  5      every ANL-S01 claim re-pointed to its new home
+platform-design      2 failed →  0
+```
+
+**The suite does not need a production build** — `reuseExistingServer` reuses a
+running dev server, so WEB-006 §3 does not block e2e. It is blocked on
+credentials.
+
+**`platform-design-system-contract` failed on Windows only**: `path.relative`
+returns backslashes, so every `"src/app/…"` comparison missed. It passed on
+Linux CI and failed on a workstation, in two tests.
+
+**146 of 252 specs assert the spelling of source files.** Every migration breaks
+the ones pinned to its markup, and the red is indistinguishable from a real
+regression. This is a tax on the migration about to be scaled up.
+
+### T-118 · the five commands the rules require and nobody could run
+`status: partial — verify/test/unit wired and green; lint and budgets exist but cannot pass` · `rules: WEB-005, WEB-006, WEB-008` · `est: 0.5h`
+`record:` [2026-08-16-T-118-missing-npm-scripts](sessions/2026-08/2026-08-16-T-118-missing-npm-scripts.md)
+
+`verify`, `lint`, `test`, `unit` and `budgets` now exist. **`lint` is a failing
+stub, not an install**: ESLint is absent entirely — no dependency, no config, no
+binary — and `next lint` is gone in Next 15. Adding four devDependencies to this
+repo is an owner call; amending WEB-006 to match the gap is a bigger one.
+
+**`budgets` is structurally an agent-forbidden command**: WEB-005 §1's numbers
+come from a production build, which is human-only. The script now says so.
+
+**`verify` excludes both deliberately** — a permanently red `verify` is an
+ignored `verify`. It is `gates → verify:dates → test`.
+
+⚠ **Plaintext credentials in two committed files**: `scripts/verify-admin.mjs:8`
+(1 password) and `scripts/audit-v5-a11y.mjs:14-19` (**all five personas**).
+`e2e/personas.ts` was deliberately scrubbed of exactly this. They are in git
+history — **rotation, not deletion**. Neither was wired to npm for that reason.
+
+### T-117 · The bar charts read left-to-right in Arabic
+`status: partial — code complete, measured both directions, axe clean; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-011` · `est: 1h`
+`record:` [2026-08-16-T-117-bar-series-rtl](sessions/2026-08/2026-08-16-T-117-bar-series-rtl.md)
+
+T-112 fixed the label *collision*; the plot itself still ran left-to-right.
+**There is no CSS route** — Recharts has no writing-mode support, so `dir` on an
+ancestor does nothing. Four props flip together: `YAxis orientation`,
+`XAxis reversed`, the chart margin, and the tick `textAnchor`.
+
+**`LabelList position` is useless under `reversed`** — `"left"` and `"right"`
+both resolve to the bar's base, dropping the value onto the axis labels. Replaced
+with a custom `ValueLabel`. Under `reversed`, Recharts keeps `x` at the base and
+makes **`width` negative**, so `x + width` is the tip in both directions.
+
+**`isRtl` cannot live in `lib/i18n`** — that module imports `next/headers` and a
+client component reaching for it 500s the dev server. It lives in
+`i18n/direction.ts`.
 
 ### T-116 · Every bar and every meter was painted in the warning colour
 `status: partial — code complete, axe clean both themes, gates unchanged; e2e owed` · `rules: WEB-000, WEB-002, WEB-003, WEB-008, WEB-009` · `est: 0.5h`

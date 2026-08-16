@@ -1,0 +1,7 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+  min-inline-size: 0;
+  padding-block-start: var(--sqx-space-5);
+}

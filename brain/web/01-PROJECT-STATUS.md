@@ -1,6 +1,425 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-15` · `Updated by: T-114 — Arabic numerals`
+`Last updated: 2026-08-16` · `Updated by: T-126 — /admin/packages workbench`
+
+## A component that compiles, typechecks and passes every gate can still be rendered by nothing (2026-08-16)
+
+T-124 rebuilt `/admin/packages` and **stopped rendering two components**.
+`NewDraftForm` and `TemplateRegistry` kept compiling, kept typechecking, kept
+passing lint, typography and v5. Nothing pointed at them.
+
+```
+git show <base>:page.tsx  →  NewDraftForm  TemplateRegistry  + 6 others
+grep the new sources      →  6 others
+```
+
+`PublishControls.tsx:90` is the only path to `createDraftVersion`, so for two
+sessions **a writer could not create a version for an existing package** —
+exactly the state the "No versions" filter selects for. T-124's record certified
+"no functional regression."
+
+**Every gate in this repo asks whether the code is well-formed. None asks
+whether it is reachable.** WEB-008's first standing sweep is the one that does —
+*diff what the page loads against what it renders* — and it is the two-line grep
+above. Run it on any task that moves a render tree, and run it **before**
+claiming no regression, not after review.
+
+## `getBoundingClientRect()` is not a visibility test (2026-08-16)
+
+T-126 measured the rebuilt register and read **12 visible required fields** on a
+page whose forms are all inside closed disclosures. `checkVisibility()` reports
+**0**, and it is right: content under `content-visibility: hidden` keeps a
+layout box and a non-null `offsetParent` while being unrendered and unfocusable.
+
+**Ask the browser the question you mean.** `checkVisibility({ checkVisibilityCSS: true })`
+for "can the user see it", rects only for "how big is it".
+
+The same session twice read a **mid-compile dev-server state as a defect** — a
+second `<main>` from the loading boundary, and a route that looked wedged. Both
+were gone on a settled load. **Re-measure before filing; a dev server mid-compile
+is not evidence.**
+
+## "The static suite is unchanged" does not mean the pinned specs still pass (2026-08-16)
+
+T-124 ran the WEB-008 sweep, found **9 specs** pinned to `admin/packages`,
+concluded none needed re-pointing, and verified it by running
+`npm run test:static` before and after — **408 passed both times**. The
+conclusion was wrong: it had broken **ten** assertions in
+`cd-008-009-packages.spec.ts` — T-125 found and re-pointed all ten.
+
+**The sweep worked. The verification did not.** That spec is not in
+`playwright.static.config.ts`'s hand-maintained allowlist, so the static suite
+was never going to execute it — and the spec cannot be run here at all, because
+its describe block needs a browser this workstation does not have.
+
+```
+sweep says      9 specs pinned
+static covers   only the ~70 in the allowlist
+therefore       "static unchanged" ⊅ "the pinned specs pass"
+```
+
+**When a sweep names a spec the static config does not run, check the assertions
+directly** — read the file and grep the strings against the new source. That is
+a five-line script and it is the only thing that settles it while the browser
+half of the suite is blocked (T-119).
+
+## A collapsed `<details>` is a visual fix, not a payload fix (2026-08-16)
+
+T-124 took `/admin/packages` from eleven simultaneously-expanded publish-impact
+reports to eleven collapsed disclosures. The screen reads completely differently.
+**The document is still ~498 KB**, because `<details>` hides content, it does not
+withhold it.
+
+**Say which one you fixed.** Collapsing is the right first move — it costs
+nothing and it is what the reader experiences — but a task that reports
+"decluttered" while the payload is unchanged has answered a different question
+from the one WEB-005 asks. Genuine deferral needs the content to not be rendered
+at all, which for per-row detail means a server action.
+
+## Charts: sometimes the honest answer is none (2026-08-16)
+
+T-124 judged six chart candidates for `/admin/packages` and built **zero**.
+
+```
+10 packages · 11 versions · 9 items
+version status   9 published / 2 draft / 0 locked   2 non-zero, one dominant
+items in use     denominator 9                      the sentence says more
+by scope         free text, not a governed enum     charting invents a taxonomy
+items/package    10 bars of config counts           nothing a designer can act on
+```
+
+**A configuration workbench is not an analytics surface.** The reader's job is
+to assemble and publish a package, and no distribution helps with that. The two
+gauges on `/admin/localization` earned their place because they were governed
+ratios that changed what the reader understood — that is the bar, and it is
+worth failing openly rather than shipping a gauge on a denominator of nine.
+
+## A filter is not a partition (2026-08-16)
+
+T-124 rebuilt the package states as mutually exclusive, so a package holding
+**both** a current publish and an open draft counted only as published — and the
+Draft filter read **0** where the old screen said **2**.
+
+Mutual exclusivity is right for a *badge* and wrong for a *filter*: filters are
+views, they may overlap, and they do not have to sum to the total. `draft` now
+means *has an open draft*, which is the question a configuration author actually
+asks. **No gate can see this** — it was found by comparing the rendered count
+against the screen being replaced, which is the audit T-111 established.
+
+
+## A screen can ship 1,821 rows to draw 12, and nothing will tell you (2026-08-16)
+
+`/admin/localization` kept search, filter and pagination in `useState`, so the
+entire `ui_strings` dictionary was serialised into the document for the client to
+slice:
+
+```
+document        755 KB → 336 KB     rows in payload  1,845 → 41
+```
+
+**No gate can see this.** Typecheck, typography, lint and the design-system gate
+were all silent; the number appears only if you measure the response. WEB-004's
+ladder already put URL state above `useState` and WEB-005's budgets already made
+755 KB indefensible — the rules were right and nothing enforced them.
+
+**The measurement is one line and belongs in every migration inventory:**
+`fetch(route).then(r => r.text()).then(h => h.length)`. A route whose document
+runs to hundreds of KB is paginating in the wrong place.
+
+**Second-order consequence worth expecting:** once the client stops holding the
+rows, anything it used to *build* from them breaks. CSV export was
+`document.createElement("a").click()` over the in-memory array; it became a route
+handler, which is better on every axis — no DOM mutation, no JavaScript, and the
+file now honours the current filter rather than client memory.
+
+## `CountBadge` cannot localise its own number, and five screens are wrong today (2026-08-16)
+
+T-123 shipped Latin digits into the Arabic filter tabs from one line —
+`<CountBadge value={counts[filter]} />`. Fixed with `formatCount`, and the
+Arabic page now measures **0 Latin-digit nodes**. The instance is trivial; the
+class is not.
+
+`CountBadge` renders `{value}` verbatim and accepts `number | string`, so **every
+caller passing a number ships Latin digits under Arabic**:
+
+```
+regulation-authority-nav  value={total}          /regulations
+review-tabs               value={tab.count}      /reviews/[id]
+factories-scope-bar       value={shown}          /factories
+more-filters              value={activeCount}    /planning
+approval-request-rail     value={entries.length} approvals queue
+```
+
+**The fix that closes the class is a one-word API change**: narrow `value` to
+`string`. It already accepts one, so the compiler then finds all eleven call
+sites for you. This is T-114's `Donut` ruling applied again — a design-system
+primitive must not acquire a locale, so it must be handed text that is already
+formatted.
+
+## Charts: the honest answer is usually fewer than the data suggests (2026-08-16)
+
+T-123 judged six candidates and built two.
+
+```
+built     Arabic coverage 99%  ·  Reviewed 0%     two Gauges, two governed ratios
+declined  status distribution  5 states, 2 non-zero, one at 98.7%
+declined  donut of statuses    same skew, Donut caps at 3
+declined  activity over time   updated_at is last-touched, not an event log
+declined  length histogram     bands past the existing 1.3 ratio would be invented
+```
+
+The pair earns its place because together they say what the screen hid:
+**everything is translated and nothing is reviewed.**
+
+**The reusable test is the one T-113 and T-115 already used:** count the non-zero
+categories before choosing a form. Two non-zero states, one at 98.7%, is not a
+distribution — it is a headline and a footnote.
+
+
+## `shell-page-frame` was the route-owned frame all along (2026-08-16)
+
+T-122 needed a frame that owns the page gutter. It built one — and two thirds of
+it already existed. **`shell-page-frame` has sat at zero importers since T-004**,
+which `05-RETIREMENT-LEDGER.md` records as its *expected* state, and it already
+implements the gutter clamp, the breadcrumb, the title and the description.
+
+```
+padding-inline: clamp(var(--sqx-page-inline-sm), 4vw, var(--sqx-page-inline))
+measured on /admin/access   0px / 0px  →  32px / 32px
+```
+
+`access-frame` composes it and adds only what is route-specific. **This is the
+swap the ledger has prescribed all along and the first one anyone has taken.**
+The next migration should reach for it before writing a `padding-inline`.
+
+**Corollary worth generalising: `app-shell`'s `.main` has no padding**, so a
+route that supplies none sits flush against the viewport edge. That is a
+one-line shell fix serving every route at once, and it was deliberately **not**
+taken — the owner's brief said not to touch the shell.
+
+## Checking the payload is not checking the render, and it cost two rounds (2026-08-16)
+
+T-122 wired a secondary line into two dropdowns and verified it by asserting the
+**RSC payload** carried `{label, note}` for all 30 options. It did. The rendered
+result was `Manage Access Grantsadmin.access.manage` — `MenuRow` puts `note`
+inside `.label` as a bare `<span>` with **no margin, no separator and no
+display**, so the two strings concatenate.
+
+**The owner found it by looking; the payload check could never have.** This
+document already says *render it and look at it* (T-090 … T-097, four tasks),
+and the check that was run was one level short of that: it proved the data
+reached the component, not that the component drew it.
+
+**A prop is verified when it is measured on screen.** For a menu, that means
+opening it in the pane and reading `getComputedStyle`, not reading the flight
+data. The measurement that settles it:
+
+```
+before  note display inline · onOwnLine false · rows concatenated
+after   note display block  · onOwnLine true  · row height 40px
+```
+
+**`.note` was broken for its own documented purpose too** — the TSDoc calls it
+"a short reason shown beside a disabled label", which would have rendered
+`Riyadhoption Not available`. It has exactly two consumers (`Select`, itself),
+so nothing else was relying on the old behaviour.
+
+## A hyphenated JSX attribute is never type-checked, so `aria-*` on a primitive silently vanishes (2026-08-16)
+
+T-122's first `Breadcrumb` put `aria-current="page"` on `<Text>`, whose prop API
+is deliberately closed (WEB-002: no escape hatch). **TypeScript accepted it and
+the attribute never rendered** — JSX attributes containing a hyphen are exempt
+from prop-type checking. `tsc` clean, gates green, and the current page unmarked
+in the accessibility tree.
+
+**No check in this repository can see this.** It was found by reading the
+rendered markup. The rule: an `aria-*` or `data-*` prop on a design-system
+primitive is a no-op unless that primitive declares it — put it on an element you
+control, or extend the primitive deliberately.
+
+## `usePathname()` disagrees with the server wherever middleware rewrites (2026-08-16)
+
+Owner-reported hydration error on `/admin/access`, and it predates the migration
+that surfaced it. `AdminScreenRegistry` matched `usePathname()` against a table
+of unprefixed routes:
+
+```
+server   /admin/access      ADM-S01        middleware rewrites /en/admin/x → /admin/x
+client   /en/admin/access   ADM-UNMAPPED   usePathname() reads the browser URL
+```
+
+Every `/admin/*` route reached with a locale prefix hydrated mismatched. Fixed
+with `stripLocale(usePathname())` — the helper already existed for exactly this.
+**Any client component in this app that branches on `usePathname()` has the same
+defect**, because the locale prefix is stripped by middleware on every route.
+
+**Found while checking it: the `/ar/` path prefix does not switch the locale at
+all** — `/ar/dashboard` and `/ar/analytics` both render `lang="en"` `dir="ltr"`
+in a session whose `locale` cookie is `en`, though `middleware.ts` reads
+`pathLocale` **before** the cookie. Platform-wide, pre-existing, and unrelated to
+any current task — but it means **a path-prefixed Arabic URL is not a way to
+review Arabic**; use the language toggle.
+
+## The 146-spec tax arrived on the very first migration after it was predicted (2026-08-16)
+
+T-119 recorded that 146 of 252 specs assert the spelling of source files, and
+that every migration would break the ones pinned to its markup. T-122 broke
+**two**, and only one was found by the pre-flight sweep — the other surfaced as
+3 new static failures after the code was already written.
+
+**The sweep missed it because the grep was route-path-shaped** (`/admin/access`)
+and the spec's assertions are file-path-shaped. **Add "grep `e2e/` for the source
+paths, not the route paths" to every migration inventory** — it is one command
+and it is the difference between re-pointing a spec deliberately and discovering
+it in a failure list.
+
+## A gate banner nobody gated (2026-08-16)
+
+`/admin/access` rendered *"Role changes are guarded and audited — every write is
+checked again on the server"* **unconditionally**, to read-only viewers who
+cannot write at all. Not a fabrication like T-110's outage banner, but the same
+family: **a reassurance about a capability the reader does not have.**
+
+Found by asking, per surface, *who is this sentence for?* — which also collapsed
+**six restatements of three facts into one role-aware card**, and deleted a
+"Reconstruction note" that was **internal build commentary rendered to ministry
+users**.
+
+## `npm run lint` exists now, and it is a ratchet because it had to be (2026-08-16)
+
+ESLint 9 flat config expressing WEB-000, with the rule citation in every
+message. **A fresh run reports 8,114 errors**, so a threshold gate would have
+been red on day one — the exact defect already recorded against `npm run gates`.
+`check-eslint.mjs` mirrors `check-typography.mjs` key-for-key, and **WEB-014 §8
+carries over verbatim: the baseline may only go down.**
+
+```
+web/no-comments 7,334 · no-restricted-syntax 413 · non-null 123 · max-lines 97
+```
+
+**Migrated code is nearly clean, which is why enforcement costs nothing today:**
+`max-lines` is **already 0** across the design system, `features/*`, `i18n`,
+`lib` and every migrated section, and **`jsx-a11y/alt-text` is 0 across all 814
+`.tsx` files**. The debt is 90% comments, densest in `/field` and `i18n + lib`.
+
+**Two rule tallies were artifacts, and both are findings:**
+
+```
+189  <Text role="bodyStrong">   SAQEEL's typography `role` prop collides with ARIA
+124  useT()                     an async SERVER helper named like a React hook
+```
+
+The first is fixed with `ignoreNonDOM`. The second is demoted to `warn` because
+**the rule is right and the name is wrong** — renaming `useT` across 81+ call
+sites is its own task.
+
+**The ratchet was proved by injecting a defect, not by reading an exit code.**
+Probe with a `let`, an `as unknown as` and a needless binding → exit 1, all three
+named with citations → probe deleted → PASSED. The injection was confirmed to
+have landed (T-090/T-107's shape, hit four times before).
+
+## There are two `package.json` files and nothing links them (2026-08-16)
+
+The repository root and `apps/web` are **separate npm projects with no
+`workspaces` field**. T-121's install landed at the root and had to be undone.
+
+**Use `npm --prefix apps/web` for every npm command in this repository.**
+
+## CORRECTION — `/field` was never blocked by a token override (2026-08-16)
+
+**The entry below headed *"`/field` is a second design system, and the baseline
+does not know it"* is wrong on its central claim, and it has been holding back
+43% of the typography baseline since 2026-08-12.** It states that migrating
+`/field` is work against a live override because `public/saqeel-ds` redefines the
+tokens the primitives consume. Measured, both directions:
+
+```
+tokens defined by public/saqeel-ds/**       113
+tokens defined by src/app/saqeel.css        479
+  ↳ intersection                              0     ← the claimed override
+tokens of the FROZEN src/app/tokens.css
+  ↳ intersection                            109     ← the actual one
+occurrences of "sqx" in public/saqeel-ds      0
+```
+
+The primitives consume `--sqx-*`. The parallel system **has never heard of
+them** — it overrides the frozen legacy sheet, which is being deleted anyway.
+`saqeel.css` is imported at `src/app/layout.tsx:2`, above `/field` like every
+other route.
+
+The parallel sheet styles **element** selectors (`body`, `h1`–`h6`, `p`, `a`,
+`::selection`); a primitive's CSS Module **class** beats all of them on
+specificity, load order irrelevant. So it governs bare elements and legacy `t-*`
+classes — *exactly what a migration removes* — and stops governing each element
+the moment that element becomes a primitive. **The migration is incremental and
+self-limiting; the `<link>` comes out last, not first.**
+
+**The measurement still owed** (this is a specificity argument, and T-095's rule
+is that a font claim is a width measurement or it is a guess): one computed-style
+read of a primitive on `/field` against the same primitive on `/dashboard`.
+Blocked only on an Inspector session — see below.
+
+## The whole e2e suite is unrunnable, and it is not the production build (2026-08-16)
+
+Three separate causes, found while closing T-111 … T-117's owed e2e:
+
+```
+browsers    npx playwright install never run — chromium-1228 has no binary
+credentials SAQEEL_TEST_PASSWORD and SAQEEL_TEST_<ROLE>_EMAIL unset; no .env.local
+specs       146 of 252 assert the spelling of source files
+```
+
+Every spec in the `e2e` project depends on `auth.setup.ts`, and `personas.ts`
+fails closed on the missing password, so **nothing authenticated runs at all**.
+
+**Correction to a standing assumption:** the suite does *not* need a production
+build. `playwright.config.ts` runs `node .next/standalone/server.js`, but
+`reuseExistingServer` defaults on and reuses a dev server on 127.0.0.1:3000.
+**WEB-006 §3 does not block e2e — missing credentials do.**
+
+**The structural cost, which matters most for the migration about to scale up:
+146 of 252 specs assert source text.** Every screen migration breaks the ones
+pinned to its markup, nothing re-points them, and the red is indistinguishable
+from a real regression. A spec asserting `className="kpi-grid"` proves nothing
+about what a user sees — the class of assertion T-063 and T-078 each retired
+once already.
+
+## A guard can fail on Windows and pass on CI, for reasons unrelated to what it guards (2026-08-16)
+
+`platform-design-system-contract.spec.ts` compared `path.relative(root, file)`
+against `"src/app/layout.tsx"`. On Windows that is `src\app\layout.tsx`, so
+**two tests failed on a workstation and passed on Linux CI**, and the message
+pointed at the design system rather than at path separators.
+
+Repairing it exposed a real finding no gate can see: **`src/app/global-error.tsx`
+carries 7 literal hex colours.** It is **allowlisted rather than stripped** — it
+renders its own `<html>`/`<body>` for the case where the root layout itself
+threw, so no stylesheet is guaranteed loaded and no `var(--sqx-*)` is guaranteed
+to resolve. Same argument that admits `layout.tsx`; the only other such file.
+
+## Two committed files still carry plaintext credentials (2026-08-16)
+
+```
+scripts/verify-admin.mjs:8        admin@mim.gov.sa   1 password
+scripts/audit-v5-a11y.mjs:14-19   five personas      5 passwords
+```
+
+`e2e/personas.ts` was deliberately rewritten to remove exactly this, and its own
+header explains the consequence: **the values are in git history, so this needs
+rotation, not deletion.** Neither file was wired into an npm script by T-118.
+
+## `verify`, `lint`, `test`, `unit`, `budgets` now exist — two of them cannot pass (2026-08-16)
+
+Closing the gap this document recorded on 2026-08-14. **`lint` is a failing stub
+because ESLint is absent, not unwired** — no dependency, no config, no binary,
+and `next lint` is gone in Next 15, so a script cannot create a toolchain.
+**`budgets` is a failing stub for a structural reason**: WEB-005 §1's numbers
+come from a production build, which is human-only, so it is a measurement
+request and can never be an agent command. `verify` excludes both deliberately —
+a permanently red `verify` is an ignored one.
+
+**`npm run gates` is still red for everyone** at the same 77 pre-existing
+`check:design-system-v5` findings. Nobody can satisfy WEB-006 §5.
 
 ## `toLocaleString("ar")` returns Latin digits. Only `"ar-SA"` returns Arabic ones (2026-08-15)
 

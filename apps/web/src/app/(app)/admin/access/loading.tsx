@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import AccessSkeleton from "@/components/sections/admin-access/access-skeleton/access-skeleton";
+import { adminAccessMessages } from "@/features/admin-access/strings";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading access management…" ar="جارٍ تحميل إدارة الوصول…" />;
+export default async function AccessLoading() {
+  const locale = await getLocale();
+  return <AccessSkeleton label={adminAccessMessages(locale).loading} />;
 }

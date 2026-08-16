@@ -1,0 +1,54 @@
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  margin-block-end: var(--sqx-stack-default);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-5);
+  padding-block-end: var(--sqx-space-2);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  margin-block-end: var(--sqx-stack-default);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  margin-block-end: var(--sqx-stack-default);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sqx-inset-card);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-raised);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-4);
+  min-block-size: var(--sqx-control-h-lg);
+  padding-block: var(--sqx-space-4);
+}
+
+.row + .row {
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.rowText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  flex: 1;
+  min-inline-size: 0;
+}

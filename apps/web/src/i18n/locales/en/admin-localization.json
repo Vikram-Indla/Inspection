@@ -1,0 +1,121 @@
+{
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration",
+    "hub": "Rules & content"
+  },
+  "title": "Language & translations",
+  "subtitle": "English source and Arabic translation for every localized surface",
+  "loading": "Loading the translation registry",
+  "coverage": {
+    "arabic": "Arabic coverage",
+    "arabicCaption": "{translated} of {total} keys",
+    "reviewed": "Reviewed",
+    "reviewedCaption": "{reviewed} of {translated} translated",
+    "runsLong": "Runs long in Arabic",
+    "runsLongCaption": "{count} keys over the layout-risk ratio"
+  },
+  "filters": {
+    "label": "Translation status",
+    "all": "All keys",
+    "missing": "Missing Arabic",
+    "draft": "Draft",
+    "reviewed": "Reviewed",
+    "orphaned": "Orphaned"
+  },
+  "toolbar": {
+    "search": "Search key, English or Arabic",
+    "searchAction": "Search",
+    "clear": "Clear search",
+    "showing": "{matched} of {total} keys",
+    "addKey": "Add key",
+    "closeAdd": "Close",
+    "export": "Export CSV",
+    "sync": "Sync from code",
+    "syncing": "Scanning code…",
+    "syncReport": "Added {added} · English changed {enChanged} · Arabic changed {arChanged} · orphaned {orphaned} · restored {revived}"
+  },
+  "table": {
+    "caption": "Governed interface strings",
+    "source": "English source",
+    "translation": "Arabic translation",
+    "state": "State"
+  },
+  "row": {
+    "arabicFor": "Arabic for {key}",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "unsaved": "Unsaved change",
+    "markReviewed": "Mark reviewed",
+    "marking": "Marking…",
+    "history": "History",
+    "historyFor": "Revision history for {key}",
+    "historyLoading": "Loading history…",
+    "historyEmpty": "No changes recorded yet.",
+    "restore": "Restore",
+    "restoring": "Restoring…",
+    "restored": "Restored as draft",
+    "changedBy": "Changed by {actor}",
+    "systemActor": "system",
+    "sourcePanel": "admin panel",
+    "sourceSync": "source sync",
+    "sourceRestore": "restore",
+    "orphanNote": "No longer found in the last code scan — kept and restorable, never deleted.",
+    "riskLong": "Arabic runs long — check narrow layouts",
+    "placeholderError": "Placeholder {token} is missing from the Arabic. Save stays disabled until the placeholders match.",
+    "updatedAt": "Updated {date}"
+  },
+  "add": {
+    "title": "Add key",
+    "key": "Key",
+    "keyHint": "nav.planning",
+    "en": "English source",
+    "ar": "Arabic",
+    "arHint": "Optional — the key is added as a draft either way",
+    "context": "Context",
+    "contextHint": "Optional — where this string appears",
+    "submit": "Add key as draft",
+    "pending": "Adding…",
+    "done": "Key added as draft"
+  },
+  "states": {
+    "missing": "Missing Arabic",
+    "draft": "Draft",
+    "reviewed": "Reviewed",
+    "orphaned": "Orphaned"
+  },
+  "empty": {
+    "title": "No interface strings yet",
+    "body": "Keys arrive from an extraction sweep over the codebase. Translate to Arabic, then mark reviewed.",
+    "noMatchTitle": "No keys match this view",
+    "noMatchBody": "Adjust the search or choose another status."
+  },
+  "governance": {
+    "heading": "Governance on this surface",
+    "pair": "Every key keeps its English source and its Arabic revision history.",
+    "retire": "Orphaned keys stay restorable and are never silently deleted.",
+    "audit": "Updates run through revisioned server actions."
+  },
+  "pagination": {
+    "label": "Registry pages",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {pageCount}"
+  },
+  "denied": {
+    "title": "Translations are restricted",
+    "body": "No translation data has been loaded. This screen requires an administrator role, so nothing here is shown rather than hidden.",
+    "back": "Back to administration",
+    "request": "Request access"
+  },
+  "error": {
+    "title": "The translation registry could not be loaded",
+    "body": "No key, translation or review state was changed. Retry, or quote the reference below to support.",
+    "reference": "ref {id}",
+    "retry": "Try again",
+    "dictionaryTitle": "The dictionary could not be read",
+    "dictionaryBody": "Nothing was changed. Reload the page to try again."
+  },
+  "notConfigured": "Not configured"
+}

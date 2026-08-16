@@ -1,0 +1,38 @@
+.trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.crumb + .crumb::before {
+  content: "/";
+  color: var(--sqx-text-muted);
+}
+
+.link {
+  border-radius: var(--sqx-radius-xs);
+  color: var(--sqx-text-muted);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--sqx-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: var(--sqx-space-1);
+}
+
+.link:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-space-1);
+}

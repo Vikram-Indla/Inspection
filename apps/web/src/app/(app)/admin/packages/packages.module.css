@@ -1,163 +1,132 @@
-.pageStack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
-.hero,
-.packageGroup,
-.versionCard,
-.governance,
-.emptyState {
-  padding: var(--space-6);
-}
-
-.heroRow,
-.packageHeading,
 .versionHeading,
 .actionRow,
-.metaRow {
+.paneActions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
+}
+
+.pills {
+  display: inline-flex;
   flex-wrap: wrap;
-}
-
-.packageGroup > summary,
-.versionCard > summary {
-  cursor: pointer;
-  min-block-size: 44px;
-  list-style-position: inside;
-}
-
-.packageBody,
-.versionBody {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  padding-block-start: var(--space-5);
-}
-
-.versionList {
-  display: grid;
-  gap: var(--space-4);
+  align-items: center;
+  gap: var(--sqx-space-2);
 }
 
 .designerStudio {
   display: grid;
-  grid-template-columns: minmax(13rem, 0.75fr) minmax(22rem, 1.5fr) minmax(18rem, 1fr);
-  gap: var(--space-4);
+  grid-template-columns:
+    minmax(var(--sqx-grid-min-xs), 0.75fr)
+    minmax(var(--sqx-grid-min-md), 1.5fr)
+    minmax(var(--sqx-grid-min-sm), 1fr);
+  gap: var(--sqx-space-4);
   align-items: start;
 }
 
 .studioPane {
   min-inline-size: 0;
-  padding: var(--space-4);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  background: var(--surface-primary);
-}
-
-.structureList {
-  display: grid;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.structureButton {
-  inline-size: 100%;
-  min-block-size: 44px;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  background: var(--surface-primary);
-  color: var(--text-primary);
-  text-align: start;
-  cursor: pointer;
-}
-
-.structureButton[aria-current="true"] {
-  border-color: var(--action-primary);
-  box-shadow: inset 3px 0 0 var(--action-primary);
-  background: var(--surface-sunken);
-}
-
-[dir="rtl"] .structureButton[aria-current="true"] {
-  box-shadow: inset -3px 0 0 var(--action-primary);
+  padding: var(--sqx-inset-panel);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-raised);
 }
 
 .editorForm,
 .editorCanvas,
 .previewPane,
-.targetList {
+.formsPane,
+.paneNote,
+.rulePanel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--sqx-space-3);
+  min-inline-size: 0;
 }
 
-.itemChip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-block-size: 44px;
+.paneNote,
+.rulePanel {
+  padding: var(--sqx-inset-panel);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-subtle);
 }
 
-.chipRemove {
-  inline-size: 44px;
-  block-size: 44px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  border-radius: 999px;
-}
-
-.chipRemove:focus-visible,
-.structureButton:focus-visible {
-  outline: 3px solid var(--focus-ring, var(--action-primary));
-  outline-offset: 2px;
-}
-
-.blockedTarget {
-  padding: var(--space-3);
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-sm);
-  background: var(--surface-sunken);
-}
-
-.blockedTarget button {
-  inline-size: 100%;
-  min-block-size: 44px;
-  margin-block-end: var(--space-2);
-}
-
-.versionTable {
-  inline-size: 100%;
-  border-collapse: collapse;
-}
-
-.versionTable th,
-.versionTable td {
-  padding: var(--space-3);
-  border-block-end: 1px solid var(--border-subtle);
-  text-align: start;
-  vertical-align: top;
-}
-
-.versionTable th {
-  font: var(--type-body-strong);
-}
-
-.notice {
+.structureList,
+.itemList {
+  display: grid;
+  gap: var(--sqx-space-2);
   margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+  list-style: none;
 }
 
-@media (max-width: 1100px) {
+.structureButton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  inline-size: 100%;
+  min-block-size: var(--sqx-control-h-lg);
+  padding: var(--sqx-inset-control);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-raised);
+  color: var(--sqx-text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+
+.structureButton[aria-current="true"] {
+  border-inline-start: var(--sqx-border-width-thick) solid var(--sqx-border-accent);
+  background: var(--sqx-surface-accent);
+}
+
+.itemRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.itemCode {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: var(--sqx-control-h-sm);
+  padding-inline: var(--sqx-space-2);
+  border: 0;
+  border-radius: var(--sqx-radius-xs);
+  background: none;
+  text-align: start;
+  cursor: pointer;
+}
+
+.arabic {
+  display: block;
+  min-inline-size: 0;
+}
+
+.feedback {
+  min-inline-size: 0;
+}
+
+.multiline {
+  display: block;
+  white-space: pre-line;
+}
+
+.itemCode:focus-visible,
+.structureButton:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+@media (max-width: 70rem) {
   .designerStudio {
-    grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+    grid-template-columns: minmax(var(--sqx-grid-min-xs), 0.7fr) minmax(0, 1.3fr);
   }
 
   .previewPane {
@@ -165,15 +134,7 @@
   }
 }
 
-@media (max-width: 720px) {
-  .hero,
-  .packageGroup,
-  .versionCard,
-  .governance,
-  .emptyState {
-    padding: var(--space-4);
-  }
-
+@media (max-width: 45rem) {
   .designerStudio {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -181,46 +142,10 @@
   .previewPane {
     grid-column: auto;
   }
-
-  .versionTable,
-  .versionTable tbody,
-  .versionTable tr,
-  .versionTable td {
-    display: block;
-    inline-size: 100%;
-  }
-
-  .versionTable thead {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-  }
-
-  .versionTable tr {
-    padding-block: var(--space-2);
-    border-block-end: 1px solid var(--border-subtle);
-  }
-
-  .versionTable td {
-    border: 0;
-    padding: var(--space-2) 0;
-  }
-
-  .versionTable td::before {
-    content: attr(data-label);
-    display: block;
-    color: var(--text-muted);
-    font: var(--type-caption-font);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .packageGroup,
-  .versionCard,
   .structureButton {
-    scroll-behavior: auto;
     transition: none;
   }
 }

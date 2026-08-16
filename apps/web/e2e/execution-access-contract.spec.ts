@@ -14,7 +14,15 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 2B governed access grants", () =>
   const migrationPath = "supabase/migrations/20260721110000_execution_access_grants.sql";
   const pagePath = "apps/web/src/app/(app)/admin/access/page.tsx";
   const actionsPath = "apps/web/src/app/(app)/admin/access/actions.ts";
-  const managerPath = "apps/web/src/app/(app)/admin/access/AccessManager.tsx";
+  // T-122 migrated this route onto SAQEEL. The reads moved to a feature query
+  // module, the effective-access computation to a pure view module, and the
+  // panel to components/sections/admin-access. Every claim below is unchanged;
+  // only its address is.
+  const queriesPath = "apps/web/src/features/admin-access/queries.ts";
+  const viewPath = "apps/web/src/features/admin-access/view.ts";
+  const screenPath = "apps/web/src/components/sections/admin-access/access-screen/access-screen.tsx";
+  const managerPath = "apps/web/src/components/sections/admin-access/access-manager/access-manager.tsx";
+  const copyPath = "apps/web/src/i18n/locales/en/admin-access.json";
 
   test("migration creates user_capability_grants with least-privilege RLS", () => {
     expect(exists(migrationPath)).toBeTruthy();
@@ -100,16 +108,16 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 2B governed access grants", () =>
   });
 
   test("page gates the panel on the canonical admin authority and replaces both seams", () => {
-    const page = read(pagePath);
-    expect(page).toContain('sb.rpc("has_internal_role", { p_role: "admin" })');
-    expect(page).toContain('sb.rpc("has_planning_capability", { p_capability: "admin.access.manage" })');
-    expect(page).toContain("AccessManager");
+    const queries = read(queriesPath);
+    expect(queries).toContain('sb.rpc("has_internal_role", { p_role: "admin" })');
+    expect(queries).toContain('sb.rpc("has_planning_capability", { p_capability: "admin.access.manage" })');
+    expect(read(screenPath)).toContain("AccessManager");
     // Effective-access explainer: computed from role defaults + direct grants.
-    expect(page).toContain('sb.from("role_capabilities")');
-    expect(page).toContain('sb.from("user_capability_grants")');
-    expect(page).toContain("viaRoles");
-    // Non-security_admin viewers keep the read-only roster note.
-    expect(page).toContain("This screen is read-only.");
+    expect(queries).toContain('sb.from("role_capabilities")');
+    expect(queries).toContain('sb.from("user_capability_grants")');
+    expect(read(viewPath)).toContain("viaRoles");
+    // The route file stays composition only (WEB-001 §2).
+    expect(read(pagePath).split(/\r?\n/).length).toBeLessThanOrEqual(40);
     // NotYetBoundary is fully retired from the access route.
     const accessDir = path.join(repoRoot, "apps/web/src/app/(app)/admin/access");
     for (const file of fs.readdirSync(accessDir)) {
@@ -124,10 +132,14 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 2B governed access grants", () =>
     expect(manager).toContain("confirmRevokeRole");
     expect(manager).toContain("confirmGrantAdminRole");
     expect(manager).toContain("confirmRevokeCapability");
-    // Honest effect copy and the self-target notice are wired.
-    const page = read(pagePath);
-    expect(page).toContain("take effect on the target's next request");
-    expect(page).toContain("self-escalation guard refuses access changes you make to yourself");
+    // Every user-visible sentence is a resource key in both locales (WEB-013),
+    // so the copy claims are asserted against the resource, not the component.
+    const copy = JSON.parse(read(copyPath));
+    expect(copy.governance.effect).toContain("next authorized request");
+    expect(copy.governance.readOnly).toContain("cannot change access");
+    expect(copy.manage.selfTarget).toContain("self-escalation guard");
+    const arabic = JSON.parse(read("apps/web/src/i18n/locales/ar/admin-access.json"));
+    expect(Object.keys(arabic.manage)).toEqual(Object.keys(copy.manage));
   });
 
   test("decision log records D-006", () => {

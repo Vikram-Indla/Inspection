@@ -1,17 +1,17 @@
-import Link from "next/link";
 import { type ReactNode } from "react";
+import Breadcrumb, { type Crumb } from "@/components/saqeel/breadcrumb/breadcrumb";
 import { Heading, Text } from "@/components/saqeel/type";
 import styles from "./shell-page-frame.module.css";
 
-export type ShellBreadcrumb = {
-  readonly label: string;
-  readonly href?: string;
-};
+export type ShellBreadcrumb = Crumb;
 
-export default function ShellPageFrame({ title, description, breadcrumbs, actions, children }: {
+export default function ShellPageFrame({
+  title, description, breadcrumbs, breadcrumbLabel, actions, children,
+}: {
   title?: string;
   description?: string;
   breadcrumbs?: readonly ShellBreadcrumb[];
+  breadcrumbLabel?: string;
   actions?: ReactNode;
   children: ReactNode;
 }) {
@@ -19,19 +19,8 @@ export default function ShellPageFrame({ title, description, breadcrumbs, action
     <div className={styles.frame}>
       {title || breadcrumbs?.length ? (
         <div className={styles.frameHead}>
-          {breadcrumbs?.length ? (
-            <ol className={styles.breadcrumb}>
-              {breadcrumbs.map((crumb, index) => (
-                <li key={crumb.href ?? crumb.label}
-                  aria-current={index === breadcrumbs.length - 1 ? "page" : undefined}>
-                  {crumb.href && index < breadcrumbs.length - 1
-                    ? <Link href={crumb.href} data-next-spa="true">
-                        <Text as="span" role="label" tone="inherit">{crumb.label}</Text>
-                      </Link>
-                    : <Text as="span" role="label" tone="inherit">{crumb.label}</Text>}
-                </li>
-              ))}
-            </ol>
+          {breadcrumbs?.length && breadcrumbLabel ? (
+            <Breadcrumb items={breadcrumbs} label={breadcrumbLabel} />
           ) : null}
           {title ? (
             <div className={styles.titleRow}>

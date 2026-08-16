@@ -5,6 +5,7 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import { Text } from "@/components/saqeel/type";
 import { makeEnumLabel } from "@/i18n/enum-label";
 import { fill } from "@/i18n/messages";
+import { isRtl } from "@/i18n/direction";
 import type { Locale } from "@/lib/i18n";
 
 export type PipelineStrings = {
@@ -62,6 +63,7 @@ export default function PipelineBreakdown({ slices, total, locale, strings }: {
         domainMax={Math.max(...ranked.map(slice => slice.value), 1)}
         ariaLabel={strings.aria}
         series={SERIES_ROLE.volume}
+        rtl={isRtl(locale)}
       />
       <Text tone="muted">{fill(strings.total, { total: formatCount(total, locale) })}</Text>
     </>

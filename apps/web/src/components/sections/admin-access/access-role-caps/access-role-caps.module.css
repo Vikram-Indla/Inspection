@@ -1,0 +1,24 @@
+.picker {
+  max-inline-size: var(--sqx-grid-min-sm);
+}
+
+@media (max-width: 48rem) {
+  .picker {
+    max-inline-size: none;
+  }
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}
+
+.name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}

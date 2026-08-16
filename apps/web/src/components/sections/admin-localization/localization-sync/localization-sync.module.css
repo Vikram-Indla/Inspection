@@ -1,0 +1,7 @@
+.sync {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}

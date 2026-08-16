@@ -77,17 +77,16 @@ test.describe("Package-focused route wiring gaps", () => {
   });
 
   test("/admin/localization fails closed before loading its real dictionary", () => {
-    const page = source("src/app/(app)/admin/localization/page.tsx");
+    const queries = source("src/features/admin-localization/queries.ts");
     const action = source("src/app/(app)/admin/localization/actions.ts");
 
     expectAdminBoundary();
-    expect(page).toContain("getVerifiedUser(sb)");
-    expect(page).toContain("getUserRoles(user.id)");
-    expect(page).toContain('const canManageLocalization = ["admin", "compliance_admin", "security_admin", "workflow_admin"]');
-    expect(page.indexOf("if (!canManageLocalization)")).toBeLessThan(page.indexOf('sb.from("ui_strings")'));
-    expect(page).toContain('throw new Error("localization_auth_unavailable")');
-    expect(page).toContain('throw new Error("localization_roles_unavailable")');
-    expect(page).toContain("loadFailed = true");
+    expect(queries).toContain("getVerifiedUser(sb)");
+    expect(queries).toContain("getUserRoles(user.id)");
+    expect(queries).toContain('const MANAGE_ROLES = ["admin", "compliance_admin", "security_admin", "workflow_admin"]');
+    expect(queries.indexOf('if (!await canManageLocalization()) return { kind: "unauthorized" }'))
+      .toBeLessThan(queries.indexOf('sb.from("ui_strings")'));
+    expect(queries).toContain('return { kind: "error" }');
     expect(action).toContain('sb.from("ui_strings")');
     expect(action).toContain('sb.from("ui_string_revisions")');
     expect(action).toContain("if (authorization.error) return { error: authorization.error }");

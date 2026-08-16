@@ -88,6 +88,7 @@ export { default as IconButton, type IconButtonProps } from "./icon-button/icon-
 export { default as Kbd, type KbdProps } from "./kbd/kbd";
 export { default as MenuSurface, type MenuSurfaceProps } from "./menu-surface/menu-surface";
 export { default as MenuRow, type MenuRowProps } from "./menu-surface/menu-row";
+export { default as SaqeelBreadcrumb, type Crumb } from "./breadcrumb/breadcrumb";
 export { default as SaqeelSelect, type SelectProps as SaqeelSelectProps, type SelectOption } from "./select/select";
 export {
   default as SaqeelDateRangePicker,
