@@ -13,11 +13,45 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-130.** Take T-131.
+implements the reservation. **Highest id in use: T-131.** Take T-132.
 
 ---
 
 ## NOW
+
+### T-131 · one typeface across the legacy routes, and the Arabic defect it exposed
+`status: done` · `rules: WEB-002, WEB-011, WEB-014` · `est: 2h`
+`record:` [2026-08-17-T-131-typeface-unification](sessions/2026-08/2026-08-17-T-131-typeface-unification.md)
+
+```
+/factories  Inter 122 → 132 nodes      Arabic  49.81px (system) → 55.55px (Plex)
+tokens.css  149 props · 64 already aliased --sqx- · 2 lines changed
+```
+
+**The sweep was not a sweep.** `tokens.css` already aliases `--sqx-*` in 64 of
+its 149 properties, so T-129's palette had **already reached the legacy routes** —
+colour was never the split. Typography was, in two parts: the **typeface**
+(`--font-body` was Plex-only) and the **sizes** (14px body vs 15px).
+
+**The typeface half is done** — two token lines, and every route the frozen
+sheets style now renders Inter for Latin and Plex for Arabic.
+
+**The size half was deliberately left**, because mapping the frozen scale means
+17px → 24px headings and 22px → 32px titles across ~80 routes that cannot all be
+rendered here. That is layout-affecting and becomes T-132 with the numbers.
+
+**It exposed a defect I introduced in T-129.** `next/font` synthesises an
+`"<name> Fallback"` face from a local system font and inserts it right after the
+real one — and that synthetic face **carries Arabic**, so it captured every
+Arabic glyph before the chain reached Plex. **Arabic has been rendering in a
+system face with the wrong metrics since T-129, on every migrated route, while
+the stack still named Plex.** Fixed with `adjustFontFallback: false`; WEB-014
+§2.0 corrected to name the setting as load-bearing and to require **measuring
+each script separately — Latin passing tells you nothing about Arabic**.
+
+**Parked:** T-132 the size repoint · `tokens.css` is nominally frozen and this
+edited two lines of it; aliasing shrinks its authority rather than growing it,
+but WEB-002 §2's wording should carve that out explicitly.
 
 ### T-130 · reconciling the shapes the tokens could not carry
 `status: done` · `rules: WEB-000, WEB-002, WEB-009, WEB-010, WEB-014` · `est: 2h`

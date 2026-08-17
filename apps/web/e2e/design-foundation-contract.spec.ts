@@ -62,7 +62,10 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
 
   test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
     const tokens = read("src/app/tokens.css");
-    expect(tokens).toContain('--font-body:    var(--font-plex-arabic'); // one self-hosted bilingual metric system
+    const saqeelSheet = read("src/app/saqeel.css");
+    expect(tokens).toContain("--font-body:    var(--sqx-font-sans);");  // the frozen sheet defers to the design system
+    expect(saqeelSheet).toContain("--sqx-font-sans: var(--font-inter"); // Latin: self-hosted Inter
+    expect(saqeelSheet).toContain("var(--font-plex-arabic");            // Arabic: self-hosted Plex, per-glyph fallback
     expect(tokens).toContain('"IBM Plex Sans Arabic"');                 // Arabic-first stack present
     expect(tokens).toContain("--type-display-size: 28px;");            // SAQEEL scale supersedes 32px
     expect(tokens).toContain("--type-body-size: 14px;");              // 14px body supersedes 16px minimum

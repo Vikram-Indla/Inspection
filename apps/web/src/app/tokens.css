@@ -180,7 +180,7 @@
    TYPOGRAPHY
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --font-body:    var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-body:    var(--sqx-font-sans);
   --font-heading: var(--font-body);
   /* Font fallback resolves per glyph. The monospace families carry no Arabic,
      so Arabic inside any mono element fell through to an arbitrary OS face
@@ -209,7 +209,7 @@
 
 /* Arabic-first metrics */
 [dir="rtl"], [lang="ar"], :lang(ar) {
-  --font-body: var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, "Segoe UI", sans-serif;
+  --font-body: var(--sqx-font-sans);
   --type-body-lh: 1.65; --type-body-lg-lh: 1.7; --type-compact-lh: 1.6;
   --type-table-lh: 1.55; --type-display-lh: 1.4; --type-page-title-lh: 1.45;
   --type-section-lh: 1.5;

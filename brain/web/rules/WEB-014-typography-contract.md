@@ -68,6 +68,24 @@ no Arabic coverage, so Arabic glyphs fall through to Plex on their own, per
 glyph, inside the same string. A `:lang(ar)` font override would break mixed
 runs — a CR number inside an Arabic sentence — and is a defect.
 
+**That only holds because Inter is loaded with `adjustFontFallback: false`, and
+it is load-bearing.** `next/font` otherwise synthesises an `"<name> Fallback"`
+face from a local system font and inserts it into the stack immediately after
+the real one. That synthetic face **does** carry Arabic, so it captures every
+Arabic glyph before the chain ever reaches Plex — measured at 49.81px against
+Plex's 55.33px, i.e. Arabic silently rendering in a system face with the wrong
+metrics, on every route, while the stack still *named* Plex.
+
+```
+adjustFontFallback default   inter, "inter Fallback", plexArabic, …   Arabic = 49.81  WRONG
+adjustFontFallback: false    inter, plexArabic, …                     Arabic = 55.55  Plex
+```
+
+**Never trust a font stack by reading it.** This defect shipped for two tasks
+because the stack named Plex and looked correct; only a width measurement of
+Arabic text found it. Measure each script separately — Latin passing tells you
+nothing about Arabic.
+
 `--sqx-font-mono` is a real monospace stack: the `mono` role differs from `body`
 by typeface *and* tabular numerals. The language reserves it for issue-ID-shaped
 text — never headings, never prose.

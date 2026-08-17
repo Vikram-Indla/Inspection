@@ -1,6 +1,46 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-130 — shape reconciliation`
+`Last updated: 2026-08-17` · `Updated by: T-131 — typeface unification`
+
+## `next/font`'s synthetic fallback silently ate Arabic for two tasks (2026-08-17)
+
+`--sqx-font-sans` named `inter, plexArabic, …` and looked correct. It rendered:
+
+```
+stack in the DOM   inter, "inter Fallback", plexArabic, "plexArabic Fallback", …
+Arabic measured    49.81px   ← a local system face
+Plex would be      55.33px
+```
+
+`next/font` synthesises an **`"<name> Fallback"`** face from a local font and
+inserts it immediately after the real one. That synthetic face **carries
+Arabic**, so it captured every Arabic glyph before the chain ever reached Plex.
+**Arabic rendered in the wrong face, with the wrong metrics, on every migrated
+route from T-129 until T-131** — while the stack still named Plex.
+
+Fixed with `adjustFontFallback: false` on the Inter loader: Arabic now measures
+55.55px, Latin 101.61px ≡ Inter.
+
+**Nothing could have caught this by reading.** The stack was right, Latin was
+right, the typography gate checks declarations rather than rendering, and
+T-129's own Arabic pass measured letter-spacing and digit shape — not the
+typeface. **Measure each script separately; Latin passing tells you nothing
+about Arabic.**
+
+## The legacy routes already had the new palette (2026-08-17)
+
+T-131 opened as "migrate ~80 legacy routes" and found the job mostly done:
+`tokens.css` holds **149 custom properties, 64 of which already alias
+`--sqx-*`** and 4 of which carry a raw value. T-129's palette reached every
+legacy route the day it landed.
+
+What was left was typography — and it split cleanly in two. The **typeface** was
+two token lines. The **sizes** (14px body vs 15px, 28px display vs 32px) are
+layout-affecting across ~80 routes and were deliberately deferred rather than
+bulk-edited.
+
+**Measure the gap before scoping the sweep.** The route-by-route plan would have
+been eighty tasks for a job that was two lines plus one deferred decision.
 
 ## A token that resolves to `none` poisons a comma list (2026-08-17)
 

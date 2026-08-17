@@ -45,6 +45,7 @@ const inter = localFont({
   ],
   variable: "--font-inter",
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const viewport = {
