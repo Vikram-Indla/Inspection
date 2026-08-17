@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-135.** Take T-136.
+implements the reservation. **Highest id in use: T-136.** Take T-137.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,43 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-136 · the shell gives 88 routes an `h1`
+`status: done` · `rules: WEB-003, WEB-014 §2, WEB-006 §5` · `est: 2h` · **owner lifted the do-not-touch-the-shell constraint for this change**
+`record:` [2026-08-17-T-136-shell-h1](sessions/2026-08/2026-08-17-T-136-shell-h1.md)
+
+```
+107 <Shell> call sites · 88 non-empty title → now h1 · 19 title="" → still none
+/planning H1→H2→H3 · /visits H1→H2→H2 · /reviews H1 · all 0 violations
+```
+
+**Three lines, one of which reaches 88 routes.** `Shell` rendered the page title
+at `level={2}`, so no route using it had an `h1`.
+
+**Promoting h2→h1 introduced a heading skip, and testing for it is what caught
+it.** `/visits` went from a valid `H2→H3→H2` to an invalid `H1→H3→H2` and axe's
+`heading-order` flagged it. Cause: **`ContextualAiPanel.tsx:39` hardcodes `<h3>`** —
+the legacy AI panel already in the retirement ledger, superseded by
+`AdvisoryStrip` which correctly uses `level={2}`. One line fixed all **6** of its
+surfaces. **A heading skip is not a WCAG AA failure** — axe's WCAG tags stayed
+clean the whole time — so only the best-practice rule would ever have reported it.
+
+**A conflict I diagnosed wrongly and reverted in full.** I read `AccessState` as a
+second `h1`/`<main>` source on six routes and added a `standalone` prop; the import
+graph then showed it has **2 importers, both shell-less `/launch` pages**, and the
+six `*AccessState` wrappers render neither `<main>` nor `h1`. **A filename grep is
+not an import graph.**
+
+**One real defect fixed on the way:** `/reviews/[id]` computed the same title
+twice — the route for the shell title and `review-workspace` for its `h1` — so the
+page rendered it in two places. Fixed with `title=""`, following the convention
+`/execution` and `/analytics` already use.
+
+**Parked:** 19 routes still have no `h1`, all `title=""` by design, with
+`/operations` and `/factories` confirmed to have none anywhere · **latent heading
+skips on routes I could not reach as a Planner** — 19 files still render
+`level={3}`/`<h3>`, and the detection is one axe rule under Admin and Inspector
+sessions · the axe run still wants a script.
 
 ### T-135 · `RouteLoading` off the landmark defect, and the axe debt discharged
 `status: done` · `rules: WEB-002, WEB-003, WEB-006 §5, WEB-014` · `est: 2h`

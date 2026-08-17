@@ -36,7 +36,7 @@ export default function ContextualAiPanel({ surface, title, description, context
     <section className="panel" aria-labelledby={`${surface}-heading`} data-testid={`${surface}-panel`}>
       <div className="panel-header row">
         <div className="grow">
-          <h3 id={`${surface}-heading`}>{title}</h3>
+          <h2 id={`${surface}-heading`}>{title}</h2>
           <Text tone="muted">{description}</Text>
         </div>
         <StatusPill tone="info">{advisoryLabel}</StatusPill>

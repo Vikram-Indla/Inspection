@@ -1,6 +1,50 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-135 — RouteLoading + the first axe run`
+`Last updated: 2026-08-17` · `Updated by: T-136 — the shell h1`
+
+## Promoting a heading level breaks the outline below it (2026-08-17)
+
+T-136 changed `Shell`'s page title from `level={2}` to `level={1}`, giving **88 of
+107 call sites an `h1`** they never had. It also **introduced a heading skip**:
+
+```
+/visits before   H2 → H3 → H2 → H2   valid
+/visits after    H1 → H3 → H2 → H2   heading-order violation
+after the fix    H1 → H2 → H2 → H2   clean
+```
+
+Any content heading that began at h3 under the old h2 becomes a skip under the new
+h1. The cause here was **`ContextualAiPanel.tsx` hardcoding `<h3>`** — the legacy
+AI panel, already in the retirement ledger, superseded by `AdvisoryStrip` which
+uses `level={2}`. One line fixed **6** surfaces.
+
+**A heading skip is not a WCAG AA failure.** axe's WCAG tags were clean before and
+after; only the best-practice `heading-order` rule ever reported it. So promoting a
+shared heading level is a change that **must** be checked with that rule
+specifically, and **19 files still render `level={3}`/`<h3>`** on routes no Planner
+session can reach.
+
+## A filename grep is not an import graph (2026-08-17)
+
+T-136 spent real effort adding a `standalone` prop to `AccessState` to resolve a
+duplicate-`h1` conflict on six routes — then checked the import graph:
+
+```
+importers of components/AccessState    2   both shell-less /launch pages
+the six *AccessState wrappers          render neither <main> nor h1
+```
+
+The six components share a naming pattern with `AccessState` and nothing else. The
+conflict never existed; the prop was unused API on a primitive and was reverted in
+full. **Grep the imports before believing the names.**
+
+## `/reviews/[id]` rendered the same title twice (2026-08-17)
+
+The route computed `ws.title.replace("{factory}", …)` for the shell title and
+`review-workspace` computed it again for its own `h1`. Pre-existing, invisible
+because both were "the page title", and it would have become two `h1`s under
+T-136. Fixed by passing `title=""` — the convention `/execution` and `/analytics`
+already follow, where the content owns the heading.
 
 ## axe has finally been run, and 0 violations is not the whole story (2026-08-17)
 
