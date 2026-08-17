@@ -1,0 +1,199 @@
+.header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-4);
+  padding-inline: var(--sqx-space-5);
+  padding-block: var(--sqx-space-4);
+  padding-block-start: max(var(--sqx-space-4), env(safe-area-inset-top));
+  background: var(--sqx-surface-header);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.headerIdentity {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.seg {
+  display: flex;
+  gap: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-5);
+  padding-block: var(--sqx-space-3);
+  background: var(--sqx-surface-header);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  overflow-x: auto;
+}
+
+.segTab {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--sqx-control-h-md);
+  padding-inline: var(--sqx-space-4);
+  border-radius: var(--sqx-radius-full);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  background: var(--sqx-surface-default);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.segTabActive {
+  background: var(--sqx-action-primary-bg);
+  border-color: var(--sqx-action-primary-border);
+  color: var(--sqx-action-primary-text);
+}
+
+.page {
+  flex: 1;
+  inline-size: 100%;
+  max-inline-size: var(--sqx-grid-min-lg);
+  margin-inline: auto;
+  padding-inline: var(--sqx-space-5);
+  padding-block: var(--sqx-space-4) var(--sqx-space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+@media (min-width: 60em) {
+  .page,
+  .detailPage { max-inline-size: none; }
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sqx-space-4);
+  padding-block: var(--sqx-space-4);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.row[data-unread] {
+  background: var(--sqx-surface-subtle);
+  margin-inline: calc(var(--sqx-space-4) * -1);
+  padding-inline: var(--sqx-space-4);
+  border-radius: var(--sqx-radius-md);
+}
+
+.row:hover {
+  background: var(--sqx-surface-subtle);
+}
+
+.rowBody {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+}
+
+.rowTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  flex-wrap: wrap;
+}
+
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+  min-inline-size: 0;
+}
+
+.titleLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.markRead {
+  position: relative;
+  z-index: 1;
+  flex: none;
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--sqx-space-9);
+  block-size: var(--sqx-space-9);
+  border-radius: var(--sqx-radius-md);
+  background: var(--sqx-surface-subtle);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.tile[data-size="lg"] {
+  inline-size: var(--sqx-space-11);
+  block-size: var(--sqx-space-11);
+  border-radius: var(--sqx-radius-lg);
+}
+
+.tile[data-tone="accent"] { color: var(--sqx-text-accent); }
+.tile[data-tone="success"] { color: var(--sqx-text-success); }
+.tile[data-tone="warning"] { color: var(--sqx-text-warning); }
+.tile[data-tone="danger"] { color: var(--sqx-text-danger); }
+.tile[data-tone="neutral"] { color: var(--sqx-text-secondary); }
+
+.detailPage {
+  flex: 1;
+  inline-size: 100%;
+  max-inline-size: var(--sqx-grid-min-lg);
+  margin-inline: auto;
+  padding-inline: var(--sqx-space-5);
+  padding-block: var(--sqx-space-5) var(--sqx-space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-4);
+}
+
+.heroText {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+}
+
+.desc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  margin: 0;
+}
+
+.descRow {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: var(--sqx-space-2) var(--sqx-space-4);
+  align-items: baseline;
+}
+
+.descRow dd {
+  margin: 0;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.descValue {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 40em) {
+  .descRow { grid-template-columns: minmax(0, 1fr); gap: var(--sqx-space-1); }
+}

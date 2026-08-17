@@ -38,7 +38,7 @@ test.describe("PKT-RESPONSIVE-EXECUTION-FIELD-004 source contracts", () => {
   test("offline, conflict, package-integrity and immutable-history identities are preserved", () => {
     const offline = source("src/lib/offline.ts");
     const integrity = source("src/lib/offline-package-integrity.ts");
-    const completed = source("src/app/(app)/field/completed/page.tsx");
+    const completed = source("src/features/field-completed/queries.ts");
     expect(offline).toContain("packageCacheNamespace(userId)");
     expect(offline).toContain("conflict");
     expect(integrity).toContain("`mim-field-v1:${verifiedUserId}`");

@@ -1,0 +1,31 @@
+{
+  "title": "Completed inspections",
+  "subtitle": "Final submitted report history",
+  "back": "Back",
+  "noValue": "—",
+  "locked": "Submitted records are locked. Corrections require a governed return and a new version.",
+  "cached": "Offline copy — read-only. Connect to refresh.",
+  "empty": "No completed inspections yet",
+  "unavailable": "Completed history is unavailable and no safe cached copy exists.",
+  "version": "Version",
+  "submitted": "Submitted",
+  "findings": "Findings",
+  "evidence": "Evidence",
+  "open": "View receipt",
+  "receipt": {
+    "notFound": "Receipt unavailable",
+    "integrity": "This inspection is unavailable, outside your assignment scope, or has no final submitted version. No editable record was used instead.",
+    "title": "Completion receipt",
+    "readOnly": "Locked final version — read-only",
+    "reference": "Completion reference",
+    "signed": "Acknowledged / signed",
+    "summary": "Read-only summary",
+    "answered": "Answered",
+    "findingsEvidence": "Findings and evidence",
+    "finding": "Finding",
+    "noFindings": "No findings recorded in this submitted snapshot.",
+    "evidenceItem": "Evidence item",
+    "noEvidenceManifest": "No evidence manifest entries are present in this submitted snapshot.",
+    "lineage": "final submitted snapshot"
+  }
+}

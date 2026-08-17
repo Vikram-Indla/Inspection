@@ -1,6 +1,43 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-144 — the /field/visits migration`
+`Last updated: 2026-08-17` · `Updated by: T-146 — the /field/completed migration`
+
+## The `/field` migration: completed history + receipt are done (2026-08-17)
+
+Eight slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
+establishments surface (T-142+T-143), visits list + calendar (T-144),
+notifications list + detail (T-145), and **`/field/completed` list + receipt
+(T-146)**. Remaining: `reports`, `settings`, and the two large execution screens
+(`[visitId]` startup, the 1,991-line `inspection/[id]/Workspace`).
+
+**T-146 confirmed the `<main>` and emoji rules on a screen that had both.** Both
+completed pages rendered their own `<main>` inside the shell's (the T-144
+duplicate-main bug) and used a literal `🔒` as the lock icon (a v5 `emoji-as-icon`
+flag). The fixes are now settled reflexes: render a `<div>`, and a pictographic
+glyph is never an icon — it comes from the registry (`restricted` = Lock). Both
+are cheap to miss and invisible to the WCAG tags, so the verification pass counts
+`<main>` and greps the body for emoji every time.
+
+## The `/field` migration: notifications (list + detail) are done (2026-08-17)
+
+Seven slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
+establishments surface (T-142+T-143), visits list + calendar (T-144), and
+**`/field/notifications` list + detail (T-145)**. The report surfaces
+(`completed`, `reports`, `settings`) and the two large execution screens
+(`[visitId]` startup, the 1,991-line `inspection/[id]/Workspace`) remain.
+
+**T-145 set the rule for a component that stores raw `<svg>` as data.** The old
+`notification-meta.ts` carried literal SVG `d` paths (and hardcoded colours and
+EN/AR labels) as a lookup table — an icon vocabulary that read as data but was a
+rule-8 (`<svg>`) + rule-15 (copy) + rule-7 (colour) violation all at once. The
+fix is a **category → {registry `IconName`, semantic tone}** map: the glyph is a
+name resolved through the registry, the colour is a tone resolved through tokens,
+the label is an i18n key. Any "icon metadata" table in the codebase should be
+this shape, never raw paths. And **a tone-coloured tile is a neutral surface with
+a tone-coloured glyph** — not a per-tone coloured background, because the soft
+surfaces are incomplete (`--sqx-surface-warning` does not exist) and
+`--sqx-surface-accent` is a tint (T-142), so a coloured-tile approach is
+inconsistent and risks the acid-lime contrast trap.
 
 ## The `/field` migration: visits list + calendar are done (2026-08-17)
 

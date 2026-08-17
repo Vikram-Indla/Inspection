@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-144.** Take T-145.
+implements the reservation. **Highest id in use: T-146.** Take T-147.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,75 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-146 · `/field/completed` (list + receipt) migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 2h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-146-field-completed-migration](sessions/2026-08/2026-08-17-T-146-field-completed-migration.md)
+
+The eighth `/field` slice — the completed-inspection history list and its `[id]`
+completion-receipt, migrated together (shared offline cache + immutable backing).
+
+```
+route files       110 + 97 → 11 + 15      raw <svg>/emoji  2 🔒 + backs → 0
+duplicate <main>  2 → 1 (shell owns it)    hardcoded copy   ~35 sites → 0
+headings          0 → 1 (list) / 1>2>2>2   rendered sizes   off-scale → 13·15
+v5                70 → 67 (2 emoji + 1 radius removed)   axe 0 (EN + AR)
+deleted 97 lines
+```
+
+**A `🔒` emoji-as-icon was the standout violation** (both pages) — a v5
+`emoji-as-icon` flag; replaced with the `restricted` (Lock) registry icon in a
+shared `LockedNotice`, dropping v5 70→67 with the banner's `12px` radius literal.
+**Two `<main>` landmarks fixed** (the T-144 duplicate-main bug, on both pages).
+**Both `as unknown as` casts gone** — one `toRecords(unknown)` narrowing drives
+both loaders; the governed `normalizeEmbedded`/`latestSubmittedVersions`/
+`summarizeSnapshot` helpers unchanged (INSP-699 cardinality handling intact).
+**The offline history cache preserved verbatim.** **`force-dynamic` dropped** (the
+layout infers it — the K-002 lesson).
+
+**Two specs re-pointed:** the gated `field-completed-history-contract` (inspector
+scope + immutable backing + no-mutation → `queries.ts`) and the CI-only
+`responsive-execution-field` (`latestSubmittedVersions`/`submission_versions` →
+`queries.ts`; its `no FieldNav` check still reads the thin `page.tsx`).
+
+---
+
+### T-145 · `/field/notifications` (list + detail) migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 3h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-145-field-notifications-migration](sessions/2026-08/2026-08-17-T-145-field-notifications-migration.md)
+
+The seventh `/field` slice — the offline-capable notifications list and its
+`[id]` detail, migrated together (shared icon/category vocabulary + libs).
+
+```
+route files       110 + 179 → 13 + 16     raw <svg>        6 category glyphs → 0
+headings          0 → 1 (list) / 1>2 (det) hardcoded copy   ~40 sites + labels → 0
+rendered sizes    off-scale → 13·15        weight cap 700 → 590
+axe 0 (EN + AR, list + detail)             deleted 454 lines
+```
+
+**`notification-meta.ts` stored raw `<svg>` path strings** (rule 8) with
+hardcoded EN/AR category labels (rule 15) — the biggest violation in the surface.
+Rebuilt as a category→{registry `IconName`, semantic tone} map, labels to i18n;
+added one icon (`revert`, `lucide/Undo2`) for the "returned" glyph. **The icon
+tile is neutral with a tone-coloured glyph** (no `--sqx-surface-warning` exists,
+and `--sqx-surface-accent` is a tint per T-142) — 0 contrast violations.
+
+**The governed offline/receipt behaviour was preserved verbatim** — the
+inspector-namespaced cache, online/offline listeners, reconnect refresh, honest
+stale notice, and recipient-scoped first-receipt-only mark-read; the detail
+read-receipt moved to `loadNotificationDetail` unchanged. Browser-verified:
+opening a detail dropped the shell unread badge 35→34. **`as unknown as` casts
+gone** — `rows.ts` owns the narrowing, shared by server and client (types-only
+imports, so no browser code leaks server-side).
+
+**Two gated specs re-pointed** (`field-notification-attention-center`,
+`field-notifications-contract`) across the split without weakening a contract;
+the live `field-notifications` spec's payload-empty text was kept exact in the en
+namespace so its runtime assertion still matches. **The attention list was split**
+(`notification-row.tsx`) to land under 200 lines.
+
+---
 
 ### T-144 · `/field/visits` + `/field/visits/calendar` migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 2.5h` · **owner signed in as Inspector for this task**

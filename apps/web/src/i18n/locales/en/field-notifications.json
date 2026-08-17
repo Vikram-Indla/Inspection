@@ -1,0 +1,46 @@
+{
+  "title": "Notifications",
+  "back": "Back",
+  "unavailable": "Notifications are temporarily unavailable. Try again.",
+  "filter": {
+    "all": "All",
+    "unread": "Unread"
+  },
+  "newBadge": "New",
+  "empty": "No notifications in this view.",
+  "offlineCached": "Offline — showing the cached attention state from {time}. It may be out of date.",
+  "offlineEmpty": "Offline — no notification snapshot is cached on this device.",
+  "refreshFailed": "Could not refresh notifications. The last cached state remains visible.",
+  "reconnecting": "Connection restored — refreshing notifications.",
+  "markRead": "Mark read",
+  "ackOffline": "Reconnect before marking this notification read. No acknowledgement was recorded.",
+  "ackFailed": "The read acknowledgement was not saved. Refresh and try again.",
+  "kinds": {
+    "assigned": "Visit assigned",
+    "reassigned": "Visit reassigned to you",
+    "released": "Assignment changed — you were released",
+    "cancelled": "Visit cancelled",
+    "rescheduled": "Visit schedule changed",
+    "expired": "Visit expired",
+    "other": "Inspection notification"
+  },
+  "category": {
+    "license": "License update",
+    "assign": "Visit assignment",
+    "return": "Report returned",
+    "sync": "Sync",
+    "calendar": "Appointment",
+    "cancel": "Cancellation"
+  },
+  "detail": {
+    "title": "Notification detail",
+    "unavailable": "This notification is temporarily unavailable. Try again.",
+    "receiptError": "The notification opened, but its read receipt could not be saved. Try again.",
+    "categoryLabel": "Category",
+    "sender": "Sender",
+    "eventKey": "Event key",
+    "notifId": "Notification ID",
+    "payloadEmpty": "No notification payload is available.",
+    "openVisit": "Open visit"
+  }
+}
