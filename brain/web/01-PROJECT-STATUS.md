@@ -1,6 +1,40 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-132 — type scale repoint`
+`Last updated: 2026-08-17` · `Updated by: T-133 — dead CSS retirement`
+
+## The component ledger contains two divergent copies of itself (2026-08-17)
+
+`04-COMPONENT-LEDGER.md` is 574 lines and reads as **[newer ledger] + [older
+ledger] appended**. Lines 5–23 repeat at 232–250, and then the copies diverge:
+
+```
+line  24   | `Button` | inherited | **`name` / `value` (T-040)**: a form with more…
+line 251   | `Button` | inherited | accepts `className` — must lose the escape hatch…
+```
+
+Same component, two different notes, one file. **This is the document whose whole
+job is *never build what already exists*** — and a reader who scrolls to the
+second half gets stale facts about components the first half describes correctly.
+
+Found while running T-133's death checklist, which is the point: the checklist
+sends you to the ledger, and the ledger turned out to be the unreliable one.
+
+**Do not fix it with a dedupe.** It needs a row-by-row merge, because the two
+halves are not identical and a mechanical pass would delete real rows. Parked
+with the line ranges.
+
+## A gate delta is evidence that a deletion was real (2026-08-17)
+
+T-133 deleted `primitives.module.css` (1,301 lines, zero importers). The proof it
+was not a phantom came from the typography gate moving **115 → 129 violations
+removed** — the baseline had recorded that file's 14 `retired-typography-role`
+entries, so a file contributing to the baseline is one the scanner really reads.
+
+**Two sequencing rules worth keeping.** Run the orphan scan **after** the
+deletion, or the dead file's own references count as consumers. And chase
+**keyframes as well as tokens**: `sqx-flow`, `sqx-sweep` and `sqx-drift` were all
+defined in `saqeel.css` and referenced nowhere, found only by listing every
+`animation-name` in `src/` and diffing against the `@keyframes` definitions.
 
 ## The typography divide is closed, and the risk was where nobody looked (2026-08-17)
 

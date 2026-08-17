@@ -143,13 +143,49 @@ already failing** — it asserted `ContextualAiPanel` and `AC-0016` inside
 
 ---
 
+## T-133 — the dead design-system sheet, deleted (2026-08-17)
+
+`components/saqeel/primitives/primitives.module.css` — **1,301 lines, deleted.**
+
+It was never marked, because it was never *replaced*: it was simply unreachable.
+Verified against the full T-077 death checklist before deleting, not just the
+import graph:
+
+```
+code importers                 0   (only use-media-query.ts is imported from that folder, and it is .ts)
+e2e specs reading it as text   0
+scripts naming it              0
+component ledger row           0   (the ledger documents use-media-query.ts, which stays)
+retirement ledger row          0
+```
+
+Deleting it also removed **14 `retired-typography-role` violations**, which is
+why the typography gate moved 115 → **129 removed** in the same change. That is
+the independent confirmation the file was real and its rules were counted.
+
+Its tokens went with it, once re-scanned to zero consumers:
+
+| Removed from `saqeel.css` | Count |
+| --- | --- |
+| `--sqx-gradient-*` definitions | 13 |
+| `--sqx-rim-light`, `--sqx-ease-sweep`, `--sqx-flow-angle/-from/-to`, `--sqx-sweep-start/-end/-skew` | 14 declarations |
+| `@keyframes sqx-flow`, `sqx-sweep`, `sqx-drift` | 3 |
+
+`saqeel.css` **1,023 → 930 lines**. Braces verified balanced (26/26), no
+malformed declarations, and every live token re-checked as still resolving in the
+browser. **Kept deliberately:** `--sqx-glare-050` and `--sqx-duration-flow` (the
+skeleton shimmer), `--sqx-duration-sweep` and `--sqx-ease-linear` (the button
+spinner), `--sqx-mirror` (Icon, DateRangePicker, SegmentedControl).
+
+---
+
 ## Running total
 
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 13 |
-| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053) |
+| Files deleted | 14 |
+| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)** |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 
 Update this table in every session that deletes anything. It is the clearest

@@ -284,8 +284,6 @@
        steps to grey-100 so depth still reads. */
     --sqx-surface-canvas: #FFFFFF;
     --sqx-surface-chrome: #FFFFFF;
-    --sqx-gradient-chrome: none;
-    --sqx-rim-light: none;
     --sqx-surface-default: #FFFFFF;
     --sqx-surface-raised: var(--sqx-grey-100);
     --sqx-surface-menu: #FFFFFF;
@@ -394,20 +392,7 @@
     --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-a24),
       0 4px 32px 0 rgba(8, 9, 10, 0.12);
 
-    --sqx-gradient-cta: linear-gradient(
-      var(--sqx-flow-angle),
-      var(--sqx-brand-400),
-      var(--sqx-brand-450),
-      var(--sqx-brand-400)
-    );
-    --sqx-gradient-halo: none;
     --sqx-accent-ai: var(--sqx-ai-deep);
-    --sqx-gradient-ai: linear-gradient(
-      var(--sqx-flow-angle),
-      var(--sqx-ai-deep),
-      var(--sqx-ai-shade),
-      var(--sqx-ai-deep)
-    );
     --sqx-nav-active-bg: var(--sqx-tint-brand-light);
     --sqx-nav-active-text: var(--sqx-brand-600);
     --sqx-nav-parent-bg: var(--sqx-tint-brand-light-soft);
@@ -429,8 +414,6 @@
        makes a dark theme legible at all. */
     --sqx-surface-canvas: var(--sqx-grey-1000);
     --sqx-surface-chrome: var(--sqx-grey-1000);
-    --sqx-gradient-chrome: none;
-    --sqx-rim-light: none;
     --sqx-surface-default: var(--sqx-grey-900);
     --sqx-surface-raised: var(--sqx-grey-800);
     --sqx-surface-menu: var(--sqx-grey-800);
@@ -535,20 +518,7 @@
     --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-800),
       0 4px 32px 0 rgba(8, 9, 10, 0.6);
 
-    --sqx-gradient-cta: linear-gradient(
-      var(--sqx-flow-angle),
-      var(--sqx-brand-300),
-      var(--sqx-brand-200),
-      var(--sqx-brand-300)
-    );
-    --sqx-gradient-halo: none;
     --sqx-accent-ai: var(--sqx-ai-main);
-    --sqx-gradient-ai: linear-gradient(
-      var(--sqx-flow-angle),
-      var(--sqx-ai-main),
-      var(--sqx-ai-light),
-      var(--sqx-ai-main)
-    );
     --sqx-nav-active-bg: var(--sqx-tint-brand-dark);
     --sqx-nav-active-text: var(--sqx-brand-200);
     --sqx-nav-parent-bg: var(--sqx-grey-a08);
@@ -759,34 +729,12 @@
     --sqx-ease-standard: cubic-bezier(0.2, 0, 0, 1);
     --sqx-ease-decelerate: cubic-bezier(0, 0, 0, 1);
     --sqx-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
-    --sqx-ease-sweep: cubic-bezier(0.3, 0, 0.2, 1);
     --sqx-ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
     --sqx-ease-linear: linear;
 
     /* Both of these used to flow through green. Under the IRP palette green
        is reserved for success, so a decorative signal sweep may not spend
        it — they run on the brand instead. */
-    --sqx-gradient-signal: linear-gradient(
-      var(--sqx-flow-angle),
-      var(--sqx-action-primary-bg),
-      var(--sqx-text-accent),
-      var(--sqx-action-primary-bg)
-    );
-    --sqx-gradient-edge: linear-gradient(
-      var(--sqx-flow-angle),
-      transparent,
-      var(--sqx-action-primary-bg),
-      var(--sqx-border-accent),
-      transparent
-    );
-    --sqx-gradient-sweep: linear-gradient(
-      var(--sqx-flow-angle),
-      transparent,
-      var(--sqx-grey-a16),
-      transparent
-    );
-    --sqx-gradient-flow-size: 220% 100%;
-    --sqx-gradient-halo-size: 180% 180%;
   }
 
   :lang(ar) {
@@ -842,21 +790,10 @@
   }
 
   :root {
-    --sqx-flow-angle: 104deg;
-    --sqx-flow-from: 0% 50%;
-    --sqx-flow-to: 100% 50%;
-    --sqx-sweep-start: -140%;
-    --sqx-sweep-end: 240%;
-    --sqx-sweep-skew: -18deg;
     --sqx-mirror: 1;
   }
 
   :root:dir(rtl) {
-    --sqx-flow-angle: 256deg;
-    --sqx-flow-from: 100% 50%;
-    --sqx-flow-to: 0% 50%;
-    --sqx-sweep-start: 240%;
-    --sqx-sweep-end: -140%;
     --sqx-mirror: -1;
 
     /* Arabic never takes letter-spacing: negative tracking breaks the joins
@@ -977,36 +914,6 @@
 
   .sqx-skip-link:focus-visible {
     transform: translateY(0);
-  }
-}
-
-@keyframes sqx-flow {
-  from {
-    background-position: var(--sqx-flow-from);
-  }
-  to {
-    background-position: var(--sqx-flow-to);
-  }
-}
-
-@keyframes sqx-sweep {
-  from {
-    transform: translateX(var(--sqx-sweep-start))
-      skewX(var(--sqx-sweep-skew));
-  }
-  to {
-    transform: translateX(var(--sqx-sweep-end))
-      skewX(var(--sqx-sweep-skew));
-  }
-}
-
-@keyframes sqx-drift {
-  0%,
-  100% {
-    background-position: var(--sqx-flow-from);
-  }
-  50% {
-    background-position: var(--sqx-flow-to);
   }
 }
 

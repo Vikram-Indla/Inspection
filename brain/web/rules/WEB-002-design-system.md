@@ -47,8 +47,19 @@ and the reduced-motion block.
 It holds **no component classes**. Component styling is §6.
 
 `apps/web/src/app/tokens.css` is the **frozen legacy** sheet. It is still
-consumed by hundreds of files and is retired screen by screen. Never edit it,
-never add to it, never delete from it.
+consumed by hundreds of files and is retired screen by screen. Never add a token
+to it, never change a value in it, never delete from it.
+
+**One edit is permitted, and only one: repointing a declaration at
+`var(--sqx-*)`.** That is not growth — it *shrinks* the sheet's authority, moving
+a decision out of frozen legacy and into the design system, and it is how a
+change of visual language reaches the routes the sheet still styles without
+touching them. T-131 and T-132 used it to bring one typeface and one type scale
+to ~80 legacy routes by editing two blocks of aliases.
+
+Everything else about the sheet stays frozen. A new property, a new raw value, or
+a deletion is still forbidden, and "I was only aliasing" does not cover any of
+them.
 
 ### The prefix
 

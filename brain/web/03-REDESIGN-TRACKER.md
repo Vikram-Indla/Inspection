@@ -13,11 +13,49 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-132.** Take T-133.
+implements the reservation. **Highest id in use: T-133.** Take T-134.
 
 ---
 
 ## NOW
+
+### T-133 · retiring 1,394 lines of unreachable design-system CSS
+`status: done` · `rules: WEB-002, WEB-006 §4, WEB-009, WEB-010` · `est: 1.5h`
+`record:` [2026-08-17-T-133-dead-css-retirement](sessions/2026-08/2026-08-17-T-133-dead-css-retirement.md)
+
+```
+primitives.module.css  1,301 → deleted     saqeel.css  1,023 → 930
+removed                13 gradients · 14 declarations · 3 keyframes
+typography gate        115 → 129 violations removed
+```
+
+**The gate confirmed the deletion was real.** Removing the file moved the
+typography baseline delta from 115 to **129**, because it had recorded that
+file's 14 `retired-typography-role` entries. A file that contributes to the
+baseline is one the scanner really reads.
+
+**The full T-077 death checklist was run, not just the import graph:** 0 code
+importers, 0 specs reading it as text, 0 scripts naming it, **0 rows in either
+ledger**. Never `@retiring`-marked because it was never *replaced* — it was
+unreachable, and marking would assert a supersession nobody performed (T-054's
+precedent).
+
+**The orphan scan was run after the deletion, not before** — beforehand the dead
+file's own references would have counted as consumers. That is how the three dead
+keyframes were found (`sqx-flow`, `sqx-sweep`, `sqx-drift`, defined and referenced
+nowhere), which chasing tokens alone would have missed. Kept deliberately:
+`glare-050` + `duration-flow` (skeleton shimmer), `duration-sweep` + `ease-linear`
+(button spinner), `mirror` (Icon, DateRangePicker, SegmentedControl).
+
+**WEB-002 §2's freeze wording is fixed.** T-131 and T-132 both had to edit
+`tokens.css` and both flagged the tension. §2 now permits exactly one edit —
+repointing a declaration at `var(--sqx-*)` — because that *shrinks* the sheet's
+authority rather than growing it. **The freeze exists to stop the legacy sheet
+accumulating, not deferring.**
+
+**Found and deliberately not fixed: `04-COMPONENT-LEDGER.md` holds two divergent
+copies of itself** — see PARKED. A careless dedupe destroys the memory this
+ledger exists to protect.
 
 ### T-132 · the frozen type scale defers to the approved one
 `status: done` · `rules: WEB-002, WEB-011, WEB-014` · `est: 2h`
@@ -4293,6 +4331,18 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **`04-COMPONENT-LEDGER.md` contains two divergent copies of itself** (T-133).
+  Lines **5–23 repeat at 232–250**, then the copies diverge: line **24** and line
+  **251** are both the `Button` row with **different content** — the first cites
+  T-040's `name`/`value` work, the second is an older, thinner note about
+  `className`. The file is 574 lines and reads as [newer ledger] + [older ledger]
+  appended. **This matters because the ledger is the authority for *never build
+  what already exists*** — a reader consulting the second half gets stale facts
+  about the same components. **Do not dedupe mechanically.** It needs a
+  row-by-row merge deciding which version is authoritative, because a careless
+  pass silently destroys the institutional memory the ledger exists to hold.
+  Cheap to start: diff the two `Button` rows and work down.
 
 - **Does `planning/loading.tsx` mask every nested route's skeleton?** (T-096.)
   A cold navigation to `/planning/immediate` shows `PlanningSkeleton` — an
