@@ -11,11 +11,17 @@ import type { GeoMarkerData } from "@/components/GeoMap";
 // position:relative container.
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
-export default function FieldLocationMap({ lat, lng, label }: { lat: number; lng: number; label: string }) {
+export default function FieldLocationMap({ lat, lng, label, unavailableHeadingLevel }: {
+  lat: number;
+  lng: number;
+  label: string;
+  unavailableHeadingLevel?: 3 | 4 | 5;
+}) {
   const markers: GeoMarkerData[] = [{ id: "site", lat, lng, label, tone: "neutral" }];
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <GeoMap center={[lng, lat]} zoom={14} markers={markers} interactive={false} showRegions={false} ariaLabel={label} />
+      <GeoMap center={[lng, lat]} zoom={14} markers={markers} interactive={false} showRegions={false}
+        ariaLabel={label} unavailableHeadingLevel={unavailableHeadingLevel} />
     </div>
   );
 }

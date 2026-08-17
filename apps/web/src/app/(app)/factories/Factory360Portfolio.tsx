@@ -29,8 +29,6 @@ import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { formatDate } from "@/lib/dates";
 import { getMessages } from "@/i18n/messages";
 
-export type RevampFactoryRow = FactoryRow;
-
 const alertTone = (value: number | null, raised: StatusTone): StatusTone =>
   (value === null || value === 0 ? "neutral" : raised);
 
@@ -42,7 +40,7 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function RevampFactory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, profiles, riskMovement, now }: {
+export default function Factory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, profiles, riskMovement, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;

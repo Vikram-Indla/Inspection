@@ -1,11 +1,31 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-138 — the /field home migration`
+`Last updated: 2026-08-17` · `Updated by: T-140 — the /field/my-tasks migration`
 
-## The `/field` migration has started, and the home route is done (2026-08-17)
+## The `/field` migration: home and my-tasks are done (2026-08-17)
 
-T-138 migrated the first slice. The gap T-137 measured below is closed **for the
-home route only** — the other 121 files of the channel still carry it.
+T-138 migrated the home route; **T-140 migrated `/field/my-tasks`**, the
+master/detail screen. The gap T-137 measured below is closed for those two; the
+other ~120 files of the channel still carry it.
+
+**A pattern is now confirmed across both slices: the same GeoMap "Map
+unavailable" heading (`h4`) is valid or a skip depending purely on the heading
+level of the section that frames it.** On the home map card it sits under an `h3`
+title (`h3→h4`, fine); in the my-tasks Visit Location section it sits under an
+`h2` (`h2→h4`, a skip). T-140 gave GeoMap an additive `unavailableHeadingLevel`
+prop (default 4) rather than guessing — any future map placed under an `h2`
+section must pass `3`.
+
+**And the same enum-translation trap caught both slices: governed enum values
+(risk band, licence status, visit state) must read the shared `visits.enum`
+namespace, not a screen-local table.** The old code did this through
+`t("enum.<v>")`; a screen-local status map silently drops the Arabic for
+`low`/`medium`/`high`. Both T-138 and T-140 route governed enums through
+`enumLabel(messages.visits.enum, …)`.
+
+## The `/field` home migration is done (2026-08-17)
+
+T-138 migrated the first slice.
 
 ```
 route file        677 lines → 12

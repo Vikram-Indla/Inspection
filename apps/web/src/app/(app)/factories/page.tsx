@@ -3,12 +3,12 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
 import FactoriesScopeBar from "@/components/sections/factories/factories-scope-bar/factories-scope-bar";
-import RevampFactory360Portfolio, { type RevampFactoryRow } from "./RevampFactory360Portfolio";
+import Factory360Portfolio from "./Factory360Portfolio";
 import { queryPortfolioCounts } from "@/features/factories/portfolio-counts";
 import { queryFactoryRiskMovement } from "@/features/factories/risk-context";
 import { queryFactoryCompliance } from "@/features/factories/compliance";
 import { queryFactoryProfiles } from "@/features/factories/profile";
-import { isTestSourceFactory } from "@/features/factories/portfolio";
+import { isTestSourceFactory, type FactoryRow } from "@/features/factories/portfolio";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveFactory360Permissions } from "@/lib/factory360/dossier";
 
@@ -72,7 +72,7 @@ export default async function Factories({ searchParams }: {
   // F360-SRCH-001/F360-ARCH-001 — prefer the additive CR-centred dossier when
   // this legacy factory has a verified license mapping. If the new projection
   // is unavailable or unmapped, preserve the established /factories/:id path.
-  const portfolioRows: RevampFactoryRow[] = (fs ?? [])
+  const portfolioRows: FactoryRow[] = (fs ?? [])
     .filter(row => !isTestFixtureEstablishment(row) && !isTestSourceFactory(row))
     .map(({ industrial_licenses, ...row }) => {
     const commercialRegistrationId = industrial_licenses?.[0]?.commercial_registration_id ?? null;
@@ -110,7 +110,7 @@ export default async function Factories({ searchParams }: {
           total={selectedScopeCount}
         />
         <div data-sqx-cards="flush">
-          <RevampFactory360Portfolio
+          <Factory360Portfolio
             key={selectedCr}
             factories={portfolioRows}
             portfolioLabel={portfolioLabel}

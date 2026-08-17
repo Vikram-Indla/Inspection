@@ -94,6 +94,10 @@ task that supersedes them lands.
 
 | File | Deleted | Replaced by | Bytes removed |
 | --- | --- | --- | --- |
+| `app/(app)/field/my-tasks/AssignmentTaskBrowser.tsx` (211 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks-list` (T-140) — one importer, the route it replaced; its logic (`assignment-task-model`) was reused, only the UI deleted | 211 lines |
+| `app/(app)/field/my-tasks/TaskHeaderStatus.tsx` (73 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks-sync-status` (T-140) — one importer | 73 lines |
+| `app/(app)/field/my-tasks/PrepareAssignmentAction.tsx` (42 lines) | 2026-08-17 | `components/sections/field-my-tasks/prepare-assignment-action` (T-140) — one importer | 42 lines |
+| `app/(app)/field/my-tasks/my-tasks.module.css` (154 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks.module.css` (T-140) — imported only by the three components deleted above | 154 lines |
 | `components/field/FieldMetricStrip.tsx` (151 lines) | 2026-08-17 | `components/sections/field-home/field-mission-metrics` (T-138) — **one importer, the route that replaced it**, so deleted rather than banner-marked | 151 lines |
 | `components/field/DailyBriefingCard.tsx` (132 lines) | 2026-08-17 | `components/sections/field-home/field-daily-brief` (T-138) — one importer | 132 lines |
 | `components/field/FieldHome.tsx` (46 lines) | 2026-08-17 | `components/sections/field-home/field-map-canvas` (T-138) — one importer | 46 lines |
@@ -188,8 +192,8 @@ spinner), `--sqx-mirror` (Icon, DateRangePicker, SegmentedControl).
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 18 |
-| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)**; **523 lines off the `/field` home — 3 components + its stylesheet — and 665 lines out of its route file (T-138)** |
+| Files deleted | 22 |
+| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)**; **523 lines off the `/field` home — 3 components + its stylesheet — and 665 lines out of its route file (T-138)**; **480 lines off `/field/my-tasks` — 3 components + its stylesheet — and 595 lines out of its route file (T-140)** |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 
 Update this table in every session that deletes anything. It is the clearest

@@ -39,8 +39,8 @@ import DecisionCanvas, {
 } from "./DecisionCanvas";
 import OpsMap, { type OpsMapStrings, type OpsPin } from "../operations/OpsMap";
 import styles from "./dashboard.module.css";
-import RevampStrategicView from "./RevampStrategicView";
-import RevampOperationalView from "./RevampOperationalView";
+import StrategicBoard from "./StrategicBoard";
+import OperationalBoard from "./OperationalBoard";
 import { ROLE_DASHBOARD_METRICS, type DashboardPersona } from "@/lib/dashboard-role";
 
 type Locale = "en" | "ar";
@@ -281,7 +281,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
     locale,
     partialSources,
   );
-  return <RevampStrategicView locale={locale} metrics={metrics} factories={factories} group={group} params={params}
+  return <StrategicBoard locale={locale} metrics={metrics} factories={factories} group={group} params={params}
     requirementStrip={requirementStrip} requirementStripStrings={stripStrings(locale)} />;
 
   const markers: CanvasMarker[] = factories
@@ -537,7 +537,7 @@ export function OperationalView({ locale, metrics, projection, factoryCoords, pa
     locale,
     partialSources,
   );
-  return <RevampOperationalView locale={locale} metrics={metrics}
+  return <OperationalBoard locale={locale} metrics={metrics}
     requirementStrip={requirementStrip} requirementStripStrings={operationalRequirementStripStrings(locale)} />;
 
   const operational = metrics.operational;

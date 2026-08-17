@@ -95,7 +95,7 @@ test.describe("Factory 360 iPad parity + non-regression contract", () => {
   });
 
   test("assigned work exposes a canonical Factory 360 detail entry carrying the selected license", () => {
-    const tasks = read("src/app/(app)/field/my-tasks/page.tsx");
-    expect(tasks).toContain("`/field/factory-360/${lic.commercial_registration_id}?license=${lic.id}`");
+    const tasks = read("src/features/field-my-tasks/queries.ts");
+    expect(tasks).toContain("`/field/factory-360/${crId}?license=${licence.id}`");
   });
 });

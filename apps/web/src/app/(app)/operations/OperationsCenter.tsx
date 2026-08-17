@@ -34,7 +34,7 @@ type RegionSummary = {
   href: string;
 };
 
-export default function RevampOperationsCenter({
+export default function OperationsCenter({
   locale,
   view,
   mapEntries,

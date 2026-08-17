@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 test("Factory360 never presents seeded or fixture records as live Senaei", () => {
   const source = readFileSync(resolve(
     process.cwd(),
-    "src/app/(app)/factories/RevampFactory360Portfolio.tsx",
+    "src/app/(app)/factories/Factory360Portfolio.tsx",
   ), "utf8");
 
   expect(source).toContain('!selected.is_temporary && selected.source === "senaei"');

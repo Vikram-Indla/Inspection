@@ -26,7 +26,7 @@ function OperationalCard({ locale, question, title, value, definition, href, act
   );
 }
 
-export default function RevampOperationalView({ locale, metrics, requirementStrip, requirementStripStrings }: {
+export default function OperationalBoard({ locale, metrics, requirementStrip, requirementStripStrings }: {
   locale: Locale;
   metrics: DashboardMetrics;
   requirementStrip: { metrics: MetricDisplay[]; methodology: Record<string, MethodologyEntry> };

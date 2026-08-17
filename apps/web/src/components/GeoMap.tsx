@@ -8,7 +8,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAP_PALETTE } from "@/lib/map-palette";
 import mapChrome from "@/components/saqeel/map/map-chrome.module.css";
-import { Heading, Text } from "@/components/saqeel/type";
+import { Heading, Text, type HeadingLevel } from "@/components/saqeel/type";
 import { loadKsaRegions } from "@/lib/ksa-regions";
 
 export type GeoTone = "high" | "medium" | "low" | "neutral" | "brand";
@@ -100,6 +100,7 @@ type Props = {
   /** Colour regions by RAG posture (canonical region id → band). Boundary
    *  reference layer only when omitted. */
   regionPostures?: RegionPostureMap;
+  unavailableHeadingLevel?: HeadingLevel;
 };
 
 type RenderData = Pick<Props, "center" | "zoom" | "markers" | "selectedId" | "focus">;
@@ -183,7 +184,7 @@ function readTheme(): "light" | "dark" {
   return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
 }
 
-export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", fitMarkers = false, showRegions = true, regionPostures }: Props) {
+export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", fitMarkers = false, showRegions = true, regionPostures, unavailableHeadingLevel = 4 }: Props) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -311,7 +312,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     const ar = mapLocale === "ar";
     return <div className="sq-state sq-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider={failed ? "mapbox-failed" : "mapbox-unavailable"}>
       <span className="sq-state__glyph">⌖</span>
-      <Heading level={4} visual="bodyStrong">{ar ? "الخريطة غير متاحة" : "Map unavailable"}</Heading>
+      <Heading level={unavailableHeadingLevel} visual="bodyStrong">{ar ? "الخريطة غير متاحة" : "Map unavailable"}</Heading>
       <Text tone="muted">{failed
         ? (ar ? "تعذّر تحميل الخريطة. تبقى السجلات متاحة في القائمة." : "The map could not load. The records are still available as a list.")
         : (ar ? "الخريطة غير متاحة في هذه البيئة. تبقى السجلات متاحة في القائمة." : "The map is not available here. The records are still available as a list.")}</Text>

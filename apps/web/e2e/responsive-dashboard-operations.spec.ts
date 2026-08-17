@@ -55,7 +55,7 @@ test.describe("PKT-RESPONSIVE-DASHBOARD-OPERATIONS-002", () => {
 
   test("Dashboard user-facing copy describes access scope without RLS or workbook jargon", () => {
     const dashboard = read("src/app/(app)/dashboard/DashboardView.tsx");
-    const strategic = read("src/app/(app)/dashboard/RevampStrategicView.tsx");
+    const strategic = read("src/app/(app)/dashboard/StrategicBoard.tsx");
     const registry = read("src/lib/dashboard-kpi/registry.ts");
     const format = read("src/app/(app)/dashboard/dashboard-format.ts");
     const userFacingSources = `${dashboard}\n${strategic}\n${registry}`;

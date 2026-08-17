@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-138.** Take T-139.
+implements the reservation. **Highest id in use: T-140.** Take T-141.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,66 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-140 · `/field/my-tasks` migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 3h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-140-field-my-tasks-migration](sessions/2026-08/2026-08-17-T-140-field-my-tasks-migration.md)
+
+The second `/field` slice: a master/detail screen with a live dossier.
+
+```
+route file        611 lines → 16          raw <svg>        3 → 0
+client islands    1 → 3 (all leaves)      hardcoded copy   103 sites → 0
+headings          5×h3, no h1 → 1>2>2>2>2>2>2   axe 0 (EN+AR, list + full dossier)
+rendered sizes    9 off-scale → 13·15·24        weight cap 700 → 590
+deleted           480 lines (3 components + stylesheet)
+```
+
+**Two defects found only by measuring, both mirrors of T-138.**
+(1) The GeoMap "Map unavailable" heading is `h4` — valid under the home page's
+`h3` card, an `h2 → h4` **skip** here under the `h2` Visit Location section.
+Fixed with an **additive** `unavailableHeadingLevel` prop on GeoMap (default 4,
+zero change to other consumers), passed `3` through the now-my-tasks-only
+`FieldLocationMap`. (2) Risk band / licence enums rendered **English in Arabic**
+because my first pass used a local status table instead of the shared
+`visits.enum` — `low → منخفضة` lives there. Same shared-namespace fix as T-138.
+
+**`design-foundation-contract` encoded a dead rule** — it pinned *exactly one*
+gradient to `my-tasks.module.css`, but WEB-009 §11's gradient budget is **zero**.
+The migrated sheet has none; the assertion was flipped to `toBe(0)`.
+
+**`assignment-task-model.ts` and `connectivityPresentation` were reused** — pure
+governed logic with a passing contract, imported by `/field/visits` too. Only
+the UI (`AssignmentTaskBrowser`) was deleted.
+
+---
+
+### T-139 · "Revamp" out of the component names
+`status: done` · `rules: WEB-000, WEB-007` · `est: 30m`
+`record:` [2026-08-17-T-139-revamp-rename](sessions/2026-08/2026-08-17-T-139-revamp-rename.md)
+
+Four components were named after the project phase that produced them
+(`b91b8905 feat(web): migrate Saqeel revamp shell and core workspaces`) rather
+than what they render. Renamed to `StrategicBoard`, `OperationalBoard`,
+`Factory360Portfolio`, `OperationsCenter`, with 4 importers and 4 specs
+re-pointed and the redundant `RevampFactoryRow` alias deleted outright.
+
+**`Board`, not `View`:** `DashboardView.tsx` already exports its own
+`StrategicView`/`OperationalView`, so the prefix had been doing real
+disambiguation — typecheck caught the collision on the first attempt.
+
+**Not renamed, and why:** the `admin.revamp.*` i18n keys are **DB-backed** by
+three migrations, so renaming them in code alone drops the Arabic on
+`/admin/integrations` and `/admin/risk`; `product-contract/**` files carry stable
+contract IDs; migration filenames are the ledger; and the "supplied Revamp"
+comments name the real design artefact. **A filename should say what the thing
+is — but a governance artefact's name *is* its identifier.**
+
+**Both baselines are keyed by file path**, so the rename read as 7 new
+violations. Relocked and proved neutral: typography 1336/278 entries and eslint
+7812/906 entries, identical before and after.
+
+---
 
 ### T-138 · the `/field` home migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 4h` · **owner signed in as Inspector for this task**
@@ -4531,6 +4591,13 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`normal` priority renders a danger pill with an untranslated label** (T-140).
+  A visit with `priority: "normal"` shows a red `Priority: normal` pill —
+  `normal` is outside the governed low/medium/high/urgent set, so it falls
+  through untranslated. Pre-existing (the old page rendered any truthy priority
+  as `badge-critical`); belongs to a governed-enum audit.
+- **`GeoMap` hard-codes its own EN/AR strings** for the "Map unavailable" state
+  (T-140). Shared-infra copy debt, outside any one slice.
 - **The `/field` route header duplicates the AppShell** (T-138). The field header
   renders Search and Notifications controls that the canonical AppShell already
   provides one row above — two search affordances and two bells on the same

@@ -42,7 +42,7 @@ function MetricCard({ locale, question, title, value, valueKind = "number", empt
   );
 }
 
-export default function RevampStrategicView({ locale, metrics, factories, group, params, requirementStrip, requirementStripStrings }: {
+export default function StrategicBoard({ locale, metrics, factories, group, params, requirementStrip, requirementStripStrings }: {
   locale: Locale;
   metrics: DashboardMetrics;
   factories: FactoryRef[];

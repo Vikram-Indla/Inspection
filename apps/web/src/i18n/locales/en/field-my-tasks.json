@@ -1,0 +1,137 @@
+{
+  "title": "My Tasks",
+  "subtitle": "Tasks assigned to you · authority-scoped",
+  "back": "Back",
+  "actions": "Actions",
+  "unavailable": "Field data is temporarily unavailable (ERR-OPS-001). Try again.",
+  "noValue": "—",
+  "header": {
+    "online": "Online",
+    "offline": "Offline",
+    "syncNow": "Sync now",
+    "syncing": "Syncing…"
+  },
+  "list": {
+    "heading": "Assigned tasks",
+    "search": "Search factory, visit, city or region",
+    "all": "All",
+    "today": "Today",
+    "active": "Active",
+    "upcoming": "Upcoming",
+    "alerts": "Needs attention",
+    "alertsUnavailable": "Assignment alerts are temporarily unavailable. Other assignment data remains visible.",
+    "returned": "Returned",
+    "expired": "Expired",
+    "earliest": "Earliest first",
+    "latest": "Latest first",
+    "sortLabel": "Sort order",
+    "filterLabel": "Filter assignments",
+    "empty": "No assigned tasks in your scope.",
+    "emptyFiltered": "No assignments match this search and filter.",
+    "offline": "Offline — server refresh is unavailable. Information shown may be stale; reconnect and retry.",
+    "online": "Online — assignments are server-scoped to you.",
+    "open": "Open assignment",
+    "prepare": "Accept / prepare",
+    "continue": "Continue",
+    "preparing": "Preparing…",
+    "return": "Return…",
+    "viewOnly": "View only",
+    "packageLinked": "Package linked",
+    "packageMissing": "Package not linked",
+    "priority": "Priority"
+  },
+  "status": {
+    "new": "New",
+    "prepared": "Prepared",
+    "on_the_way": "On the way",
+    "arrived": "Arrived",
+    "executing": "In progress",
+    "submitted": "Submitted",
+    "approved": "Approved",
+    "completed": "Completed",
+    "closed": "Closed",
+    "cancelled": "Cancelled",
+    "rejected": "Rejected",
+    "under_review": "Under review"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "detail": {
+    "selectPrompt": "Select a task",
+    "selectBody": "Pick a task from the list to see the establishment record.",
+    "noDossier": "The full establishment record is unavailable until a commercial-registration/licence mapping exists for this factory, or Factory 360 access is granted.",
+    "window": "Visit window",
+    "factoryCode": "Factory code"
+  },
+  "establishment": {
+    "heading": "Establishment Data",
+    "licensed": "Licensed establishment",
+    "timeline": "Timeline",
+    "regNumber": "Registration no.",
+    "phone": "Phone",
+    "investment": "Investment size",
+    "requestDate": "Request created on",
+    "estType": "Establishment type",
+    "factory": "Factory",
+    "estStatus": "Establishment status"
+  },
+  "evaluation": {
+    "heading": "Evaluation Indicators",
+    "complianceRate": "Compliance rate",
+    "riskScore": "Risk score",
+    "notAvailable": "Not available",
+    "restricted": "Restricted",
+    "basis": "{passed}/{answered}",
+    "healthRiskNote": "Health score and risk score are separate, governed concepts."
+  },
+  "license": {
+    "heading": "License Data",
+    "type": "License type",
+    "status": "License status",
+    "expiryDate": "Expiry date",
+    "number": "License number",
+    "region": "Region",
+    "city": "City"
+  },
+  "location": {
+    "heading": "Visit Location",
+    "address": "Address",
+    "official": "Official location",
+    "unavailable": "Official location unavailable"
+  },
+  "regulatory": {
+    "heading": "Regulatory Data",
+    "noSourceTag": "No governed source",
+    "noSource": "No governed source is connected yet for {section}.",
+    "noRecords": "No source-backed records are available in your scope for this section.",
+    "activities": "Factory Activities",
+    "manufacturing": "Manufacturing Status",
+    "contacts": "Contacts",
+    "machines": "Machines",
+    "products": "Products",
+    "raw": "Raw Materials",
+    "documents": "Documents",
+    "license": "License Documents"
+  },
+  "card": {
+    "hs": "HS / activity",
+    "qty": "Qty / capacity",
+    "activityNo": "Activity code",
+    "activityClass": "Activity class",
+    "type": "Type",
+    "reference": "Reference",
+    "validTo": "Valid to",
+    "licenseCert": "Industrial license certificate",
+    "licenseNumber": "License number",
+    "expiryDate": "Expiry date",
+    "status": "Status"
+  },
+  "start": {
+    "remote": "Start remote visit",
+    "visit": "Start visit execution"
+  }
+}

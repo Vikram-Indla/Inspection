@@ -2,16 +2,14 @@
 
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { acceptPrepareAssignment, type AssignmentPrepareResult } from "./actions";
+import { acceptPrepareAssignment, type AssignmentPrepareResult } from "@/app/(app)/field/my-tasks/actions";
+import Button from "@/components/saqeel/button/button";
+import { Text } from "@/components/saqeel/type";
 import styles from "./my-tasks.module.css";
 
 const INITIAL: AssignmentPrepareResult = { status: "idle" };
 
-export default function PrepareAssignmentAction({
-  visitId,
-  label,
-  working,
-}: {
+export default function PrepareAssignmentAction({ visitId, label, working }: {
   visitId: string;
   label: string;
   working: string;
@@ -26,16 +24,22 @@ export default function PrepareAssignmentAction({
   }, [router, state]);
 
   return (
-    <form action={action} className={styles.itemActionForm}>
+    <form action={action} className={styles.itemActions}>
       <input type="hidden" name="visit_id" value={visitId} />
-      <button type="submit" className="btn btn-secondary btn-sm" disabled={pending}
-        aria-describedby={state.status === "error" ? `prepare-error-${visitId}` : undefined}>
+      <Button
+        type="submit"
+        variant="secondary"
+        size="sm"
+        disabled={pending}
+        busy={pending}
+        describedBy={state.status === "error" ? `prepare-error-${visitId}` : undefined}
+      >
         {pending ? working : label}
-      </button>
+      </Button>
       {state.status === "error" ? (
-        <span id={`prepare-error-${visitId}`} role="alert" className="t-caption">
+        <Text role="label" tone="danger" live="alert" id={`prepare-error-${visitId}`}>
           {state.message}
-        </span>
+        </Text>
       ) : null}
     </form>
   );

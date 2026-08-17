@@ -110,11 +110,9 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     expect(dashboard).not.toContain("linear-gradient");
     expect(authenticated).not.toContain("--sq-color-prism-magenta");
     expect(mapPanel).not.toContain("backdrop-filter: blur(12px)"); // current value is blur(4px) on .map-panel — 12px never reintroduced
-    // The only page-owned gradient in the authenticated tree is the my-tasks
-    // map backdrop, and it is token-valued end to end.
-    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(1);
-    expect(read("src/app/(app)/field/my-tasks/my-tasks.module.css"))
-      .toContain("linear-gradient(135deg, var(--surface-sunken), var(--accent-soft))");
+    // WEB-009 §11: the gradient budget is zero. The last page-owned gradient
+    // was the my-tasks map backdrop, removed when that screen migrated.
+    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(0);
     expect(skeleton).toContain(".sq-skeleton");
   });
 
