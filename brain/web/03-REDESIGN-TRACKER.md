@@ -13,11 +13,62 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-131.** Take T-132.
+implements the reservation. **Highest id in use: T-132.** Take T-133.
 
 ---
 
 ## NOW
+
+### T-132 · the frozen type scale defers to the approved one
+`status: done` · `rules: WEB-002, WEB-011, WEB-014` · `est: 2h`
+`record:` [2026-08-17-T-132-type-scale-repoint](sessions/2026-08/2026-08-17-T-132-type-scale-repoint.md)
+
+```
+tokens.css   14 shorthands + 34 size/line/weight tokens repointed at --sqx-text-*
+/factories   sizes 13 · 15 · 20 · 24 · 32   smallest 13px   weights ≤ 590
+overflow     document 0 · elements past viewport 0 · 320px scrollWidth exactly 320
+Arabic       same scale · letter-spacing 0 · leading 1.55/1.80 (looser, per WEB-011)
+```
+
+**Measuring consumption first changed the plan.** I had flagged the heading jumps
+(17→24, 22→32) as the risk; they are ~32 consumers. The real mass is
+**208 consumers below 13px** — `--type-caption-font` alone has **105** — so the
+risk was at the small end.
+
+**Three mappings are judgement calls, not mechanics.** `caption`/`micro` → `label`
+(13px) rather than `body` (15px), because their call sites are labels, metadata,
+ID codes and a small button — 1px to the floor instead of 3px. `title` (22px) →
+`heading` (24px) rather than `display`, because the frozen sheet keeps `display`
+separately and sending both would collapse two levels. `--type-input` **stays
+14px** — that is the reference's control size, the one legacy 14px that is right.
+Line-heights for `compact`/`table`/`meta`/`caption` point at `body-line` (1.6),
+not `label-line` (1.2): the size comes from label, the leading does not, because
+those style multi-line content.
+
+**`--type-caption-font` is not the retired role.** WEB-014 §2.1 retires SAQEEL's
+`--sqx-text-caption`; this is a different, frozen-legacy token, so choosing its
+target is a migration decision rather than a rule breach.
+
+**The Arabic leading overrides survived** — `tokens.css`'s RTL block overrides
+line-heights only, never sizes, so Arabic keeps looser leading on the new scale.
+
+**A 320px overhang was checked before being blamed:** 12 `definition-list`
+elements overhang 9px, but that primitive consumes **zero `--type-*` tokens** —
+its 288px width is `--sqx-grid-min-md`. Pre-existing, clipped, parked.
+
+**Two specs pinned the frozen px and were strengthened, not swapped** — they now
+assert the frozen sheet *aliases* `--sqx-text-*` and that `saqeel.css` holds the
+approved values, which fails if an independent scale ever returns. Their comments
+asserted the *previous* decision ("SAQEEL scale supersedes 32px") and were
+corrected rather than left to mislead.
+
+**The typography divide is closed:** one typeface, one scale, one palette across
+migrated and legacy routes alike.
+
+**Parked:** `DefinitionList` overflows 9px at 320px · `tokens.css` is nominally
+frozen and T-131/T-132 have now edited it twice — both edits *reduce* its
+authority by aliasing, which is the opposite of what the freeze protects against,
+but WEB-002 §2's wording still does not carve that out.
 
 ### T-131 · one typeface across the legacy routes, and the Arabic defect it exposed
 `status: done` · `rules: WEB-002, WEB-011, WEB-014` · `est: 2h`

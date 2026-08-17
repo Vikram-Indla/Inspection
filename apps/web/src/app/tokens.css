@@ -138,21 +138,27 @@
   --print-text:    #111111; --print-surface: #FFFFFF; --print-border:  #555555;
   --shadow-base:   #000000;
 
-  /* Composite type shorthands (font: <weight> <size>/<lh> <family>) */
-  --type-display: 600 28px/1.25 var(--font-body);
-  --type-title: 600 22px/1.3 var(--font-body);
-  --type-heading-lg: 600 17px/1.35 var(--font-body);
-  --type-heading: 600 14px/1.4 var(--font-body);
-  --type-subheading: 600 15px/1.55 var(--font-body);
-  --type-body-font: 400 14px/1.5 var(--font-body);
-  --type-body-strong: 600 14px/1.5 var(--font-body);
-  --type-field: 400 15px/1.55 var(--font-body);
-  --type-caption-font: 400 12px/1.4 var(--font-body);
-  --type-micro: 500 11.5px/1.4 var(--font-body);
+  /* Composite type shorthands, repointed at the approved scale so the routes
+     these still style share one typography with the migrated ones. The mapping
+     is deliberate, not mechanical: `title` goes to heading (24px) rather than
+     display (32px) because the frozen sheet keeps `display` separately, and
+     `caption` / `micro` go to label (13px) rather than body (15px) because
+     their call sites are labels, metadata and small controls — not prose.
+     `input` stays 14px: that is the reference's control size. */
+  --type-display: var(--sqx-text-display);
+  --type-title: var(--sqx-text-heading);
+  --type-heading-lg: var(--sqx-text-subheading);
+  --type-heading: var(--sqx-text-body-strong);
+  --type-subheading: var(--sqx-text-body-strong);
+  --type-body-font: var(--sqx-text-body);
+  --type-body-strong: var(--sqx-text-body-strong);
+  --type-field: var(--sqx-text-body);
+  --type-caption-font: var(--sqx-text-label);
+  --type-micro: var(--sqx-text-label);
   --type-input: 400 14px/1.5 var(--font-body);
-  --type-input-field: 400 15px/1.55 var(--font-body);
-  --type-metric: 700 30px/1.15 var(--font-body);
-  --type-label-font: 500 12px/1.35 var(--font-body);
+  --type-input-field: var(--sqx-text-body);
+  --type-metric: var(--sqx-text-metric);
+  --type-label-font: var(--sqx-text-label);
 
   /* Control + layout + motion natives */
   --control-h-prominent: 48px; --control-h-field: 52px; --control-h-compact: 36px;
@@ -190,21 +196,40 @@
   --font-mono:    ui-monospace, "SF Mono", "Cascadia Mono", Menlo,
                   var(--font-plex-arabic, "IBM Plex Sans Arabic"), monospace;
 
-  --type-display-size: 28px;      --type-display-lh: 1.25; --type-display-w: 600;
-  --type-page-title-size: 22px;   --type-page-title-lh: 1.3;  --type-page-title-w: 600;
-  --type-section-size: 17px;      --type-section-lh: 1.35; --type-section-w: 600;
-  --type-heading-size: 14px;      --type-heading-lh: 1.4;  --type-heading-w: 600;
-  --type-body-lg-size: 15px;      --type-body-lg-lh: 1.55;
-  --type-body-size: 14px;         --type-body-lh: 1.5;
-  --type-compact-size: 13px;      --type-compact-lh: 1.45;
-  --type-table-size: 13px;        --type-table-lh: 1.4;
-  --type-label-size: 12px;        --type-label-lh: 1.35; --type-label-w: 500;
-  --type-button-size: 13px;       --type-button-w: 500;
-  --type-meta-size: 12px;         --type-meta-lh: 1.4;
-  --type-caption-size: 11.5px;    --type-caption-lh: 1.4;
-  --type-metric-size: 30px;       --type-metric-lh: 1.15; --type-metric-w: 700;
-  --type-mono-size: 12.5px;
-  --text-lg: 17px;
+  --type-display-size: var(--sqx-text-display-size);
+  --type-display-lh: var(--sqx-text-display-line);
+  --type-display-w: var(--sqx-text-display-weight);
+  --type-page-title-size: var(--sqx-text-heading-size);
+  --type-page-title-lh: var(--sqx-text-heading-line);
+  --type-page-title-w: var(--sqx-text-heading-weight);
+  --type-section-size: var(--sqx-text-subheading-size);
+  --type-section-lh: var(--sqx-text-subheading-line);
+  --type-section-w: var(--sqx-text-subheading-weight);
+  --type-heading-size: var(--sqx-text-body-strong-size);
+  --type-heading-lh: var(--sqx-text-body-strong-line);
+  --type-heading-w: var(--sqx-text-body-strong-weight);
+  --type-body-lg-size: var(--sqx-text-body-size);
+  --type-body-lg-lh: var(--sqx-text-body-line);
+  --type-body-size: var(--sqx-text-body-size);
+  --type-body-lh: var(--sqx-text-body-line);
+  --type-compact-size: var(--sqx-text-label-size);
+  --type-compact-lh: var(--sqx-text-body-line);
+  --type-table-size: var(--sqx-text-label-size);
+  --type-table-lh: var(--sqx-text-body-line);
+  --type-label-size: var(--sqx-text-label-size);
+  --type-label-lh: var(--sqx-text-label-line);
+  --type-label-w: var(--sqx-text-label-weight);
+  --type-button-size: var(--sqx-text-label-size);
+  --type-button-w: var(--sqx-text-label-weight);
+  --type-meta-size: var(--sqx-text-label-size);
+  --type-meta-lh: var(--sqx-text-body-line);
+  --type-caption-size: var(--sqx-text-label-size);
+  --type-caption-lh: var(--sqx-text-body-line);
+  --type-metric-size: var(--sqx-text-metric-size);
+  --type-metric-lh: var(--sqx-text-metric-line);
+  --type-metric-w: var(--sqx-text-metric-weight);
+  --type-mono-size: var(--sqx-text-mono-size);
+  --text-lg: var(--sqx-text-subheading-size);
 }
 
 /* Arabic-first metrics */

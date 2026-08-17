@@ -67,9 +67,15 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     expect(saqeelSheet).toContain("--sqx-font-sans: var(--font-inter"); // Latin: self-hosted Inter
     expect(saqeelSheet).toContain("var(--font-plex-arabic");            // Arabic: self-hosted Plex, per-glyph fallback
     expect(tokens).toContain('"IBM Plex Sans Arabic"');                 // Arabic-first stack present
-    expect(tokens).toContain("--type-display-size: 28px;");            // SAQEEL scale supersedes 32px
-    expect(tokens).toContain("--type-body-size: 14px;");              // 14px body supersedes 16px minimum
-    expect(tokens).toContain("--type-table-size: 13px;");             // 13px tables
+    // The frozen scale now defers to the approved language rather than pinning
+    // its own px. Asserting the alias is a stronger contract than a literal:
+    // it fails if the frozen sheet ever re-acquires an independent scale.
+    expect(tokens).toContain("--type-display-size: var(--sqx-text-display-size);");
+    expect(tokens).toContain("--type-body-size: var(--sqx-text-body-size);");
+    expect(tokens).toContain("--type-table-size: var(--sqx-text-label-size);");
+    expect(saqeelSheet).toContain("--sqx-text-display-size: 2rem;");   // 32px display
+    expect(saqeelSheet).toContain("--sqx-text-body-size: 0.9375rem;"); // 15px body
+    expect(saqeelSheet).toContain("--sqx-text-label-size: 0.8125rem;"); // 13px floor
     expect(tokens).not.toMatch(/retired input font|retired-mono|Barlow/);      // retired runtime fonts stay absent
   });
 

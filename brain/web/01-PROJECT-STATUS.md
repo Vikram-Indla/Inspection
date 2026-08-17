@@ -1,6 +1,45 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-131 — typeface unification`
+`Last updated: 2026-08-17` · `Updated by: T-132 — type scale repoint`
+
+## The typography divide is closed, and the risk was where nobody looked (2026-08-17)
+
+T-132 repointed the frozen `--type-*` scale at `--sqx-text-*`. One file, no
+component touched, and the app now has **one typeface, one scale and one palette
+across migrated and legacy routes alike**.
+
+T-131 flagged the **heading jumps** (17→24px, 22→32px) as the danger. Measuring
+consumption first showed they are ~32 call sites, while the real mass is
+**208 consumers below 13px** — `--type-caption-font` alone has **105**:
+
+```
+caption-font 105 (12px) · micro 76 (11.5px) · body-strong 39 · compact-size 29
+body-font 22 · label-size 18 · heading-lg 15 · title 11 · display 6
+```
+
+**Count the consumers before you rank the risk.** The scary-looking change was
+marginal; the boring one was the whole job.
+
+Result, measured: `/factories` renders 13 · 15 · 20 · 24 · 32 with a 13px floor
+and weights ≤ 590; **zero elements past the viewport at 960px, and at 320px the
+document scrollWidth is exactly 320.** Arabic keeps the same sizes with looser
+leading (1.55 / 1.80) because `tokens.css`'s RTL block overrides line-heights
+only, never sizes — the one thing most likely to have broken.
+
+## Aliasing a pinned value beats swapping it (2026-08-17)
+
+Four specs across T-131 and T-132 pinned literal values in `tokens.css`
+(`--font-body: var(--font-plex-arabic`, `--type-display-size: 28px`,
+`--type-page-title-size: 22px`, `--type-body-size: 14px`). Every one was
+**strengthened rather than edited down to whatever shipped**: they now assert the
+frozen sheet *aliases* the design system, plus that `saqeel.css` holds the
+approved value. That fails if the frozen sheet ever re-acquires an independent
+scale, which the literal could never detect.
+
+Two of those assertions carried comments asserting the *previous* decision —
+"SAQEEL scale supersedes 32px", "14px body supersedes 16px minimum". Those are
+now false. **When you re-point an assertion, re-read its comment: a stale comment
+on a passing test is worse than a failing one.**
 
 ## `next/font`'s synthetic fallback silently ate Arabic for two tasks (2026-08-17)
 

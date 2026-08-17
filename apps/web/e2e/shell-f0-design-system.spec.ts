@@ -45,9 +45,9 @@ test.describe("shell-f0 SAQEEL design-system migration", () => {
 
   test("typography and visual values resolve through canonical SAQEEL tokens", () => {
     const tokens = read("src/app/tokens.css");
-    expect(tokens).toContain("--type-page-title-size: 22px");
-    expect(tokens).toContain("--type-body-size: 14px");
-    expect(tokens).toContain("--type-compact-size: 13px");
+    expect(tokens).toContain("--type-page-title-size: var(--sqx-text-heading-size);");
+    expect(tokens).toContain("--type-body-size: var(--sqx-text-body-size);");
+    expect(tokens).toContain("--type-compact-size: var(--sqx-text-label-size);");
     expect(tokens).toContain("--radius-sm: 6px");
     expect(tokens).not.toMatch(/--sq-[a-z0-9-]+\s*:/);
     expect(tokens).not.toContain("@import url(");
