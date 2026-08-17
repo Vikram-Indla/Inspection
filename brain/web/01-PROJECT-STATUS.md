@@ -1,6 +1,57 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-134 — component ledger merge`
+`Last updated: 2026-08-17` · `Updated by: T-135 — RouteLoading + the first axe run`
+
+## axe has finally been run, and 0 violations is not the whole story (2026-08-17)
+
+`axe-core@4.12.1` was already a dependency. T-135 ran it against
+`wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa`:
+
+```
+/dashboard  dark  · en     30 passes  0 violations  2 incomplete
+/dashboard  light · en     30 passes  0 violations  2 incomplete
+/dashboard  dark  · ar     30 passes  0 violations  2 incomplete
+/factories  dark  · en     33 passes  0 violations  3 → 2 after the fix
+```
+
+**The first real axe evidence this programme has** — eight records had listed it
+as owed. It is 572 KB, too large to inject in one evaluate call, so it was served
+from `public/` for the run and deleted immediately (verified by `rm`, a 404, and a
+clean `git status`). **That hand-copy is a trap if repeated; the run belongs in a
+script.**
+
+**It found one genuine defect no gate could see.** `CountBadge` put `aria-label`
+on a bare `<span>` with no role, which ARIA prohibits — so the label was being
+**discarded by assistive technology entirely** at both call sites. T-122's rule
+arriving from a new direction: *an `aria-*` attribute is a no-op unless the element
+it lands on can carry it.*
+
+**And the caveat that matters more than the zero.** `/factories` measures
+**`main: 1, h1: 0`**, and axe's own `page-has-heading-one` **did not flag it**,
+because that rule sits outside the WCAG tags. The missing-`h1` problem recorded
+against `/dashboard` is not route-specific: legacy `Shell` renders the page title
+as `<Heading level={2}>`, so **all 77 routes importing it have no `h1`**.
+
+**A clean axe run under the WCAG tags does not mean the heading outline is
+sound** — and "axe: 0 violations" is exactly the kind of number that stops people
+looking further.
+
+## One 18-line file was serving two `main` landmarks to 31 routes (2026-08-17)
+
+`components/RouteLoading.tsx` rendered `<main className="sq-content">` while both
+shells already render `<main id="main-content">`
+(`app-shell.tsx:42`, `ShellClient.tsx:649`). Every one of its **31 importing
+routes** served a duplicate landmark while loading, plus `glyph="◫"`, an
+`EmptyState` import from the closed `components/` root, and the banned
+`isAr ? ar : en` ternary — four breaches in eighteen lines.
+
+Rebuilt on `SkeletonRegion`, which already carries
+`role="status" aria-busy aria-live`, removing three of the four at once and adding
+**no file to the closed directory** because the primitives bring their own styles.
+
+**The fourth could not be fixed here and the count is the reason:** the 31 callers
+pass literal `en="…" ar="…"` pairs — **~62 hardcoded strings** — so the ternary is
+the API, not the file. Removing it means 31 callers and 31 new i18n namespaces.
 
 ## CORRECTION — the ID collisions are 6, not 3, and T-046 was used four times (2026-08-17)
 

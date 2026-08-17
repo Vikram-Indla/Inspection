@@ -14,9 +14,9 @@ export default function CountBadge({ value, tone = "neutral", label, superscript
       className={styles.root}
       data-tone={tone}
       data-superscript={superscript ? "" : undefined}
-      aria-label={label}
     >
       {value}
+      {label ? <span className="sqx-visually-hidden">{` ${label}`}</span> : null}
     </Root>
   );
 }

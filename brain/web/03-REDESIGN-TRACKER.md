@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-134.** Take T-135.
+implements the reservation. **Highest id in use: T-135.** Take T-136.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,46 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-135 · `RouteLoading` off the landmark defect, and the axe debt discharged
+`status: done` · `rules: WEB-002, WEB-003, WEB-006 §5, WEB-014` · `est: 2h`
+`record:` [2026-08-17-T-135-routeloading-and-axe](sessions/2026-08/2026-08-17-T-135-routeloading-and-axe.md)
+
+```
+RouteLoading   18 → 19 lines, reaching 31 routes
+axe 4.12.1     0 violations across dark · light · Arabic RTL · a second route
+lint           104 → 107 violations removed
+```
+
+**Four rule breaches in one 18-line file, on 31 routes.** Both shells render
+`<main id="main-content">` and `RouteLoading` rendered its own `<main>` inside
+that, so every importing route served **two `main` landmarks** while loading. It
+also carried `glyph="◫"`, an `EmptyState` import from the closed `components/`
+root, and the banned `isAr ? ar : en` ternary. Rebuilt on `SkeletonRegion` — which
+already renders `role="status" aria-busy aria-live` — removing the landmark, the
+glyph and the closed-directory import at once, **with no new file added to the
+closed directory** because the primitives bring their own styles.
+
+**The axe debt is discharged.** `axe-core@4.12.1` is already a dependency; served
+from the dev server for the run and deleted immediately, verified three ways.
+**0 violations on every surface** — the first real axe evidence this programme has.
+
+**axe found one genuine defect:** `CountBadge` put `aria-label` on a bare `<span>`
+with no role, which ARIA prohibits — so **the label was being discarded by
+assistive technology entirely** at both call sites. T-122's ruling arriving from a
+new direction. Fixed with a visually-hidden span: announces "1 Factories shown",
+still shows "1".
+
+**And a finding worth more than the fix: `/factories` measures `main: 1, h1: 0`,
+and axe's own `page-has-heading-one` did not flag it** because it sits outside the
+WCAG tags. The missing-`h1` problem is not route-specific — legacy `Shell` renders
+the title at `level={2}`, so **all 77 of its routes lack an `h1`**. **A clean axe
+run under the WCAG tags does not mean the heading outline is sound.**
+
+**Parked:** ~62 hardcoded strings across the 31 `RouteLoading` callers · no `h1`
+on 77 legacy-`Shell` routes (one shell fix serves all) · `DateRangePicker`'s
+`aria-controls` points at an id absent while closed · **the axe run needs a script**
+rather than a hand-copied 572 KB file in `public/`.
 
 ### T-134 · merging the component ledger's two divergent copies
 `status: done` · `rules: WEB-007` · `est: 1h`
