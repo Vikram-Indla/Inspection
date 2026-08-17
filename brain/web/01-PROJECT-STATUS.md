@@ -1,12 +1,33 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-141 — the /field/drafts migration`
+`Last updated: 2026-08-17` · `Updated by: T-142 — the /field/establishments migration`
+
+## The `/field` migration: home, my-tasks, drafts, establishments done (2026-08-17)
+
+T-138 home, T-140 `/field/my-tasks`, T-141 `/field/drafts`, **T-142
+`/field/establishments`** (main list; the `unregistered/` create form is next).
+The gap T-137 measured below is closed for those four; the rest of the channel
+still carries it.
+
+**T-142 hardened the acid-lime fill rule into a token distinction, because it
+mis-bit twice in one screen.** `--sqx-surface-accent` is a **soft dark-olive
+tint** meant to sit *behind normal text*; it is NOT the bright lime fill. Putting
+dark/inverse text on it gives ~1.23:1 (the active tab, and the card avatar, both
+failed this way). The bright acid-lime **fill** is `--sqx-action-primary-bg` with
+`--sqx-action-primary-text` as its void ink — the tokens the primary Button uses.
+Rule for every future component: want the lime *fill*, reach for the
+action-primary tokens; `surface-accent` is only ever a subtle background.
+
+**And a container-width rule for field list pages.** The home pattern is *two*
+lines — `max-inline-size: var(--sqx-grid-min-lg)` **and**
+`@media (min-width: 60em) { max-inline-size: none }`. The first alone clamps a
+grid to a 384px single column; a card-grid screen needs both, or the grid never
+gets to fan out.
 
 ## The `/field` migration: home, my-tasks and drafts are done (2026-08-17)
 
 T-138 migrated the home route, T-140 `/field/my-tasks`, **T-141
-`/field/drafts`**. The gap T-137 measured below is closed for those three; the
-rest of the channel still carries it.
+`/field/drafts`**.
 
 **T-141 established the rule for migrating a client component with `let` debt.**
 The old `FieldDraftList` carried six `let`s inside an offline-read effect —

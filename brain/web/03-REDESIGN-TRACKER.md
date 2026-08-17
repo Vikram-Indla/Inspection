@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-141.** Take T-142.
+implements the reservation. **Highest id in use: T-142.** Take T-143.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,40 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-142 · `/field/establishments` migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 2.5h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-142-field-establishments-migration](sessions/2026-08/2026-08-17-T-142-field-establishments-migration.md)
+
+The fourth `/field` slice and the largest — a filterable, paginated, tabbed card
+grid with a filter drawer. Scoped to the main list; `unregistered/` is next.
+
+```
+route file        406 lines → 15          raw <svg>        4 → 0
+inline style      21 → 0                   hardcoded copy   39 sites → 0
+headings          0 → 1 (+h2 drawer)       `let` in .tsx    3 → 0 (relocated to .ts)
+rendered sizes    off-scale → 13·15        weight cap 700 → 590
+axe 0 (EN + AR, list + open drawer)        deleted 65-line stylesheet
+```
+
+**The filter drawer stayed server-rendered on URL state.** The saqeel `Drawer` is
+a client-controlled legacy primitive — wrong for a `?filter=1` drawer that opens
+and closes by navigation. So the drawer is a server overlay `<Link>` + `<aside>`;
+only its form controls (`Select`, `TextInput`) are client leaves, matching the
+migrated `analytics-filters`. The `let`-heavy query building moved to a `.ts`
+feature module (where `let` is fine), killing the rule-6 debt by relocation.
+
+**Two acid-lime contrast traps, caught by measuring.** The active tab used
+`--sqx-surface-accent` — a *soft dark-olive tint*, not the bright fill — with dark
+text, giving **1.23:1**. `--sqx-surface-accent` is a background-behind-normal-text
+token, never a fill for inverse text; fixed to `--sqx-action-primary-bg` + its ink
+(void-on-lime). The card avatar had the same soft-surface+dark-text and moved to a
+neutral sunken surface. **And a layout trap:** I copied home's
+`max-inline-size: var(--sqx-grid-min-lg)` but omitted its
+`@media (min-width: 60em) { max-inline-size: none }` override — the grid clamped
+to a 384px single column until I added the second line.
+
+---
 
 ### T-141 · `/field/drafts` migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 1.5h` · **owner signed in as Inspector for this task**
@@ -4623,6 +4657,16 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **`/field/establishments/unregistered` is still on the parallel system**
+  (T-142). The create form — page (94), `UnregisteredEstablishmentForm` (128),
+  `actions.ts` (109). Its own task. `actions.ts` calls the governed
+  `create_immediate_visit` RPC and is asserted by `field-establishment-incidents`
+  — migrate the UI, leave the RPC call untouched.
+- **`--sqx-surface-accent` is a soft tint, not a fill** (T-142, learned the hard
+  way). It is a dark-olive background meant to sit behind *normal* text; putting
+  dark/inverse text on it gives ~1.23:1. The bright acid-lime fill is
+  `--sqx-action-primary-bg` (+ `--sqx-action-primary-text` ink). Any component
+  wanting the lime *fill* uses the action-primary tokens, never surface-accent.
 - **The saqeel `Button` has no `mirrored` / directional-icon passthrough**
   (T-052, resurfaced T-140/T-141). Every back control built as
   `Button icon="previousPage"` renders a `ChevronLeft` that stays left-pointing

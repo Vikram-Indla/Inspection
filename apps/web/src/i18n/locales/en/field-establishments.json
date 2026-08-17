@@ -1,0 +1,54 @@
+{
+  "title": "Establishments",
+  "subtitle": "Authority-scoped",
+  "addUnlicensed": "Unlicensed establishment",
+  "unavailable": "Establishments are temporarily unavailable. Nothing was changed.",
+  "noValue": "—",
+  "tabs": {
+    "label": "Registration status",
+    "licensed": "Licensed establishments",
+    "unlicensed": "Unlicensed establishments"
+  },
+  "search": {
+    "placeholder": "Search by name, license no., or city",
+    "label": "Search establishments",
+    "filter": "Filter"
+  },
+  "emptyHint": "If no licensed establishment matches the search, a new (unlicensed) establishment can be created.",
+  "empty": {
+    "heading": "No establishments found",
+    "body": "Change or clear the search filters. Only records you can access will show here."
+  },
+  "count": "{shown} shown · {total} records in scope",
+  "results": "Results",
+  "card": {
+    "licensed": "Licensed",
+    "unlicensed": "Unregistered / temporary",
+    "noLicense": "No license",
+    "open": "Open Factory 360",
+    "noDossier": "Factory 360 is unavailable until a commercial-registration/licence mapping exists."
+  },
+  "risk": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "pager": {
+    "label": "Establishment pages",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {count}"
+  },
+  "drawer": {
+    "heading": "Filter establishments",
+    "close": "Close",
+    "tradeName": "Trade name / identifier",
+    "estName": "Establishment name",
+    "riskClass": "Risk classification",
+    "region": "Region",
+    "city": "City",
+    "all": "All",
+    "clear": "Clear",
+    "apply": "Apply"
+  }
+}

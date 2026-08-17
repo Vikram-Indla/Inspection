@@ -11,6 +11,7 @@ import arExecution from "./locales/ar/execution.json";
 import arEnforcement from "./locales/ar/enforcement.json";
 import arFactories from "./locales/ar/factories.json";
 import arFieldDrafts from "./locales/ar/field-drafts.json";
+import arFieldEstablishments from "./locales/ar/field-establishments.json";
 import arFieldHome from "./locales/ar/field-home.json";
 import arFieldMyTasks from "./locales/ar/field-my-tasks.json";
 import arNotifications from "./locales/ar/notifications.json";
@@ -32,6 +33,7 @@ import enExecution from "./locales/en/execution.json";
 import enEnforcement from "./locales/en/enforcement.json";
 import enFactories from "./locales/en/factories.json";
 import enFieldDrafts from "./locales/en/field-drafts.json";
+import enFieldEstablishments from "./locales/en/field-establishments.json";
 import enFieldHome from "./locales/en/field-home.json";
 import enFieldMyTasks from "./locales/en/field-my-tasks.json";
 import enNotifications from "./locales/en/notifications.json";
@@ -55,6 +57,7 @@ export type Messages = {
   readonly execution: typeof enExecution;
   readonly factories: typeof enFactories;
   readonly fieldDrafts: typeof enFieldDrafts;
+  readonly fieldEstablishments: typeof enFieldEstablishments;
   readonly fieldHome: typeof enFieldHome;
   readonly fieldMyTasks: typeof enFieldMyTasks;
   readonly notifications: typeof enNotifications;
@@ -67,8 +70,8 @@ export type Messages = {
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldDrafts: enFieldDrafts, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
-  ar: { adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldDrafts: arFieldDrafts, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
+  en: { adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
+  ar: { adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {

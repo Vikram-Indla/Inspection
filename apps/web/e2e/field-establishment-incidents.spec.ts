@@ -7,7 +7,6 @@ const repoRoot = path.resolve(webRoot, "../..");
 const readWeb = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
 const readRepo = (file: string) => fs.readFileSync(path.join(repoRoot, file), "utf8");
 
-const ESTABLISHMENTS = "src/app/(app)/field/establishments/page.tsx";
 const INCIDENT_PAGE = "src/app/(app)/field/incident-reports/page.tsx";
 const INCIDENT_ACTION = "src/app/(app)/field/incident-reports/actions.ts";
 const INCIDENT_FORM = "src/app/(app)/field/incident-reports/IncidentReportForm.tsx";
@@ -28,13 +27,16 @@ const incidentTextColumns = [
 
 test.describe("PLAN v7 item 7 field establishments + incident logging", () => {
   test("the field establishment browser uses real master data and field-safe dossier links", () => {
-    const src = readWeb(ESTABLISHMENTS);
-    expect(src).toContain('from("factories")');
-    expect(src).toContain("industrial_licenses(id, commercial_registration_id, license_number, plant_number)");
-    expect(src).toContain("/field/factory-360/");
-    expect(src).toContain('href="/field/establishments/unregistered"');
-    expect(src).toContain('is_temporary", status === "unlicensed"');
-    expect(src).not.toContain('href="/factories');
+    const queries = readWeb("src/features/field-establishments/queries.ts");
+    const rows = readWeb("src/features/field-establishments/rows.ts");
+    const screen = readWeb("src/components/sections/field-establishments/establishments-screen.tsx");
+    expect(queries).toContain('from("factories")');
+    expect(queries).toContain("industrial_licenses(id, commercial_registration_id, license_number, plant_number)");
+    expect(rows).toContain("/field/factory-360/");
+    expect(screen).toContain('href="/field/establishments/unregistered"');
+    expect(queries).toContain('is_temporary", query.status === "unlicensed"');
+    expect(screen).not.toContain('href="/factories');
+    expect(rows).not.toContain('href="/factories');
   });
 
   test("unregistered creation delegates to the real atomic record-plus-visit workflow", () => {
