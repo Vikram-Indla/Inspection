@@ -9,7 +9,7 @@ test.describe("contextual AI user journeys", () => {
     test.use({ storageState: storageStatePath("inspector") });
     test("opens the daily briefing inside My assignments", async ({ page }) => {
       await page.goto("/field");
-      await expect(page.getByTestId("inspector-daily-briefing-panel")).toBeVisible();
+      await expect(page.getByRole("region", { name: "AI Daily Brief" })).toBeVisible();
       await expect(page.getByText("AI Daily Brief")).toBeVisible();
       await expect(page.getByText("Advisory only", { exact: true })).toBeVisible();
       await expect(page.getByText("My visits")).toBeVisible();

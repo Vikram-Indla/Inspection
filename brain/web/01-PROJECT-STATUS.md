@@ -1,8 +1,39 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-137 — the Admin/Inspector heading sweep`
+`Last updated: 2026-08-17` · `Updated by: T-138 — the /field home migration`
+
+## The `/field` migration has started, and the home route is done (2026-08-17)
+
+T-138 migrated the first slice. The gap T-137 measured below is closed **for the
+home route only** — the other 121 files of the channel still carry it.
+
+```
+route file        677 lines → 12
+headings          0 → 1>2>2>3>2>3>3>2>2>2>2   one h1, one main, no skips
+rendered sizes    11.5·12·12.5·13·13.5·14·14.5·16·19  →  13·15·24·32
+weight cap        700 → 590
+raw <svg>         15 → 0            inline style={{}}   66 → 2
+hardcoded copy    48 keys → 0       axe   0 across EN/dark, AR/dark, AR/light
+```
+
+**The lesson that shaped the whole task: bound a slice by the import graph, not by
+the directory.** `FieldHeader` has **34 importers** and `FieldHeaderSync` **4**.
+Rewriting either — both sit in `components/field/` and both look like "the field
+home's header" — would have silently restyled 33 unmigrated screens. `FieldHome`,
+`FieldMetricStrip` and `DailyBriefingCard` had **exactly one importer each**, so
+those were the ones safe to delete. This is T-136's "a filename grep is not an
+import graph" applied *before* writing code instead of after review.
+
+**The parallel stylesheet is still linked** by `field/layout.tsx` and still comes
+out last, per the standing correction: a CSS Module class beats its element
+selectors on specificity, so removing the `<link>` early would break the
+unmigrated screens, not the migrated one.
 
 ## `/field` has no heading structure at all, and it is now measured (2026-08-17)
+
+**Partly resolved by T-138** — the home route now has a full outline and the
+approved scale. Everything below still holds for `/field/my-tasks` and the rest of
+the channel.
 
 The Inspector pass in T-137 produced the biggest finding of the accessibility
 work, and it is not a heading skip:

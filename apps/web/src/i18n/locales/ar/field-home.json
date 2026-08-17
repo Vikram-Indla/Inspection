@@ -1,0 +1,120 @@
+{
+  "title": "لوحة الميدان",
+  "greeting": {
+    "morning": "صباح الخير، {name}",
+    "afternoon": "مساء الخير، {name}",
+    "evening": "مساء الخير، {name}",
+    "inspector": "مفتش"
+  },
+  "header": {
+    "search": "بحث",
+    "notifications": "الإشعارات",
+    "unread": "لديك إشعارات غير مقروءة",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "syncNow": "مزامنة الآن",
+    "syncing": "جارٍ المزامنة…"
+  },
+  "unavailable": {
+    "alert": "بيانات الميدان غير متاحة مؤقتاً (ERR-OPS-001). حاول مرة أخرى.",
+    "scope": "تعذّرت قراءة زياراتك المسندة وجدول اليوم والمسار، لذلك لا تُعرض أي أعداد — وهذا ليس عدداً صفرياً.",
+    "briefHeading": "الموجز اليومي",
+    "stillAvailable": "ما زال متاحاً",
+    "retry": "إعادة المحاولة",
+    "myTasks": "مهامي",
+    "establishments": "المنشآت",
+    "notifications": "الإشعارات"
+  },
+  "mission": {
+    "heading": "مهمة اليوم والمؤشرات",
+    "daily": "لديك {n} زيارة متبقية اليوم",
+    "weekly": "لديك {n} زيارة متبقية هذا الأسبوع",
+    "returned": "مُعادة",
+    "drafts": "مسودة للاستئناف",
+    "scopeLabel": "فترة المؤشرات",
+    "scopeDaily": "يومي",
+    "scopeWeekly": "أسبوعي"
+  },
+  "metric": {
+    "inspections": "عمليات تفتيش",
+    "followUp": "متابعة",
+    "highRisk": "منشآت عالية الخطورة",
+    "finishTime": "وقت الإنهاء المتوقع",
+    "completion": "نسبة الإنجاز",
+    "capAssignedDaily": "مسندة · تبدأ نافذتها اليوم",
+    "capAssignedWeekly": "مسندة · تبدأ نافذتها هذا الأسبوع",
+    "capFollowUp": "مُعادة للتصحيح · هذه الفترة",
+    "capHighRisk": "درجة الخطورة · عالية",
+    "capCompletion": "مُرسلة ÷ مسندة · ليست اعتماداً",
+    "notConfigured": "غير مُهيأ"
+  },
+  "brief": {
+    "heading": "ملخص اليوم الذكي",
+    "advisory": "استشاري فقط",
+    "unavailable": "لا يوجد ملخص استشاري الآن — لم يتم إنشاء أو تغيير أي شيء."
+  },
+  "reco": {
+    "heading": "توصية الذكاء الاصطناعي — ابدأ هنا",
+    "viewCard": "عرض بطاقة المنشأة",
+    "start": "بدء الرحلة",
+    "highRisk": "الأعلى خطورة في قائمتك — ابدأ هنا.",
+    "soonest": "أقرب موعد مجدول في قائمتك.",
+    "bandHigh": "الأعلى خطورة",
+    "bandMedium": "خطورة متوسطة",
+    "bandLow": "خطورة منخفضة"
+  },
+  "map": {
+    "heading": "خريطة العمليات اليوم",
+    "todaysRoute": "مسار اليوم",
+    "routeInRegion": "{region} — {route}",
+    "plannedSequence": "التسلسل المخطط · اليوم",
+    "canvasLabel": "خريطة المهام المسندة",
+    "noStops": "لا توجد زيارات مخططة اليوم",
+    "viewFull": "عرض الخريطة الكاملة"
+  },
+  "preview": {
+    "heading": "معاينة المنشأة",
+    "empty": "لا توجد منشأة قابلة للتنفيذ في قائمتك الآن.",
+    "riskScore": "مؤشر الخطورة",
+    "lastInspection": "آخر تفتيش",
+    "openViolations": "المخالفات المفتوحة",
+    "visitType": "نوع الزيارة",
+    "scheduled": "موعد الزيارة",
+    "openPrep": "فتح حزمة ما قبل التفتيش",
+    "openF360": "فتح ملف المنشأة 360"
+  },
+  "schedule": {
+    "heading": "جدول اليوم",
+    "count": "{n} زيارة",
+    "empty": "لا توجد زيارات مجدولة اليوم",
+    "emptyBody": "تظهر هنا مهامك المسندة فقط. تصل المهام الجديدة مع إشعار.",
+    "viewAll": "عرض الكل"
+  },
+  "pending": {
+    "heading": "بانتظار الاهتمام",
+    "priorityHigh": "أولوية عالية",
+    "priorityMedium": "متوسطة",
+    "returned": "تقارير مُعادة",
+    "drafts": "تقارير مسودة",
+    "reviewNow": "مراجعة الآن",
+    "resume": "استئناف",
+    "sync": "بانتظار المزامنة",
+    "syncManaged": "تديرها المزامنة الآمنة دون اتصال",
+    "notConfigured": "غير مُهيأ"
+  },
+  "insight": {
+    "heading": "مؤشرات تشغيلية",
+    "today": "زيارات اليوم",
+    "remaining": "الزيارات المتبقية",
+    "pending": "بانتظار الاهتمام",
+    "progress": "إنجاز اليوم"
+  },
+  "quickActions": {
+    "heading": "إجراءات سريعة",
+    "immediate": "إنشاء زيارة فورية",
+    "search": "بحث منشأة",
+    "continue": "متابعة التفتيش النشط",
+    "myVisits": "زياراتي"
+  },
+  "noValue": "—"
+}

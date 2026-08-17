@@ -43,11 +43,11 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
   });
 
   test("UIU-ISP-AC-012..013 active assignments precede pending attention and analytics", () => {
-    const page = read("src/app/(app)/field/page.tsx");
-    const mapIndex = page.indexOf("<FieldHome");
-    const scheduleIndex = page.indexOf('tr("field.home.schedule.title"');
-    const pendingIndex = page.indexOf('tr("field.home.pending');
-    const insightIndex = page.indexOf("insightNum");
+    const page = read("src/components/sections/field-home/field-home-screen.tsx");
+    const mapIndex = page.indexOf("<FieldOperationsMap");
+    const scheduleIndex = page.indexOf("<FieldSchedule");
+    const pendingIndex = page.indexOf("<FieldPendingAttention");
+    const insightIndex = page.indexOf("<FieldInsightStrip");
     expect(mapIndex).toBeGreaterThan(-1);
     expect(scheduleIndex).toBeGreaterThan(mapIndex);
     expect(pendingIndex).toBeGreaterThan(scheduleIndex);

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-137.** Take T-138.
+implements the reservation. **Highest id in use: T-138.** Take T-139.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,46 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-138 · the `/field` home migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 4h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-138-field-home-migration](sessions/2026-08/2026-08-17-T-138-field-home-migration.md)
+
+The first slice of the `/field` channel, and the largest single gap T-137 found.
+
+```
+route file        677 lines → 12          raw <svg>        15 → 0
+client islands    3 → 3                   inline style     66 → 2
+headings          0 → 1>2>2>3>2>3>3>2>2>2>2
+rendered sizes    11.5·12·12.5·13·13.5·14·14.5·16·19  →  13·15·24·32
+weight cap        700 → 590               hardcoded copy   48 keys → 0
+axe               0 violations across EN/dark, AR/dark, AR/light
+```
+
+**The slice was bounded by the import graph, not by the directory.**
+`FieldHeader` has **34 importers** and `FieldHeaderSync` 4 — rewriting either
+would have restyled 33 unmigrated screens. The home route stops importing
+`FieldHeader` and renders its own header; `FieldHeaderSync` is reused as-is.
+`FieldHome`, `FieldMetricStrip` and `DailyBriefingCard` had exactly one importer
+each and were deleted at zero imports — **523 lines** including the old stylesheet.
+
+**A local helper had institutionalised the banned copy pattern:**
+`const tr = (key, en, ar) => (locale === "ar" ? ar : t(key, en))` inlined both
+languages at every call site. 48 keys moved to a new `field-home` namespace;
+almost all the Arabic already existed inside those calls and was lifted.
+
+**Five spec regressions, all resolved.** Four were source-scanning contracts
+asserting on the literal text of `field/page.tsx` and were re-pointed at the files
+that now own each concern. The fifth was mine: `performance-pass4-contract`
+(K-002) forbids `export const dynamic = "force-dynamic"` on `/field` — the
+authenticated layout infers it — and I had copied that line from the expiry
+route's boilerplate.
+
+**Seed defect fixed alongside:** `inspector1–5` were the only personas without a
+guarded `full_name` fallback in `01-identity.sql`, which is why they alone read
+"Synthetic inspector1" after a provisioner run.
+
+---
 
 ### T-137 · the heading sweep under Admin and Inspector
 `status: done` · `rules: WEB-003, WEB-014` · `est: 2h` · **owner signed in as Admin, then Inspector, for this task**
@@ -4490,6 +4530,20 @@ filters and tabs moved to `searchParams`.
 
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
+
+- **The `/field` route header duplicates the AppShell** (T-138). The field header
+  renders Search and Notifications controls that the canonical AppShell already
+  provides one row above — two search affordances and two bells on the same
+  screen. Pre-existing: the original `FieldHeader` predates the unified shell, and
+  T-138 carried the affordances across deliberately rather than making an IA
+  decision inside a migration. Collapsing it belongs to the channel migration.
+- **`components/field/FieldScopeToggle.tsx` is orphaned** — zero importers, and it
+  was already orphaned before T-138 touched the directory.
+- **The shell's own type is off-scale and off-typeface** (T-138, measured). The
+  mobile-nav drawer renders at 14 px and the notification-bell badge at 13.33 px
+  **in Arial** — the only Arial on the page. Belongs to T-010.
+- **`features/field-home/queries.ts` is 327 lines** (T-138). Under the 400 hard
+  ceiling, but it is the natural split point when the channel grows.
 
 - **`04-COMPONENT-LEDGER.md` contains two divergent copies of itself** (T-133).
   Lines **5–23 repeat at 232–250**, then the copies diverge: line **24** and line

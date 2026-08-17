@@ -10,6 +10,7 @@ import arDashboard from "./locales/ar/dashboard.json";
 import arExecution from "./locales/ar/execution.json";
 import arEnforcement from "./locales/ar/enforcement.json";
 import arFactories from "./locales/ar/factories.json";
+import arFieldHome from "./locales/ar/field-home.json";
 import arNotifications from "./locales/ar/notifications.json";
 import arOperations from "./locales/ar/operations.json";
 import arPlanning from "./locales/ar/planning.json";
@@ -28,6 +29,7 @@ import enDashboard from "./locales/en/dashboard.json";
 import enExecution from "./locales/en/execution.json";
 import enEnforcement from "./locales/en/enforcement.json";
 import enFactories from "./locales/en/factories.json";
+import enFieldHome from "./locales/en/field-home.json";
 import enNotifications from "./locales/en/notifications.json";
 import enOperations from "./locales/en/operations.json";
 import enPlanning from "./locales/en/planning.json";
@@ -48,6 +50,7 @@ export type Messages = {
   readonly enforcement: typeof enEnforcement;
   readonly execution: typeof enExecution;
   readonly factories: typeof enFactories;
+  readonly fieldHome: typeof enFieldHome;
   readonly notifications: typeof enNotifications;
   readonly operations: typeof enOperations;
   readonly planning: typeof enPlanning;
@@ -58,8 +61,8 @@ export type Messages = {
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
-  ar: { adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
+  en: { adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldHome: enFieldHome, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
+  ar: { adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldHome: arFieldHome, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {

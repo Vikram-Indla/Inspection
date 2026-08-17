@@ -1,0 +1,120 @@
+{
+  "title": "Field dashboard",
+  "greeting": {
+    "morning": "Good morning, {name}",
+    "afternoon": "Good afternoon, {name}",
+    "evening": "Good evening, {name}",
+    "inspector": "Inspector"
+  },
+  "header": {
+    "search": "Search",
+    "notifications": "Notifications",
+    "unread": "You have unread notifications",
+    "online": "Online",
+    "offline": "Offline",
+    "syncNow": "Sync now",
+    "syncing": "Syncing…"
+  },
+  "unavailable": {
+    "alert": "Field data is temporarily unavailable (ERR-OPS-001). Try again.",
+    "scope": "Your assigned visits, today's schedule and route could not be read, so no counts are shown — this is not a count of zero.",
+    "briefHeading": "Daily brief",
+    "stillAvailable": "Still available",
+    "retry": "Try again",
+    "myTasks": "My tasks",
+    "establishments": "Establishments",
+    "notifications": "Notifications"
+  },
+  "mission": {
+    "heading": "Today's mission and metrics",
+    "daily": "{n} visits remaining today",
+    "weekly": "{n} visits remaining this week",
+    "returned": "returned",
+    "drafts": "draft to resume",
+    "scopeLabel": "Metric period",
+    "scopeDaily": "Daily",
+    "scopeWeekly": "Weekly"
+  },
+  "metric": {
+    "inspections": "Inspections",
+    "followUp": "Follow-up",
+    "highRisk": "High-risk factories",
+    "finishTime": "Est. finish time",
+    "completion": "Completion rate",
+    "capAssignedDaily": "assigned · window begins today",
+    "capAssignedWeekly": "assigned · window begins this week",
+    "capFollowUp": "returned for correction · this period",
+    "capHighRisk": "risk band · high",
+    "capCompletion": "submitted ÷ assigned · not approval",
+    "notConfigured": "Not configured"
+  },
+  "brief": {
+    "heading": "AI Daily Brief",
+    "advisory": "Advisory only",
+    "unavailable": "No advisory is available right now — nothing was generated or changed."
+  },
+  "reco": {
+    "heading": "AI recommendation — start here",
+    "viewCard": "View factory card",
+    "start": "Start journey",
+    "highRisk": "Highest risk band in your queue — start here.",
+    "soonest": "Earliest scheduled window in your queue.",
+    "bandHigh": "Highest risk",
+    "bandMedium": "Medium risk",
+    "bandLow": "Low risk"
+  },
+  "map": {
+    "heading": "Today's operations map",
+    "todaysRoute": "Today's route",
+    "routeInRegion": "{region} — {route}",
+    "plannedSequence": "Planned sequence · today",
+    "canvasLabel": "Assigned tasks map",
+    "noStops": "No visits planned for today",
+    "viewFull": "View full map"
+  },
+  "preview": {
+    "heading": "Factory preview",
+    "empty": "No actionable establishment in your queue right now.",
+    "riskScore": "Risk score",
+    "lastInspection": "Last inspection",
+    "openViolations": "Open violations",
+    "visitType": "Visit type",
+    "scheduled": "Scheduled",
+    "openPrep": "Open pre-inspection pack",
+    "openF360": "Open Factory 360"
+  },
+  "schedule": {
+    "heading": "Today's schedule",
+    "count": "{n} visits",
+    "empty": "No visits scheduled today",
+    "emptyBody": "Only your own assignments appear here. New assignments arrive with a notification.",
+    "viewAll": "View all"
+  },
+  "pending": {
+    "heading": "Pending attention",
+    "priorityHigh": "High priority",
+    "priorityMedium": "Medium",
+    "returned": "Returned inspections",
+    "drafts": "Draft inspections",
+    "reviewNow": "Review now",
+    "resume": "Resume",
+    "sync": "Pending synchronization",
+    "syncManaged": "Managed by secure offline sync",
+    "notConfigured": "Not configured"
+  },
+  "insight": {
+    "heading": "Operational insight",
+    "today": "Today's visits",
+    "remaining": "Remaining visits",
+    "pending": "Pending attention",
+    "progress": "Daily progress"
+  },
+  "quickActions": {
+    "heading": "Quick actions",
+    "immediate": "Create immediate visit",
+    "search": "Search factory",
+    "continue": "Continue active inspection",
+    "myVisits": "My visits"
+  },
+  "noValue": "—"
+}

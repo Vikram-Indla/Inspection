@@ -98,6 +98,17 @@ update public.profiles set full_name = 'عادل الزهراني' where email =
 update public.profiles set full_name = 'زياد الحربي' where email = 'supervisor3@mim.gov.sa' and full_name like 'Synthetic %';
 update public.profiles set full_name = 'حسام العتيبي' where email = 'supervisor4@mim.gov.sa' and full_name like 'Synthetic %';
 update public.profiles set full_name = 'رائد المطيري' where email = 'supervisor5@mim.gov.sa' and full_name like 'Synthetic %';
+-- inspector1..5 are named in the curated block above, which is UNGUARDED and
+-- therefore only wins if it runs after the provisioner. Every other alias also
+-- has a guarded line here, so a provisioner run that reintroduces
+-- 'Synthetic <alias>' is repaired on the next seed; without these five, only
+-- inspector1..5 stayed 'Synthetic inspector1' on the account chip. Same names
+-- and regions as lines 25-29, so the two blocks cannot disagree.
+update public.profiles set full_name = 'سلطان عايض الشهري', region = 'Riyadh' where email = 'inspector1@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'ماجد سليمان الزهراني', region = 'Makkah' where email = 'inspector2@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'فيصل تركي العنزي', region = 'Eastern' where email = 'inspector3@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'هاني مشعل الغامدي', region = 'Madinah' where email = 'inspector4@mim.gov.sa' and full_name like 'Synthetic %';
+update public.profiles set full_name = 'ياسر راشد البقمي', region = 'Qassim' where email = 'inspector5@mim.gov.sa' and full_name like 'Synthetic %';
 update public.profiles set full_name = 'أنس العنزي' where email = 'inspector6@mim.gov.sa' and full_name like 'Synthetic %';
 update public.profiles set full_name = 'رامي الرشيد' where email = 'inspector7@mim.gov.sa' and full_name like 'Synthetic %';
 update public.profiles set full_name = 'مازن الخالدي' where email = 'inspector8@mim.gov.sa' and full_name like 'Synthetic %';
