@@ -115,7 +115,6 @@
   "src/app/(app)/field/loading.tsx::legacy-type-class-in-jsx": 1,
   "src/app/(app)/field/map/map.module.css::raw-typography-property": 5,
   "src/app/(app)/field/map/page.tsx::legacy-type-class-in-jsx": 2,
-  "src/app/(app)/field/reports/reports.module.css::raw-typography-property": 11,
   "src/app/(app)/field/sample-collection-reports/page.tsx::inline-font-style": 1,
   "src/app/(app)/field/sample-collection-reports/page.tsx::legacy-type-class-in-jsx": 10,
   "src/app/(app)/field/search/page.tsx::legacy-type-class-in-jsx": 1,

@@ -1,14 +1,27 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-146 — the /field/completed migration`
+`Last updated: 2026-08-17` · `Updated by: T-149 — the coverage-widget segmented-meter rebuild`
 
-## The `/field` migration: completed history + receipt are done (2026-08-17)
+## The `/field` migration: the submitted-report library is done (2026-08-17)
 
-Eight slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
+Nine slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
 establishments surface (T-142+T-143), visits list + calendar (T-144),
-notifications list + detail (T-145), and **`/field/completed` list + receipt
-(T-146)**. Remaining: `reports`, `settings`, and the two large execution screens
+notifications list + detail (T-145), `/field/completed` list + receipt
+(T-146), and **`/field/reports` submitted-report library + inline document
+(T-148)**. Remaining: `settings` (+ devices, readiness, conflicts), `feedback`,
+the enforcement `*-reports` screens, and the two large execution screens
 (`[visitId]` startup, the 1,991-line `inspection/[id]/Workspace`).
+
+**T-148 split a 213-line client under the 200-line ceiling and killed the last
+`as unknown as` in the slice.** `ReportsLibrary` became `reports-library` (150,
+`SegmentedControl` tabs + `ListRow` records) + `report-document` (120, the inline
+immutable document); `queries.ts` narrows `row.visits` from `unknown` instead of
+`as unknown as Visit`. The frozen legacy `FieldConnectivityBanner` (`sq-banner`,
+`var(--space-3)`, literal radius) was dropped for a token-clean
+`ReportsConnectivity` leaf over the same `connectivityState` util — a migrated
+screen never reaches back into the parallel system for a shared widget. The
+`let active` unmount guard became a `useRef` (rule 6). `[id]/page.tsx` stays the
+thin governed redirect to `/reports/inspection/[id]`.
 
 **T-146 confirmed the `<main>` and emoji rules on a screen that had both.** Both
 completed pages rendered their own `<main>` inside the shell's (the T-144

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-146.** Take T-147.
+implements the reservation. **Highest id in use: T-149.** Take T-150.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,53 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-149 · the coverage widget stops being two charts that say the same thing twice
+`status: done` · `rules: WEB-002, WEB-004, WEB-013, WEB-014` · `est: 1.5h`
+`record:` [2026-08-17-T-149-coverage-widget-segmented-meter](sessions/2026-08/2026-08-17-T-149-coverage-widget-segmented-meter.md)
+
+Follow-up to T-147 (recolour was not enough). The `measure-coverage` widget drew a
+2-slice donut **and** a "Blocked by reason" bar whose single bar was always
+100 % wide (`domainMax = the only count`), so it carried zero information and
+dominated the card. The donut's empty arc and the blocked bar were the same fact
+(`total − live`) drawn twice. Replaced both with one **stacked segmented meter**
+(`live | reason…` summing to total) + a text legend; `percent` is a `Metric`.
+Success = live, warning = blocked; reason identity is the legend label, never hue
+(2-colour, CVD-safe). Dropped `Gauge`/`BarSeries` from this widget (both still
+used elsewhere), the `headingId` prop, and the `reasons`/`reasonsAria` strings.
+**Visual confirmation owed** — renders only on the planner/ops dashboards.
+
+---
+
+### T-148 · `/field/reports` (submitted-report library) migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 2h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-148-field-reports-migration](sessions/2026-08/2026-08-17-T-148-field-reports-migration.md)
+
+The submitted-report library + inline document detail, rebuilt on SAQEEL
+primitives and the Linear language. `ReportsLibrary` (213) split into
+`reports-library` (150) + `report-document` (120). Killed the `as unknown as
+Visit` cast (narrowed in `queries.ts`), the duplicate `<main>`, three raw
+`<svg>`, `force-dynamic`, and ~30 `tr(key, en, ar)` sites → new `field-reports`
+namespace. `[id]/page.tsx` kept as the thin governed redirect to
+`/reports/inspection/[id]`. Offline cache preserved verbatim. Legacy
+`FieldConnectivityBanner` dropped for a token-clean `ReportsConnectivity`.
+Empty state browser-verified (EN/dark); populated list/detail **owed** (seeded
+inspector has no submitted reports).
+
+---
+
+### T-147 · the coverage chart stops borrowing the AI accent
+`status: done` · `rules: WEB-002` · `est: 20m`
+`record:` [2026-08-17-T-147-coverage-chart-recolour](sessions/2026-08/2026-08-17-T-147-coverage-chart-recolour.md)
+
+The "Strategic requirement coverage" gauge + bars (and `analytics-blocked`)
+rendered in bright `--sqx-ai-main` (`#8B5CF6`) purple — the AI accent, which
+WEB-002 reserves for AI. `SERIES_ROLE.coverage: 2 → 1`: coverage is a proportion,
+so it takes the `rate` slot (amber). `rate` was used by no chart anywhere, so no
+collision; amber vs the cyan pipeline chart is CVD-safe; fixes both consumers.
+**Visual confirmation owed** — the widget renders only for a planner/admin.
+
+---
 
 ### T-146 · `/field/completed` (list + receipt) migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 2h` · **owner signed in as Inspector for this task**

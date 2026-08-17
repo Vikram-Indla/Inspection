@@ -196,7 +196,7 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     ],
   ],
   [
-    "web/src/app/(app)/field/reports/page.tsx · reports/[id]/page.tsx · reports.module.css",
+    "web/src/app/(app)/field/reports/page.tsx · reports/[id]/page.tsx · components/sections/field-reports/* · features/field-reports/queries.ts",
     [
       { kind: "static", path: "/field/reports", label: "reports library" },
       {

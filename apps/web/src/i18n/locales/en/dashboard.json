@@ -127,8 +127,6 @@
       "meterLabel": "Live source",
       "meterAria": "{live} of {total} governed measures have a live source",
       "ratio": "{live} of {total} measures",
-      "reasons": "Blocked by reason",
-      "reasonsAria": "Blocked governed measures, grouped by the reason they are blocked",
       "allLive": "Every governed measure listed below has a live source."
     },
     "pipeline": {
