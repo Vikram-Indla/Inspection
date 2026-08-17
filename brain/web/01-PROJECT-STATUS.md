@@ -1,6 +1,77 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-136 — the shell h1`
+`Last updated: 2026-08-17` · `Updated by: T-137 — the Admin/Inspector heading sweep`
+
+## `/field` has no heading structure at all, and it is now measured (2026-08-17)
+
+The Inspector pass in T-137 produced the biggest finding of the accessibility
+work, and it is not a heading skip:
+
+```
+/field           headings 0 · role="heading" 0
+/field/my-tasks  5 headings, all h3, no h1
+```
+
+Every visual heading on the field home is a `<div>` or `<span>` — including the
+page title:
+
+```
+"Good afternoon, …"          <div>   16px / 700
+"AI Daily Brief"             <span>  14px / 600
+"Today's operations map"     <div class="t-label">  13px / 500
+"Inspections"                <div>   12.5px / 600
+```
+
+**A screen-reader user has nothing to navigate the field home by.** That is worse
+than a skip and **invisible to `heading-order`**, which only fires on an increase
+greater than one — so a clean axe run on `/field` means nothing about its outline.
+
+The same session, same viewport, tells the design story in one line:
+
+```
+/dashboard        13 · 15 · 20 · 24 · 32                       the approved scale
+/field/my-tasks   11.5 · 12 · 12.5 · 13 · 13.5 · 14 · 14.5 · 16 · 19
+```
+
+Nine ad-hoc sizes, five below the 13px floor, weight 700 above the 590 cap.
+`/saqeel-ds/saqeel/styles.css` is still linked, so the T-129→T-132 token promotion
+— which moved the whole application onto one palette, typeface and scale by
+retargeting one file — **never reached `/field` at all.** The standing CORRECTION
+is confirmed by measurement: that sheet is a separate system, not a `--sqx-*`
+override, and only migrating the routes removes it.
+
+**`/field` is now the largest single accessibility and design-language gap in the
+application**, and for the first time it is quantified rather than asserted.
+
+## A screen you have only seen in one role is a screen you have not seen (2026-08-17)
+
+`/admin/planning/expiry` was built in T-127 and ported in T-134, always under a
+Planner session — which only ever renders its **access-refusal** state. The first
+Admin render showed "Superseded" truncating to "Supers…" in every row.
+
+The measurement misled twice before it settled:
+
+```
+pill root    scrollW 89 = clientW 89   "no overflow"
+label child  scrollW 75 > clientW 59   truncated
+```
+
+The root reported no overflow **because the label child absorbed it**. Cause was a
+12% status column leaving a 91px content box for a pill needing ~101px.
+
+Two habits this reinforces: check the element that actually clips, not its
+container; and **a route gated by capability needs a session that holds the
+capability before it can be called verified.**
+
+## `page-has-heading-one` does not fire, so count the `h1`s yourself (2026-08-17)
+
+Across every axe run in T-135–T-137, `page-has-heading-one` reported nothing —
+including on `/field`, which has **zero** headings, and `/dashboard`, which has no
+`h1`. It sits outside the WCAG tags and did not run even when requested by rule
+name.
+
+**Any gate for this must count `document.querySelectorAll('h1')` directly.**
+Relying on the axe rule would have reported those pages clean.
 
 ## Promoting a heading level breaks the outline below it (2026-08-17)
 

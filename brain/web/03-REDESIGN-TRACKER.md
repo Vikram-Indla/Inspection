@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-136.** Take T-137.
+implements the reservation. **Highest id in use: T-137.** Take T-138.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,52 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-137 · the heading sweep under Admin and Inspector
+`status: done` · `rules: WEB-003, WEB-014` · `est: 2h` · **owner signed in as Admin, then Inspector, for this task**
+`record:` [2026-08-17-T-137-heading-sweep](sessions/2026-08/2026-08-17-T-137-heading-sweep.md)
+
+```
+10 routes · 2 roles · 0 WCAG violations
+/admin/items        1→3→3→3→3→3  SKIP → 1→2→2→2→2→2
+/admin/integrations 1→3→3→3→2→2  SKIP → 1→2→2→2→2→2
+```
+
+**Both skips were exactly the shape T-136 predicted** — page sections written at
+h3 under a shell that used to be h2. `/admin/items` needed the order right: its
+nested `h4` was demoted **first**, or promoting the five h3s would have created a
+new skip. Tag balance asserted before and after.
+
+**`/field` is outside the migration entirely, and it is now measured.**
+`/field` renders **zero headings and zero `role="heading"`** — every visual
+heading is a `<div>` or `<span>`, including the page title
+(`"Good afternoon, …"`, `<div>` 16px/700). A screen-reader user has nothing to
+navigate by, which is worse than a skip and invisible to `heading-order` because
+that rule only fires on an increase greater than one. Same session, same viewport:
+
+```
+/dashboard       13 · 15 · 20 · 24 · 32                          the approved scale
+/field/my-tasks  11.5 · 12 · 12.5 · 13 · 13.5 · 14 · 14.5 · 16 · 19
+```
+
+Nine ad-hoc sizes, five below the 13px floor, weight 700 above the 590 cap — the
+parallel `/saqeel-ds/saqeel/styles.css` is still linked, so T-129→T-132's token
+promotion never reached it. **The standing CORRECTION is confirmed by
+measurement:** that sheet is a separate system, not a `--sqx-*` override, and only
+migration removes it.
+
+**A defect in my own work, found only because the role changed.** I built
+`/admin/planning/expiry` in T-127 and had only ever seen its *access-refusal*
+state as a Planner. As an Admin, "Superseded" truncated to "Supers…" in every row.
+The pill root reported `scrollW 89 = clientW 89` — **no overflow — because the
+label child absorbed it** (`scrollW 75 > clientW 59`). `colStatus: 12%` left a
+91px content box for a pill needing ~101px; widened to 15%. **A screen you have
+only seen in one role is a screen you have not seen.**
+
+**Parked:** `/field` has no heading structure and is still on the parallel design
+system — now the largest accessibility and design-language gap in the app, fully
+measured · the 19 `title=""` routes still lack an `h1` · **`page-has-heading-one`
+never fires**, so "no h1" must be detected by counting `h1` elements directly.
 
 ### T-136 · the shell gives 88 routes an `h1`
 `status: done` · `rules: WEB-003, WEB-014 §2, WEB-006 §5` · `est: 2h` · **owner lifted the do-not-touch-the-shell constraint for this change**

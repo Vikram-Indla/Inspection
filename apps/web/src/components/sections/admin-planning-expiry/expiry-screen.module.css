@@ -51,10 +51,10 @@
 }
 
 .colVersion { inline-size: 6%; }
-.colStatus { inline-size: 12%; }
+.colStatus { inline-size: 15%; }
 .colOffset { inline-size: 8%; }
-.colReason { inline-size: 21%; }
-.colReasonWide { inline-size: 29%; }
+.colReason { inline-size: 18%; }
+.colReasonWide { inline-size: 26%; }
 .colNotify { inline-size: 14%; }
 .colScope { inline-size: 13%; }
 .colEffective { inline-size: 12%; }
