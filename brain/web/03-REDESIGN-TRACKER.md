@@ -13,11 +13,54 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-129.** Take T-130.
+implements the reservation. **Highest id in use: T-130.** Take T-131.
 
 ---
 
 ## NOW
+
+### T-130 · reconciling the shapes the tokens could not carry
+`status: done` · `rules: WEB-000, WEB-002, WEB-009, WEB-010, WEB-014` · `est: 2h`
+`record:` [2026-08-17-T-130-shape-reconciliation](sessions/2026-08/2026-08-17-T-130-shape-reconciliation.md)
+
+```
+files changed  4          decorative gradient components  1 (the rest was dead)
+StatusPill     15px body → 13px label      contrast 7.13 dark · 4.61 light
+Card           box-shadow was INVALID and dropped app-wide
+light sweep    302 elements, 0 failures
+```
+
+**The card's elevation was never rendering.** `box-shadow: var(--sqx-shadow-card),
+var(--sqx-rim-light)` resolved to `…, none`, and **`none` is only valid as the
+sole value of `box-shadow`** — so the whole declaration was invalid and dropped.
+Every Card in the app has been drawing its edge from the `border` alone, which by
+accident is the single hairline the language wants, so nothing looked wrong and
+nothing would have until someone gave rim-light a value. **A token resolving to
+`none` poisons a comma list.**
+
+**The gradient sweep was small because most of it is dead.**
+`components/saqeel/primitives/primitives.module.css` — **1,301 lines — has zero
+importers** (only the `use-media-query` hook is imported from that folder), and
+`.sqx-btn[data-gradient]` has zero JSX consumers. The live decorative-gradient
+surface was exactly **one** component, the AI button, now flat.
+
+**Control density already matched** and was left alone. The apparent 20px button
+outlier is `variant="link"`, deliberately baseline-aligned for prose, which WCAG
+2.2 §2.5.8 exempts as an inline target.
+
+**My contrast tooling produced a false failure — twice in two tasks.** A sweep
+reported 11 pill failures at 4.16:1; they were the **inner label spans**, whose
+own background is transparent and parses as black. Resolved to the nearest
+*painted* ancestor the real pairs are 4.61 and 10.22, both passing, and the whole
+page measures 0 failures across 302 elements. T-129's was the mirror image (a
+*sibling* pill, so walking up missed it). **A contrast check is only as good as
+its background resolution — re-measure a failure before fixing it.**
+
+**Parked:** `primitives.module.css` is the largest deletion candidate in the
+design system · `--sqx-rim-light` and 13 `--sqx-gradient-*` tokens now have only
+dead consumers · **11 ping dots animate at once on `/dashboard`** — compositor-only
+and reduced-motion guarded, but `StatusPill` defaults `ping` to true and the
+language is deliberately quiet; flipping that default is an owner call.
 
 ### T-129 · the approved language becomes the system
 `status: done` · `rules: WEB-000 … WEB-014` · `est: 5h`

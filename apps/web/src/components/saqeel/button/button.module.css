@@ -144,46 +144,12 @@
 
 .root[data-variant="ai"] {
   color: var(--sqx-on-accent-ai);
-  background-image: var(--sqx-gradient-ai);
-  background-size: var(--sqx-gradient-flow-size);
-  animation: sqx-flow var(--sqx-duration-flow) linear infinite;
+  background: var(--sqx-ai-deep);
+  border-color: transparent;
 }
 
-.root[data-variant="ai"]::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset-block: calc(var(--sqx-space-8) * -1);
-  inline-size: 40%;
-  inset-inline-start: 0;
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    var(--sqx-glare-050),
-    transparent
-  );
-  opacity: 0;
-  pointer-events: none;
-}
-
-.root[data-variant="ai"]:hover::after {
-  animation: button-sweep var(--sqx-duration-sweep) var(--sqx-ease-sweep) 1;
-}
-
-@keyframes button-sweep {
-  from {
-    transform: translateX(var(--sqx-sweep-start)) skewX(var(--sqx-sweep-skew));
-    opacity: 0;
-  }
-
-  40% {
-    opacity: 1;
-  }
-
-  to {
-    transform: translateX(var(--sqx-sweep-end)) skewX(var(--sqx-sweep-skew));
-    opacity: 0;
-  }
+.root[data-variant="ai"]:hover:not(:disabled) {
+  background: var(--sqx-ai-shade);
 }
 
 @media (max-width: 40rem) {

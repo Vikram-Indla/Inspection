@@ -6,7 +6,7 @@
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-card);
-  box-shadow: var(--sqx-shadow-card), var(--sqx-rim-light);
+  box-shadow: none;
   transition:
     transform var(--sqx-duration-fast) var(--sqx-ease-standard),
     border-color var(--sqx-duration-fast) var(--sqx-ease-standard);

@@ -1,6 +1,44 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-129 — the approved language becomes the system`
+`Last updated: 2026-08-17` · `Updated by: T-130 — shape reconciliation`
+
+## A token that resolves to `none` poisons a comma list (2026-08-17)
+
+`card.module.css` declared `box-shadow: var(--sqx-shadow-card), var(--sqx-rim-light)`
+and `--sqx-rim-light` is `none` in **both** themes. `none` is only valid as the
+*sole* value of `box-shadow`, so the declaration was invalid and dropped —
+**every Card in the application has been rendering with no box-shadow at all.**
+
+```
+inset 0 0 0 1px #23252A, none   →  computed: none
+inset 0 0 0 1px #23252A         →  computed: rgb(35,37,42) 0 0 0 1px inset
+```
+
+Nothing looked wrong, because the card's `border` was already drawing the single
+hairline the language wants. It would have looked wrong the moment anyone gave
+`--sqx-rim-light` a value: every card would have silently gained a doubled edge.
+
+**A CSS custom property is not inert when it resolves to a keyword.** If a token
+can be `none`, it cannot sit in a comma-separated list.
+
+## A contrast check is only as good as its background resolution (2026-08-17)
+
+Two false failures in two tasks, from opposite directions:
+
+```
+T-129  selected segment read 1.3:1   the lime pill is a SIBLING span — walking up misses it
+T-130  11 pills read 4.16:1          the rows were inner label spans whose own bg is transparent,
+                                     and transparent parses to black
+```
+
+Resolved to the nearest **painted** ancestor, the real numbers are 4.61 and
+10.22, and the page measures **0 failures across 302 elements**. T-130 nearly
+"corrected" a palette that was already correct; what stopped it was recomputing
+the same pair three ways — from hex, from the computed strings, and live — and
+getting 4.61 every time.
+
+**Never compare against a transparent element's own background, never assume the
+painted surface is an ancestor, and re-measure a failure before fixing it.**
 
 ## The no-literals rule is what let art direction change in one file (2026-08-17)
 

@@ -25,7 +25,7 @@
   background: var(--sqx-surface-default);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-card);
-  box-shadow: var(--sqx-shadow-card), var(--sqx-rim-light);
+  box-shadow: var(--sqx-shadow-menu);
   scrollbar-width: thin;
   scrollbar-color: var(--sqx-border-strong) transparent;
 }
