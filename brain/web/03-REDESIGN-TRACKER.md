@@ -13,11 +13,47 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-133.** Take T-134.
+implements the reservation. **Highest id in use: T-134.** Take T-135.
+
+**The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
+T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
+The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 
 ---
 
 ## NOW
+
+### T-134 · merging the component ledger's two divergent copies
+`status: done` · `rules: WEB-007` · `est: 1h`
+`record:` [2026-08-17-T-134-ledger-merge](sessions/2026-08/2026-08-17-T-134-ledger-merge.md)
+
+```
+04-COMPONENT-LEDGER.md   574 → 351 lines
+177 unique rows recovered · 0 lost · 0 duplicated · 0 duplicate headings
+```
+
+**Neither copy was a superset, so "take the newer one" would have destroyed 86
+rows.** A had 91 rows, B had 173, union 177: 4 rows existed only in A (`type`,
+`route-error`, `dashboard/enforcement-trend`, `dashboard/executive-brief`), 86
+only in B, and of the 87 shared rows only **2** differed (`Button`,
+`date-range-presets` — A longer in both).
+
+**Length is not evidence of supersession.** For those 2, A was verified to carry
+*every* fact B had, phrase by phrase, because B's text was not contained verbatim
+in A even though A held all its content. Every anchor line was asserted to be the
+expected row before any write.
+
+**My first two readings were both wrong** and each correction came from measuring:
+"a clean 227-line duplication" (a misaligned diff) and "A is newer, take A" (B is
+longer and holds 86 rows A never had). The heading map is what settled it.
+
+**The only visible symptom of a 223-line duplication was duplicate headings**, in
+a 574-line table. The ledger now opens with a banner and one instruction: search
+for the row before appending, edit in place if it exists.
+
+**The other four brain files were swept, not parked** — zero duplicate headings
+anywhere, so none carries the same shape. That sweep is what surfaced the
+corrected collision count above.
 
 ### T-133 · retiring 1,394 lines of unreachable design-system CSS
 `status: done` · `rules: WEB-002, WEB-006 §4, WEB-009, WEB-010` · `est: 1.5h`

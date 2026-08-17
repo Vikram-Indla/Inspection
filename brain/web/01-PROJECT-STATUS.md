@@ -1,6 +1,56 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-133 — dead CSS retirement`
+`Last updated: 2026-08-17` · `Updated by: T-134 — component ledger merge`
+
+## CORRECTION — the ID collisions are 6, not 3, and T-046 was used four times (2026-08-17)
+
+The entry below headed *"Two sessions ran at once and the working tree is
+entangled"* calls the T-076/T-101 incident **"the third ID collision"**. Counted
+across `02-SESSION-LOG.md`:
+
+```
+T-026  /factories snapshot hero        vs  /enforcement-library
+T-027  /factories compliance           vs  Five-route rebuild + Jira canon
+T-046  FOUR different /planning/bulk slices, all numbered T-046
+T-077  delete the dead planning tree   vs  /visits/[id] bilingual resources
+T-078  repair the responsive spec      vs  /visits/[id] read surface
+```
+
+**Six colliding IDs across 13 rows**, each pair a different title describing
+different work — genuine collisions, not double-logged rows.
+
+This document already prescribed the fix after the first one — *claim the ID in
+the tracker at the start of a task* — and already observed that nothing
+implements it. T-127…T-134 have each advanced "Highest id in use" by hand, so the
+practice is live, but **nothing stops a concurrent session taking the same
+number**. The cheapest real control is a gate that fails on a duplicate `T-NNN`
+in the session log: it is the one-line grep that produced the table above.
+
+## The component ledger held two divergent copies of itself (2026-08-17)
+
+`04-COMPONENT-LEDGER.md` had a whole second ledger appended below the first, so
+the same component appeared twice with different notes and anyone reading past
+the halfway point got stale facts. Merged in T-134: **177 unique rows recovered,
+0 lost, 574 → 351 lines.**
+
+**Neither copy was a superset**, which is why "take the newer one" would have
+destroyed 86 rows:
+
+```
+A 91 rows · B 173 rows · union 177
+only in A  type · route-error · dashboard/enforcement-trend · dashboard/executive-brief
+only in B  86 rows (regulations, enforcement, approvals, factories workspaces)
+shared 87  only 2 differ — Button, date-range-presets — A longer in both
+```
+
+**Length is not evidence of supersession.** For the two differing rows, A was
+verified to carry *every* fact B had before B was discarded — phrase by phrase,
+because B's text was not contained verbatim in A even though A held all of its
+content.
+
+**The only visible symptom of a 223-line duplication was duplicate headings**, in
+a 574-line table where nobody would notice them. The ledger now opens with a
+banner and one instruction: search for the row before appending.
 
 ## The component ledger contains two divergent copies of itself (2026-08-17)
 
