@@ -83,7 +83,6 @@
   "src/app/(app)/field/daily-visit-hub.module.css::legacy-type-token": 5,
   "src/app/(app)/field/destruction-reports/page.tsx::inline-font-style": 1,
   "src/app/(app)/field/destruction-reports/page.tsx::legacy-type-class-in-jsx": 8,
-  "src/app/(app)/field/establishments/unregistered/UnregisteredEstablishmentForm.tsx::legacy-type-class-in-jsx": 3,
   "src/app/(app)/field/facility-reports/page.tsx::inline-font-style": 1,
   "src/app/(app)/field/facility-reports/page.tsx::legacy-type-class-in-jsx": 9,
   "src/app/(app)/field/factory-360/page.tsx::legacy-type-class-in-jsx": 1,

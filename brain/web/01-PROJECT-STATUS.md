@@ -1,13 +1,28 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-142 — the /field/establishments migration`
+`Last updated: 2026-08-17` · `Updated by: T-143 — the /field/.../unregistered migration`
+
+## The `/field` migration: the establishments surface is done (2026-08-17)
+
+T-138 home, T-140 `/field/my-tasks`, T-141 `/field/drafts`, T-142
+`/field/establishments` (list), **T-143 `/field/establishments/unregistered`**
+(create form). **The establishments surface is now fully migrated.** The gap
+T-137 measured below is closed for those five routes; the rest of the channel
+(`/field/visits`, `visits/calendar`, `[visitId]`, `inspection/[id]`, and the
+report/notification surfaces) still carries it.
+
+**T-143 set the rule for migrating a governed form.** The create form calls
+`create_immediate_visit` through `actions.ts`, which is asserted by
+`field-establishment-incidents` and is governed server logic. The rule: **migrate
+the UI *around* a governed action, never through it** — leave `actions.ts`
+byte-for-byte, import it unchanged, and rebuild only the presentation. Same
+principle as reusing `assignment-task-model` in T-140: governed logic with a
+passing contract is a fixed point the migration flows around.
 
 ## The `/field` migration: home, my-tasks, drafts, establishments done (2026-08-17)
 
 T-138 home, T-140 `/field/my-tasks`, T-141 `/field/drafts`, **T-142
-`/field/establishments`** (main list; the `unregistered/` create form is next).
-The gap T-137 measured below is closed for those four; the rest of the channel
-still carries it.
+`/field/establishments`** (main list).
 
 **T-142 hardened the acid-lime fill rule into a token distinction, because it
 mis-bit twice in one screen.** `--sqx-surface-accent` is a **soft dark-olive

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-142.** Take T-143.
+implements the reservation. **Highest id in use: T-143.** Take T-144.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,39 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-143 · `/field/establishments/unregistered` migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 2h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-143-field-unregistered-migration](sessions/2026-08/2026-08-17-T-143-field-unregistered-migration.md)
+
+The fifth `/field` slice — the create form that closes out the establishments
+surface. GPS + report-type + reason → the governed `create_immediate_visit` RPC.
+
+```
+route file        94 lines → 11           raw <svg>        1 → 0
+headings          0 (h5, no h1) → 1>2>2>2  module-level let  1 → 0
+rendered sizes    off-scale → 13·15        hardcoded copy   ~26 sites → 0
+axe 0 (EN + AR)   deleted 177 lines (old form + PackageTypeSelector)
+```
+
+**`actions.ts` was left untouched** — it calls `create_immediate_visit` and is
+asserted by `field-establishment-incidents`; governed server logic, not UI. The
+form imports it unchanged. **The role gate was dropped** — `field/layout.tsx`
+already redirects non-inspectors, so the page's re-check was dead code.
+
+**A module-level `let` mutated during render is gone:** the old form declared
+`let mapLoadingLabel` at module scope and reassigned it every render to smuggle a
+label into the `dynamic()` loading fallback — replaced with a `Skeleton` (no
+label) and the GeoMap `ariaLabel`. **`PackageTypeSelector` (single-consumer) was
+rebuilt** as `package-type-select` on tokens, keeping its native-radio submit
+contract, and deleted at zero imports.
+
+**The live browser e2e was re-pointed:** `verify-unregistered-establishment`
+clicked `.sq-typecard` and a reason `<button>`; both became radios, so its
+selectors moved to `getByRole("radiogroup"/"radio").check()`. Left unfixed it
+would have broken CI.
+
+---
 
 ### T-142 · `/field/establishments` migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 2.5h` · **owner signed in as Inspector for this task**
