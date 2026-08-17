@@ -4,14 +4,17 @@ import { useState, useTransition } from "react";
 import { setRuleEnabled, type ExpiryResult } from "@/app/(app)/admin/planning/expiry/actions";
 import type { ExpiryRuleRow as ExpiryRule } from "@/app/(app)/admin/planning/expiry/types";
 import type { ExpiryRuleGroup } from "@/features/admin-planning-expiry/queries";
-import { Button, Card, Heading, Notice, Text } from "@/components/experimental/linear";
+import Button from "@/components/saqeel/button/button";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import { fill } from "@/i18n/messages";
-import type { Locale } from "@/lib/i18n";
 import { formatCount } from "@/i18n/numbers";
+import type { Locale } from "@/lib/i18n";
 import ExpiryRuleEditor from "./expiry-rule-editor";
 import ExpiryRuleRow, { ColumnHead } from "./expiry-rule-row";
 import type { ExpiryCopy } from "./expiry-copy";
-import styles from "./expiry-rule-section.module.css";
+import styles from "./expiry-screen.module.css";
 
 export default function ExpiryRuleSection({ group, copy, locale, canConfigure }: {
   group: ExpiryRuleGroup;
@@ -39,40 +42,34 @@ export default function ExpiryRuleSection({ group, copy, locale, canConfigure }:
 
   return (
     <Card as="section" labelledBy={headingId}>
-      <div className={styles.section}>
-        <div className={styles.header}>
-          <div className={styles.heading}>
-            <Heading level={2} role="bodyLg" id={headingId}>{ruleName}</Heading>
-            {group.live ? (
-              <Text role="caption" tone="muted" as="span">
-                {fill(copy.status.liveSummary, { version: formatCount(group.live.version, locale) })}
-              </Text>
-            ) : null}
-          </div>
-          {canConfigure ? (
-            <Button
-              variant="ghost"
-              disabled={pending}
-              onClick={() => { setEditingId(null); setCreating(!creating); }}
-            >
-              {copy.action.newVersion}
-            </Button>
-          ) : null}
-        </div>
-
+      <CardHeader
+        level="h2"
+        titleId={headingId}
+        title={ruleName}
+        description={group.live
+          ? fill(copy.status.liveSummary, { version: formatCount(group.live.version, locale) })
+          : undefined}
+        trailing={canConfigure ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={pending}
+            label={copy.action.newVersion}
+            onClick={() => { setEditingId(null); setCreating(!creating); }}
+          >
+            {copy.action.newVersion}
+          </Button>
+        ) : undefined}
+      />
+      <CardBody gap="tight">
         {feedback.ok ? (
-          <Notice tone="accent" live="status"><Text role="caption">{feedback.ok}</Text></Notice>
+          <Text tone="secondary" live="status">{feedback.ok}</Text>
         ) : null}
         {feedback.error ? (
-          <Notice tone="danger" live="alert"><Text role="caption">{feedback.error}</Text></Notice>
+          <Text tone="danger" live="alert">{feedback.error}</Text>
         ) : null}
         {group.versions.length > 0 && !group.live ? (
-          <Notice tone="accent">
-            <div className={styles.stack}>
-              <Text role="caption" tone="strong" weight="medium">{copy.status.noneLive}</Text>
-              <Text role="caption" tone="muted">{copy.status.noneLiveNote}</Text>
-            </div>
-          </Notice>
+          <StatusPill tone="warning">{copy.status.noneLive}</StatusPill>
         ) : null}
 
         {creating ? (
@@ -85,7 +82,7 @@ export default function ExpiryRuleSection({ group, copy, locale, canConfigure }:
         ) : null}
 
         {group.versions.length === 0 ? (
-          <Text role="caption" tone="muted">{copy.empty.body}</Text>
+          <Text tone="muted">{copy.empty.body}</Text>
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.table}>
@@ -134,7 +131,7 @@ export default function ExpiryRuleSection({ group, copy, locale, canConfigure }:
             </table>
           </div>
         )}
-      </div>
+      </CardBody>
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import ExpiryScreen from "@/components/experimental/planning-expiry/expiry-screen";
+import ExpiryScreen from "@/components/sections/admin-planning-expiry/expiry-screen";
 import { loadPlanningExpiry } from "@/features/admin-planning-expiry/queries";
 import { getLocale } from "@/lib/i18n";
 

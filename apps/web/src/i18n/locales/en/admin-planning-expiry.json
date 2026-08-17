@@ -2,8 +2,13 @@
   "title": "Planning Expiry Rules",
   "subtitle": "Rules that expire visits which were never acknowledged, dated, started or completed",
   "loading": "Loading planning expiry rules",
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration"
+  },
   "governance": {
     "heading": "One enabled version per rule type.",
+    "pill": "Governed",
     "body": "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently, and every change is recorded in the audit trail."
   },
   "scheduler": {
@@ -11,13 +16,15 @@
   },
   "readOnly": {
     "heading": "You can view these rules but not change them",
-    "body": "A security administrator can give your role permission to edit them, under Users & roles."
+    "body": "A security administrator can give your role permission to edit them, under Users & roles.",
+    "pill": "View only"
   },
   "error": {
     "heading": "Couldn’t load expiry rules",
     "body": "Nothing was changed. Try again.",
     "retry": "Try again",
-    "reference": "Reference"
+    "reference": "Reference",
+    "pill": "Unavailable"
   },
   "ruleType": {
     "no_acknowledgement": "No acknowledgement",

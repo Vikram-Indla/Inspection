@@ -13,11 +13,49 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-128.** Take T-129.
+implements the reservation. **Highest id in use: T-129.** Take T-130.
 
 ---
 
 ## NOW
+
+### T-129 · the approved language becomes the system
+`status: done` · `rules: WEB-000 … WEB-014` · `est: 5h`
+`record:` [2026-08-17-T-129-language-adoption](sessions/2026-08/2026-08-17-T-129-language-adoption.md)
+
+```
+tokens retargeted  128 values, one file     routes re-skinned  28, none edited
+--sqx- consumers   254, none edited         experimental       30 files deleted
+Inter  as-declared 356.27 = Inter 356.27    status families    5, AA both themes
+```
+
+**The whole visual language was replaced by editing one file.** Because every
+consumer holds `var(--sqx-*)` and never a literal, retargeting the primitives
+re-skinned 28 migrated routes without one being edited — `/operations` was
+verified rendering the new language having never been opened. That reason is now
+written into WEB-002 §1, CLAUDE.md rule 7 and README rule 7.
+
+**SAQEEL is the system; the language is `design/linear/`.** Separated in the
+rules, because the language has now been replaced once without the system
+changing at all.
+
+**Status was derived and measured, not taken.** The reference forbids green and
+red as status, which cannot govern a platform where severity is legally
+meaningful. `warning` and `major` were derived because acid lime **is** the
+primary action — a warning pill would be indistinguishable from a CTA.
+
+**Four defects found by measuring, none by a gate:** white-on-lime at 1.1:1;
+chromatic link text in the dark block only (the light block was already right,
+which is why it survived); and two specs pinning values that had to move —
+INSP-702 was re-pointed **only after proving the requirement still holds** under
+the new ramp.
+
+**One measurement was wrong and is recorded:** the selected segment read 1.3:1
+because the lime pill is a **sibling span**, so an ancestor walk misses it.
+
+**Parked:** `ExpiryAdmin.tsx` is now genuinely dead · `/dashboard` still has no
+`h1` (`Shell` gets `title=""`) · rim-light and CTA-gradient tokens are now
+against the language and want a consumer sweep.
 
 ### T-128 · `/dashboard` in the experimental Linear system — the fairness test
 `status: partial — code complete, both perspectives rendered and measured in dark, light, English and Arabic; axe, 320px/200% zoom and browser e2e owed` · `rules: WEB-000 … WEB-014` · `est: 4h`

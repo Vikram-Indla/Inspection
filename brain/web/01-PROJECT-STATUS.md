@@ -1,6 +1,43 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-128 — /dashboard Linear experiment`
+`Last updated: 2026-08-17` · `Updated by: T-129 — the approved language becomes the system`
+
+## The no-literals rule is what let art direction change in one file (2026-08-17)
+
+T-129 replaced the entire visual language by retargeting **128 values in
+`saqeel.css`**. **254 files consume `var(--sqx-*)`; none was edited**, and 28
+migrated routes adopted the new language for free. `/operations` was verified
+rendering it having never been opened.
+
+The rule had always been justified as tidiness. It is actually the thing that
+lets the system survive a change of art direction, and WEB-002 §1 now says so.
+
+**The corollary is the warning:** a component holding one hardcoded value opts
+that route out of the *next* change, silently.
+
+## A theme-asymmetric token is invisible unless both themes are measured (2026-08-17)
+
+`--sqx-text-link`, `-accent`, `--sqx-action-tertiary-text` and
+`--sqx-segment-label` pointed at pale lime **in the dark block only**, so links
+rendered chromatic — against the rule written in the same session. The light
+block was already neutral and correct, **which is exactly why it survived**:
+every check that looked at light passed.
+
+Same shape one level up: **white ink on a lime fill measured 1.1:1**, because
+repointing brand to a *light* colour broke every token that assumed "brand fill
+is dark, so ink is white".
+
+**Measure both themes, or measure nothing.**
+
+## An ancestor walk is not a background test (2026-08-17)
+
+A contrast scan reported the selected segment at **1.3:1** and was wrong. The
+lime pill is a **sibling `<span>`** that slides behind the segment, so walking
+the ancestor chain for a non-transparent background finds the graphite root and
+misses the pill entirely. `::before` / `::after` were empty too.
+
+When a design paints selection with a sliding indicator, query for the painted
+colour rather than walking up — and re-check a "failure" before fixing it.
 
 ## `inline-flex` inside a column flex container is full-width, and it looked like a design choice (2026-08-17)
 

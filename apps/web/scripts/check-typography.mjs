@@ -21,8 +21,6 @@ const FROZEN_SHEETS = [
 
 const TYPE_PRIMITIVE = "src/components/saqeel/type/";
 
-const EXPERIMENTAL_TYPE_LAYER = "src/components/experimental/linear";
-
 const LEGACY_TYPE_CLASSES = [
   "t-display",
   "t-page-title",
@@ -133,7 +131,7 @@ function scan() {
   const violations = [];
   for (const file of walk(SRC_ROOT)) {
     const path = relative(WEB_ROOT, file).split(sep).join("/");
-    if (path.startsWith(TYPE_PRIMITIVE) || path.startsWith(EXPERIMENTAL_TYPE_LAYER)) continue;
+    if (path.startsWith(TYPE_PRIMITIVE)) continue;
     const source = readFileSync(file, "utf8");
     const lines = source.split("\n");
     for (const rule of RULES) {

@@ -449,9 +449,9 @@
     --sqx-text-disabled: var(--sqx-grey-500);
     --sqx-text-inverse: var(--sqx-grey-900);
     --sqx-text-on-action: var(--sqx-brand-950);
-    --sqx-text-link: var(--sqx-brand-200);
-    --sqx-text-link-hover: var(--sqx-brand-100);
-    --sqx-text-accent: var(--sqx-brand-200);
+    --sqx-text-link: var(--sqx-grey-300);
+    --sqx-text-link-hover: var(--sqx-grey-200);
+    --sqx-text-accent: var(--sqx-grey-300);
     --sqx-text-success: var(--sqx-success-light);
     --sqx-text-warning: var(--sqx-warning-light);
     --sqx-text-danger: var(--sqx-error-light);
@@ -471,11 +471,11 @@
     --sqx-action-primary-text: var(--sqx-brand-950);
     --sqx-action-primary-border: var(--sqx-action-primary-bg);
     --sqx-segment-track: var(--sqx-grey-800);
-    --sqx-segment-label: var(--sqx-brand-200);
+    --sqx-segment-label: var(--sqx-grey-300);
     --sqx-action-secondary-border: var(--sqx-grey-a32);
     --sqx-action-secondary-text: #FFFFFF;
     --sqx-action-secondary-hover: var(--sqx-grey-a12);
-    --sqx-action-tertiary-text: var(--sqx-brand-200);
+    --sqx-action-tertiary-text: var(--sqx-grey-300);
     --sqx-action-tertiary-hover: var(--sqx-tint-brand-dark);
     --sqx-action-danger-bg: var(--sqx-error-light);
     --sqx-action-danger-hover: #FFC7A8;

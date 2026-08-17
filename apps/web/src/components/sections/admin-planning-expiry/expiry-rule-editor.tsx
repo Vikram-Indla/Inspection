@@ -3,10 +3,15 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { createRuleVersion, updateRule, type ExpiryResult } from "@/app/(app)/admin/planning/expiry/actions";
 import type { ExpiryRuleRow } from "@/app/(app)/admin/planning/expiry/types";
-import { Button, Checkbox, Field, NumberInput, Notice, Select, Text, TextInput } from "@/components/experimental/linear";
+import Button from "@/components/saqeel/button/button";
+import Choice from "@/components/saqeel/choice/choice";
+import Field from "@/components/saqeel/field/field";
+import SaqeelSelect from "@/components/saqeel/select/select";
+import TextInput from "@/components/saqeel/text-input/text-input";
+import { Text } from "@/components/saqeel/type";
 import { fill } from "@/i18n/messages";
 import type { ExpiryCopy } from "./expiry-copy";
-import styles from "./expiry-rule-editor.module.css";
+import styles from "./expiry-screen.module.css";
 
 const VISIT_TYPES = ["periodic", "follow_up", "complaint"] as const;
 const EXECUTION_MODES = ["physical", "virtual", "administrative"] as const;
@@ -49,78 +54,84 @@ export default function ExpiryRuleEditor({ row, ruleType, ruleName, copy, onClos
   return (
     <form className={styles.editor} onSubmit={submit} aria-label={legend}>
       <div className={styles.grid}>
-        <Field id={`offset-${key}`} label={copy.field.offset} hint={copy.field.offsetHint}>
-          <NumberInput
+        <Field label={copy.field.offset} htmlFor={`offset-${key}`} hint={copy.field.offsetHint}>
+          <TextInput
             id={`offset-${key}`}
             name="offset_minutes"
-            min={0}
-            max={525600}
+            type="number"
             required
-            defaultValue={row?.offset_minutes ?? 0}
-            describedBy={`offset-${key}-hint`}
+            defaultValue={String(row?.offset_minutes ?? 0)}
+            label={copy.field.offset}
           />
         </Field>
-        <Field id={`visit-type-${key}`} label={copy.field.visitType}>
-          <Select
+        <Field label={copy.field.visitType} htmlFor={`visit-type-${key}`}>
+          <SaqeelSelect
             id={`visit-type-${key}`}
             name="scope_visit_type"
+            label={copy.field.visitType}
             defaultValue={scope.visit_type ?? "any"}
             options={scopeOptions(VISIT_TYPES, copy.visitType)}
           />
         </Field>
-        <Field id={`execution-mode-${key}`} label={copy.field.executionMode}>
-          <Select
+        <Field label={copy.field.executionMode} htmlFor={`execution-mode-${key}`}>
+          <SaqeelSelect
             id={`execution-mode-${key}`}
             name="scope_execution_mode"
+            label={copy.field.executionMode}
             defaultValue={scope.execution_mode ?? "any"}
             options={scopeOptions(EXECUTION_MODES, copy.executionMode)}
           />
         </Field>
-        <Field id={`priority-${key}`} label={copy.field.priority}>
-          <Select
+        <Field label={copy.field.priority} htmlFor={`priority-${key}`}>
+          <SaqeelSelect
             id={`priority-${key}`}
             name="scope_priority"
+            label={copy.field.priority}
             defaultValue={scope.priority ?? "any"}
             options={scopeOptions(PRIORITIES, copy.priority)}
           />
         </Field>
       </div>
 
-      <div className={styles.reason}>
-        <Field id={`reason-${key}`} label={copy.field.reason}>
-          <TextInput id={`reason-${key}`} name="reason" required maxLength={500} defaultValue={row?.reason ?? ""} />
-        </Field>
-      </div>
+      <Field label={copy.field.reason} htmlFor={`reason-${key}`}>
+        <TextInput
+          id={`reason-${key}`}
+          name="reason"
+          required
+          maxLength={500}
+          defaultValue={row?.reason ?? ""}
+          label={copy.field.reason}
+        />
+      </Field>
 
       <div className={styles.checks}>
-        <Checkbox
+        <Choice
+          kind="checkbox"
           id={`notify-creator-${key}`}
           name="notify_plan_creator"
+          value="1"
           label={copy.notify.planCreator}
           defaultChecked={row?.notify_plan_creator ?? true}
         />
-        <Checkbox
+        <Choice
+          kind="checkbox"
           id={`notify-inspector-${key}`}
           name="notify_inspector"
+          value="1"
           label={copy.notify.inspector}
           defaultChecked={row?.notify_inspector ?? false}
         />
       </div>
 
-      {feedback.error ? (
-        <Notice tone="danger" live="alert">
-          <Text role="caption">{feedback.error}</Text>
-        </Notice>
-      ) : null}
+      {feedback.error ? <Text tone="danger" live="alert">{feedback.error}</Text> : null}
 
       <div className={styles.footer}>
-        <Button type="submit" variant="primary" disabled={pending}>
+        <Button type="submit" variant="primary" size="sm" disabled={pending} label={row ? copy.action.save : copy.action.createVersion}>
           {pending ? copy.action.working : row ? copy.action.save : copy.action.createVersion}
         </Button>
-        <Button type="button" variant="quiet" disabled={pending} onClick={onClose}>
+        <Button type="button" variant="tertiary" size="sm" disabled={pending} label={copy.action.cancel} onClick={onClose}>
           {copy.action.cancel}
         </Button>
-        <span className={styles.spacer} />
       </div>
     </form>
   );
