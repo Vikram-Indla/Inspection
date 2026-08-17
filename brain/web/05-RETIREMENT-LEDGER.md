@@ -94,6 +94,8 @@ task that supersedes them lands.
 
 | File | Deleted | Replaced by | Bytes removed |
 | --- | --- | --- | --- |
+| `components/field/FieldDraftList.tsx` (159 lines) | 2026-08-17 | `components/sections/field-drafts/draft-list` (T-141) — one importer, the drafts route; the offline merge logic was carried across, only the presentation and the `let`s deleted | 159 lines |
+| `app/(app)/field/drafts/drafts.module.css` (44 lines) | 2026-08-17 | `components/sections/field-drafts/drafts.module.css` (T-141) — imported only by the deleted route markup | 44 lines |
 | `app/(app)/field/my-tasks/AssignmentTaskBrowser.tsx` (211 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks-list` (T-140) — one importer, the route it replaced; its logic (`assignment-task-model`) was reused, only the UI deleted | 211 lines |
 | `app/(app)/field/my-tasks/TaskHeaderStatus.tsx` (73 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks-sync-status` (T-140) — one importer | 73 lines |
 | `app/(app)/field/my-tasks/PrepareAssignmentAction.tsx` (42 lines) | 2026-08-17 | `components/sections/field-my-tasks/prepare-assignment-action` (T-140) — one importer | 42 lines |
@@ -192,8 +194,8 @@ spinner), `--sqx-mirror` (Icon, DateRangePicker, SegmentedControl).
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 22 |
-| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)**; **523 lines off the `/field` home — 3 components + its stylesheet — and 665 lines out of its route file (T-138)**; **480 lines off `/field/my-tasks` — 3 components + its stylesheet — and 595 lines out of its route file (T-140)** |
+| Files deleted | 24 |
+| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)**; **523 lines off the `/field` home — 3 components + its stylesheet — and 665 lines out of its route file (T-138)**; **480 lines off `/field/my-tasks` — 3 components + its stylesheet — and 595 lines out of its route file (T-140)**; **203 lines off `/field/drafts` — `FieldDraftList` + its stylesheet — and 139 lines out of its route file (T-141)** |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 
 Update this table in every session that deletes anything. It is the clearest

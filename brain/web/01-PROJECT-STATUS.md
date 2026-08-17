@@ -1,12 +1,26 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-140 — the /field/my-tasks migration`
+`Last updated: 2026-08-17` · `Updated by: T-141 — the /field/drafts migration`
+
+## The `/field` migration: home, my-tasks and drafts are done (2026-08-17)
+
+T-138 migrated the home route, T-140 `/field/my-tasks`, **T-141
+`/field/drafts`**. The gap T-137 measured below is closed for those three; the
+rest of the channel still carries it.
+
+**T-141 established the rule for migrating a client component with `let` debt.**
+The old `FieldDraftList` carried six `let`s inside an offline-read effect —
+baselined on its path, but rule 6 (no `let` in `.tsx`, ever) means the *migrated*
+file lands at zero. The pattern that works: one `async safeRead<T>() →
+{value, ok}` helper turns each `try/catch`-per-read into a `const`, `Promise.all`
+replaces a mutating accumulator loop, and the failure flag is derived from the
+`ok`s. Behaviour is preserved exactly while the migrated file is clean — the same
+discipline the typography and copy rules already demand.
 
 ## The `/field` migration: home and my-tasks are done (2026-08-17)
 
 T-138 migrated the home route; **T-140 migrated `/field/my-tasks`**, the
-master/detail screen. The gap T-137 measured below is closed for those two; the
-other ~120 files of the channel still carry it.
+master/detail screen.
 
 **A pattern is now confirmed across both slices: the same GeoMap "Map
 unavailable" heading (`h4`) is valid or a skip depending purely on the heading

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-140.** Take T-141.
+implements the reservation. **Highest id in use: T-141.** Take T-142.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,38 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-141 · `/field/drafts` migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 1.5h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-141-field-drafts-migration](sessions/2026-08/2026-08-17-T-141-field-drafts-migration.md)
+
+The third `/field` slice — small (150-line page) but with the offline merge.
+
+```
+route file        150 lines → 11          raw <svg>        4 → 0
+headings          0 → 1>2                 hardcoded copy   17 sites → 0
+rendered sizes    off-scale → 13·15       weight cap 700 → 590
+`let` in .tsx     6 (carried debt) → 0    axe 0 (EN + AR)
+deleted           203 lines (FieldDraftList + stylesheet)
+```
+
+**The offline merge was carried across character-identical — but the six `let`s
+could not be.** `FieldDraftList` read three IndexedDB stores in a
+`try/catch`-per-read effect using `let` accumulators (baselined debt); rule 6
+bars `let` in `.tsx`, so a migrated file lands at zero. Refactored to one
+`async safeRead<T>() → {value, ok}` helper, `Promise.all` for the per-draft
+counts, and a derived `readFailed`. Governed behaviour (server-first render,
+local layered in, unknowns render nothing) unchanged; `field-offline-isolation`'s
+`localForUser` assertion still holds after the path re-point.
+
+**Added the `info` icon** (`lucide/Info`) for the footnote panels — the fifth
+semantic name this `/field` sweep has needed.
+
+**Parked, both cross-cutting:** the back-button chevron does not mirror in RTL
+(`Button` has no `mirrored` passthrough — the T-052 gap, identical on my-tasks),
+and the count pill reads "1 drafts" (no pluralisation, as the old page did).
+
+---
 
 ### T-140 · `/field/my-tasks` migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-009, WEB-013, WEB-014` · `est: 3h` · **owner signed in as Inspector for this task**
@@ -4591,6 +4623,14 @@ filters and tabs moved to `searchParams`.
 Ideas discovered mid-task go here and are left alone until their proper turn.
 Pull one in only if it is genuinely part of doing the active task well.
 
+- **The saqeel `Button` has no `mirrored` / directional-icon passthrough**
+  (T-052, resurfaced T-140/T-141). Every back control built as
+  `Button icon="previousPage"` renders a `ChevronLeft` that stays left-pointing
+  in Arabic. `Icon` and `IconButton` take `mirrored`; `Button` does not. Fixing
+  it once on `Button` corrects every back/next control across the app — a
+  shared-component task, not a per-slice patch.
+- **Field count pills are not pluralised** (T-141). "1 drafts" — the count-plus-
+  word pattern (`{n} {word}`) predates i18n plurals. A WEB-013 plural pass.
 - **`normal` priority renders a danger pill with an untranslated label** (T-140).
   A visit with `priority: "normal"` shows a red `Priority: normal` pill —
   `normal` is outside the governed low/medium/high/urgent set, so it falls
