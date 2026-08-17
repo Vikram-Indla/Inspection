@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-143.** Take T-144.
+implements the reservation. **Highest id in use: T-144.** Take T-145.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,38 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-144 · `/field/visits` + `/field/visits/calendar` migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 2.5h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-17-T-144-field-visits-migration](sessions/2026-08/2026-08-17-T-144-field-visits-migration.md)
+
+The sixth `/field` slice — the visits list and its calendar subroute, migrated
+together because they share one loader, one `FieldVisit` type, one stylesheet and
+a view-switcher nav.
+
+```
+route files       60 + 31 → 11 + 11       raw <svg>        several → 0
+duplicate <main>  2 → 1 (shell owns it)    hardcoded copy   ~45 sites → 0
+headings          0 → 1 (list) / 1>2 (cal) rendered sizes   off-scale → 13·15
+axe 0 (EN + AR, list + calendar)           deleted 218 lines
+```
+
+**A duplicate-`main` bug was found and fixed** — `AppShell` renders the `<main>`,
+but the old `VisitsClient` and `loading.tsx` each rendered their own, nesting a
+second landmark. Invisible to the WCAG tags; only `landmark-no-duplicate-main`
+catches it. The rebuild renders a `<div>` like the other five field slices.
+
+**`assignment-task-model` reused unchanged** (governed helpers, shared with
+my-tasks); `as unknown as Row[]` gone (`rows.ts` narrows from `unknown`); the
+`FieldVisit` type moved to the feature layer. **The calendar's UTC date logic was
+preserved verbatim** — a visit's calendar day must not shift under the viewer's
+timezone, so `Date.UTC`/`timeZone:"UTC"` were carried across, not "corrected".
+**`loading.tsx` is localised now** via `getMessages(await getLocale())`, not a
+hardcoded English `aria-label`.
+
+**No spec re-pointing needed** — nothing in e2e reads the visits source files.
+
+---
 
 ### T-143 · `/field/establishments/unregistered` migrated off the parallel design system
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-006, WEB-013, WEB-014` · `est: 2h` · **owner signed in as Inspector for this task**

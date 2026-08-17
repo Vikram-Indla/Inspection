@@ -1,6 +1,24 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-143 — the /field/.../unregistered migration`
+`Last updated: 2026-08-17` · `Updated by: T-144 — the /field/visits migration`
+
+## The `/field` migration: visits list + calendar are done (2026-08-17)
+
+T-138 home, T-140 my-tasks, T-141 drafts, T-142+T-143 the establishments surface
+(list + create form), **T-144 the `/field/visits` list and its `/calendar`
+subroute**. Six slices done; the large execution screens (`[visitId]` startup,
+the 1,991-line `inspection/[id]/Workspace`) and the report/notification surfaces
+remain.
+
+**T-144 surfaced a landmark bug the WCAG tags cannot see.** `AppShell` owns the
+one `<main id="main-content">`; every migrated field screen renders a `<div>`
+inside it. The old `VisitsClient` and its `loading.tsx` each rendered their *own*
+`<main>` — a second landmark nested in the shell's. Nothing in the WCAG A/AA tag
+set flags a duplicate main; only the best-practice `landmark-no-duplicate-main`
+rule does, and only if you run it explicitly and count `<main>` in the browser.
+**Standing rule for field migrations: render a `<div>`, never `<main>` — the
+shell owns the landmark — and count `document.querySelectorAll('main')` in
+verification, because a stray one is otherwise silent.**
 
 ## The `/field` migration: the establishments surface is done (2026-08-17)
 

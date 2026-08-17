@@ -14,6 +14,7 @@ import arFieldDrafts from "./locales/ar/field-drafts.json";
 import arFieldEstablishments from "./locales/ar/field-establishments.json";
 import arFieldHome from "./locales/ar/field-home.json";
 import arFieldUnregistered from "./locales/ar/field-unregistered.json";
+import arFieldVisits from "./locales/ar/field-visits.json";
 import arFieldMyTasks from "./locales/ar/field-my-tasks.json";
 import arNotifications from "./locales/ar/notifications.json";
 import arOperations from "./locales/ar/operations.json";
@@ -37,6 +38,7 @@ import enFieldDrafts from "./locales/en/field-drafts.json";
 import enFieldEstablishments from "./locales/en/field-establishments.json";
 import enFieldHome from "./locales/en/field-home.json";
 import enFieldUnregistered from "./locales/en/field-unregistered.json";
+import enFieldVisits from "./locales/en/field-visits.json";
 import enFieldMyTasks from "./locales/en/field-my-tasks.json";
 import enNotifications from "./locales/en/notifications.json";
 import enOperations from "./locales/en/operations.json";
@@ -62,6 +64,7 @@ export type Messages = {
   readonly fieldEstablishments: typeof enFieldEstablishments;
   readonly fieldHome: typeof enFieldHome;
   readonly fieldUnregistered: typeof enFieldUnregistered;
+  readonly fieldVisits: typeof enFieldVisits;
   readonly fieldMyTasks: typeof enFieldMyTasks;
   readonly notifications: typeof enNotifications;
   readonly operations: typeof enOperations;
@@ -73,8 +76,8 @@ export type Messages = {
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, fieldUnregistered: enFieldUnregistered, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
-  ar: { adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, fieldUnregistered: arFieldUnregistered, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
+  en: { adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, fieldUnregistered: enFieldUnregistered, fieldVisits: enFieldVisits, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
+  ar: { adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, fieldUnregistered: arFieldUnregistered, fieldVisits: arFieldVisits, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {
