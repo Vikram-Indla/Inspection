@@ -147,7 +147,7 @@ test.describe("iPad standalone presentation", () => {
     expect(layout).toContain('manifest: "/manifest.json"');
     expect(layout).toContain("themeColor: [");
     expect(layout).toContain('{ media: "(prefers-color-scheme: light)", color: "#FFFFFF" }');
-    expect(layout).toContain('{ media: "(prefers-color-scheme: dark)", color: "#080B10" }');
+    expect(layout).toContain('{ media: "(prefers-color-scheme: dark)", color: "#08090A" }');
   });
 
   test("manifest gains installability fields without changing brand identity", () => {

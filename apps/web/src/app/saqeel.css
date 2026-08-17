@@ -3,147 +3,165 @@
 @layer sqx.tokens {
   :root {
     /* ------------------------------------------------------------------
-       Palette source: IRP (ir-frontend), src/theme/theme-config.ts.
-       Adopted 2026-08 on the manager's instruction. Two rules govern it:
+       Palette source: the approved experimental reference at
+       design/linear/design.md. Adopted 2026-08-17 on the manager's
+       instruction, replacing the IRP palette adopted 2026-08. Three rules
+       govern it:
 
-       1. Surfaces are NEUTRAL. Pure white in light, near-black in dark.
-          No hue in any page, card, dropdown, header or sidebar fill.
-       2. Colour is reserved for meaning: the primary action, status, and
-          data. GREEN NOW MEANS SUCCESS AND NOTHING ELSE — it is not a
-          brand colour, an accent, a chart series or a nav state.
+       1. Surfaces are NEUTRAL and told apart by a HAIRLINE, not a shadow.
+          Elevation is the surface ladder plus a 1px inset ring.
+       2. Acid lime is the single chromatic action and is a FILL ONLY.
+          Measured 1.23:1 as text on white — it can never carry a label.
+          Text accents are neutral plus an underline.
+       3. Status is the one place chroma carries meaning. The reference has
+          no status system, so the five families below are derived from its
+          accents and measured here (see the status block).
 
-       IRP ships light only, so the dark theme is derived here: the grey
-       ramp is extended below IRP's 900 in the same blue-grey hue so the
-       page reads near-black while staying in one family with the light
-       theme, and every accent gets a light-on-dark counterpart.
+       The reference ships dark only, so the light theme is derived: the
+       ladder inverts, and `fog` is muted text on dark where `ash` is muted
+       text on light.
        ------------------------------------------------------------------ */
 
-    /* Grey — IRP's ramp verbatim from 50 to 900, extended at 950/1000.
-       Measured on #FFFFFF:  #1C252E 15.52:1   #454F5B 8.33:1   #637381 4.88:1
-       Measured on #141A21:  #FFFFFF 17.51:1   #C4CDD5 10.87:1  #919EAB 6.41:1
-       Ladder deltas — light #FFFFFF->#F9FAFB 1.045, dark #080B10->#141A21
-       1.126 and #141A21->#1C252E 1.128, so nesting stays visible. */
-    --sqx-grey-050: #FCFDFD;
-    --sqx-grey-100: #F9FAFB;
-    --sqx-grey-200: #F4F6F8;
-    --sqx-grey-300: #DFE3E8;
-    --sqx-grey-400: #C4CDD5;
-    --sqx-grey-500: #919EAB;
-    --sqx-grey-600: #637381;
-    --sqx-grey-700: #454F5B;
-    --sqx-grey-800: #1C252E;
-    --sqx-grey-900: #141A21;
-    --sqx-grey-950: #0E131A;
-    --sqx-grey-1000: #080B10;
-    --sqx-grey-neutral-dark: #28323D;
+    /* Grey — the reference's neutral ladder mapped onto the 050..1000 scale.
+       Measured on #FFFFFF:  #23252A 15.33:1  #383B3F 11.26:1  #62666D 5.77:1
+       Measured on #08090A:  #FFFFFF 19.93:1  #D0D6E0 13.64:1  #8A8F98 6.13:1
+       Ladder deltas — light #FFFFFF->#FAFAFA 1.04, dark #08090A->#0F1011
+       1.05 and #0F1011->#161718 1.06, so nesting stays visible. */
+    --sqx-grey-050: #FCFCFC;
+    --sqx-grey-100: #FAFAFA;
+    --sqx-grey-200: #F4F4F5;
+    --sqx-grey-300: #E5E5E6;
+    --sqx-grey-400: #D0D6E0;
+    --sqx-grey-500: #8A8F98;
+    --sqx-grey-600: #62666D;
+    --sqx-grey-700: #383B3F;
+    --sqx-grey-800: #23252A;
+    --sqx-grey-900: #161718;
+    --sqx-grey-950: #0F1011;
+    --sqx-grey-1000: #08090A;
+    --sqx-grey-neutral-dark: #23252A;
 
-    /* Brand — IRP primary, aubergine. The only non-status accent.
+    /* Brand — acid lime. The single chromatic action in the system, and the
+       one place a saturated colour is allowed on chrome.
 
-       Filled controls use #7E61AC (IRP's own primary.light), NOT the #413259
-       main. At full strength the fill read as near-black, and a CTA that dark
-       is hard to tell from a disabled slab. #7E61AC carries #FFFFFF at
-       5.01:1, hover #6A5391 at 6.44:1, pressed #52406F at 9.05:1 — the
-       control darkens under the pointer and contrast only ever improves.
+       IT IS A FILL, NEVER TEXT. Measured: #E4F222 on #FFFFFF is 1.23:1 and
+       on #08090A is 16.15:1 — so a lime label is invisible in light mode and
+       no darkened lime stays lime (it turns olive). The ink on a lime fill is
+       always #08090A: 16.15:1 at rest, 13.07:1 hover, 10.31:1 pressed, so the
+       control darkens under the pointer and contrast only ever falls within
+       AA.
 
-       Text keeps the darker #413259. A fill needs to look light; a label on
-       a light surface needs to be readable, and #7E61AC on the brand tint is
-       only 4.19:1. Fills lighten, text does not.
+       The 600..950 stops are therefore NEUTRAL, not lime. They exist because
+       `--sqx-text-link` and `--sqx-text-accent` point at brand-600, and a
+       text role must resolve to something readable in both themes. Chromatic
+       body text is forbidden by the reference; links are neutral plus an
+       underline. */
+    --sqx-brand-050: #FCFEE9;
+    --sqx-brand-100: #F6FBC2;
+    --sqx-brand-200: #EEF799;
+    --sqx-brand-300: #E9F55C;
+    --sqx-brand-400: #E4F222;
+    --sqx-brand-450: #CEDB20;
+    --sqx-brand-500: #B8C31D;
+    --sqx-brand-600: #23252A;
+    --sqx-brand-700: #161718;
+    --sqx-brand-800: #0F1011;
+    --sqx-brand-900: #08090A;
+    --sqx-brand-950: #08090A;
 
-       Dark theme flips to #B49AD8, which carries #0D0A12 at 8.00:1. */
-    --sqx-brand-050: #F2EDF9;
-    --sqx-brand-100: #E4DBF2;
-    --sqx-brand-200: #CDBAEA;
-    --sqx-brand-300: #B49AD8;
-    --sqx-brand-400: #7E61AC;
-    --sqx-brand-450: #6A5391;
-    --sqx-brand-500: #52406F;
-    --sqx-brand-600: #413259;
-    --sqx-brand-700: #342847;
-    --sqx-brand-800: #271E35;
-    --sqx-brand-900: #1A1423;
-    --sqx-brand-950: #0D0A12;
+    /* The reference's pulse-green, coral-red, signal-teal, iris and lavender
+       are defined as status and chart roles below, never as brand. */
 
-    /* IRP's secondary (teal #18D8C6) is deliberately NOT adopted and not
-       defined here. At that saturation it reads as green to anyone
-       scanning the page, which would break rule 2 above. */
+    /* Status — derived from the reference's accents, because the reference
+       has none: it calls pulse-green and coral-red "supporting accents, not
+       status colours", which is guidance for a marketing site and cannot
+       govern a platform where severity is legally meaningful.
 
-    /* Status — IRP's four, plus one interpolated orange for the severity
-       tier between warning and critical. Pill text uses the *darker* stop
-       in light mode: IRP's own .dark stops only reach 3.6:1 on a 16% tint,
-       which is a large-text pass at best.
-       Light pill, text on tint:  success 6.79  warning 7.32  error 9.27
-                                  info 6.78    major 8.05    neutral 7.23
-       Dark  pill, text on tint:  success 9.04  warning 9.21  error 7.88
-                                  info 8.56    major 8.20    neutral 8.40 */
-    --sqx-success-lighter: #D3FCD2;
-    --sqx-success-light: #77ED8B;
-    --sqx-success-main: #22C55E;
-    --sqx-success-dark: #118D57;
-    --sqx-success-darker: #065E49;
-    --sqx-warning-lighter: #FFF5CC;
-    --sqx-warning-light: #FFD666;
-    --sqx-warning-main: #FFAB00;
-    --sqx-warning-dark: #B76E00;
-    --sqx-warning-darker: #7A4100;
-    --sqx-error-lighter: #FFE9D5;
-    --sqx-error-light: #FFAC82;
-    --sqx-error-main: #FF5630;
-    --sqx-error-dark: #B71D18;
-    --sqx-error-darker: #7A0916;
-    --sqx-info-lighter: #C9F4FC;
-    --sqx-info-light: #7EE4F6;
-    --sqx-info-main: #46CFE7;
-    --sqx-info-dark: #49AABB;
-    --sqx-info-darker: #215C66;
-    --sqx-major-light: #FDBA74;
-    --sqx-major-main: #FF7A1A;
-    --sqx-major-dark: #B54708;
-    --sqx-major-darker: #7C2D12;
+       success = pulse-green, error = coral-red, info = signal-teal verbatim.
+       warning and major have no counterpart in the reference and are derived
+       in its saturation idiom — acid lime cannot serve as warning because it
+       IS the primary action, and a warning pill would be indistinguishable
+       from a CTA. This follows the precedent already set for `major`, which
+       has always been an interpolated severity tier.
 
-    /* AI — violet. Kept as the one accent outside the palette because every
-       product signals AI this way, and an aubergine AI entry point would be
-       indistinguishable from a primary action. Saturated (70%) where the
-       brand is desaturated (17%), so the two never read as the same thing.
-       #6D28D9 carries #FFFFFF at 7.10:1; #A78BFA carries #0D0A12 at 7.22:1. */
+       `main` is the graphic fill on DARK; `dark` is the graphic fill on
+       LIGHT, because warning and info at full strength measure 2.25:1 and
+       2.41:1 on white — under the 3:1 that WCAG 1.4.11 needs for a dot, bar
+       or border. Text on a tint always uses `darker` (light) / `light` (dark).
+
+       graphic on #FFFFFF:  success 3.17  warning 3.01  error 3.48  info 3.07  major 3.14
+       graphic on #0F1011:  success 5.88  warning 8.30  error 5.35  info 7.75  major 5.94
+       text on tint light:  success 4.51  warning 4.61  error 4.65  info 4.59  major 4.66
+       text on tint dark:   success 5.36  warning 7.13  error 5.05  info 6.82  major 5.58
+       No two mains are closer than deltaE 30. */
+    --sqx-success-lighter: #D4EDDA;
+    --sqx-success-light: #3DAF57;
+    --sqx-success-main: #27A644;
+    --sqx-success-dark: #27A644;
+    --sqx-success-darker: #1E7E34;
+    --sqx-warning-lighter: #F9ECD1;
+    --sqx-warning-light: #E4AF3B;
+    --sqx-warning-main: #E0A21B;
+    --sqx-warning-dark: #C18B17;
+    --sqx-warning-darker: #8F6811;
+    --sqx-error-lighter: #FBDDDD;
+    --sqx-error-light: #ED6868;
+    --sqx-error-main: #EB5757;
+    --sqx-error-dark: #EB5757;
+    --sqx-error-darker: #B74444;
+    --sqx-info-lighter: #CCF1F5;
+    --sqx-info-light: #2AC3D4;
+    --sqx-info-main: #02B8CC;
+    --sqx-info-dark: #02A2B4;
+    --sqx-info-darker: #017987;
+    --sqx-major-light: #EE7D3C;
+    --sqx-major-main: #EC6B21;
+    --sqx-major-dark: #EC6B21;
+    --sqx-major-darker: #AF4F18;
+
+    /* AI — the reference's lavender. Kept as the one accent outside the
+       status set because every product signals AI this way, and a lime AI
+       entry point would be indistinguishable from the primary action.
+       #6443AF carries #FFFFFF at 7.09:1; #8B5CF6 carries #08090A at 4.71:1. */
     --sqx-ai-light: #C4B5FD;
-    --sqx-ai-main: #A78BFA;
-    --sqx-ai-shade: #5B3FC7;
-    --sqx-ai-deep: #6D28D9;
+    --sqx-ai-main: #8B5CF6;
+    --sqx-ai-shade: #6443AF;
+    --sqx-ai-deep: #6443AF;
 
     /* Flattened tints. Written as hex, not alpha, so a pill nested inside a
        card does not compound its own background against the one below it. */
-    --sqx-tint-brand-light: #ECEAEE;
-    --sqx-tint-brand-light-soft: #F4F3F5;
-    --sqx-tint-success-light: #DCF6E5;
-    --sqx-tint-warning-light: #FFF2D6;
-    --sqx-tint-error-light: #FFE4DE;
-    --sqx-tint-info-light: #E1F7FB;
-    --sqx-tint-major-light: #FFEADA;
-    --sqx-tint-neutral-light: #EDEFF2;
-    --sqx-tint-ai-light: #EBE1FA;
-    --sqx-tint-brand-dark: #262A35;
-    --sqx-tint-success-dark: #16352B;
-    --sqx-tint-warning-dark: #3A311C;
-    --sqx-tint-error-dark: #3A2423;
-    --sqx-tint-info-dark: #1C3741;
-    --sqx-tint-major-dark: #3A2920;
-    --sqx-tint-neutral-dark: #282F37;
-    --sqx-tint-ai-dark: #262238;
+    --sqx-tint-brand-light: #FCFEE9;
+    --sqx-tint-brand-light-soft: #FDFEF4;
+    --sqx-tint-success-light: #E5F4E9;
+    --sqx-tint-warning-light: #FBF4E4;
+    --sqx-tint-error-light: #FDEBEB;
+    --sqx-tint-info-light: #E1F6F9;
+    --sqx-tint-major-light: #FDEDE4;
+    --sqx-tint-neutral-light: #F3F4F5;
+    --sqx-tint-ai-light: #F3EFFE;
+    --sqx-tint-brand-dark: #292B13;
+    --sqx-tint-success-dark: #122B21;
+    --sqx-tint-warning-dark: #302A1A;
+    --sqx-tint-error-dark: #311E24;
+    --sqx-tint-info-dark: #0C2D36;
+    --sqx-tint-major-dark: #32211B;
+    --sqx-tint-neutral-dark: #202224;
+    --sqx-tint-ai-dark: #201B31;
 
-    /* Alphas. IRP builds every divider, hover and disabled fill from the
-       grey-500 channel, which is why its chrome stays neutral over any
-       surface. Same here. */
-    --sqx-grey-a08: rgba(145, 158, 171, 0.08);
-    --sqx-grey-a12: rgba(145, 158, 171, 0.12);
-    --sqx-grey-a16: rgba(145, 158, 171, 0.16);
-    --sqx-grey-a20: rgba(145, 158, 171, 0.2);
-    --sqx-grey-a24: rgba(145, 158, 171, 0.24);
-    --sqx-grey-a32: rgba(145, 158, 171, 0.32);
-    --sqx-grey-a48: rgba(145, 158, 171, 0.48);
-    --sqx-shade-050: rgba(145, 158, 171, 0.08);
-    --sqx-shade-100: rgba(145, 158, 171, 0.12);
-    --sqx-shade-150: rgba(145, 158, 171, 0.16);
-    --sqx-shade-200: rgba(145, 158, 171, 0.24);
+    /* Alphas. Every divider, hover and disabled fill is built from the
+       grey-500 channel (#8A8F98), which is why chrome stays neutral over any
+       surface in either theme. */
+    --sqx-grey-a08: rgba(138, 143, 152, 0.08);
+    --sqx-grey-a12: rgba(138, 143, 152, 0.12);
+    --sqx-grey-a16: rgba(138, 143, 152, 0.16);
+    --sqx-grey-a20: rgba(138, 143, 152, 0.2);
+    --sqx-grey-a24: rgba(138, 143, 152, 0.24);
+    --sqx-grey-a32: rgba(138, 143, 152, 0.32);
+    --sqx-grey-a48: rgba(138, 143, 152, 0.48);
+    --sqx-shade-050: rgba(138, 143, 152, 0.08);
+    --sqx-shade-100: rgba(138, 143, 152, 0.12);
+    --sqx-shade-150: rgba(138, 143, 152, 0.16);
+    --sqx-shade-200: rgba(138, 143, 152, 0.24);
     --sqx-void-200: rgba(0, 0, 0, 0.32);
     --sqx-void-300: rgba(0, 0, 0, 0.44);
     --sqx-void-400: rgba(0, 0, 0, 0.6);
@@ -245,10 +263,10 @@
     --sqx-neon-ai-light: var(--sqx-ai-light);
     --sqx-neon-ai-shade: var(--sqx-ai-shade);
 
-    --sqx-green-veil-soft: rgba(65, 50, 89, 0.06);
-    --sqx-green-veil-strong: rgba(65, 50, 89, 0.1);
-    --sqx-neon-veil-soft: rgba(205, 186, 234, 0.08);
-    --sqx-neon-veil-strong: rgba(205, 186, 234, 0.14);
+    --sqx-green-veil-soft: rgba(138, 143, 152, 0.06);
+    --sqx-green-veil-strong: rgba(138, 143, 152, 0.1);
+    --sqx-neon-veil-soft: rgba(255, 255, 255, 0.03);
+    --sqx-neon-veil-strong: rgba(255, 255, 255, 0.06);
     --sqx-halo-green: var(--sqx-grey-900);
     --sqx-halo-cyan: var(--sqx-grey-900);
     --sqx-halo-light: var(--sqx-grey-100);
@@ -285,7 +303,7 @@
     --sqx-text-muted: var(--sqx-grey-600);
     --sqx-text-disabled: var(--sqx-grey-600);
     --sqx-text-inverse: #FFFFFF;
-    --sqx-text-on-action: #FFFFFF;
+    --sqx-text-on-action: var(--sqx-grey-1000);
     --sqx-text-link: var(--sqx-brand-600);
     --sqx-text-link-hover: var(--sqx-brand-800);
     --sqx-text-accent: var(--sqx-brand-600);
@@ -305,7 +323,7 @@
     --sqx-action-primary-bg: var(--sqx-brand-400);
     --sqx-action-primary-hover: var(--sqx-brand-450);
     --sqx-action-primary-active: var(--sqx-brand-500);
-    --sqx-action-primary-text: #FFFFFF;
+    --sqx-action-primary-text: var(--sqx-grey-1000);
     --sqx-action-primary-border: var(--sqx-action-primary-bg);
     --sqx-segment-track: var(--sqx-grey-200);
     --sqx-segment-label: var(--sqx-brand-600);
@@ -364,17 +382,17 @@
     --sqx-chart-grid: var(--sqx-grey-a24);
     --sqx-chart-axis: var(--sqx-grey-600);
 
-    /* IRP's card shadow: a 2px ambient ring plus a soft drop, both built
-       from the grey-500 channel so the shadow stays neutral over white. */
+    /* Elevation is a HAIRLINE, not a shadow. The reference is explicit:
+       surfaces separate by a 1px inset ring and the surface ladder, never by
+       an ambient stack. Only genuinely floating layers — menu, modal — earn a
+       drop, and it stays tight rather than soft. */
     --sqx-elevation-0: none;
-    --sqx-elevation-1: 0 0 2px 0 var(--sqx-shade-200),
-      0 12px 24px -4px var(--sqx-shade-100);
-    --sqx-elevation-2: 0 0 2px 0 var(--sqx-shade-200),
-      0 16px 32px -4px var(--sqx-shade-150);
-    --sqx-elevation-3: 0 0 2px 0 var(--sqx-shade-200),
-      0 20px 40px -4px var(--sqx-shade-200);
-    --sqx-elevation-4: 0 0 2px 0 var(--sqx-shade-200),
-      0 24px 48px 0 var(--sqx-shade-200);
+    --sqx-elevation-1: inset 0 0 0 1px var(--sqx-grey-a24);
+    --sqx-elevation-2: inset 0 0 0 1px var(--sqx-grey-a32);
+    --sqx-elevation-3: 0 0 0 1px var(--sqx-grey-a24),
+      0 2px 4px 0 rgba(8, 9, 10, 0.08);
+    --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-a24),
+      0 4px 32px 0 rgba(8, 9, 10, 0.12);
 
     --sqx-gradient-cta: linear-gradient(
       var(--sqx-flow-angle),
@@ -507,15 +525,15 @@
     --sqx-chart-grid: var(--sqx-grey-a16);
     --sqx-chart-axis: var(--sqx-grey-500);
 
+    /* Same rule inverted: on the near-black canvas the hairline is the
+       graphite ring the reference names, and only floating layers drop. */
     --sqx-elevation-0: none;
-    --sqx-elevation-1: 0 0 0 1px var(--sqx-grey-a08),
-      0 1px 3px var(--sqx-void-300);
-    --sqx-elevation-2: 0 0 0 1px var(--sqx-grey-a08),
-      0 4px 10px var(--sqx-void-300);
-    --sqx-elevation-3: 0 0 0 1px var(--sqx-grey-a12),
-      0 10px 24px var(--sqx-void-400);
-    --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-a12),
-      0 20px 48px var(--sqx-void-500);
+    --sqx-elevation-1: inset 0 0 0 1px var(--sqx-grey-800);
+    --sqx-elevation-2: inset 0 0 0 1px var(--sqx-grey-700);
+    --sqx-elevation-3: 0 0 0 1px var(--sqx-grey-800),
+      0 2px 4px 0 rgba(0, 0, 0, 0.4);
+    --sqx-elevation-4: 0 0 0 1px var(--sqx-grey-800),
+      0 4px 32px 0 rgba(8, 9, 10, 0.6);
 
     --sqx-gradient-cta: linear-gradient(
       var(--sqx-flow-angle),
@@ -552,51 +570,61 @@
     --sqx-status-danger-soft: var(--sqx-status-critical-soft);
     --sqx-status-danger-on-soft: var(--sqx-status-critical-on-soft);
 
-    --sqx-font-sans: var(--font-plex-arabic, "IBM Plex Sans Arabic"), system-ui, sans-serif;
-    --sqx-font-mono: var(--sqx-font-sans);
+    /* Inter carries Latin, IBM Plex Sans Arabic carries Arabic. Fallback is
+       per-glyph, so no [lang] selector is needed: Inter has no Arabic
+       coverage, so Arabic falls through to Plex on its own. Both are
+       self-hosted — the build never fetches a font at runtime. */
+    --sqx-font-sans: var(--font-inter, "Inter"), var(--font-plex-arabic, "IBM Plex Sans Arabic"), system-ui, -apple-system, "Segoe UI", sans-serif;
+    --sqx-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+    /* The scale caps at 590. The reference forbids 700+ outright, so
+       `bold` is an alias for `semibold` rather than a heavier cut. */
     --sqx-weight-regular: 400;
-    --sqx-weight-medium: 500;
-    --sqx-weight-semibold: 600;
-    --sqx-weight-bold: 700;
+    --sqx-weight-medium: 510;
+    --sqx-weight-semibold: 590;
+    --sqx-weight-bold: 590;
     --sqx-numeric-tabular: tabular-nums;
 
-    --sqx-text-display-size: 1.875rem;
-    --sqx-text-display-line: 1.15;
-    --sqx-text-display-weight: var(--sqx-weight-bold);
-    --sqx-text-display-tracking: -0.02em;
-    --sqx-text-heading-size: 1.25rem;
-    --sqx-text-heading-line: 1.3;
-    --sqx-text-heading-weight: var(--sqx-weight-semibold);
-    --sqx-text-heading-tracking: -0.01em;
-    --sqx-text-subheading-size: 1rem;
-    --sqx-text-subheading-line: 1.4;
-    --sqx-text-subheading-weight: var(--sqx-weight-semibold);
-    --sqx-text-subheading-tracking: 0;
-    --sqx-text-body-size: 0.875rem;
+    /* The reference's scale: 13 / 15 / 20 / 24 / 32, with 14 for controls.
+       Tracking is negative and tightens as size grows; it is zeroed under
+       RTL further down, because Arabic never takes letter-spacing. There is
+       no size below 13px in this system — the smallest prose is `body`. */
+    --sqx-text-display-size: 2rem;
+    --sqx-text-display-line: 1.13;
+    --sqx-text-display-weight: var(--sqx-weight-medium);
+    --sqx-text-display-tracking: -0.022em;
+    --sqx-text-heading-size: 1.5rem;
+    --sqx-text-heading-line: 1.33;
+    --sqx-text-heading-weight: var(--sqx-weight-regular);
+    --sqx-text-heading-tracking: -0.012em;
+    --sqx-text-subheading-size: 1.25rem;
+    --sqx-text-subheading-line: 1.33;
+    --sqx-text-subheading-weight: var(--sqx-weight-medium);
+    --sqx-text-subheading-tracking: -0.012em;
+    --sqx-text-body-size: 0.9375rem;
     --sqx-text-body-line: 1.6;
     --sqx-text-body-weight: var(--sqx-weight-regular);
-    --sqx-text-body-tracking: 0;
-    --sqx-text-body-strong-size: 0.875rem;
+    --sqx-text-body-tracking: -0.011em;
+    --sqx-text-body-strong-size: 0.9375rem;
     --sqx-text-body-strong-line: 1.6;
     --sqx-text-body-strong-weight: var(--sqx-weight-semibold);
-    --sqx-text-body-strong-tracking: 0;
-    --sqx-text-label-size: 0.75rem;
-    --sqx-text-label-line: 1.4;
-    --sqx-text-label-weight: var(--sqx-weight-semibold);
-    --sqx-text-label-tracking: 0.01em;
-    --sqx-text-overline-size: 0.6875rem;
-    --sqx-text-overline-line: 1.3;
-    --sqx-text-overline-weight: var(--sqx-weight-bold);
-    --sqx-text-overline-tracking: 0.08em;
-    --sqx-text-metric-size: 1.75rem;
-    --sqx-text-metric-line: 1.1;
-    --sqx-text-metric-weight: var(--sqx-weight-bold);
-    --sqx-text-metric-tracking: -0.02em;
+    --sqx-text-body-strong-tracking: -0.011em;
+    --sqx-text-label-size: 0.8125rem;
+    --sqx-text-label-line: 1.2;
+    --sqx-text-label-weight: var(--sqx-weight-medium);
+    --sqx-text-label-tracking: 0;
+    --sqx-text-overline-size: 0.8125rem;
+    --sqx-text-overline-line: 1.2;
+    --sqx-text-overline-weight: var(--sqx-weight-medium);
+    --sqx-text-overline-tracking: 0.06em;
+    --sqx-text-metric-size: 2rem;
+    --sqx-text-metric-line: 1.13;
+    --sqx-text-metric-weight: var(--sqx-weight-medium);
+    --sqx-text-metric-tracking: -0.022em;
     --sqx-text-mono-size: 0.8125rem;
     --sqx-text-mono-line: 1.5;
-    --sqx-text-mono-weight: var(--sqx-weight-medium);
-    --sqx-text-mono-tracking: 0;
+    --sqx-text-mono-weight: var(--sqx-weight-regular);
+    --sqx-text-mono-tracking: -0.013em;
 
     --sqx-text-title-size: var(--sqx-text-display-size);
     --sqx-text-title-line: var(--sqx-text-display-line);
@@ -644,13 +672,16 @@
     --sqx-page-inline-sm: var(--sqx-space-5);
     --sqx-page-block: var(--sqx-space-8);
 
-    --sqx-radius-xs: 0.25rem;
-    --sqx-radius-sm: 0.375rem;
-    --sqx-radius-md: 0.5625rem;
+    /* Three radii are the whole vocabulary: 6px controls, 12px cards, pills.
+       2px and 4px exist for inline marks and badges. Nothing is larger than
+       12px — the reference caps card radius there. */
+    --sqx-radius-xs: 0.125rem;
+    --sqx-radius-sm: 0.25rem;
+    --sqx-radius-md: 0.375rem;
     --sqx-radius-lg: 0.75rem;
-    --sqx-radius-xl: 1rem;
-    --sqx-radius-2xl: 1.375rem;
-    --sqx-radius-full: 999px;
+    --sqx-radius-xl: 0.75rem;
+    --sqx-radius-2xl: 0.75rem;
+    --sqx-radius-full: 9999px;
     --sqx-radius-control: var(--sqx-radius-md);
     --sqx-radius-card: var(--sqx-radius-lg);
     --sqx-radius-surface: var(--sqx-radius-xl);
@@ -827,6 +858,20 @@
     --sqx-sweep-start: 240%;
     --sqx-sweep-end: -140%;
     --sqx-mirror: -1;
+
+    /* Arabic never takes letter-spacing: negative tracking breaks the joins
+       and positive tracking severs them outright (WEB-011). The reference's
+       scale is tracked at every size, so every role is zeroed here rather
+       than through a [dir="rtl"] override in component CSS. */
+    --sqx-text-display-tracking: 0;
+    --sqx-text-heading-tracking: 0;
+    --sqx-text-subheading-tracking: 0;
+    --sqx-text-body-tracking: 0;
+    --sqx-text-body-strong-tracking: 0;
+    --sqx-text-label-tracking: 0;
+    --sqx-text-overline-tracking: 0;
+    --sqx-text-metric-tracking: 0;
+    --sqx-text-mono-tracking: 0;
   }
 }
 

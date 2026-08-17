@@ -53,11 +53,11 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
       "--sqx-text-disabled: var(--sqx-grey-600);",
       "--sqx-text-disabled: var(--sqx-grey-500);",
     ]);
-    expect(saqeel).toContain("--sqx-grey-600: #637381;");
-    expect(saqeel).toContain("--sqx-grey-500: #919EAB;");
-    expect(contrast("#637381", "#ffffff")).toBeGreaterThanOrEqual(4.5); // light: grey-600 on white cards
-    expect(contrast("#919EAB", "#1C252E")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on raised grey-800
-    expect(contrast("#919EAB", "#141A21")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on default grey-900
+    expect(saqeel).toContain("--sqx-grey-600: #62666D;");
+    expect(saqeel).toContain("--sqx-grey-500: #8A8F98;");
+    expect(contrast("#62666D", "#ffffff")).toBeGreaterThanOrEqual(4.5); // light: grey-600 on white cards
+    expect(contrast("#8A8F98", "#23252A")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on raised grey-800
+    expect(contrast("#8A8F98", "#161718")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on default grey-900
   });
 
   test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
