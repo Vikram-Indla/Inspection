@@ -249,6 +249,7 @@ export function isShellRouteCurrent(current: string, href: string) {
   if (hrefPath === "/dashboard") return current === hrefPath;
   if (hrefPath === "/operations") return current === hrefPath || current.startsWith(`${hrefPath}/`);
   if (hrefPath === "/admin") return current === hrefPath;
+  if (hrefPath === "/admin/gis") return current === hrefPath;
   return current === hrefPath || current.startsWith(`${hrefPath}/`);
 }
 

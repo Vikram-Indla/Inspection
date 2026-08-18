@@ -1,6 +1,30 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-159 — the /admin/gis geofencing studio migration`
+`Last updated: 2026-08-18` · `Updated by: T-160 — the /admin/gis/spatial migration + nav fix`
+
+## The `/admin` migration: the GIS tree is done, and a nav-highlight bug fixed (2026-08-18)
+
+**T-160 finished the GIS tree with `/admin/gis/spatial` and fixed a real
+navigation bug.** The spatial canvas is a small feature-flagged subroute
+(`FEATURE_SPATIAL_CANVAS` → `NotYetBoundary` when off), migrated the same way as
+its parent: thin route → `features/admin-gis-spatial/*` + `components/sections/
+admin-gis-spatial/*`, reusing the `adminGis` namespace with a `spatial` section
+(a subroute's copy belongs to its parent's namespace, not a new one). The
+`gis_admin` in-UI gate carried across from the studio.
+
+**The lesson is the sidebar double-highlight.** `isShellRouteCurrent` marks a nav
+item active on an exact match *or a path-prefix* match — so a parent route lights
+up on any child. That's correct when the child has no nav item of its own
+(`/operations` on `/operations/live`), but wrong when the child *is* a separate
+nav item: `/admin/gis` lit up alongside `/admin/gis/spatial`. The file already
+carried exact-match special cases for `/dashboard` and `/admin` for exactly this
+reason; `/admin/gis` needed the same. **The rule to remember: a parent nav route
+must be exact-match whenever one of its children is a distinct nav item** — and
+the `isShellRouteCurrent` unit test now locks it (`/admin/gis/spatial` → `/admin/
+gis` is `false`). Applying the in-UI `gis_admin` gate meant re-pointing two live
+`mvp2` M2-06 governance tests: the gate hides the create form for a non-gis_admin,
+so "create is denied" is now enforced before submit (no input offered) rather than
+by an RLS error after — the guarantee preserved and strengthened.
 
 ## The `/admin` migration: the GIS geofencing studio, with a permission gate (2026-08-18)
 

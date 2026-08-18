@@ -32,7 +32,7 @@
     "bandAll": "All risk bands",
     "regionLabel": "Region",
     "bandLabel": "Risk band",
-    "shownOf": "{shown} / {total} factories shown",
+    "shownOf": "{shown} factories match your filters",
     "noCoords": "{count} without coordinates (table only)",
     "noResults": "No factories match the current filters."
   },
@@ -96,5 +96,48 @@
     "no_factory": "No factory selected.",
     "bad_radius": "A positive radius in metres is required.",
     "rls": "Update blocked — the gis_admin role is required (RLS factories_update)."
+  },
+  "spatial": {
+    "loading": "Loading spatial canvas…",
+    "title": "Spatial canvas",
+    "subtitle": "Additive working layers and factory locations — the official pin stays GIS-admin owned",
+    "off": {
+      "consequence": "The spatial canvas is not enabled here. Mapbox provider is held.",
+      "notAvailable": "Not available yet",
+      "whyPrereq": "Why / prerequisites"
+    },
+    "banner": {
+      "title": "Layers and locations.",
+      "body": "The official factory pin stays owned by the GIS administrator; these are extra working layers. Geofence and accuracy use the approved engine defaults."
+    },
+    "error": "Couldn't load spatial data. Nothing changed.",
+    "emptyTitle": "No layers or working locations in scope",
+    "emptyBody": "GIS layers and working factory locations appear here. Empty may also mean none are in your scope.",
+    "create": {
+      "title": "Create a layer",
+      "key": "Layer key",
+      "keyPlaceholder": "e.g. coastal_zones",
+      "label": "Label",
+      "labelPlaceholder": "e.g. Coastal zones",
+      "type": "Type",
+      "typeOverlay": "Overlay",
+      "typeBase": "Base",
+      "typeBoundary": "Boundary",
+      "typeHeat": "Heat",
+      "typeRoute": "Route",
+      "submit": "Create layer",
+      "submitting": "Creating…",
+      "created": "Layer created",
+      "viewOnly": "View only — the gis_admin role is required to create layers."
+    },
+    "layersTitle": "Working layers",
+    "active": "Active",
+    "inactive": "Inactive",
+    "result": {
+      "flag_off": "The spatial canvas is turned off (FEATURE_SPATIAL_CANVAS).",
+      "expired": "Session expired — sign in again.",
+      "required": "A layer key and label are required.",
+      "invalid_type": "Choose a valid layer type."
+    }
   }
 }

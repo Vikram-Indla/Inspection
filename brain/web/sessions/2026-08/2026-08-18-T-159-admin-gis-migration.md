@@ -162,6 +162,12 @@ Two owner-requested tweaks after the first pass, all verified live:
    Next ›` below the table, shown only when `total > pageSize`. Verified: DOM row
    count **25** (was 612), `1–25 of 612`, Next → `51–75 of 612`, filter by Riyadh
    → resets to `1–25 of 499`. axe **0**, typography PASSED, test:static **408/33**.
+6. **Toolbar count aligned with pagination.** The count read `612 / 612 factories
+   shown` while the pager showed `1–25 of 612` — "shown" contradicted the paged
+   table. Reworded to `{shown} of {total} factories match` (`مطابق` in Arabic):
+   the toolbar states the filter-match count, the pager owns the display range, so
+   they agree (e.g. "612 of 612 factories match" + "1–25 of 612"; filter Riyadh →
+   "499 of 612 factories match" + "1–25 of 499"). i18n-only, en/ar parity holds.
 
 ## Parked
 

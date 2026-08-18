@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import SpatialSkeleton from "@/components/sections/admin-gis-spatial/spatial-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading spatial studio…" ar="جارٍ تحميل الاستوديو المكاني…" />;
+export default async function LoadingSpatial() {
+  const locale = await getLocale();
+  return <SpatialSkeleton label={getMessages(locale).adminGis.spatial.loading} />;
 }

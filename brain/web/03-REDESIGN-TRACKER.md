@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-159.** Take T-160.
+implements the reservation. **Highest id in use: T-160.** Take T-161.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -23,15 +23,32 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 
 ## NOW
 
-### T-160 · `/admin/gis/spatial` rebuild on SAQEEL
-`status: todo` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 1.5h`
+### T-160 · `/admin/gis/spatial` rebuilt on SAQEEL + sidebar double-highlight fix
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 1.5h`
+`record:` [2026-08-18-T-160-gis-spatial-migration](sessions/2026-08/2026-08-18-T-160-gis-spatial-migration.md)
 
-Parked from T-159 — the feature-flagged spatial-canvas subroute
-(`FEATURE_SPATIAL_CANVAS`; Mapbox held → `NotYetBoundary` when off). `AdminShell`
-+ alert banner + `CreateLayer` (raw `<input>`s → WEB-015) + a layers/locations
-list. English-only copy → new namespace (or extend `adminGis`). `mvp2-modules-live`
-+ `mvp2-modules-rls-negative` + `shell-navigation` read this subroute — re-point
-on migration.
+The feature-flagged spatial-canvas subroute (`FEATURE_SPATIAL_CANVAS`; Mapbox
+held → `NotYetBoundary` when off) — a create-layer form + working-layers list.
+Owner: migrate off legacy + **fix the sidebar double-highlight** (both GIS Studio
+and Spatial Canvas lit up). **Nav fix:** `isShellRouteCurrent` ended in a prefix
+match, so `/admin/gis` matched `/admin/gis/spatial`; added `/admin/gis` to the
+exact-match cases (like `/dashboard`, `/admin`) — browser-verified, only Spatial
+Canvas highlights now. Legacy `AdminShell` + `sq-*`/`badge`/`btn` + WEB-015 raw
+inputs + English-only. Rebuilt thin `page.tsx` (52→9) → `features/admin-gis-spatial/
+{queries,types,strings}` + `components/sections/admin-gis-spatial/` (screen +
+client create-layer + layers + skeleton), **reusing the `adminGis` namespace**
+(`spatial` section). `TextInput`/`SaqeelSelect` (WEB-015), `StatusPill` layer
+status, framed skeleton, `NotYetBoundary` preserved. **Permission gate:** resolve
+`gis_admin` → `canCreate`; non-gis_admin sees a view-only notice instead of the
+form (RLS stays authority). `actions.ts` codes + `revalidatePath`. **No
+regression:** `shell-navigation` (nav-fix assertions), `mvp2-modules-live` +
+`mvp2-modules-rls-negative` M2-06 re-pointed for the in-UI gate. test:static
+**408/33**, v5 **60** (adds 0), Arabic/RTL + 200% zoom **0 overflow**. **Owed:**
+flag-on UI (form/list) needs `FEATURE_SPATIAL_CANVAS` on.
+
+---
+
+### T-159 · `/admin/gis` (GIS geofencing studio) rebuilt on SAQEEL + gis_admin gate
 
 ---
 
