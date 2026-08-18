@@ -99,7 +99,13 @@ specs (they run in the full browser e2e, not `test:static`).
       transitions table, capabilities list all render correctly; Arabic fully
       translated + mirrored, fallback guards resolved from the `ar` file, the
       dedup holds in both locales
-- [ ] axe scan / light theme / 200 % zoom — owed
+- [x] **axe (WCAG 2.0/2.1/2.2 A+AA)** — **0 violations, 30 passes** on my content;
+      the only "incomplete" items are shell chrome (palette/bell/user-menu
+      `aria-controls`, the bell count badge), none in the planning-status content
+- [x] **light theme** — clean, good contrast, `StatusPill`/pills readable, dedup holds
+- [x] **200 % zoom** — no horizontal overflow (`scrollWidth === clientWidth`);
+      content reflows (the read-only pill drops below the title, headings/body wrap)
+- [x] temp `public/__axe.js` removed after the scan; theme + zoom restored
 
 ## Post-render fix
 
