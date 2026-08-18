@@ -105,7 +105,7 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     ],
   ],
   [
-    "web/src/app/(app)/field/account · field/settings (+ FieldSettingsClient.tsx)",
+    "web/src/app/(app)/field/account · field/settings (+ components/sections/field-settings/* · features/field-settings/queries.ts)",
     [
       { kind: "static", path: "/field/account", label: "account" },
       { kind: "static", path: "/field/settings", label: "settings" },

@@ -19,7 +19,8 @@ const client = read("src/lib/pwa/client.ts");
 const register = read("src/components/PwaRegister.tsx");
 const prompt = read("src/components/PwaUpdatePrompt.tsx");
 const readiness = read("src/app/(app)/field/settings/readiness/DeviceReadinessClient.tsx");
-const settings = read("src/app/(app)/field/settings/FieldSettingsClient.tsx");
+const settings = read("src/components/sections/field-settings/settings-panels.tsx");
+const settingsCopy = read("src/i18n/locales/en/field-settings.json");
 
 // Inspector iPad PWA Shell & Device Readiness.
 // Anchors: FND-005 (offline shell), SPC-OFF-001 (textual, non-color-only),
@@ -205,7 +206,8 @@ test.describe("Device Readiness surface (SCR-IPAD-610 / SPC-OFF-002 / MVP2-REQ-0
 test.describe("Field settings integration — additive, no regression to offline surface", () => {
   test("Data & Storage links to the readiness screen", () => {
     expect(settings).toContain('href="/field/settings/readiness"');
-    expect(settings).toContain('copy(locale, "Device readiness"');
+    expect(settings).toContain("copy.data.readiness");
+    expect(settingsCopy).toContain('"Device readiness"');
   });
 
   test("regression: offline queue/conflict surface (Claude-1) is untouched", () => {

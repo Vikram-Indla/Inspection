@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-151.** Take T-152.
+implements the reservation. **Highest id in use: T-152.** Take T-153.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,27 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-152 · `/admin/planning/lookups` rebuilt + reusable `Tabs` primitive
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 3h`
+`record:` [2026-08-18-T-152-planning-lookups-and-tabs](sessions/2026-08/2026-08-18-T-152-planning-lookups-and-tabs.md)
+
+Design-critique-driven transform of the legacy planning-lookups admin (100% raw
+HTML, English-only, form-in-a-table-cell, no responsiveness). Built a **new
+reusable `Tabs` SAQEEL primitive** (`components/saqeel/tabs/` — real
+tablist/tab/tabpanel, roving focus + arrow keys, `tabPanelProps` helper, RTL via
+`--sqx-mirror`) per the owner's approval, and used it for the kind selector. Full
+rebuild mirroring the migrated `expiry` sibling: thin `page.tsx` →
+`features/admin-planning-lookups/queries.ts` + `components/sections/admin-planning-
+lookups/` (screen, manager, editor, table, skeleton) + new bilingual
+`adminPlanningLookups` namespace + `loading.tsx`/`error.tsx`. **One editor
+surface** (killed the add-form + edit-in-cell duplication), responsive `DataTable`,
+`StatusPill` status, `Choice` flags, raw-JSON behind an Advanced disclosure. Kind
+labels via the reusable `humaniseEnum` (`lib/text.ts`), not inline. `actions.ts`
+localized (P0-1). Server governance byte-for-byte. **Owner-requested tabs → new
+`Tabs` primitive, reusable everywhere hardcoded tabs exist.**
+
+---
 
 ### T-151 · form controls: DatePickerField + no-raw-date-input rule (WEB-015)
 `status: done` · `rules: WEB-002, WEB-013, WEB-015 (new)` · `est: 1.5h`

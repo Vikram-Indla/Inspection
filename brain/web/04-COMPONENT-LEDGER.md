@@ -48,6 +48,7 @@ Status values:
 | `Choice` (Checkbox, Radio) | inherited | |
 | `Switch` | to-build | extract from `Choice`; full toggle contract |
 | `SegmentedControl` | inherited | audit arrow-key navigation |
+| `Tabs` | **built (T-152)** | real `tablist`/`tab`/`tabpanel` selector — roving tabindex + arrow/Home/End keys, `tabPanelProps()` helper wiring `aria-controls`↔`aria-labelledby`, underline-active, RTL via `--sqx-mirror`, API mirrors `SegmentedControl`. The drop-in for hardcoded tab rows (`SegmentedControl` is a radiogroup/button-group; `Tabs` is genuine tabs with a panel). |
 | `FileUpload` | inherited | |
 | `DateRangePicker` | inherited | |
 | `DatePickerField` | **built (T-151)** | form-submittable single date: wraps `DatePicker`, holds value state, emits a hidden `name` input — the drop-in for the banned `TextInput type="date"` (WEB-015). Mirrors `DateRangePicker`'s `nameFrom`/`nameTo` contract. |

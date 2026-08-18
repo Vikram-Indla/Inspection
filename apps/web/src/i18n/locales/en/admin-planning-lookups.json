@@ -1,0 +1,99 @@
+{
+  "title": "Planning lookups",
+  "subtitle": "Governed reference data that fills every planning list.",
+  "loading": "Loading planning lookups",
+  "breadcrumb": {
+    "administration": "Administration",
+    "label": "Planning lookups"
+  },
+  "governance": {
+    "heading": "Governed reference data",
+    "pill": "Audited",
+    "body": "These values fill every planning list — visit types, reasons, priorities. Every change records who made it and what it was before and after."
+  },
+  "readOnly": {
+    "heading": "View only",
+    "pill": "Read-only",
+    "body": "You can view these but not change them. A security administrator can give your role permission to edit them, under Users and roles."
+  },
+  "error": {
+    "heading": "Couldn't load lookups",
+    "pill": "Unavailable",
+    "body": "The lookup list is temporarily unavailable. Nothing was changed. Reload to try again.",
+    "retry": "Reload to try again",
+    "reference": "Reference"
+  },
+  "tabsLabel": "Lookup kinds",
+  "kinds": {
+    "visit_type": "Visit type",
+    "visit_mode": "Visit mode",
+    "priority": "Priority",
+    "return_reason": "Return reason",
+    "cancellation_reason": "Cancellation reason",
+    "manual_entry_reason": "Manual entry reason",
+    "assignment_override_reason": "Assignment override reason"
+  },
+  "flags": {
+    "manual_entry_allowed": "Manual entry allowed",
+    "attachment_required": "Attachment required",
+    "location_required": "Location required",
+    "comments_required": "Comments required"
+  },
+  "editor": {
+    "addTitle": "Add lookup value",
+    "editTitle": "Edit lookup value",
+    "kind": "Kind",
+    "key": "Key",
+    "keyPlaceholder": "snake_case (e.g. periodic)",
+    "labelEn": "English label",
+    "labelEnPlaceholder": "e.g. Periodic visit",
+    "labelAr": "Arabic label",
+    "labelArPlaceholder": "مثال: زيارة دورية",
+    "sortOrder": "Sort order",
+    "sortOrderPlaceholder": "0",
+    "flagsTitle": "Eligibility flags",
+    "advanced": "Advanced — raw metadata override (JSON)",
+    "rawJson": "Raw metadata override (JSON)",
+    "rawJsonPlaceholder": "{\"custom_flag\": true}",
+    "rawJsonHint": "Optional. A non-empty JSON object replaces all metadata for this row.",
+    "add": "Add value",
+    "save": "Save",
+    "cancel": "Cancel",
+    "working": "Applying…"
+  },
+  "table": {
+    "colKey": "Key",
+    "colLabels": "Labels",
+    "colFlags": "Flags",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noFlags": "None",
+    "emptyTitle": "No values in this kind",
+    "emptyBody": "Add the first value for this lookup kind."
+  },
+  "deleteNote": "Lookup values are never deleted — history and existing records keep referring to them. Deactivation retires a value: governed selects only read active rows.",
+  "actions": {
+    "sessionEnded": "Your session has ended. Sign in again.",
+    "noPermission": "You do not have permission to configure planning lookups.",
+    "invalidKind": "Choose a governed lookup kind. Nothing was changed.",
+    "invalidKey": "The key must be lowercase snake_case (a–z, 0–9, _). Nothing was changed.",
+    "labelRequired": "An English label is required. Nothing was changed.",
+    "sortNaN": "Sort order must be a number. Nothing was changed.",
+    "rowGone": "That lookup row no longer exists. Nothing was changed.",
+    "jsonInvalid": "The raw metadata override is not valid JSON. Nothing was changed.",
+    "jsonNotObject": "The raw metadata override must be a JSON object. Nothing was changed.",
+    "keyExistsUpdate": "The key \"{key}\" already exists in kind \"{kind}\" — keys are unique per kind. Nothing was changed.",
+    "keyExistsInsert": "The key \"{key}\" already exists in kind \"{kind}\" — edit that row instead. Nothing was changed.",
+    "updated": "Lookup \"{kind}.{key}\" updated — audited; consumers see it on their next read.",
+    "added": "Lookup \"{kind}.{key}\" added as active — audited; it appears in governed selects on their next load.",
+    "missingId": "Missing lookup id. Nothing was changed.",
+    "rowGoneOrRls": "That lookup row no longer exists, or the change was denied. Nothing was changed.",
+    "reactivated": "\"{kind}.{key}\" reactivated — it appears in governed selects on their next load.",
+    "deactivated": "\"{kind}.{key}\" deactivated (never deleted) — governed selects only read active rows, so it disappears on their next load."
+  }
+}

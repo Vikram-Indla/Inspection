@@ -23,7 +23,7 @@ test.describe("PKT-RESPONSIVE-EXECUTION-FIELD-004 source contracts", () => {
   test("Field participates in the application light and dark theme contract", () => {
     const theme = source("src/components/ThemeScript.tsx");
     const sync = source("src/components/ThemeChannelSync.tsx");
-    const settings = source("src/app/(app)/field/settings/FieldSettingsClient.tsx");
+    const settings = source("src/components/sections/field-settings/settings-panels.tsx");
     const account = source("src/app/(app)/field/account/page.tsx");
     expect(theme).not.toContain('^\\\\/field(\\\\/|$)');
     expect(theme).toContain('^\\\\/login(\\\\/|$)|^\\\\/reset(\\\\/|$)');
