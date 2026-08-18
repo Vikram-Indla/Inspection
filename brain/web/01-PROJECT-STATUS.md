@@ -1,6 +1,27 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-156 — the /admin/integrations index migration`
+`Last updated: 2026-08-18` · `Updated by: T-157 — the /admin/integrations/senai-data migration`
+
+## The `/admin` migration: SENAI data console is done, one toggle (2026-08-18)
+
+**T-157 took the second integrations route and the owner's steer with it.** The
+`/admin/integrations/senai-data` console (Sources / Endpoints / Field mapping /
+Sync & reconcile) was 415 lines on `AdminShell` with **four separate pill tabs**;
+the owner pointed at the tab bar and asked for **one single toggle with proper
+spacing.** The four `<Link>` pills became a single `SegmentedControl` — because it
+renders as one connected `<nav>` of Links (with a sliding pill + `aria-current`)
+whenever every item carries an `href`, the URL-query tab state (`?tab=sources`)
+is untouched and each section still server-renders its own data. This is the
+distinction to remember: the on-page `Tabs` primitive (T-152) is for panels that
+switch client-side; a `SegmentedControl` with `href` items is the right control
+for cross-render section switches that must stay bookmarkable and server-driven.
+The rebuild also moved onto `ShellPageFrame` + one `--sqx-stack-section` stack (the
+spacing fix), kept all four tables as `DataTable`s (which own their overflow and
+stack on mobile), and **preserved the FND-007 write-back assertion as derived**
+(`holds`/`breach` from `SENAEI_MASTER_DATA_WRITE_BACK_ENDPOINTS.length`), never
+asserted. Verified: axe **0**, Arabic/RTL + 200% zoom **0 overflow**, typography
+**−43**, v5 61→**60**, test:static **408/33**. Only `factory-data` (T-158, a
+17-raw-input WEB-015 pass) remains in the tree.
 
 ## The `/admin` migration: System connections index is done (2026-08-18)
 

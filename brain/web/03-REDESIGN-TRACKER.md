@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-156.** Take T-157.
+implements the reservation. **Highest id in use: T-157.** Take T-158.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -35,17 +35,27 @@ new namespace. Design-critique flow, owner sign-off before code.
 
 ---
 
-### T-157 · `/admin/integrations/senai-data` rebuild on SAQEEL
-`status: todo` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 3h`
+### T-157 · `/admin/integrations/senai-data` rebuilt on SAQEEL + single tab toggle
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 3h`
+`record:` [2026-08-18-T-157-senai-data-migration](sessions/2026-08/2026-08-18-T-157-senai-data-migration.md)
 
-Second of the integrations tree (from T-156). 415-line `page.tsx` on `AdminShell`
-with **4 tabs** (Sources / Endpoints / Field mapping / Sync & reconcile), 4 tables,
-a KPI strip, and its own 95-line `senai-data.module.css`. Has code comments
-(WEB-000 §2) and a `toISOString().slice` v5 finding. FND-007 write-back-derived
-banner + the SENAI endpoint contract must be preserved verbatim. Reuse the `Tabs`
-primitive (T-152) for the four sections. Design-critique flow, owner sign-off
-before code. `admin-integration-truth-states` tests 3–4 already assert this
-page's source + CSS — re-point on migration.
+Second of the integrations tree. 415-line `page.tsx` on `AdminShell` with four
+pill tabs (Sources / Endpoints / Field mapping / Sync & reconcile), 4 tables, a KPI
+strip, own 95-line CSS, English-only copy, code comments, `toISOString` dates.
+Owner's steer: **the four tabs → one single toggle, fix the spacing.** Rebuilt thin
+`page.tsx` (415→11) → `features/admin-senai-data/{queries,types,strings}` +
+`components/sections/admin-senai-data/` (screen + 4 tab views + skeleton) + new
+bilingual `adminSenaiData` namespace. **Single toggle:** `SegmentedControl` with
+`href` items renders one connected `<nav>` of Links with a sliding pill +
+`aria-current` (not the on-page `Tabs` primitive — these are URL-query section
+switches). `ShellPageFrame` + one `--sqx-stack-section` stack for the spacing;
+3-crumb breadcrumb replaces the back button. Four `DataTable`s (own their overflow),
+`StatusPill` statuses, `Metric` KPIs, `formatDateTime`. **FND-007 write-back
+assertion still derived** from `SENAEI_MASTER_DATA_WRITE_BACK_ENDPOINTS.length`; the
+endpoint contract + verification logic byte-for-byte. Deleted the orphaned old CSS.
+`admin-integration-truth-states` tests 3–4 re-pointed (guarantees preserved).
+typography **−43**, v5 61→**60**, test:static **408/33**, axe **0**, Arabic/RTL +
+200% zoom **0 overflow**.
 
 ---
 
