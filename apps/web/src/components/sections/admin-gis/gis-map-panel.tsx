@@ -115,10 +115,10 @@ export default function GisMapPanel({
           </div>
 
           <div className={styles.pills}>
-            <StatusPill tone="danger">{`${strings.band.high} ${bandCounts.high}`}</StatusPill>
-            <StatusPill tone="warning">{`${strings.band.medium} ${bandCounts.medium}`}</StatusPill>
-            <StatusPill tone="success">{`${strings.band.low} ${bandCounts.low}`}</StatusPill>
-            {bandCounts.unbanded > 0 ? <StatusPill tone="neutral">{`${strings.band.unbanded} ${bandCounts.unbanded}`}</StatusPill> : null}
+            <StatusPill tone="danger">{`${bandLabel("high", strings)} ${bandCounts.high}`}</StatusPill>
+            <StatusPill tone="warning">{`${bandLabel("medium", strings)} ${bandCounts.medium}`}</StatusPill>
+            <StatusPill tone="success">{`${bandLabel("low", strings)} ${bandCounts.low}`}</StatusPill>
+            {bandCounts.unbanded > 0 ? <StatusPill tone="neutral">{`${bandLabel("unbanded", strings)} ${bandCounts.unbanded}`}</StatusPill> : null}
             <Text role="label" tone="muted">{p.legendCaption}</Text>
           </div>
         </CardBody>

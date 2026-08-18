@@ -111,6 +111,48 @@ shell-owned "GIS Studio" nav label) all pass unchanged.
 - [x] **Arabic / RTL** at 375 px — `dir=rtl`, all copy from `ar` JSON, single `<main>`, map/panel/toolbar stack, **0** horizontal overflow
 - [x] **200% zoom** — **0** horizontal overflow
 
+## Follow-up polish (same task)
+
+Two owner-requested tweaks after the first pass, all verified live:
+
+1. **Filter dropdowns responsive grid.** The two toolbar filters (regions / risk
+   bands) moved from wrapping flex items into a `.filters` grid —
+   `grid-template-columns: 1fr 1fr` (each 50%, same row) collapsing to `1fr`
+   (each 100%, own row) at `max-width: 30rem` (xs). Verified: 584px → 50/50 same
+   row; 375px → stacked full-width.
+2. **Registry factory-value alignment + humanised bands.** In the stacked
+   `DataTable`, the factory-name `Button` stretched its grid cell (`width: 517`,
+   `text-align: center`) so the name sat centred while every other value was
+   left-aligned. Wrapping it in a `.nameCell` span with `justify-self: start`
+   shrinks it to content width (verified `nameLeft === regionLeft`). And the raw
+   lowercase risk bands (`low`/`medium`/`high`/`unbanded`) are now humanised
+   through the reusable **`sentenceCase`** (a no-op in Arabic, so i18n-safe),
+   applied inside `bandLabel` — so the registry, the panel pill, the legend, and
+   the band filter all read `Low` / `Medium` / `High` / `Unbanded`. typography
+   PASSED, test:static **408/33**.
+3. **Registry horizontal-scroll on small screens.** The stacked `DataTable`
+   overflowed and the `bleed` negative margin clipped the first characters. Two
+   parts: `bleed={false}` on the GIS tables kills the negative-margin clip, and a
+   `.tableFit` wrapper blockifies the `<table>`/`<thead>`/`<tbody>` in stacked
+   mode (`@media max-width: 75rem`) so the full-width grid rows govern instead of
+   the `display:table` max-content sizing. The last piece was the name **`Button`**
+   (`white-space: nowrap`, `justify-content: center`, no `className` prop): a
+   scoped `.nameCell button` override sets `inline-size: 100%; justify-content:
+   flex-start; white-space: normal` so long names wrap inside the column and stay
+   left-aligned. Verified at 375px: registry `scrollOverflow: 0`, page overflow 0,
+   `nameLeft === regionLeft`.
+4. **"Factories by region" chart — a genuine fit, not enforced.** The map shows
+   *where* factories are but nothing quantifies *how many per region*; the legend
+   only covers bands. A server-aggregated **`BarSeries`** (`components/saqeel/
+   charts/bar-series`) ranks the top 8 regions by factory count
+   (`gis-region-chart.tsx`), placed inside the studio between the map/panel and
+   the registry (not after the 612-row table, where it would be buried). Labels
+   pass through `humaniseEnum`; the chart is RTL-aware (`rtl={locale === "ar"}` —
+   bars grow leftward, labels right), `role="img"` + aria-label. Full-fleet
+   overview (stable, distinct from the filter-driven legend). axe **0**,
+   Arabic/RTL + both viewports **0 overflow**, v5 **60** (adds 0), test:static
+   **408/33**.
+
 ## Parked
 
 - `/admin/gis/spatial` (T-160) — the feature-flagged spatial-canvas subroute

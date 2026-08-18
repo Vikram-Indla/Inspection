@@ -22,8 +22,27 @@
   min-inline-size: 0;
 }
 
-.filter {
-  inline-size: 12rem;
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sqx-space-3);
+  flex: 1 1 20rem;
+  min-inline-size: 0;
+}
+
+.nameCell {
+  min-inline-size: 0;
+}
+
+.nameCell button {
+  inline-size: 100%;
+  justify-content: flex-start;
+  text-align: start;
+  white-space: normal;
+}
+
+.nameCell button span {
+  white-space: normal;
 }
 
 .layout {
@@ -75,8 +94,18 @@
   .layout {
     grid-template-columns: 1fr;
   }
+}
 
-  .filter {
-    inline-size: 100%;
+@media (max-width: 30rem) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 75rem) {
+  .tableFit table,
+  .tableFit thead,
+  .tableFit tbody {
+    display: block;
   }
 }

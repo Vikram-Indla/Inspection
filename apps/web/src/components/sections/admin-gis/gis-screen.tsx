@@ -38,7 +38,7 @@ export default function GisScreen({ data, locale }: { data: GisView; locale: Loc
           <EmptyState icon="map" title={strings.empty.title} description={strings.empty.body} />
         ) : (
           <>
-            <GisStudio strings={strings} factories={data.factories} settings={data.settings} canEdit={data.canEdit} />
+            <GisStudio strings={strings} factories={data.factories} settings={data.settings} canEdit={data.canEdit} locale={locale} />
             <GisSettings strings={strings} settings={data.settings} />
           </>
         )}

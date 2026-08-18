@@ -26,7 +26,7 @@ export default function GisRegistry({ strings, factories, selectedId, defaultFen
       header: r.name,
       isRowHeader: true,
       cell: factory => factory.official_lat != null && factory.official_lng != null
-        ? <Button variant="link" size="sm" onClick={() => onSelect(factory.id)}>{factory.name}</Button>
+        ? <span className={styles.nameCell}><Button variant="link" size="sm" onClick={() => onSelect(factory.id)}>{factory.name}</Button></span>
         : <Text as="span" role="bodyStrong">{factory.name}</Text>,
     },
     { key: "region", header: r.region, cell: factory => <Text as="span">{factory.region ?? strings.dash}</Text> },
@@ -54,13 +54,16 @@ export default function GisRegistry({ strings, factories, selectedId, defaultFen
   return (
     <Card as="section">
       <CardBody>
-        <DataTable
-          columns={columns}
-          rows={factories}
-          getRowId={factory => factory.id}
-          getRowSelected={factory => factory.id === selectedId}
-          empty={{ icon: "map", title: strings.toolbar.noResults }}
-        />
+        <div className={styles.tableFit}>
+          <DataTable
+            columns={columns}
+            rows={factories}
+            getRowId={factory => factory.id}
+            getRowSelected={factory => factory.id === selectedId}
+            empty={{ icon: "map", title: strings.toolbar.noResults }}
+            bleed={false}
+          />
+        </div>
       </CardBody>
     </Card>
   );

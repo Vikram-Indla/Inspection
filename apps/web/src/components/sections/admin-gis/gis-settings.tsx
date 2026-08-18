@@ -3,6 +3,7 @@ import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-
 import { Text } from "@/components/saqeel/type";
 import type { AdminGisMessages } from "@/features/admin-gis/strings";
 import type { GisSettings as GisSettingsData } from "@/features/admin-gis/types";
+import styles from "./gis.module.css";
 
 type SettingRow = { readonly key: string; readonly label: string; readonly value: string };
 
@@ -28,7 +29,9 @@ export default function GisSettings({ strings, settings }: {
   return (
     <Card as="section">
       <CardBody>
-        <DataTable columns={columns} rows={rows} getRowId={row => row.key} empty={{ icon: "map", title: s.setting }} />
+        <div className={styles.tableFit}>
+          <DataTable columns={columns} rows={rows} getRowId={row => row.key} empty={{ icon: "map", title: s.setting }} bleed={false} />
+        </div>
       </CardBody>
     </Card>
   );

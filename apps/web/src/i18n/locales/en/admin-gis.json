@@ -59,6 +59,11 @@
     "low": "low",
     "unbanded": "unbanded"
   },
+  "regionChart": {
+    "title": "Factories by region",
+    "help": "Registered factories per region across the full fleet — the top regions by count.",
+    "ariaLabel": "Registered factories per region, ranked"
+  },
   "registry": {
     "code": "Code",
     "name": "Factory",

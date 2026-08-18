@@ -5,7 +5,9 @@ import { updateGeofenceRadius, type GisResult } from "@/app/(app)/admin/gis/acti
 import type { GeoFocus, GeoMarkerData, GeoTone } from "@/components/GeoMap";
 import { bandLabel, type AdminGisMessages } from "@/features/admin-gis/strings";
 import type { GisFactory, GisSettings } from "@/features/admin-gis/types";
+import type { Locale } from "@/lib/i18n";
 import GisMapPanel, { type BandCounts } from "./gis-map-panel";
+import GisRegionChart from "./gis-region-chart";
 import GisRegistry from "./gis-registry";
 import GisToolbar from "./gis-toolbar";
 import styles from "./gis.module.css";
@@ -17,11 +19,12 @@ function bandGeoTone(band: string | null): GeoTone {
   return "neutral";
 }
 
-export default function GisStudio({ strings, factories, settings, canEdit }: {
+export default function GisStudio({ strings, factories, settings, canEdit, locale }: {
   strings: AdminGisMessages;
   factories: readonly GisFactory[];
   settings: GisSettings;
   canEdit: boolean;
+  locale: Locale;
 }) {
   const defaultFence = settings.geofence_default_radius_m ?? 150;
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -108,6 +111,7 @@ export default function GisStudio({ strings, factories, settings, canEdit }: {
         onRadiusChange={(id, radiusM) => { if (id === selectedId) setDraftRadius(String(radiusM)); }}
         onDraftChange={setDraftRadius}
       />
+      <GisRegionChart factories={factories} strings={strings} locale={locale} />
       <GisRegistry strings={strings} factories={filtered} selectedId={selectedId} defaultFence={defaultFence} onSelect={select} />
     </div>
   );

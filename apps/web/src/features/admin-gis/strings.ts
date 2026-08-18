@@ -1,6 +1,7 @@
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
+import { sentenceCase } from "@/lib/text";
 
 export type AdminGisMessages = ReturnType<typeof adminGisMessages>;
 
@@ -21,8 +22,8 @@ export function bandTone(band: string | null): StatusTone {
 }
 
 export function bandLabel(band: string | null, strings: AdminGisMessages): string {
-  if (band === "high") return strings.band.high;
-  if (band === "medium") return strings.band.medium;
-  if (band === "low") return strings.band.low;
-  return strings.band.unbanded;
+  if (band === "high") return sentenceCase(strings.band.high);
+  if (band === "medium") return sentenceCase(strings.band.medium);
+  if (band === "low") return sentenceCase(strings.band.low);
+  return sentenceCase(strings.band.unbanded);
 }
