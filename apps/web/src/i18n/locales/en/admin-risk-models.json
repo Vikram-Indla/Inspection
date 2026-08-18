@@ -1,0 +1,72 @@
+{
+  "breadcrumb": { "administration": "Administration", "label": "Risk model workbench" },
+  "title": "Risk model workbench",
+  "loading": "Loading risk models",
+  "nav": {
+    "label": "Risk settings",
+    "studio": "Risk Studio",
+    "studioHint": "Immediate-live settings",
+    "models": "Model versions",
+    "modelsHint": "Draft and maker-checker lifecycle"
+  },
+  "banner": {
+    "title": "Draft layer",
+    "body": "Drafts check that weights add up and that bands match the Risk Studio, then publish through maker-checker. Published versions can't be changed. No value is set here that the approved structure doesn't require."
+  },
+  "error": "Couldn't load risk models. Nothing changed.",
+  "empty": {
+    "title": "No risk model drafts",
+    "body": "No risk models exist in your allowed scope. Create a draft to begin the maker-checker lifecycle."
+  },
+  "off": {
+    "consequence": "The risk-model draft layer is not turned on here; live risk settings are still edited on the Risk Studio.",
+    "notAvailable": "Not available yet",
+    "whyPrereq": "Why / prerequisites"
+  },
+  "composer": {
+    "heading": "New draft version",
+    "newLabel": "Version label",
+    "versionPlaceholder": "e.g. v2026.1",
+    "payload": "Model payload — factors sum to 1.00 · bands 0–100",
+    "factorKey": "Factor key",
+    "factorKeyPlaceholder": "e.g. prior_violations",
+    "factorWeight": "Weight",
+    "addFactor": "Add factor",
+    "removeFactor": "Remove",
+    "lowEnds": "Low ends at",
+    "mediumEnds": "Medium ends at",
+    "validationReady": "Canonical structure valid",
+    "validationNeeded": "Complete a valid model before creating the draft",
+    "create": "Create draft",
+    "creating": "Creating…",
+    "created": "Draft created"
+  },
+  "statusLabels": {
+    "draft": "Draft",
+    "review": "In review",
+    "approved": "Approved",
+    "published": "Published",
+    "retired": "Retired"
+  },
+  "card": {
+    "version": "v{n}",
+    "inspect": "Model structure",
+    "immutable": "Published versions can't be changed",
+    "transition": "Transition",
+    "reason": "Reason",
+    "reasonPlaceholder": "Reason for this transition",
+    "apply": "Apply",
+    "applying": "Applying…",
+    "done": "Done",
+    "noTransitions": "No further transitions"
+  },
+  "actions": {
+    "flagOff": "Risk workbench is turned off here (FEATURE_RISK_WORKBENCH).",
+    "sessionExpired": "Your session has ended. Sign in again.",
+    "versionLabelRequired": "A version label is required.",
+    "payloadInvalid": "The model payload was not valid JSON.",
+    "writeError": "The change could not be saved (risk_owner scope required). Nothing changed.",
+    "illegalTransition": "Illegal transition {from} → {to}.",
+    "transitionRejected": "Transition rejected: {message}"
+  }
+}

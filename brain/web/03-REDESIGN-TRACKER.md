@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-154.** Take T-155.
+implements the reservation. **Highest id in use: T-155.** Take T-156.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,29 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-155 · `/admin/risk/models` rebuilt on SAQEEL + skeleton spacing fix + section tabs
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 2h`
+`record:` [2026-08-18-T-155-risk-models-migration](sessions/2026-08/2026-08-18-T-155-risk-models-migration.md)
+
+Design-critique transform of the risk-model workbench (maker-checker draft →
+review → approve → publish → retire, with weight/band validation). Owner flagged
+two specifics: **verify the section tabs** and **fix the skeleton's left-right
+spacing**. Legacy: `AdminShell`, raw `<fieldset>`/`<select>`/`<input>`/`<details>`
++ `panel`/`sq-field`/`sq-input`/`rk-*`/`badge`/`t-caption`, inline styles, no `ar`.
+Rebuilt thin `page.tsx` → `features/admin-risk-models/queries.ts` +
+`components/sections/admin-risk-models/` (screen, section-nav, composer,
+model-card, skeleton) + new bilingual `adminRiskModels` namespace + a **framed
+`loading.tsx`** (wrapped in `ShellPageFrame` — the spacing fix; the old
+`RouteLoading` rendered edge-to-edge). **`RiskSectionNav` → a SAQEEL underline-tab
+nav** (Risk Studio ↔ Model versions, hint subtitle) — both tabs browser-verified
+(active state + cross-page navigation). `StatusPill` tone map, `Field`/`TextInput`/
+`SaqeelSelect`/`DefinitionList`, live client validation preserved, `actions.ts`
+localized (logic byte-for-byte, `FEATURE_RISK_WORKBENCH` gate intact). Contract
+`admin-risk-studio-contract` re-pointed (5 tests) with guarantees preserved.
+typography **-4**, v5 **62**, test:static **408/33**.
+
+---
 
 ### T-154 · `/admin/compliance-requests` (maker-checker workflow) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 4h`
