@@ -152,6 +152,16 @@ Two owner-requested tweaks after the first pass, all verified live:
    overview (stable, distinct from the filter-driven legend). axe **0**,
    Arabic/RTL + both viewports **0 overflow**, v5 **60** (adds 0), test:static
    **408/33**.
+5. **Registry pagination.** All 612 rows rendered at once (612 stacked cards on
+   mobile). The full set stays loaded client-side because the **map markers need
+   it**, but the registry now renders one page at a time: `gis-studio` holds a
+   `page` state, slices `filtered` to `PAGE_SIZE = 25`, and resets to page 0 on any
+   filter change (a `filterTo` wrapper), with `safePage` clamping when the result
+   set shrinks — no syncing effect. The DS **`Pagination`** (`components/saqeel/
+   pagination`, client `onPageChange` mode) renders `‹ Previous · {a}–{b} of {n} ·
+   Next ›` below the table, shown only when `total > pageSize`. Verified: DOM row
+   count **25** (was 612), `1–25 of 612`, Next → `51–75 of 612`, filter by Riyadh
+   → resets to `1–25 of 499`. axe **0**, typography PASSED, test:static **408/33**.
 
 ## Parked
 

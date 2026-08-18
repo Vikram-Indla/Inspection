@@ -74,6 +74,12 @@
     "coords": "Official coordinates",
     "radiusDefault": "default"
   },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "status": "{a}–{b} of {n}",
+    "label": "Registry pages"
+  },
   "settings": {
     "setting": "Setting",
     "value": "Value",

@@ -74,6 +74,12 @@
     "coords": "الإحداثيات الرسمية",
     "radiusDefault": "افتراضي"
   },
+  "pagination": {
+    "previous": "السابق",
+    "next": "التالي",
+    "status": "{a}–{b} من {n}",
+    "label": "صفحات السجل"
+  },
   "settings": {
     "setting": "الإعداد",
     "value": "القيمة",

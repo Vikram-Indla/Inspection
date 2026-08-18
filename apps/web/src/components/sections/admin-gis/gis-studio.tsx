@@ -12,6 +12,8 @@ import GisRegistry from "./gis-registry";
 import GisToolbar from "./gis-toolbar";
 import styles from "./gis.module.css";
 
+const PAGE_SIZE = 25;
+
 function bandGeoTone(band: string | null): GeoTone {
   if (band === "high") return "high";
   if (band === "medium") return "medium";
@@ -33,6 +35,7 @@ export default function GisStudio({ strings, factories, settings, canEdit, local
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("");
   const [band, setBand] = useState("");
+  const [page, setPage] = useState(0);
   const [state, formAction, pending] = useActionState<GisResult, FormData>(updateGeofenceRadius, {});
 
   const regions = useMemo(
@@ -78,6 +81,15 @@ export default function GisStudio({ strings, factories, settings, canEdit, local
     setFocus({ lat: factory.official_lat, lng: factory.official_lng, zoom: 12 });
   }
 
+  function filterTo(apply: () => void) {
+    apply();
+    setPage(0);
+  }
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageRows = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
+
   return (
     <div className={styles.studio}>
       <GisToolbar
@@ -89,9 +101,9 @@ export default function GisStudio({ strings, factories, settings, canEdit, local
         shown={filtered.length}
         total={factories.length}
         unlocated={unlocated}
-        onQuery={setQuery}
-        onRegion={setRegion}
-        onBand={setBand}
+        onQuery={value => filterTo(() => setQuery(value))}
+        onRegion={value => filterTo(() => setRegion(value))}
+        onBand={value => filterTo(() => setBand(value))}
       />
       <GisMapPanel
         strings={strings}
@@ -112,7 +124,18 @@ export default function GisStudio({ strings, factories, settings, canEdit, local
         onDraftChange={setDraftRadius}
       />
       <GisRegionChart factories={factories} strings={strings} locale={locale} />
-      <GisRegistry strings={strings} factories={filtered} selectedId={selectedId} defaultFence={defaultFence} onSelect={select} />
+      <GisRegistry
+        strings={strings}
+        factories={pageRows}
+        selectedId={selectedId}
+        defaultFence={defaultFence}
+        onSelect={select}
+        page={safePage}
+        pageCount={pageCount}
+        pageSize={PAGE_SIZE}
+        total={filtered.length}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

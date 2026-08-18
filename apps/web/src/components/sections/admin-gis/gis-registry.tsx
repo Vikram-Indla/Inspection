@@ -3,18 +3,24 @@
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import DataTable, { CellMuted, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import Button from "@/components/saqeel/button/button";
+import Pagination from "@/components/saqeel/pagination/pagination";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
 import { bandLabel, bandTone, type AdminGisMessages } from "@/features/admin-gis/strings";
 import type { GisFactory } from "@/features/admin-gis/types";
 import styles from "./gis.module.css";
 
-export default function GisRegistry({ strings, factories, selectedId, defaultFence, onSelect }: {
+export default function GisRegistry({ strings, factories, selectedId, defaultFence, onSelect, page, pageCount, pageSize, total, onPageChange }: {
   strings: AdminGisMessages;
   factories: readonly GisFactory[];
   selectedId: string | null;
   defaultFence: number;
   onSelect: (id: string) => void;
+  page: number;
+  pageCount: number;
+  pageSize: number;
+  total: number;
+  onPageChange: (page: number) => void;
 }) {
   const r = strings.registry;
   const mono = (value: React.ReactNode) => <Text as="span" role="mono" dir="ltr">{value}</Text>;
@@ -64,6 +70,16 @@ export default function GisRegistry({ strings, factories, selectedId, defaultFen
             bleed={false}
           />
         </div>
+        {total > pageSize ? (
+          <Pagination
+            page={page}
+            pageCount={pageCount}
+            pageSize={pageSize}
+            total={total}
+            strings={strings.pagination}
+            onPageChange={onPageChange}
+          />
+        ) : null}
       </CardBody>
     </Card>
   );
