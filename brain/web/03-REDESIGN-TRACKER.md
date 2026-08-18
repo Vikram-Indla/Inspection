@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-152.** Take T-153.
+implements the reservation. **Highest id in use: T-153.** Take T-154.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,25 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-153 · `/admin/planning/status` (read-only) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-013, WEB-014` · `est: 1.5h`
+`record:` [2026-08-18-T-153-planning-status-migration](sessions/2026-08/2026-08-18-T-153-planning-status-migration.md)
+
+Design-critique transform of the read-only planning-status-rules admin (raw
+`<table>`s, `badge`/`alert`/`panel`/`t-caption`, English-only, `toLocaleDateString`,
+6-col table with no mobile strategy). Rebuilt server-only (no editor, no actions)
+mirroring the `expiry`/`lookups` siblings: thin `page.tsx` →
+`features/admin-planning-status/{queries,data}.ts` + `components/sections/admin-
+planning-status/` (screen, transitions `DataTable`, capabilities `DefinitionList`,
+skeleton) + new bilingual `adminPlanningStatus` namespace + `loading.tsx`/
+`error.tsx`. `ShellPageFrame` consumed (shell untouched); governance/source/
+fallback as `Card`+`StatusPill` notices; `formatDate` (Asia/Riyadh); state/actor
+labels via reusable `humaniseEnum`. **No `Tabs`** (stacked reference, correct).
+Published-config read + honest fallback preserved; CD-044/CD-045 governance
+contracts satisfied.
+
+---
 
 ### T-152 · `/admin/planning/lookups` rebuilt + reusable `Tabs` primitive
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 3h`

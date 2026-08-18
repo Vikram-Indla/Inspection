@@ -1,0 +1,77 @@
+{
+  "title": "Planning status rules",
+  "subtitle": "How a visit moves between stages, and who may do what.",
+  "loading": "Loading planning status rules",
+  "breadcrumb": {
+    "administration": "Administration",
+    "label": "Planning status rules"
+  },
+  "readOnlyPill": "Read-only",
+  "governance": {
+    "heading": "Governed by workflow configuration",
+    "body": "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.",
+    "link": "Open workflow configuration"
+  },
+  "source": {
+    "showing": "Showing the published workflow configuration",
+    "effectiveFrom": "effective from"
+  },
+  "fallback": {
+    "heading": "Showing the standard reference",
+    "pill": "Reference",
+    "error": "The live rules could not be read. What you see below is the standard set of stages, kept here as a reference, and it may be out of date.",
+    "none": "No rules have been published yet. What you see below is the standard set of stages, kept here as a reference, and it may be out of date.",
+    "guards": {
+      "STM-PLAN-002": "Assigned inspector acknowledges",
+      "STM-VIS-001": "Execution window open",
+      "STM-VIS-002": "Report submitted",
+      "STM-VIS-003": "Review accepted",
+      "republish": "The planner is allowed to publish"
+    }
+  },
+  "states": {
+    "planned": "Planned",
+    "acknowledged": "Accepted by inspector",
+    "in_execution": "Being carried out",
+    "completed": "Completed",
+    "closed": "Closed",
+    "any": "Any stage"
+  },
+  "actors": {
+    "inspector": "Inspector",
+    "planner": "Planner"
+  },
+  "sections": {
+    "states": "Stages a visit goes through",
+    "transitions": "How a visit moves between stages",
+    "capabilities": "Planning capabilities"
+  },
+  "columns": {
+    "from": "From",
+    "to": "To",
+    "actor": "Who does it",
+    "guard": "Only when",
+    "terminal": "Final stage",
+    "sideEffects": "Also happens",
+    "capability": "Permission",
+    "effect": "Effect"
+  },
+  "yes": "Yes",
+  "no": "No",
+  "noValue": "—",
+  "capabilities": {
+    "publish": { "label": "Publish a plan", "effect": "Make a visit plan live so an inspector can act on it" },
+    "manage": { "label": "Create and edit plans", "effect": "Build and change visit plans before they go live" },
+    "cancel": { "label": "Cancel a visit", "effect": "Cancel a planned visit, giving one of the approved reasons" },
+    "reassign": { "label": "Change the inspector", "effect": "Give a planned visit to a different inspector" },
+    "reschedule": { "label": "Change the dates", "effect": "Move the window a planned visit must be carried out in" }
+  },
+  "capabilitiesNote": "What each role is allowed to do is managed under Users and roles.",
+  "emptyTransitions": "No transitions are configured.",
+  "error": {
+    "heading": "Couldn't load the status rules",
+    "body": "The status rules are temporarily unavailable. Reload to try again.",
+    "retry": "Reload to try again",
+    "reference": "Reference"
+  }
+}

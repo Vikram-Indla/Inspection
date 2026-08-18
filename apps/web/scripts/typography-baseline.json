@@ -33,7 +33,6 @@
   "src/app/(app)/admin/operations/page.tsx::legacy-type-class-in-jsx": 6,
   "src/app/(app)/admin/page.tsx::legacy-type-class-in-jsx": 6,
   "src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx::legacy-type-class-in-jsx": 8,
-  "src/app/(app)/admin/planning/status/page.tsx::legacy-type-class-in-jsx": 4,
   "src/app/(app)/admin/risk/models/RiskModels.tsx::legacy-type-class-in-jsx": 4,
   "src/app/(app)/admin/risk/page.tsx::legacy-type-class-in-jsx": 1,
   "src/app/(app)/admin/risk/RiskForm.tsx::legacy-type-class-in-jsx": 4,
