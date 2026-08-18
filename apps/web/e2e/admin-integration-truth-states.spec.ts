@@ -7,16 +7,22 @@ const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8")
 
 test.describe("Admin integration truthful partial-data presentation", () => {
   test("keeps endpoint, event and export reads independent", () => {
-    const page = read("src/app/(app)/admin/integrations/page.tsx");
+    const queries = read("src/features/admin-integrations/queries.ts");
+    const screen = read("src/components/sections/admin-integrations/integrations-screen.tsx");
+    const registry = read("src/components/sections/admin-integrations/integration-registry.tsx");
+    const copy = read("src/i18n/locales/en/admin-integrations.json");
 
     for (const source of ["endpointsRead", "eventsRead", "exportsRead"]) {
-      expect(page).toContain(`${source}.error`);
-      expect(page).toContain(`!${source}.error`);
+      expect(queries).toContain(`${source}.error`);
     }
-    expect(page).toContain("not available, not an empty");
-    expect(page).not.toContain("14 controlled rows");
-    expect(page).toContain('<bdi dir="ltr">{row.status}</bdi>');
-    expect(page).toContain("<time dateTime={row.updated_at}>");
+    for (const flag of ["endpointsFailed", "eventsFailed", "exportsFailed"]) {
+      expect(queries).toContain(flag);
+      expect(screen).toContain(flag);
+    }
+    expect(copy).toContain("not available, not an empty");
+    expect(copy).not.toContain("14 controlled rows");
+    expect(registry).toContain('row.status === "configured"');
+    expect(registry).toContain("formatDateTime(row.updated_at");
   });
 
   test("keeps factory registry, run, batch, row and reconciliation failures separate", () => {

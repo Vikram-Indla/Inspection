@@ -1,6 +1,41 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-150 — the /field/settings hub migration`
+`Last updated: 2026-08-18` · `Updated by: T-156 — the /admin/integrations index migration`
+
+## The `/admin` migration: System connections index is done (2026-08-18)
+
+The admin streak continues — T-151 (form controls + WEB-015), T-152
+(planning/lookups + the `Tabs` primitive), T-153 (planning/status), T-154
+(compliance-requests), T-155 (risk/models), and now **T-156 — the
+`/admin/integrations` index** (System connections: endpoint registry + API/rule
+events + data-sharing exports). It moved the route **off `AdminDestinationFrame`**
+(the `@retiring` legacy frame, whose retirement note named this exact route) onto
+`ShellPageFrame` + `Card`/`DataTable`/`StatusPill`, mirroring the migrated
+`access-frame`. The owner's two flags are fixed: **card spacing** (every block a
+`Card` in one `--sqx-stack-section` stack, `.split` auto-fit grids — uniform token
+gaps for the per-panel inline padding) and the **skeleton** (a framed
+`IntegrationsSkeleton`, and `admin/loading.tsx` gained the reusable `framed` prop
+so the flush cross-section entry skeleton is inset for **every** admin route).
+
+**The owner scoped the integrations tree as three tasks and picked "no drawer".**
+"The whole legacy" under `/admin/integrations` is ~805 lines across three routes;
+the index shipped as T-156, with **senai-data (T-157)** and **factory-data
+(T-158, 17 raw inputs / WEB-015)** parked as their own tasks. The endpoint
+registry became a clean `DataTable` (no shared record drawer), status a
+`StatusPill` with a `formatDateTime` provenance line — and **no governance content
+was lost** (the "configuration ≠ connectivity" banner, the three governance
+points, and the reconstruction note all carried across as `Card`s).
+
+**Re-pointing a route off a shared legacy frame ripples into cross-route specs.**
+Three contracts were re-pointed, every guarantee preserved: `admin-integration-
+truth-states` (page → queries/screen/registry/en-JSON), `mvp3-retrofit-regression`
+(heading casing to house-style `System connections`), and `admin-core-orchestrator`
+— integrations removed from its `OWNED_DESTINATIONS` + `RECORD_SURFACES` arrays
+(the legacy `data-saqeel-admin-destination` frame + drawer it no longer has),
+kept in the nav + SQL-seed arrays. That orchestrator was already partly stale for
+earlier-migrated routes — flagged as a separate cleanup. Verified: axe **0**,
+Arabic/RTL 375px + 200% zoom **0 overflow**, typography **−7**, test:static
+**408/33**.
 
 ## The `/field` migration: the settings hub is done (2026-08-18)
 

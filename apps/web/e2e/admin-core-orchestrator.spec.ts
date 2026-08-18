@@ -39,12 +39,6 @@ const OWNED_DESTINATIONS = [
     headingEn: "Inspection Forms",
     headingAr: "نماذج التفتيش",
   },
-  {
-    route: "/admin/integrations",
-    designId: "frame-24-admin-integration-management",
-    headingEn: "System Connections",
-    headingAr: "اتصالات النظام",
-  },
 ] as const;
 
 const PINNED_DESTINATIONS = [
@@ -56,14 +50,15 @@ const PINNED_DESTINATIONS = [
   { label: "Integration Management", href: "/admin/integrations" },
 ] as const;
 
-// Risk and integrations render governed empty/decision states when the caller
-// sees no records; the drawer contract is exercised wherever rows exist.
+// Risk renders governed empty/decision states when the caller sees no records;
+// the drawer contract is exercised wherever rows exist. Integrations moved to
+// the SAQEEL DataTable surface (no drawer) and is covered by
+// mvp3-retrofit-regression + admin-integration-truth-states.
 const RECORD_SURFACES = [
   { route: "/admin/access", selector: "table tbody tr[aria-haspopup=dialog]" },
   { route: "/admin/localization", selector: "article[aria-haspopup=dialog]" },
   { route: "/admin/risk", selector: "article[aria-haspopup=dialog], table tbody tr[aria-haspopup=dialog]" },
   { route: "/admin/packages", selector: "table tbody tr[aria-haspopup=dialog]" },
-  { route: "/admin/integrations", selector: "table tbody tr[aria-haspopup=dialog]" },
 ] as const;
 
 const webRoot = path.resolve(__dirname, "..");

@@ -12,7 +12,7 @@ test.describe("TASK-MVP3-RETROFIT-REGRESSION-001 integrated control planes", () 
 
   test("live MVP3 schema renders through all four additive control-plane routes", async ({ page }) => {
     const routes = [
-      ["/admin/integrations", "System Connections"],
+      ["/admin/integrations", "System connections"],
       ["/admin/operations", "System operations and resilience"],
       ["/admin/security-access", "Security posture and access review"],
       ["/admin/devices", "Trusted device and offline administration"],
