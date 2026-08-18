@@ -6,6 +6,7 @@ import FactoriesScopeBar from "@/components/sections/factories/factories-scope-b
 import Factory360Portfolio from "./Factory360Portfolio";
 import { queryPortfolioCounts } from "@/features/factories/portfolio-counts";
 import { queryFactoryRiskMovement } from "@/features/factories/risk-context";
+import { queryRiskBands } from "@/features/factories/risk-bands";
 import { queryFactoryCompliance } from "@/features/factories/compliance";
 import { queryFactoryProfiles } from "@/features/factories/profile";
 import { isTestSourceFactory, type FactoryRow } from "@/features/factories/portfolio";
@@ -83,11 +84,12 @@ export default async function Factories({ searchParams }: {
     };
   });
   const portfolioIds = portfolioRows.map(row => row.id);
-  const [portfolioCounts, riskMovement, compliance, profiles] = await Promise.all([
+  const [portfolioCounts, riskMovement, compliance, profiles, riskBands] = await Promise.all([
     queryPortfolioCounts(sb, portfolioIds),
     queryFactoryRiskMovement(sb, portfolioIds),
     queryFactoryCompliance(sb, portfolioIds),
     queryFactoryProfiles(sb, portfolioIds),
+    queryRiskBands(sb),
   ]);
   const error = scopeError ?? portfolioError;
   const isEmpty = visibleScopeRows.length === 0 || portfolioRows.length === 0;
@@ -118,6 +120,7 @@ export default async function Factories({ searchParams }: {
             locale={locale}
             counts={portfolioCounts}
             riskMovement={riskMovement}
+            riskBands={riskBands}
             complianceByFactory={compliance.byFactory}
             penaltiesReadable={compliance.penaltiesReadable}
             profiles={profiles}

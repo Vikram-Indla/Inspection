@@ -184,5 +184,10 @@
     "openLabel": "Open factory profile",
     "noContact": "No active representative is recorded"
   },
-  "loading": "Loading factories"
+  "loading": "Loading factories",
+  "riskMeter": {
+    "label": "Risk score",
+    "caption": "{score} of {ceiling} on the governed scale",
+    "aria": "Risk score {score} out of a governed ceiling of {ceiling}"
+  }
 }

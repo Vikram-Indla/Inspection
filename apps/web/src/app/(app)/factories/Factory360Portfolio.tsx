@@ -1,5 +1,7 @@
 "use client";
 import { formatCount } from "@/i18n/numbers";
+import FactoryRiskMeter from "@/components/sections/factories/factory-risk-meter/factory-risk-meter";
+import type { RiskBands } from "@/features/factories/risk-bands";
 
 import { useState } from "react";
 import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
@@ -41,7 +43,7 @@ function planningHandoffHref(factory: FactoryRow): string {
   return `/planning/single?${query.toString()}`;
 }
 
-export default function Factory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, profiles, riskMovement, now }: {
+export default function Factory360Portfolio({ factories, portfolioLabel, canCreateInspection, locale, provenanceStrings, counts, complianceByFactory, penaltiesReadable, profiles, riskMovement, riskBands, now }: {
   factories: FactoryRow[];
   portfolioLabel: string;
   canCreateInspection: boolean;
@@ -52,6 +54,7 @@ export default function Factory360Portfolio({ factories, portfolioLabel, canCrea
   penaltiesReadable: boolean;
   profiles: ReadonlyMap<string, FactoryProfileRecord>;
   riskMovement: ReadonlyMap<string, FactoryRiskMovement>;
+  riskBands: RiskBands | null;
   now: number;
 }) {
   const { factories: copy } = getMessages(locale);
@@ -170,13 +173,21 @@ export default function Factory360Portfolio({ factories, portfolioLabel, canCrea
         penalties={view.compliance.penalties}
         penaltiesReadable={penaltiesReadable}
         trends={
-          <FactoryTrends
-            series={view.trendSeries}
-            current={view.riskCurrent}
-            delta={view.riskDelta}
-            tone={view.riskTone}
-            strings={copy.trends}
-          />
+          <>
+            <FactoryRiskMeter
+              score={selected.risk_score}
+              bands={riskBands}
+              locale={locale}
+              strings={copy.riskMeter}
+            />
+            <FactoryTrends
+              series={view.trendSeries}
+              current={view.riskCurrent}
+              delta={view.riskDelta}
+              tone={view.riskTone}
+              strings={copy.trends}
+            />
+          </>
         }
         strings={copy.compliance}
       />

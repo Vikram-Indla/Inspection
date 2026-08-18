@@ -124,3 +124,100 @@ fix(factories): render every number in the reader's numbering system
 ## Next
 
 Governed labels for risk-driver keys, then the contribution chart. Tracker T-119.
+
+---
+
+## Addendum — re-examined on challenge: does *any* chart fit?
+
+Owner pushed back on the "no chart" verdict. Re-examined, and the honest answer
+is **two real candidates, both blocked on something specific and fixable** — not
+"nothing fits".
+
+### 1 · Risk score as a meter — the best fit on this screen, blocked on config
+
+The score is the screen's headline number and renders today as a bare numeral
+(`٨١٫٥`) plus a band pill (`High`). A reader cannot see **how far into the band**
+it sits — 81.5 could be a hair over the boundary or near the ceiling. `Gauge`
+exists for exactly this.
+
+**Why it is not built:** the scale is not guaranteed. The banding function reads
+its cutoffs from the risk-model **configuration**, not from constants —
+
+```sql
+low_max    := (cfg.settings#>>'{bands,low,1}')::numeric;
+medium_max := (cfg.settings#>>'{bands,medium,1}')::numeric;
+band_value := case when score_value <= low_max then 'low' … end;
+```
+
+— the score is a weighted sum (`weights must sum to 1.00`), and the column is
+`risk_score numeric(5,2)`, which permits far more than 100. Drawing an arc
+against an assumed 0–100 would **invent a ceiling the platform does not
+guarantee** (WEB-002 §9).
+
+**Unblock:** load the active risk-model config into the route and draw the meter
+against the governed band scale. Small and concrete — the config is already read
+server-side by the banding function and surfaced under `/admin/risk/models`.
+
+### 2 · Risk-driver contributions — blocked on labels and data (unchanged)
+
+### 3 · Violations by severity — marginal
+
+`ComplianceViolation.level` carries a governed severity, so a per-factory
+severity split is a real shape. But per-factory counts are small (**0** here),
+so it would need the same self-gating as `stateSlices` and would rarely render.
+Worth doing only alongside candidate 1.
+
+### What is genuinely not chart material
+
+`FactoryCompliance` holds **record lists** (reports, violations, penalties), not
+compliant/non-compliant answer counts — so there is no per-factory compliance
+ratio to meter, which was the other thing worth checking. Employees, products,
+licence facts and source trust are single values or two-item status lists.
+
+---
+
+## Addendum 2 — the meter is built, and **not yet verified in a render**
+
+Owner approved the unblock. Built:
+
+| File | Action |
+| --- | --- |
+| `features/factories/risk-bands.ts` | created — `queryRiskBands` |
+| `components/sections/factories/factory-risk-meter/` | created — `FactoryRiskMeter` |
+| `app/(app)/factories/page.tsx` | loads bands into the existing `Promise.all` |
+| `app/(app)/factories/Factory360Portfolio.tsx` | renders the meter above the trend |
+| `i18n/locales/{en,ar}/factories.json` | `riskMeter` block, both locales |
+
+**The scale is read, never assumed.** `engine_settings` where `engine = 'risk'`
+is the same row `recalculate_factory_risk` bands against:
+
+```json
+"bands": {"low":[0,39], "medium":[40,69], "high":[70,100]}
+```
+
+`queryRiskBands` returns `null` on any missing or malformed part, and
+`FactoryRiskMeter` returns `null` without bands — so a screen that cannot read
+the config shows the plain numeral and no arc, rather than an invented ceiling.
+
+### Status: unverified, and that is a real gap
+
+`npm run typecheck` is clean and the route returns **HTTP 200 with no syntax
+error in the response**. But the meter has **not been seen to render**: an
+intermediate malformed edit put the dev server's SWC cache into a bad state, and
+the tab now hangs on the route's loading skeleton with stale `Expected '</',
+got 'series'` errors quoting line numbers that no longer match the file. Touching
+the file and hard-navigating did not clear it. **The dev server needs a restart,
+which belongs to the human.**
+
+**Two things to check the moment it is back up**, neither of which I could
+settle:
+
+1. **Does the meter appear at all?** `engine_settings` may be readable only by
+   `risk_owner` / `compliance_admin`, in which case `queryRiskBands` correctly
+   returns `null` under a Planner and the meter renders nothing — designed
+   behaviour, but it would mean this persona never sees it and the check has to
+   run under an admin role.
+2. **Arabic, RTL and axe on the gauge** — the caption interpolates two numbers
+   through `formatDecimal`, so `٨١٫٥ من ١٠٠` is expected; unconfirmed.
+
+Until both are answered this addendum is **code complete, not done**.
