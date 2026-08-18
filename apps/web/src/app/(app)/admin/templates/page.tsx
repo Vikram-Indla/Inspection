@@ -53,6 +53,19 @@ export default async function Templates() {
     typeReport: t("admin.template.type.report", "Report"),
     typeActionForm: t("admin.template.type.actionForm", "Action form"),
     typePenalty: t("admin.template.type.penalty", "Penalty"),
+    keyPlaceholder: t("admin.template.keyPlaceholder", "Example: chem-storage-checklist"),
+    versionPlaceholder: t("admin.template.versionPlaceholder", "v1"),
+    titleEnPlaceholder: t("admin.template.titleEnPlaceholder", "Example: Chemical storage inspection"),
+    titleArPlaceholder: t("admin.template.titleArPlaceholder", "مثال: تفتيش تخزين المواد الكيميائية"),
+    reasonPlaceholder: t("admin.template.reasonPlaceholder", "Why this version is being deactivated"),
+    schemaPlaceholder: t("admin.template.schemaPlaceholder", '{"fields":[]}'),
+    datePicker: {
+      placeholder: t("common.date.select", "Select a date"),
+      clear: t("common.clear", "Clear"),
+      today: t("common.today", "Today"),
+      previousMonth: t("common.previousMonth", "Previous month"),
+      nextMonth: t("common.nextMonth", "Next month"),
+    },
   };
 
   return (
@@ -93,6 +106,7 @@ export default async function Templates() {
         <TemplateRegistry
           templates={(templates ?? []) as unknown as TemplateRow[]}
           strings={templateStrings}
+          locale={locale}
         />
       )}
 

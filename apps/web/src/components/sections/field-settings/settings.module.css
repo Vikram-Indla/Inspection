@@ -1,0 +1,174 @@
+.header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-4);
+  padding-inline: var(--sqx-space-5);
+  padding-block: var(--sqx-space-4);
+  padding-block-start: max(var(--sqx-space-4), env(safe-area-inset-top));
+  background: var(--sqx-surface-header);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.page {
+  flex: 1;
+  inline-size: 100%;
+  max-inline-size: var(--sqx-grid-min-lg);
+  margin-inline: auto;
+  padding-inline: var(--sqx-space-5);
+  padding-block: var(--sqx-space-5) var(--sqx-space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-md);
+  background: var(--sqx-surface-raised);
+  overflow: hidden;
+}
+
+.row,
+.link,
+.action {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-3);
+  inline-size: 100%;
+  min-block-size: var(--sqx-touch-target);
+  padding-inline: var(--sqx-space-4);
+  padding-block: var(--sqx-space-3);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.row:first-child,
+.link:first-child,
+.action:first-child {
+  border-block-start: none;
+}
+
+.rowLabel {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.trailing {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+
+.link,
+.action {
+  text-align: start;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border-inline: none;
+  border-block-end: none;
+  cursor: pointer;
+}
+
+.link:hover,
+.action:hover {
+  background: var(--sqx-action-secondary-hover);
+}
+
+.link:focus-visible,
+.action:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: calc(var(--sqx-focus-ring-offset) * -1);
+}
+
+.action {
+  justify-content: flex-start;
+}
+
+.chevron {
+  flex: none;
+  display: inline-flex;
+  color: var(--sqx-text-muted);
+}
+
+.note {
+  padding-inline: var(--sqx-space-4);
+  padding-block: var(--sqx-space-3);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.themeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--sqx-control-h-md);
+  block-size: var(--sqx-control-h-md);
+  color: var(--sqx-text-primary);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-radius: var(--sqx-radius-md);
+  background: var(--sqx-surface-raised);
+  cursor: pointer;
+}
+
+.themeButton:hover {
+  background: var(--sqx-action-secondary-hover);
+}
+
+.themeButton:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.langSwitch {
+  display: inline-flex;
+  gap: var(--sqx-space-1);
+  padding: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-pill);
+  background: var(--sqx-surface-sunken);
+}
+
+.langOption {
+  padding-inline: var(--sqx-space-3);
+  padding-block: var(--sqx-space-1);
+  border-radius: var(--sqx-radius-pill);
+  color: var(--sqx-text-secondary);
+  text-decoration: none;
+}
+
+.langOption[data-active] {
+  background: var(--sqx-surface-raised);
+  color: var(--sqx-text-primary);
+}
+
+.langOption:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}
+
+.signOut {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--sqx-touch-target);
+  padding-inline: var(--sqx-space-4);
+  border-radius: var(--sqx-radius-md);
+  background: var(--sqx-status-danger);
+  text-decoration: none;
+}
+
+.signOut:hover {
+  background: var(--sqx-action-danger-hover);
+}
+
+.signOut:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}

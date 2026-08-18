@@ -1,0 +1,66 @@
+{
+  "title": "Settings",
+  "back": "Back",
+  "loading": "Loading settings",
+  "notConfigured": "Not configured",
+  "sections": {
+    "general": "General",
+    "notifications": "Notifications",
+    "security": "Security",
+    "connectivity": "Connectivity and sync",
+    "data": "Data and storage",
+    "about": "About"
+  },
+  "general": {
+    "appearance": "Appearance",
+    "language": "Language",
+    "textSize": "Text size"
+  },
+  "theme": {
+    "toLight": "Switch to light mode",
+    "toDark": "Switch to dark mode"
+  },
+  "language": {
+    "arabic": "العربية",
+    "english": "English",
+    "switch": "Interface language"
+  },
+  "notifications": {
+    "tasks": "Task and appointment notifications",
+    "urgent": "Urgent alerts",
+    "sound": "Notification sound"
+  },
+  "security": {
+    "devices": "Biometric lock and trusted devices",
+    "delegation": "Absence delegation",
+    "audit": "Every action in your session is logged and audited · Encrypted connection"
+  },
+  "connectivity": {
+    "syncStatus": "Sync status",
+    "conflicts": "Conflict resolution",
+    "autoSync": "Auto-sync",
+    "offlineMaps": "Offline maps",
+    "syncNow": "Sync now"
+  },
+  "syncState": {
+    "synced": "Synced",
+    "offline": "Offline",
+    "pending": "Loading…",
+    "syncing": "Syncing",
+    "conflict": "Conflict",
+    "failed": "Unavailable"
+  },
+  "data": {
+    "readiness": "Device readiness",
+    "storageUsed": "Storage used",
+    "clearCache": "Clear cache"
+  },
+  "about": {
+    "appVersion": "App version",
+    "appVersionDefault": "Set by deployment",
+    "help": "Help and support",
+    "privacy": "Privacy policy"
+  },
+  "signOut": "Sign out",
+  "copyright": "SAQEEL — Ministry of Industry and Mineral Resources © 2026"
+}

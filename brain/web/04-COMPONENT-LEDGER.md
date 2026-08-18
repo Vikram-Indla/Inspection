@@ -50,6 +50,7 @@ Status values:
 | `SegmentedControl` | inherited | audit arrow-key navigation |
 | `FileUpload` | inherited | |
 | `DateRangePicker` | inherited | |
+| `DatePickerField` | **built (T-151)** | form-submittable single date: wraps `DatePicker`, holds value state, emits a hidden `name` input — the drop-in for the banned `TextInput type="date"` (WEB-015). Mirrors `DateRangePicker`'s `nameFrom`/`nameTo` contract. |
 | `StatusSelector` | inherited | |
 
 ## surface/ — the layout and container vocabulary

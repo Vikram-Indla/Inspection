@@ -1,4 +1,5 @@
 "use client";
+import { formatCount } from "@/i18n/numbers";
 
 import { useState } from "react";
 import Button from "@/components/saqeel/button/button";
@@ -36,8 +37,8 @@ export default function FactoriesScopeBar({ locale, options, value, shown, total
         </Button>
       </div>
       <p className={styles.count}>
-        <CountBadge value={shown} label={factories.scope.shown} />
-        <span>{fill(factories.scope.total, { total })}</span>
+        <CountBadge value={formatCount(shown, locale)} label={factories.scope.shown} />
+        <span>{fill(factories.scope.total, { total: formatCount(total, locale) })}</span>
       </p>
     </form>
   );

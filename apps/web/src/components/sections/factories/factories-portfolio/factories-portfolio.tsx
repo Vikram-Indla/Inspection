@@ -17,7 +17,7 @@ export type PortfolioLicence = {
   readonly riskBand: string | null;
   readonly expiryDate: string | null;
   readonly expiryState: LicenceExpiryState | null;
-  readonly openViolations: number | null;
+  readonly openViolations: string | null;
   readonly provenanceLabel: string;
   readonly provenanceTone: StatusTone;
 };
@@ -25,7 +25,7 @@ export type PortfolioLicence = {
 export type PortfolioStat = {
   readonly key: string;
   readonly label: string;
-  readonly value: number | null;
+  readonly value: string | null;
   readonly tone: StatusTone;
 };
 

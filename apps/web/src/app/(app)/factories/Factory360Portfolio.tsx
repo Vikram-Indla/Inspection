@@ -1,4 +1,5 @@
 "use client";
+import { formatCount } from "@/i18n/numbers";
 
 import { useState } from "react";
 import FactoriesPortfolio from "@/components/sections/factories/factories-portfolio/factories-portfolio";
@@ -57,7 +58,7 @@ export default function Factory360Portfolio({ factories, portfolioLabel, canCrea
   const [selectedId, setSelectedId] = useState(factories[0]?.id ?? "");
   const selected = factories.find(factory => factory.id === selectedId) ?? factories[0];
   const highRisk = factories.filter(factory => factory.risk_band === "high").length;
-  const licences = factories.map(factory => toLicence(factory, provenanceStrings, {
+  const licences = factories.map(factory => toLicence(factory, provenanceStrings, locale, {
     openViolations: counts.openViolationsAvailable ? counts.openViolations.get(factory.id) ?? 0 : null,
     now,
   }));
@@ -102,18 +103,18 @@ export default function Factory360Portfolio({ factories, portfolioLabel, canCrea
           selectedId={selected.id}
           onSelect={setSelectedId}
           stats={[
-            { key: "factories", label: copy.portfolio.factories, value: factories.length, tone: "neutral" },
-            { key: "highRisk", label: copy.portfolio.highRisk, value: highRisk, tone: alertTone(highRisk, "danger") },
+            { key: "factories", label: copy.portfolio.factories, value: formatCount(factories.length, locale), tone: "neutral" },
+            { key: "highRisk", label: copy.portfolio.highRisk, value: formatCount(highRisk, locale), tone: alertTone(highRisk, "danger") },
             {
               key: "openViolations",
               label: copy.portfolio.openViolations,
-              value: counts.openViolationsAvailable ? totalOpenViolations : null,
+              value: counts.openViolationsAvailable ? formatCount(totalOpenViolations, locale) : null,
               tone: alertTone(counts.openViolationsAvailable ? totalOpenViolations : null, "danger"),
             },
             {
               key: "activePenalties",
               label: copy.portfolio.activePenalties,
-              value: counts.activePenaltiesAvailable ? totalActivePenalties : null,
+              value: counts.activePenaltiesAvailable ? formatCount(totalActivePenalties, locale) : null,
               tone: alertTone(counts.activePenaltiesAvailable ? totalActivePenalties : null, "warning"),
             },
           ]}
@@ -185,6 +186,7 @@ export default function Factory360Portfolio({ factories, portfolioLabel, canCrea
         official={profiles.get(selected.id)?.media.official ?? 0}
         inspection={profiles.get(selected.id)?.media.inspection ?? 0}
         href={selected.dossier_href}
+        locale={locale}
         strings={copy.profile}
       />
 

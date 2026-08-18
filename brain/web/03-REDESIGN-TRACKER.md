@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-149.** Take T-150.
+implements the reservation. **Highest id in use: T-151.** Take T-152.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,54 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-151 · form controls: DatePickerField + no-raw-date-input rule (WEB-015)
+`status: done` · `rules: WEB-002, WEB-013, WEB-015 (new)` · `est: 1.5h`
+`record:` [2026-08-18-T-151-form-controls-datepicker-rule](sessions/2026-08/2026-08-18-T-151-form-controls-datepicker-rule.md)
+
+Owner flagged `/admin/packages` "Action-form templates" rendering **raw native
+date inputs** (`TextInput type="date"`) instead of the design date picker, and
+made two standing rules: no raw HTML date input (use the DS date picker), and no
+input without a placeholder — if a control is missing from the DS, build it
+first, never inline raw HTML. **Gap found:** the DS `DatePicker` was a controlled
+popover with no form submission, so a new **`DatePickerField`** (uncontrolled,
+`name` + hidden input, matches `DateRangePicker`'s `nameFrom`/`nameTo` contract)
+was created and the 4 admin/packages date fields swapped to it. `"date"` removed
+from `TextInputType` (compile-time ban). Placeholders added to every
+TemplateRegistry/PublishControls input. New **`WEB-015`** rule + ratchet gate
+`gates:date-inputs` (baseline 19, may only fall). **Note:** a concurrent agent
+left `features/factories/view.ts` + `i18n/numbers.ts` mid-edit (unrelated
+typecheck/lint errors) — not this task.
+
+---
+
+### T-150 · `/field/settings` hub migrated off the parallel design system
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 2h` · **owner signed in as Inspector for this task**
+`record:` [2026-08-18-T-150-field-settings-migration](sessions/2026-08/2026-08-18-T-150-field-settings-migration.md)
+
+The settings hub (General / Notifications / Security / Connectivity / Data /
+About / Sign out) rebuilt on SAQEEL primitives + Linear. The offline snapshot
+island (`peekAll`/`conflicts`, online/offline sync) preserved verbatim; sync
+status is now a `StatusPill`, the language switch keeps the real `/locale?set=`
+links, `ThemeToggle` reused (contract-required), and every design item with no
+backing store stays an honest governed "Not configured" row. ~40 `copy(locale,
+en, ar)` sites → new `field-settings` namespace. 4 `<svg>` + inline literals +
+legacy classes gone. **The gated `field-settings-contract` test #5 was re-pointed
+to the new client with all guarantees preserved** (read-only offline, no
+clear/remove/resolve, governed clear-cache row); four other specs reading
+`FieldSettingsClient.tsx` re-pointed. **Full settings tree is bigger than one
+task** — devices/conflicts/readiness parked below.
+
+### PARKED — the rest of the `/field/settings` tree (from T-150)
+- **`/field/settings/devices`** (TrustedDevicesClient 531 + page 273 + actions +
+  strings) — trusted-device self-enrollment; governed by `field-settings-contract`
+  tests #1–4/#6 and the mvp3 control-plane. A task on its own.
+- **`/field/settings/conflicts`** (ConflictResolutionClient 478 + page 88) — the
+  offline conflict-resolution surface.
+- **`/field/settings/readiness`** (DeviceReadinessClient 199 + page) — the iPad
+  PWA readiness screen, governed by `ipad-pwa-shell-contract`.
+
+---
 
 ### T-149 · the coverage widget stops being two charts that say the same thing twice
 `status: done` · `rules: WEB-002, WEB-004, WEB-013, WEB-014` · `est: 1.5h`

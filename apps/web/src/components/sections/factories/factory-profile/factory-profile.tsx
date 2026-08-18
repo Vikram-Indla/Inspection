@@ -1,4 +1,6 @@
 import DefinitionList, { type Definition } from "@/components/saqeel/definition-list/definition-list";
+import { formatCount } from "@/i18n/numbers";
+import type { Locale } from "@/lib/i18n";
 import Button from "@/components/saqeel/button/button";
 import styles from "./factory-profile.module.css";
 import { Text } from "@/components/saqeel/type";
@@ -18,14 +20,15 @@ export type FactoryProfileStrings = {
   readonly openLabel: string;
 };
 
-export default function FactoryProfile({ groups, official, inspection, href, strings }: {
+export default function FactoryProfile({ groups, official, inspection, href, locale, strings }: {
   groups: readonly FactoryProfileGroup[];
   official: number;
   inspection: number;
   href: string;
+  locale: Locale;
   strings: FactoryProfileStrings;
 }) {
-  const count = (template: string, value: number) => template.replace("{n}", String(value));
+  const count = (template: string, value: number) => template.replace("{n}", formatCount(value, locale));
   return (
     <details className={styles.section}>
       <summary className={styles.summary}>

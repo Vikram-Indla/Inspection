@@ -1,16 +1,27 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-17` · `Updated by: T-149 — the coverage-widget segmented-meter rebuild`
+`Last updated: 2026-08-18` · `Updated by: T-150 — the /field/settings hub migration`
 
-## The `/field` migration: the submitted-report library is done (2026-08-17)
+## The `/field` migration: the settings hub is done (2026-08-18)
 
-Nine slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
+Ten slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
 establishments surface (T-142+T-143), visits list + calendar (T-144),
 notifications list + detail (T-145), `/field/completed` list + receipt
-(T-146), and **`/field/reports` submitted-report library + inline document
-(T-148)**. Remaining: `settings` (+ devices, readiness, conflicts), `feedback`,
-the enforcement `*-reports` screens, and the two large execution screens
+(T-146), `/field/reports` submitted-report library + inline document
+(T-148), and **the `/field/settings` hub (T-150)**. Remaining: the three parked
+settings sub-routes (`devices`, `conflicts`, `readiness`), `feedback`, the
+enforcement `*-reports` screens, and the two large execution screens
 (`[visitId]` startup, the 1,991-line `inspection/[id]/Workspace`).
+
+**T-150 showed a surface too big for one task, and scoped down.** `/field/
+settings` is 4 routes / 14 files / ~2,300 lines; the hub migrated, the three
+500/478/199-line sub-route clients parked as their own tasks (hub links keep
+working). It also re-pointed **five specs** across the split — including the
+gated `field-settings-contract` #5, whose pinned `"Clear cache"` English literal
+became a governed-row + namespace assertion — preserving every guarantee while
+the copy moved to i18n. The pattern is now routine: a migration that moves a file
+the static specs read must re-point them, and a literal they pin becomes a
+key-plus-namespace check, never a weakened guarantee.
 
 **T-148 split a 213-line client under the 200-line ceiling and killed the last
 `as unknown as` in the slice.** `ReportsLibrary` became `reports-library` (150,

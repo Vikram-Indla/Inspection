@@ -1,4 +1,5 @@
 import type { PortfolioLicence } from "@/components/sections/factories/factories-portfolio/factories-portfolio";
+import { formatCount } from "@/i18n/numbers";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 
 export type FactoryRow = {
@@ -145,7 +146,7 @@ export function conditionOf(band: string | null, strings: ConditionStrings): {
   return { label: strings.unavailable, tone: "neutral" };
 }
 
-export function toLicence(factory: FactoryRow, strings: ProvenanceStrings, counts: {
+export function toLicence(factory: FactoryRow, strings: ProvenanceStrings, locale: "en" | "ar", counts: {
   openViolations: number | null;
   now: number;
 }): PortfolioLicence {
@@ -162,7 +163,7 @@ export function toLicence(factory: FactoryRow, strings: ProvenanceStrings, count
     riskBand: factory.risk_band,
     expiryDate: expiry,
     expiryState: licenceExpiryState(expiry, counts.now),
-    openViolations: counts.openViolations,
+    openViolations: counts.openViolations === null ? null : formatCount(counts.openViolations, locale),
     provenanceLabel: provenance.label,
     provenanceTone: provenance.tone,
   };
