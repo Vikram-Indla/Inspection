@@ -1,44 +1,52 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getMessages, type Messages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 import { insertNotification, type NotifyChannel } from "@/lib/notify";
+import { supabaseServer } from "@/lib/supabase-server";
 
 export type CcrActionResult = { ok?: boolean; error?: string; requestId?: string };
 
+type CcrMessages = Messages["adminComplianceRequests"]["actions"];
+
 const pathFor = (id?: string) => id ? `/admin/compliance-requests/${id}` : "/admin/compliance-requests";
 
-function databaseMessage(error: { message?: string } | null): string {
+async function messages(): Promise<CcrMessages> {
+  return getMessages(await getLocale()).adminComplianceRequests.actions;
+}
+
+function databaseMessage(error: { message?: string } | null, m: CcrMessages): string {
   const message = error?.message ?? "";
   const known: Array<[string, string]> = [
-    ["CCR_NOT_AUTHORIZED", "Your role cannot perform this request action."],
-    ["CCR_REVIEW_NOT_AUTHORIZED", "A Compliance reviewer role is required."],
-    ["CCR_PUBLISH_NOT_AUTHORIZED", "A Compliance reviewer role is required to publish."],
-    ["CCR_MAKER_CHECKER", "The request creator cannot review or publish their own request."],
-    ["CCR_COMMENT_REQUIRED", "A comment is required for Return or Reject."],
-    ["CCR_COMPONENT_REQUIRED", "Add at least one component before submitting."],
-    ["CCR_DEPENDENCY_CYCLE", "That dependency would create a cycle."],
-    ["CCR_DEPENDENCY_NOT_APPROVED", "Publication is blocked because a required parent is not approved."],
-    ["CCR_ORPHAN_COMPONENT", "Publication is blocked because a component has no approved or existing parent version."],
-    ["CCR_NOT_EDITABLE", "Only the current draft revision can be edited."],
-    ["CCR_NOT_SUBMITTABLE", "This request is not in a submittable state."],
-    ["CCR_REVISION_REQUIRES_RETURNED", "A new revision can be created only after Return."],
-    ["CCR_PROPOSED_SNAPSHOT_REQUIRED", "Proposed values must be a JSON object."],
-    ["CCR_MODIFY_TARGET_REQUIRED", "Modify requests require an existing target UUID."],
+    ["CCR_NOT_AUTHORIZED", m.notAuthorized],
+    ["CCR_REVIEW_NOT_AUTHORIZED", m.reviewNotAuthorized],
+    ["CCR_PUBLISH_NOT_AUTHORIZED", m.publishNotAuthorized],
+    ["CCR_MAKER_CHECKER", m.makerChecker],
+    ["CCR_COMMENT_REQUIRED", m.commentRequired],
+    ["CCR_COMPONENT_REQUIRED", m.componentRequired],
+    ["CCR_DEPENDENCY_CYCLE", m.dependencyCycle],
+    ["CCR_DEPENDENCY_NOT_APPROVED", m.dependencyNotApproved],
+    ["CCR_ORPHAN_COMPONENT", m.orphanComponent],
+    ["CCR_NOT_EDITABLE", m.notEditable],
+    ["CCR_NOT_SUBMITTABLE", m.notSubmittable],
+    ["CCR_REVISION_REQUIRES_RETURNED", m.revisionRequiresReturned],
+    ["CCR_PROPOSED_SNAPSHOT_REQUIRED", m.proposedSnapshotRequired],
+    ["CCR_MODIFY_TARGET_REQUIRED", m.modifyTargetRequired],
   ];
   return known.find(([key]) => message.includes(key))?.[1] ?? NEUTRAL_WRITE_ERROR;
 }
 
-function objectJson(raw: FormDataEntryValue | null, required: boolean): { value: Record<string, unknown> | null; error?: string } {
+function objectJson(raw: FormDataEntryValue | null, required: boolean, m: CcrMessages): { value: Record<string, unknown> | null; error?: string } {
   const text = String(raw ?? "").trim();
-  if (!text) return required ? { value: null, error: "A JSON object is required." } : { value: null };
+  if (!text) return required ? { value: null, error: m.jsonRequired } : { value: null };
   try {
     const value = JSON.parse(text) as unknown;
-    if (!value || Array.isArray(value) || typeof value !== "object") return { value: null, error: "The value must be a JSON object." };
+    if (!value || Array.isArray(value) || typeof value !== "object") return { value: null, error: m.jsonNotObject };
     return { value: value as Record<string, unknown> };
   } catch {
-    return { value: null, error: "Enter valid JSON." };
+    return { value: null, error: m.jsonInvalid };
   }
 }
 
@@ -48,10 +56,6 @@ async function deliverGovernedChannels(
   recipients: string[],
   payload: Record<string, unknown>,
 ) {
-  // The RPC has already persisted the guaranteed in-app event. Published
-  // notification rules opt external channels into the existing provider,
-  // preference and delivery-truth engine; failures never roll back the primary
-  // governed transition.
   const { data: rules, error } = await sb.from("notification_rules")
     .select("channel").eq("event_key", eventKey).eq("status", "published");
   if (error) { logProviderError(`compliance request ${eventKey} rules`, error); return; }
@@ -82,12 +86,12 @@ async function notifyReviewers(sb: Awaited<ReturnType<typeof supabaseServer>>, r
   });
 }
 
-async function rpc(name: string, args: Record<string, unknown>, requestId?: string): Promise<CcrActionResult> {
+async function rpc(name: string, args: Record<string, unknown>, m: CcrMessages, requestId?: string): Promise<CcrActionResult> {
   const sb = await supabaseServer();
   const { data, error } = await sb.rpc(name, args);
   if (error) {
     logProviderError(`compliance request ${name}`, error);
-    return { error: databaseMessage(error) };
+    return { error: databaseMessage(error, m) };
   }
   revalidatePath(pathFor(requestId));
   revalidatePath("/admin/compliance-requests");
@@ -104,37 +108,40 @@ async function rpc(name: string, args: Record<string, unknown>, requestId?: stri
 }
 
 export async function createComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const requestType = String(formData.get("request_type") ?? "");
   const comments = String(formData.get("comments") ?? "").trim();
-  if (!title) return { error: "Title is required." };
+  if (!title) return { error: m.titleRequired };
   const sb = await supabaseServer();
   const { data, error } = await sb.rpc("create_compliance_request", {
     p_title: title, p_description: description, p_request_type: requestType, p_comments: comments,
   });
   if (error || typeof data !== "string") {
     if (error) logProviderError("compliance request create", error);
-    return { error: databaseMessage(error) };
+    return { error: databaseMessage(error, m) };
   }
   revalidatePath("/admin/compliance-requests");
   return { ok: true, requestId: data };
 }
 
 export async function updateComplianceRequestDraft(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
   return rpc("update_compliance_request_draft", {
     p_request: requestId,
     p_title: String(formData.get("title") ?? "").trim(),
     p_description: String(formData.get("description") ?? "").trim(),
     p_comments: String(formData.get("comments") ?? "").trim(),
-  }, requestId);
+  }, m, requestId);
 }
 
 export async function addComplianceRequestComponent(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  const current = objectJson(formData.get("current_snapshot"), false);
-  const proposed = objectJson(formData.get("proposed_snapshot"), true);
+  const current = objectJson(formData.get("current_snapshot"), false, m);
+  const proposed = objectJson(formData.get("proposed_snapshot"), true, m);
   if (current.error || proposed.error) return { error: current.error ?? proposed.error };
   const target = String(formData.get("target_entity_id") ?? "").trim();
   return rpc("add_compliance_request_component", {
@@ -144,53 +151,61 @@ export async function addComplianceRequestComponent(_: CcrActionResult, formData
     p_current_snapshot: current.value,
     p_proposed_snapshot: proposed.value,
     p_comments: String(formData.get("component_comments") ?? "").trim(),
-  }, requestId);
+  }, m, requestId);
 }
 
 export async function addComplianceRequestDependency(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
   return rpc("add_compliance_request_dependency", {
     p_request: requestId,
     p_parent: String(formData.get("parent_component_id") ?? ""),
     p_child: String(formData.get("child_component_id") ?? ""),
-  }, requestId);
+  }, m, requestId);
 }
 
 export async function submitComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  return rpc("submit_compliance_request", { p_request: requestId }, requestId);
+  return rpc("submit_compliance_request", { p_request: requestId }, m, requestId);
 }
 
 export async function reviseComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  return rpc("revise_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, requestId);
+  return rpc("revise_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, m, requestId);
 }
 
 export async function decideComplianceRequestComponent(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
   return rpc("decide_compliance_request_component", {
     p_component: String(formData.get("component_id") ?? ""),
     p_decision: String(formData.get("decision") ?? ""),
     p_comments: String(formData.get("comments") ?? "").trim(),
-  }, requestId);
+  }, m, requestId);
 }
 
 export async function returnComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  return rpc("return_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, requestId);
+  return rpc("return_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, m, requestId);
 }
 
 export async function rejectComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  return rpc("reject_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, requestId);
+  return rpc("reject_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, m, requestId);
 }
 
 export async function cancelComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  return rpc("cancel_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, requestId);
+  return rpc("cancel_compliance_request", { p_request: requestId, p_comments: String(formData.get("comments") ?? "").trim() }, m, requestId);
 }
 
 export async function publishComplianceRequest(_: CcrActionResult, formData: FormData): Promise<CcrActionResult> {
+  const m = await messages();
   const requestId = String(formData.get("request_id") ?? "");
-  return rpc("publish_compliance_request", { p_request: requestId }, requestId);
+  return rpc("publish_compliance_request", { p_request: requestId }, m, requestId);
 }

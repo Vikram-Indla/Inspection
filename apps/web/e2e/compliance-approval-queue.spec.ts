@@ -12,7 +12,10 @@ const readRepo = (file: string) => fs.readFileSync(path.join(repoRoot, file), "u
 test.describe("Prompt 04 Compliance Approval Queue contract", () => {
   const queue = readWeb("src/app/(app)/admin/compliance-approvals/page.tsx");
   const layout = readWeb("src/app/(app)/admin/compliance-approvals/layout.tsx");
-  const workspace = readWeb("src/app/(app)/admin/compliance-requests/[id]/page.tsx");
+  const workspace = readWeb("src/components/sections/admin-compliance-requests/request-workspace.tsx");
+  const componentCard = readWeb("src/components/sections/admin-compliance-requests/component-card.tsx");
+  const actionZone = readWeb("src/components/sections/admin-compliance-requests/action-zone.tsx");
+  const copy = readWeb("src/i18n/locales/en/admin-compliance-requests.json");
   const actions = readWeb("src/app/(app)/admin/compliance-requests/actions.ts");
   const navigation = readWeb("src/lib/shell-navigation.ts");
   const migration = readRepo("supabase/migrations/20260719213000_compliance_configuration_request_engine.sql");
@@ -51,13 +54,16 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
 
   test("review workspace preserves component compare, comments and publication controls", () => {
     expect(queue).toContain("Open review");
-    expect(workspace).toContain("Current value");
-    expect(workspace).toContain("Proposed value");
-    expect(workspace).toContain("Approve component");
-    expect(workspace).toContain("Reject component");
-    expect(workspace).toContain("Return reason (required)");
-    expect(workspace).toContain("Rejection reason (required)");
-    expect(workspace).toContain("Publish approved branches transactionally");
+    expect(copy).toContain("Current value");
+    expect(copy).toContain("Proposed value");
+    expect(copy).toContain("Approve component");
+    expect(copy).toContain("Reject component");
+    expect(copy).toContain("Return reason (required)");
+    expect(copy).toContain("Rejection reason (required)");
+    expect(copy).toContain("Publish approved branches transactionally");
+    expect(componentCard).toContain("decideComplianceRequestComponent");
+    expect(workspace).toContain("ComponentCard");
+    expect(actionZone).toContain("publishComplianceRequest");
     expect(actions).toContain('revalidatePath("/admin/compliance-approvals")');
   });
 

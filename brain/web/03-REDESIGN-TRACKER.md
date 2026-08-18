@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-153.** Take T-154.
+implements the reservation. **Highest id in use: T-154.** Take T-155.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,29 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-154 · `/admin/compliance-requests` (maker-checker workflow) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014` · `est: 4h`
+`record:` [2026-08-18-T-154-compliance-requests-migration](sessions/2026-08/2026-08-18-T-154-compliance-requests-migration.md)
+
+The **largest** migration so far — the maker-checker compliance-configuration-
+request workflow: list + create + a dense detail workspace (current/proposed JSON
+compares, per-component approve/reject, dependency tree, revision history,
+state-gated action zone) + **11 localized server actions** + two role-gated
+layouts. Legacy: two shells (`AdminShell` + the older `@/components/Shell`),
+hardcoded English everywhere, emoji-as-icons (`⚠ ◇ 🔎 ◌`), raw ISO timestamps,
+no responsiveness. Rebuilt thin routes → `features/admin-compliance-requests/`
+(queries + types) + `components/sections/admin-compliance-requests/` (register,
+create, workspace, component-card, action-zone, add-component, dependencies,
+decisions, skeleton) + new bilingual `adminComplianceRequests` namespace +
+`loading.tsx`/`error.tsx`. Reused the **`Tabs` primitive** for the workspace
+secondary metadata (Dependencies/History/Decisions); `formatDate`/`formatDateTime`;
+`StatusPill`; `DefinitionList`; responsive `DataTable`; JSON compare via `Mono` +
+`white-space` container (stacks on mobile). Governance byte-for-byte; **3 governed
+contract specs re-pointed** (CMP-REQ engine/queue/library) with guarantees
+preserved. typography **-23**, v5 **64→62** (emoji removed), test:static **408/33**.
+
+---
 
 ### T-153 · `/admin/planning/status` (read-only) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-013, WEB-014` · `est: 1.5h`

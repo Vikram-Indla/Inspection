@@ -1,9 +1,8 @@
-import Shell from "@/components/Shell";
+import ComplianceRequestsSkeleton from "@/components/sections/admin-compliance-requests/compliance-requests-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-export default function Loading() {
-  return (
-    <Shell current="/admin/compliance-requests" title="">
-      <div className="panel"><div className="sq-state" role="status"><span className="sq-state__glyph" aria-hidden="true">◌</span><h4>Loading configuration requests…</h4><p className="t-caption">Reading the request list and its final submitted versions.</p></div></div>
-    </Shell>
-  );
+export default async function ComplianceRequestsLoading() {
+  const locale = await getLocale();
+  return <ComplianceRequestsSkeleton label={getMessages(locale).adminComplianceRequests.loading} />;
 }
