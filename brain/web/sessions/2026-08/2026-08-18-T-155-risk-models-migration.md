@@ -21,9 +21,15 @@ skeleton's left-right spacing.
   legacy `EmptyState`/`IconChart`.
 - `t(key,"English")` with **no `ar`** (English-only in Arabic) + English action
   messages.
-- **The skeleton bug (owner's flag):** `loading.tsx` → `RouteLoading` rendered
-  `SkeletonRegion` with **no page frame**, so it sat edge-to-edge while the real
-  content (inside `AdminShell`) was padded/centred.
+- **The skeleton bug (owner's flag):** the skeleton the owner kept seeing was
+  **`admin/risk/loading.tsx`**, not `models/loading.tsx`. Next.js shows the
+  *shallowest* `loading.tsx` in a freshly-entered subtree, so arriving at
+  `/admin/risk/models` from anywhere outside the risk section surfaces the
+  **parent** `admin/risk/loading.tsx` for the whole load — and that rendered
+  `RouteLoading`'s `SkeletonRegion` with **no page frame**, so it sat
+  edge-to-edge while the framed content (32 px inset) loaded behind it. The
+  route's own `models/loading.tsx` is only reached on *intra-section* nav
+  (Studio → Model versions).
 - **The tabs (`RiskSectionNav`)** on legacy `rk-section-nav` classes.
 
 ## What changed
@@ -31,7 +37,9 @@ skeleton's left-right spacing.
 | File | Action |
 | --- | --- |
 | `app/(app)/admin/risk/models/page.tsx` | rebuilt as a route file (79 → 11) |
-| `app/(app)/admin/risk/models/loading.tsx` | **framed skeleton** (`ShellPageFrame`-wrapped) — the spacing fix |
+| `app/(app)/admin/risk/models/loading.tsx` | **framed skeleton** (`ShellPageFrame`-wrapped) — intra-section loading |
+| `components/RouteLoading.tsx` | added reusable `framed` prop (wraps the skeleton in `ShellPageFrame`); default off, every existing caller unchanged |
+| `app/(app)/admin/risk/loading.tsx` | **`framed` — the real spacing fix**; comment banner removed (zero-comments) |
 | `app/(app)/admin/risk/models/actions.ts` | localized (55 → 59), logic byte-for-byte |
 | `features/admin-risk-models/queries.ts` | created — load + feature flag |
 | `components/sections/admin-risk-models/` | `risk-models-screen` · `risk-section-nav` · `risk-composer` · `risk-model-card` · `risk-models-skeleton` · `risk-models.module.css` |
@@ -40,11 +48,16 @@ skeleton's left-right spacing.
 
 ## Decisions
 
-**The skeleton spacing fix.** The migrated `loading.tsx` renders
-`RiskModelsSkeleton`, which wraps `SkeletonRegion` in **`ShellPageFrame`** — same
-max-width + horizontal padding as the screen — so the skeleton no longer sits
-flush to the edge. The shared `RouteLoading` is left untouched; risk/models gets
-its own framed skeleton like every other migrated route.
+**The skeleton spacing fix.** Root cause was the *parent* boundary:
+`admin/risk/loading.tsx` (the shallowest `loading.tsx` reached when entering the
+risk section) rendered the flush `RouteLoading`. Gave `RouteLoading` an optional
+`framed` prop that wraps its `SkeletonRegion` in **`ShellPageFrame`** (default off
+— every other caller is byte-for-byte unchanged) and set `framed` on
+`admin/risk/loading.tsx`, so the skeleton now sits at the same 32 px inset as the
+content. `models/loading.tsx` keeps its own framed `RiskModelsSkeleton` for the
+intra-section (Studio → Model versions) transition. **Verified live** by sampling
+the `aria-busy` region through the transition: `regionLeft: 32`, `insideFrame:
+true` across the whole load (was flush at ≈ 0 before).
 
 **The tabs.** `RiskSectionNav` became a SAQEEL underline-tab nav — a `<nav>` of
 real `<Link>`s (Risk Studio → `/admin/risk`, Model versions → `/admin/risk/models`)
@@ -88,7 +101,10 @@ frozen sheet is unchanged; the new nav uses a colocated module instead).
 - [x] `npm run test:static` — **408 passed / 33 failed — exact baseline** (risk contract re-pointed, 5/5 green)
 - [x] **live render (admin persona)** — the section **tabs** render with the correct
       active underline and **navigate** (Risk Studio → `/admin/risk`); the content
-      is padded in line with the title (skeleton fix is the same framing)
+      is padded in line with the title
+- [x] **skeleton fix verified live** — sampled the loading `aria-busy` region on
+      entry into the risk section: `regionLeft: 32`, `insideFrame: true`,
+      `frameLeft: 32` for the full ~1.4 s load (flush at ≈ 0 before the fix)
 - [ ] board / composer / model-card render — **owed**: `FEATURE_RISK_WORKBENCH` is
       **off** in this env, so the page shows `NotYetBoundary`; the composer, model
       cards, transitions, and Arabic/axe/zoom on a populated board need the flag on.
