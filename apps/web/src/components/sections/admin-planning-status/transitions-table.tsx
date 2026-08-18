@@ -60,7 +60,6 @@ export default function TransitionsTable({ transitions, isFallback, locale, copy
       rows={rows}
       columns={columns}
       getRowId={row => row.rowId}
-      caption={copy.sections.transitions}
       empty={{ title: copy.emptyTransitions, icon: "forms" }}
     />
   );

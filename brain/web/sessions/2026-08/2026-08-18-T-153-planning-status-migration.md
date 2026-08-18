@@ -94,7 +94,23 @@ specs (they run in the full browser e2e, not `test:static`).
 - [x] `npm run check:design-system-v5` — **64** unchanged; adds **0**
 - [x] `npm run test:static` — **408 passed / 33 failed — exact baseline**
 - [x] CD-044 / CD-045 / shell-navigation assertions read and confirmed satisfied
-- [ ] live admin-persona render + axe/light/zoom/Arabic — owed
+- [x] **live render (admin persona) — EN / dark AND Arabic / RTL** — browser-verified
+      in the fallback state: governance card, reference notice, state chips,
+      transitions table, capabilities list all render correctly; Arabic fully
+      translated + mirrored, fallback guards resolved from the `ar` file, the
+      dedup holds in both locales
+- [ ] axe scan / light theme / 200 % zoom — owed
+
+## Post-render fix
+
+The owner's live look caught a **duplicate label**: the transitions section
+`<Heading>` and the `DataTable`'s visible `<caption>` both rendered "How a visit
+moves between stages". The migrated convention (`regulation-items`) uses the
+`DataTable` `caption` as the label with no separate heading, but this screen's
+three sections (states chips / transitions / capabilities list) each need a
+consistent `<h2>`, and only the table carries a built-in caption. Fix: keep the
+section `<Heading>` on all three, drop the `DataTable caption` — one bold `h2`
+label per section, no duplication. Re-verified in the pane.
 
 ## Parked
 
