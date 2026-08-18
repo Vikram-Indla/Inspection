@@ -1,0 +1,82 @@
+.studio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.toolbarGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.search {
+  flex: 1 1 16rem;
+  min-inline-size: 0;
+}
+
+.filter {
+  inline-size: 12rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 22rem);
+  gap: var(--sqx-space-6);
+  align-items: start;
+}
+
+.mapCard {
+  min-inline-size: 0;
+  overflow: hidden;
+  border-radius: var(--sqx-radius-card);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  block-size: clamp(24rem, 60vh, 34rem);
+}
+
+.panelBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+  align-items: center;
+}
+
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.cellStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 60rem) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filter {
+    inline-size: 100%;
+  }
+}

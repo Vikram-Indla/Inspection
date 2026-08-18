@@ -12,7 +12,7 @@ test.describe("TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003", () => {
     const seed = readFileSync(app("../../supabase/migrations/0001_foundation.sql"), "utf8");
     const startup = readFileSync(app("src/app/(app)/field/[visitId]/Startup.tsx"), "utf8");
     const fieldPage = readFileSync(app("src/app/(app)/field/[visitId]/page.tsx"), "utf8");
-    const gisPage = readFileSync(app("src/app/(app)/admin/gis/page.tsx"), "utf8");
+    const gisPage = readFileSync(app("src/features/admin-gis/queries.ts"), "utf8");
 
     expect(seed).toContain('"gps_accuracy_checkin_max_m":25');
     expect(seed).toContain('"arrival_detection_radius_m":200');

@@ -26,25 +26,27 @@ test.describe("Factory 360 governed admin control plane", () => {
   });
 
   test("exposes retained mutations only in admin and relies on audited RLS tables", () => {
-    const page = read("src/app/(app)/admin/integrations/factory-data/page.tsx");
-    const controls = read("src/app/(app)/admin/integrations/factory-data/MasterDataForms.tsx");
+    const controls = ["document-form", "representative-form", "catalog-forms"]
+      .map(name => read(`src/components/sections/admin-factory-data/${name}.tsx`))
+      .join("\n");
     const actions = read("src/app/(app)/admin/integrations/factory-data/actions.ts");
+    const copy = read("src/i18n/locales/en/admin-factory-data.json");
     const migration = fs.readFileSync(path.resolve(webRoot, "../../supabase/migrations/20260720010000_factory360_v2_foundation.sql"), "utf8");
     for (const operation of ["document", "representative", "product", "material", "representative_status"]) expect(controls).toContain(`value="${operation}"`);
     for (const field of ["reference_no", "valid_from", "valid_to", "annual_capacity", "is_primary", "full_name", "role_title", "phone", "email", "source", "hs_code"]) expect(controls).toContain(`name="${field}"`);
     expect(actions).toContain("validTo < validFrom");
     expect(actions).toContain("annualCapacity < 0");
     expect(actions).toContain("mapFactoryError(error, \"update\")");
-    expect(page).toContain("Factory 360 profiles are read-only");
-    expect(page).toContain("SENAEI_API_CONTRACT_NOT_SUPPLIED");
+    expect(copy).toContain("Factory 360 profiles are read-only");
+    expect(copy).toContain("SENAEI_API_CONTRACT_NOT_SUPPLIED");
     for (const table of ["senaei_sync_runs", "factory_import_batches", "factory_import_rows"]) expect(migration).toContain(`'${table}'`);
     expect(migration).toContain("audit_row_change()");
   });
 
   test("shows provider, batch, rejected-row and reconciliation truth separately", () => {
-    const page = read("src/app/(app)/admin/integrations/factory-data/page.tsx");
-    for (const heading of ["Senaei provider", "CSV staging and validation", "Sync and import history", "Rejected staged rows", "Reconciliation history"]) expect(page).toContain(heading);
-    expect(page).toContain("No remote call is made from this page");
-    expect(page).toContain("Staged does not mean imported");
+    const copy = read("src/i18n/locales/en/admin-factory-data.json");
+    for (const heading of ["Senaei provider", "CSV staging and validation", "Sync and import history", "Rejected staged rows", "Reconciliation history"]) expect(copy).toContain(heading);
+    expect(copy).toContain("No remote call is made from this page");
+    expect(copy).toContain("Staged does not mean imported");
   });
 });

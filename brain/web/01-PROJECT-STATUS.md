@@ -1,6 +1,68 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-157 — the /admin/integrations/senai-data migration`
+`Last updated: 2026-08-18` · `Updated by: T-159 — the /admin/gis geofencing studio migration`
+
+## The `/admin` migration: the GIS geofencing studio, with a permission gate (2026-08-18)
+
+**T-159 took on the most interactive admin surface yet — `/admin/gis`.** A live
+Mapbox map of 612 factory pins, linked map↔registry selection, a geofence-radius
+editor, filters, a legend, and a settings table, in a 279-line client component.
+The rebuild kept every interaction (the `GeoMap` Mapbox engine is untouched) and
+split the client under the 200-line ceiling into a `gis-studio` container +
+presentational `gis-toolbar`/`gis-map-panel`/`gis-registry`. The lesson worth
+carrying: **a large interactive client migrates by extracting a state container
+that composes presentational children — the map/table/panel become dumb, the
+container owns the derivations** (filtered/located/markers/selected), and a
+selection `useEffect` becomes a derived value (WEB-004).
+
+**The permission gate is now an in-UI state, not a post-submit surprise.** Editing
+a geofence needs the `gis_admin` role (RLS `factories_update`); the route only
+needs `admin`. `loadGis()` resolves `gis_admin` server-side and returns `canEdit`,
+so a non-gis_admin admin sees the coordinates read-only with a "View only —
+gis_admin required" notice instead of an editor that would fail on save. RLS stays
+the authority (the action still returns an `rls` code), but the block is honest
+up front. This is the pattern for any surface where route access and write
+capability differ: resolve the write role in the loader, gate the control in the
+UI, keep RLS as the backstop.
+
+**Accessibility caught a real gap.** The old registry selected a factory on a
+row `onClick` — not keyboard-reachable. The migrated registry's name cell is a
+focus `Button`, and an axe pass caught a selected-row muted-label contrast
+(4.45:1 on the accent-tinted highlight) fixed by `tone="muted"` → `"secondary"`.
+Three specs (`mapbox-provider`, `ipad-gps-policy`, `neutral-error-sweep`) were
+re-pointed to the new files with every guarantee intact. Verified: axe 0,
+Arabic/RTL + 200% zoom 0 overflow, test:static 408/33. Parked: the feature-flagged
+`/admin/gis/spatial` subroute (T-160).
+
+## The `/admin` migration: the integrations tree is complete (2026-08-18)
+
+**T-158 finished the tree — `/admin/integrations/factory-data`, the WEB-015 one.**
+The Factory data console had 18 raw controls (a file input, 2 date inputs, 3
+selects, ~10 text/number/email inputs, 2 checkboxes) and English-only copy. The
+owner's asks were specific: **use our uploader** for the CSV and **DS controls for
+every field**. The key discovery is that the DS **already ships what you need** —
+`components/saqeel/file-upload` is a drag-and-drop uploader that submits through a
+plain `<form action>` (so the server action reads `csv_file` from `FormData`
+unchanged) and drives a client preview through its `onSelect` callback; no new
+component was built. Every field moved onto `TextInput`/`SaqeelSelect`/
+`DatePickerField`/`Choice` wrapped in `Field`, and the two raw date inputs became
+`DatePickerField` — WEB-015 satisfied end to end. **Before reaching for a raw
+input or building a new control, check `components/saqeel/` — the primitive is
+usually already there.**
+
+**Action-result copy: codes → client i18n map.** `actions.ts` stays logic-only,
+returning stable codes; a `resultMessage(code, strings)` helper maps them to en/ar
+copy in the client, and the shared `mapFactoryError` neutral output (a Factory-360
+util, not this route's copy) passes through untouched. That's the clean split when
+an action's errors must be localized without threading locale into governed
+server logic. Two governed contracts (`admin-integration-truth-states` test 2,
+`factory360-admin-control-plane` tests 3–4) were re-pointed to the new files + en
+JSON with every guarantee intact, and the orphaned old client forms deleted.
+
+**The three integrations routes — index (T-156), senai-data (T-157),
+factory-data (T-158) — are all migrated.** `AdminDestinationFrame` no longer lists
+`/admin/integrations` on its retirement pending-list. Verified across all three:
+axe 0, Arabic/RTL + 200% zoom 0 overflow, test:static 408/33.
 
 ## The `/admin` migration: SENAI data console is done, one toggle (2026-08-18)
 

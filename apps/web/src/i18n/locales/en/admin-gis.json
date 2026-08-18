@@ -1,0 +1,89 @@
+{
+  "loading": "Loading GIS studio…",
+  "dash": "—",
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration",
+    "hub": "GIS studio"
+  },
+  "title": "GIS studio — geofencing",
+  "subtitle": "Official coordinates and per-factory geofence radii, stamped on every geo event",
+  "banner": {
+    "title": "GIS studio.",
+    "body": "These values are stamped on every geo event, and the settings version is recorded with each check-in. Official coordinates stay owned by the GIS administrator; field observations never overwrite them. Per-factory geofence radii are edited on the map below."
+  },
+  "error": {
+    "title": "GIS data not available.",
+    "body": "Couldn't load GIS data. Nothing changed."
+  },
+  "empty": {
+    "title": "No factories registered",
+    "body": "The factory list is empty — geofences appear here once factories are synced."
+  },
+  "map": {
+    "loadingTitle": "Loading map",
+    "loadingBody": "Preparing the KSA geofencing view.",
+    "ariaLabel": "KSA geofencing map"
+  },
+  "toolbar": {
+    "searchLabel": "Search factories",
+    "searchPlaceholder": "Search by name, code, city or region…",
+    "regionAll": "All regions",
+    "bandAll": "All risk bands",
+    "regionLabel": "Region",
+    "bandLabel": "Risk band",
+    "shownOf": "{shown} / {total} factories shown",
+    "noCoords": "{count} without coordinates (table only)",
+    "noResults": "No factories match the current filters."
+  },
+  "panel": {
+    "selectTitle": "Select a factory pin",
+    "selectBody": "Click any pin to see its official coordinates and set its geofence radius.",
+    "coordsLabel": "Official coordinates — owned by the GIS administrator",
+    "coordsCaption": "Field observation never overwrites the official pin.",
+    "radiusLabel": "Geofence radius (m)",
+    "radiusHint": "Tip: with this factory selected, click the map to set the fence edge at that point. Blank override falls back to the engine default ({default} m).",
+    "save": "Save radius",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "viewOnly": "View only — the gis_admin role is required to edit geofence radii.",
+    "defaultsTitle": "Engine defaults (read-only)",
+    "defaultsCheckin": "Check-in accuracy",
+    "defaultsArrival": "Arrival detection",
+    "defaultsFence": "Default geofence",
+    "legendCaption": "risk-band pin tones"
+  },
+  "band": {
+    "high": "high",
+    "medium": "medium",
+    "low": "low",
+    "unbanded": "unbanded"
+  },
+  "registry": {
+    "code": "Code",
+    "name": "Factory",
+    "region": "Region",
+    "city": "City",
+    "band": "Risk band",
+    "radius": "Geofence radius",
+    "coords": "Official coordinates",
+    "radiusDefault": "default"
+  },
+  "settings": {
+    "setting": "Setting",
+    "value": "Value",
+    "gps": "GPS accuracy for check-in",
+    "arrival": "Arrival detection radius",
+    "fence": "Geofence default radius",
+    "fenceNote": "per-factory override on the map",
+    "telemetry": "Telemetry interval",
+    "deviation": "Route deviation alert",
+    "retention": "Retention"
+  },
+  "result": {
+    "expired": "Session expired — sign in again.",
+    "no_factory": "No factory selected.",
+    "bad_radius": "A positive radius in metres is required.",
+    "rls": "Update blocked — the gis_admin role is required (RLS factories_update)."
+  }
+}

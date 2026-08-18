@@ -1,0 +1,179 @@
+{
+  "loading": "Loading factory data integration…",
+  "notConfigured": "Not configured",
+  "dash": "—",
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration",
+    "hub": "Connections & geography",
+    "factory": "Factory data"
+  },
+  "title": "Factory data integration",
+  "subtitle": "Staging, master-data controls and import history — read-only Factory 360 profiles",
+  "banner": {
+    "title": "Settings only.",
+    "body": "Factory 360 profiles are read-only. Setting up a provider does not prove it's connected. CSV rows stay staged until a separate, approved reconciliation, and source identifiers can't be silently replaced."
+  },
+  "provider": {
+    "title": "Senaei provider",
+    "status": "Not configured / not verified here",
+    "noRemoteCall": "No remote call is made from this page. Undocumented provider domains remain SENAEI_API_CONTRACT_NOT_SUPPLIED.",
+    "help": "The endpoint contract and its recorded live-call check are shown in SENAI data management. Setting it up is not the same as being connected.",
+    "link": "SENAI data management"
+  },
+  "csv": {
+    "title": "CSV staging and validation",
+    "upload": {
+      "label": "CSV file",
+      "prompt": "Drag a CSV here",
+      "browse": "or browse",
+      "selected": "Selected {name}",
+      "previewAlt": "Preview of {name}",
+      "remove": "Remove {name}",
+      "hint": "factory360-v2 · up to 2 MB"
+    },
+    "schemaNote": "Schema {schema}. Required identity columns: {required}. Files are staged for reconciliation; this action never overwrites factory truth.",
+    "previewRows": "{rows} data rows · {columns} columns",
+    "stage": "Stage validated batch",
+    "staging": "Staging…",
+    "staged": "Batch {batch} staged: {pending} pending reconciliation, {rejected} rejected with safe row errors. Zero rows are accepted until governed reconciliation."
+  },
+  "masterData": {
+    "title": "Factory master-data controls",
+    "help": "These operations are always recorded in the Activity Log. They do not edit external CR, license, or plant identifiers.",
+    "noWriteback": "Read-only — no write-back.",
+    "noWritebackHelp": "Everything saved here is recorded in SAQEEL only. No establishment or factory master-data change is sent to SENAI: the endpoint contract has no master-data write endpoint, so there is no path for one.",
+    "factory": "Factory",
+    "selectFactory": "Select a factory",
+    "selected": "{name} · CR {cr} · License {license}",
+    "openDossier": "Open factory profile (read-only)",
+    "factoriesError": "The factory list could not be read. Import and reconciliation history below may still be available.",
+    "representativesError": "Representatives could not be read for this factory. Other factory facts remain available.",
+    "document": {
+      "title": "Document metadata",
+      "type": "Type",
+      "typeLicense": "License",
+      "typeCr": "CR",
+      "typeSafety": "Safety certificate",
+      "typeLayout": "Layout",
+      "typeOther": "Other",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Operating license",
+      "reference": "Reference number",
+      "referencePlaceholder": "e.g. LIC-2026-0043",
+      "validFrom": "Valid from",
+      "validTo": "Valid to",
+      "submit": "Add metadata"
+    },
+    "representative": {
+      "title": "Representative",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "e.g. Sara Al-Otaibi",
+      "role": "Role",
+      "rolePlaceholder": "e.g. Compliance officer",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g. 0555 123 456",
+      "email": "Email",
+      "emailPlaceholder": "name@company.com",
+      "primary": "Primary contact",
+      "submit": "Add representative"
+    },
+    "product": {
+      "title": "Product",
+      "name": "Name",
+      "namePlaceholder": "e.g. Rebar coil",
+      "hsCode": "HS code",
+      "hsCodePlaceholder": "e.g. 7213.10",
+      "unit": "Unit",
+      "unitPlaceholder": "e.g. tonne",
+      "capacity": "Annual capacity",
+      "capacityPlaceholder": "e.g. 12000",
+      "primary": "Primary product",
+      "submit": "Add product"
+    },
+    "material": {
+      "title": "Raw material",
+      "name": "Name",
+      "namePlaceholder": "e.g. Iron ore",
+      "source": "Source",
+      "sourceLocal": "Local",
+      "sourceImported": "Imported",
+      "hsCode": "HS code",
+      "hsCodePlaceholder": "e.g. 2601.11",
+      "submit": "Add material"
+    },
+    "status": {
+      "title": "Representative status",
+      "active": "active",
+      "inactive": "inactive",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "empty": "No representatives are recorded for this factory.",
+      "saved": "Saved and audit-recorded"
+    }
+  },
+  "history": {
+    "title": "Sync and import history",
+    "runsError": "Sync runs could not be read. Rejected rows and reconciliation records remain independently readable below.",
+    "batchesError": "Batch tracking details could not be read. Available sync-run facts are kept without a guessed file origin.",
+    "colCreated": "Created",
+    "colModeSource": "Mode / source",
+    "colStatus": "Status",
+    "colCustody": "Custody",
+    "colCounts": "Received / accepted / rejected",
+    "batchLabel": "batch {status}",
+    "providerSource": "provider",
+    "noBatchProvenance": "No batch provenance recorded",
+    "emptyTitle": "No sync or import runs",
+    "emptyBody": "No sync or import runs visible to you. This is a checked, empty result.",
+    "rejected": {
+      "title": "Rejected staged rows",
+      "error": "Rejected staged rows could not be read. This is data that's not available, not an empty rejection set.",
+      "row": "Row {n}",
+      "emptyTitle": "No rejected staged rows",
+      "emptyBody": "No rejected staged rows. This is a checked, empty result."
+    },
+    "reconciliation": {
+      "title": "Reconciliation history",
+      "error": "Reconciliation history could not be read. This is data that's not available, not an empty history.",
+      "noReason": "No reason code",
+      "emptyTitle": "No reconciliation records",
+      "emptyBody": "No reconciliation records visible to you. This is a checked, empty result. Staged does not mean imported."
+    }
+  },
+  "datePicker": {
+    "placeholder": "Pick a date",
+    "clear": "Clear",
+    "today": "Today",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "result": {
+    "requiredHeaderMissing": "Missing required column: {header}",
+    "auth_required": "Your session expired. Sign in and try again.",
+    "role_check_unavailable": "Your access couldn't be checked right now. Try again shortly.",
+    "admin_role_required": "You do not have permission for this action.",
+    "factory_required": "Choose a factory first.",
+    "operation_not_allowed": "That operation isn't allowed here.",
+    "invalid_document": "Enter a title and choose a valid document type.",
+    "invalid_valid_range": "Valid-to must be on or after valid-from.",
+    "representative_name_required": "Enter the representative's full name.",
+    "representative_not_found": "That representative could not be found.",
+    "product_name_required": "Enter the product name.",
+    "invalid_capacity": "Annual capacity must be a non-negative number.",
+    "invalid_material": "Enter a name and choose a valid source.",
+    "CSV_FILE_REQUIRED": "Attach a .csv file.",
+    "CSV_SCHEMA_VERSION_UNSUPPORTED": "This CSV schema version isn't supported.",
+    "CSV_FILE_SIZE_INVALID": "The file is empty or larger than 2 MB.",
+    "CSV_UNCLOSED_QUOTE": "The CSV has an unclosed quote.",
+    "CSV_HAS_NO_DATA_ROWS": "The CSV has no data rows.",
+    "CSV_DUPLICATE_HEADER": "The CSV has a duplicate column header.",
+    "CSV_UNKNOWN_HEADER": "The CSV has an unrecognised column header.",
+    "CSV_REQUIRED_HEADER_MISSING": "The CSV is missing a required identity column.",
+    "CSV_ROW_LIMIT_EXCEEDED": "The CSV exceeds the 5,000-row limit.",
+    "CSV_STAGE_RUN_FAILED": "The staging run couldn't be recorded. Nothing was staged.",
+    "CSV_BATCH_ALREADY_STAGED": "This exact file was already staged.",
+    "CSV_STAGE_BATCH_FAILED": "The staging batch couldn't be recorded. Nothing was staged.",
+    "CSV_STAGE_ROWS_FAILED": "The staged rows couldn't be recorded. The batch was rolled back."
+  }
+}

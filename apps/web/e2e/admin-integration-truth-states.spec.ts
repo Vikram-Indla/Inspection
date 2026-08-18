@@ -26,7 +26,9 @@ test.describe("Admin integration truthful partial-data presentation", () => {
   });
 
   test("keeps factory registry, run, batch, row and reconciliation failures separate", () => {
-    const page = read("src/app/(app)/admin/integrations/factory-data/page.tsx");
+    const queries = read("src/features/admin-factory-data/queries.ts");
+    const history = read("src/components/sections/admin-factory-data/factory-history.tsx");
+    const copy = read("src/i18n/locales/en/admin-factory-data.json");
 
     for (const source of [
       "factoriesRead",
@@ -36,12 +38,12 @@ test.describe("Admin integration truthful partial-data presentation", () => {
       "reconciliationRead",
       "representativesRead",
     ]) {
-      expect(page).toContain(`${source}.error`);
+      expect(queries).toContain(`${source}.error`);
     }
-    expect(page).not.toContain("schemaUnavailable");
-    expect(page).toContain("No batch provenance recorded");
-    expect(page).toContain('<bdi dir="ltr">{run.status}</bdi>');
-    expect(page).toContain("<time dateTime={run.created_at}>");
+    expect(queries).not.toContain("schemaUnavailable");
+    expect(copy).toContain("No batch provenance recorded");
+    expect(history).toContain("run.status");
+    expect(history).toContain("run.created_at");
   });
 
   test("does not convert failed SENAI reads into zero or empty source truth", () => {

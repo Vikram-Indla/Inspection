@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-157.** Take T-158.
+implements the reservation. **Highest id in use: T-159.** Take T-160.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -23,15 +23,71 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 
 ## NOW
 
-### T-158 · `/admin/integrations/factory-data` rebuild on SAQEEL
-`status: todo` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 3h`
+### T-160 · `/admin/gis/spatial` rebuild on SAQEEL
+`status: todo` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 1.5h`
 
-Third and last of the integrations tree (from T-156). 61-line `page.tsx` on
-`AdminShell` + `CsvImportForm` (2 raw inputs) + `MasterDataForms` (**17 raw
-inputs** — a full WEB-015 pass, likely new `components/saqeel/` controls). Alert
-banner, provider panel, CSV staging, master-data controls, sync/import history
-table, rejected rows, reconciliation history. All copy `t(key,"English")` →
-new namespace. Design-critique flow, owner sign-off before code.
+Parked from T-159 — the feature-flagged spatial-canvas subroute
+(`FEATURE_SPATIAL_CANVAS`; Mapbox held → `NotYetBoundary` when off). `AdminShell`
++ alert banner + `CreateLayer` (raw `<input>`s → WEB-015) + a layers/locations
+list. English-only copy → new namespace (or extend `adminGis`). `mvp2-modules-live`
++ `mvp2-modules-rls-negative` + `shell-navigation` read this subroute — re-point
+on migration.
+
+---
+
+### T-159 · `/admin/gis` (GIS geofencing studio) rebuilt on SAQEEL + gis_admin gate
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`
+`record:` [2026-08-18-T-159-admin-gis-migration](sessions/2026-08/2026-08-18-T-159-admin-gis-migration.md)
+
+The interactive geofencing studio — live KSA Mapbox map (612 pins), search +
+region/band filters, linked map↔registry selection, a selected-factory side panel
+with a geofence-radius editor, engine defaults, a live legend, and a settings
+table. Owner: **responsiveness (LTR/RTL), framed skeleton, permission gate,
+consistent gaps, EN/AR from files.** Legacy `AdminShell` + `sq-*`/`badge`/`btn`/
+`t-caption` + inline styles; WEB-015 raw search/2-select/number controls;
+English-only ~45 `t()`; `GisStudio` **279 lines** (over ceiling); flush skeleton;
+risk as `sq-lozenge`. Rebuilt thin `page.tsx` (107→9) → `features/admin-gis/
+{queries,types,strings}` + 8-file `components/sections/admin-gis/` (screen +
+client `gis-studio` container composing toolbar/map-panel/registry + settings +
+skeleton). **Permission gate:** `loadGis` resolves `gis_admin` → `canEdit`; non-
+gis_admin sees a **view-only notice** instead of the radius editor (RLS stays
+authority) — browser-verified. `GeoMap` (Mapbox) untouched; registry name-cell is
+now a focus `Button` (keyboard-selectable, replacing the non-focusable row click);
+the selection `useEffect` gone (derived). `TextInput`/`SaqeelSelect`/`StatusPill`
+(risk bands)/`DefinitionList`/`DataTable`; map/panel grid **stacks < 60rem**.
+`actions.ts` codes→client map. **No regression:** `mapbox-provider`,
+`ipad-gps-policy`, `neutral-error-sweep` re-pointed; deleted old `GisStudio.tsx`.
+typography **−62**, v5 **60** (adds 0), test:static **408/33**, axe **0** (fixed a
+selected-row contrast), Arabic/RTL + 200% zoom **0 overflow**.
+
+---
+
+### T-158 · `/admin/integrations/factory-data` rebuilt on SAQEEL + DS uploader
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 3h`
+`record:` [2026-08-18-T-158-factory-data-migration](sessions/2026-08/2026-08-18-T-158-factory-data-migration.md)
+
+Final route of the integrations tree. 61-line `page.tsx` on `AdminShell` +
+`CsvImportForm` + `MasterDataForms` — **18 raw controls** (1 file input, 2 date, 3
+select, ~10 text/number/email, 2 checkbox), English-only copy, raw dates. Owner:
+**use our uploader** + **DS controls for every field** (WEB-015). The DS
+**`FileUpload`** already existed (drag+browse, submits via `<form action>`,
+`onSelect` drives the CSV header-preview) — no new component. Rebuilt thin
+`page.tsx` (61→10) → `features/admin-factory-data/{queries,types,strings}` (incl.
+a `resultMessage` code→copy localizer) + 11-file `components/sections/admin-factory-
+data/` (screen, csv-import, factory-picker, 4 forms, master-data-panel, history,
+skeleton) + new bilingual `adminFactoryData` namespace. Every field on a DS control
+(`TextInput`+placeholders / `SaqeelSelect` / `DatePickerField` / `Choice`), wrapped
+in `Field`. **`actions.ts` logic byte-for-byte** (2 English sentence-errors → codes;
+CSV custody + 5 operations + gate + validation intact). **No regression:**
+`admin-integration-truth-states` test 2 + `factory360-admin-control-plane` tests 3–4
+re-pointed to the new files + `en` JSON; deleted the orphaned old client forms.
+typography **−54**, v5 **60** (adds 0), date-inputs 19, test:static **408/33**, axe
+**0**, Arabic/RTL + 200% zoom **0 overflow**. **The integrations tree is complete
+(T-156 · T-157 · T-158).**
+
+---
+
+### T-157 · `/admin/integrations/senai-data` rebuilt on SAQEEL + single tab toggle
 
 ---
 
