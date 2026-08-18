@@ -21,6 +21,7 @@ export type DatePickerProps = {
   strings: DatePickerStrings;
   disabled?: boolean;
   align?: "start" | "end";
+  block?: boolean;
 };
 
 function addMonths(value: Date, count: number): Date {
@@ -28,7 +29,7 @@ function addMonths(value: Date, count: number): Date {
 }
 
 export default function DatePicker({
-  value, onChange, label, placeholder, locale, monthLabels, strings, disabled, align = "start",
+  value, onChange, label, placeholder, locale, monthLabels, strings, disabled, align = "start", block,
 }: DatePickerProps) {
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -65,7 +66,7 @@ export default function DatePicker({
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-block={block ? "" : undefined}>
       <button
         className={styles.trigger}
         ref={triggerRef}

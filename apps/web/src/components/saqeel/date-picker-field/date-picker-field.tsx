@@ -38,6 +38,7 @@ export default function DatePickerField({
         strings={{ clear: strings.clear, today: strings.today }}
         disabled={disabled}
         align={align}
+        block
       />
       <input type="hidden" id={id} name={name} value={value} />
     </span>

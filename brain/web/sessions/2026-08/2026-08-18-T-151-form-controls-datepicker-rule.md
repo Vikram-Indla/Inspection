@@ -34,7 +34,8 @@ server-side (as `DateRangePicker` already does), not by the inert hidden input.
 
 | File | Action |
 | --- | --- |
-| `components/saqeel/date-picker-field/date-picker-field.tsx` + `.module.css` | **created** — form-submittable single-date field |
+| `components/saqeel/date-picker-field/date-picker-field.tsx` + `.module.css` | **created** — form-submittable single-date field; always renders `DatePicker block` so it fills the field width |
+| `components/saqeel/date-picker/date-picker.tsx` + `.module.css` | added opt-in `block` prop (`.root[data-block] { display:flex; inline-size:100% }`) — the picker root was `inline-flex` (content-width), so a form field rendered narrower than the `TextInput`s beside it. Existing consumers unaffected (default stays inline). |
 | `components/saqeel/text-input/text-input.tsx` | removed `"date"` from `TextInputType` — `TextInput type="date"` is now a compile error |
 | `app/(app)/admin/packages/TemplateRegistry.tsx` | 2 date fields → `DatePickerField`; placeholders on key/version/titleEn/titleAr/reason/schema; `locale` prop |
 | `app/(app)/admin/packages/PublishControls.tsx` | 2 date fields → `DatePickerField`; deactivation-reason placeholder; `locale` on `NewDraftForm`/`DeactivatePackage` |
