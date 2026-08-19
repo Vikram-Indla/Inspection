@@ -1,6 +1,29 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-19` · `Updated by: T-163 — the /admin/operations migration`
+`Last updated: 2026-08-19` · `Updated by: T-164 — the /admin/enforcement-recommendations migration`
+
+## The `/admin` migration: the enforcement-recommendation review queue (2026-08-19)
+
+**T-164 migrated `/admin/enforcement-recommendations`** — the maker-checker review
+queue where inspector-submitted enforcement recommendations are approved or rejected.
+This was the most governance-dense admin route yet, and the value was in migrating the
+chrome while touching **none** of the decision logic: the reader/decider/writer role
+split (supervisors decide, admins read), the `ENFORCEMENT_P0_RPCS_DEPLOYED` backend
+feature-gate that returns `backend_guard_required` until a safe database transition
+exists, the maker-checker RPC with idempotency + receipt validation, and the three
+"Not configured / read-only decision scope" truth notices all carry across verbatim
+(`actions.ts` untouched). What changed is purely presentational: `AdminShell` → `ShellPageFrame`,
+the old `EmptyState` + **three `<svg>` icons** → the icon registry, a **headerless raw
+`<table>`** → a `DataTable` with real column headers, raw `sq-choice`/`sq-textarea` →
+`Choice`/`Textarea`, and ~40 inline `tr(key,en,ar)` ternaries → a proper bilingual
+namespace.
+
+**A sanctioned `useEffect`.** The decide form mints its idempotency key client-side via
+`useEffect` — this is the rule-10 external-sync exception, not a violation: the key must
+be unique per form instance and per page load (so a genuine second decision after a
+reload isn't deduped as a replay), which rules out both `useId` and a `useState` lazy
+initialiser (the latter would hydration-mismatch the hidden input). It's the correct
+escape hatch and what the original did.
 
 ## The `/admin` migration: the system-operations console + a genuine chart (2026-08-19)
 

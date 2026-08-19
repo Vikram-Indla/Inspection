@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-163.** Take T-164.
+implements the reservation. **Highest id in use: T-164.** Take T-165.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,54 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-164 · `/admin/enforcement-recommendations` (Enforcement recommendation review) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2.5h`
+`record:` [2026-08-19-T-164-admin-enforcement-recommendations-migration](sessions/2026-08/2026-08-19-T-164-admin-enforcement-recommendations-migration.md)
+
+The maker-checker enforcement-recommendation review queue — inspector-submitted
+`pending` recommendations land here; supervisors decide (approve/reject + reason),
+admins read-only, all behind an `ENFORCEMENT_P0_RPCS_DEPLOYED` backend-gate. Legacy
+`AdminShell` + the **old** `@/components/EmptyState` + **three `<svg>` icons from
+`@/app/icons`** (rule 8) + `alert`/`badge`/`panel`/`saqeel-state`/`t-caption`/a
+**headerless raw `<table>`** + inline styles; ~40 strings as inline `tr(key,en,ar)`
+ternaries (rule 15); `page.tsx` ~180 lines (rule 3); `as unknown as` casts (rule 5);
+`DecideForm` raw `sq-choice`/`sq-textarea`/`btn` (WEB-015). Delivered P0/P1 critique
++ widget mockup, approved. Rebuilt thin `page.tsx` (180→10) →
+`features/admin-enforcement-recommendations/{queries,types,strings}` (the reader/
+decider/writer resolution keeping the **exact** `isDecider`/`isReader` expressions
+the wiring spec asserts, the pending + decided reads with `CLEAN_FACTORY_CODES`
+scope, boundary-narrowed — no `as unknown as`) + `components/sections/
+admin-enforcement-recommendations/` (screen · pending-list · recommendation-card ·
+decide-form · decided-table · skeleton) + new bilingual
+`adminEnforcementRecommendations` namespace (every governance notice verbatim) +
+framed `loading.tsx`. `ShellPageFrame` + `Card` notices + `StatusPill` (measure +
+approved=success/rejected=danger) + `Choice`/`Textarea`/`Button` decide form +
+`DataTable` (the decided table **gains real column headers**, the legacy had none) +
+saqeel `EmptyState`; `formatDateTime` (Asia/Riyadh). **Governance preserved
+byte-for-byte:** the three notices (policy Not-configured, decision scope, read-only),
+the reader/decider/writer split, the `ENFORCEMENT_P0_RPCS_DEPLOYED`→`backend_guard_
+required` gate, and the maker-checker RPC `decide_enforcement_recommendation` with
+idempotency + receipt validation (`actions.ts` **untouched**). One rule-10 note: the
+decide form keeps a minimal `useEffect` to mint the client-only `crypto.randomUUID()`
+idempotency key — the sanctioned external-sync exception (a hydration-safe server
+value isn't possible). **No regression:** `package-route-wiring-gaps` (":63") re-pointed
+page → `queries.ts` (`getUserRoles`, the exact `isDecider`/`isReader` lines,
+`sb.from("enforcement_recommendations")`) + the screen (`pendingError &&`), the
+`actions.ts` asserts unchanged; no `layout.tsx` added (inherits the parent `/admin`
+boundary — `admin-supervisor-route-boundary` asserts it's inherited); shell nav label
+untouched. **Deleted** `DecideForm.tsx` + `responsive.module.css`. typecheck/lint
+clean, typography **PASSED (−91)**, date-inputs PASSED, v5 **60** (adds 0),
+test:static **408/33 exact baseline** (re-point passes). **Verified live** (admin =
+decider, non-writer): framed en + ar, both notices verbatim, **no read-only banner**
+(decider), pending + decided empty states, the "Recently decided" section present
+(decider-only), **axe 0** (26 passes), 200% zoom + Arabic-RTL mobile 375px **0
+overflow**. **Env note:** the seed has no pending/decided recommendations in the
+`CLEAN_FACTORY_CODES` scope, so the decide form (needs a pending row + supervisor)
+and a populated decided table couldn't be exercised — the form uses `Choice`/
+`Textarea`/`Button` + the backend-gated action, following the verified pattern.
+
+---
 
 ### T-163 · `/admin/operations` (System operations & resilience) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`

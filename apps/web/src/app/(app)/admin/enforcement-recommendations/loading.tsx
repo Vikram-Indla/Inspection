@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import EnforcementRecsSkeleton from "@/components/sections/admin-enforcement-recommendations/enforcement-recs-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading enforcement recommendations…" ar="جارٍ تحميل توصيات الإنفاذ…" />;
+export default async function LoadingEnforcementRecommendations() {
+  const locale = await getLocale();
+  return <EnforcementRecsSkeleton label={getMessages(locale).adminEnforcementRecommendations.loading} />;
 }
