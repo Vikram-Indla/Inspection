@@ -559,15 +559,15 @@
        Tracking is negative and tightens as size grows; it is zeroed under
        RTL further down, because Arabic never takes letter-spacing. There is
        no size below 13px in this system — the smallest prose is `body`. */
-    --sqx-text-display-size: 2rem;
+    --sqx-text-display-size: 1.5rem;
     --sqx-text-display-line: 1.13;
     --sqx-text-display-weight: var(--sqx-weight-medium);
     --sqx-text-display-tracking: -0.022em;
-    --sqx-text-heading-size: 1.5rem;
+    --sqx-text-heading-size: 1.1rem;
     --sqx-text-heading-line: 1.33;
     --sqx-text-heading-weight: var(--sqx-weight-regular);
     --sqx-text-heading-tracking: -0.012em;
-    --sqx-text-subheading-size: 1.25rem;
+    --sqx-text-subheading-size: 1rem;
     --sqx-text-subheading-line: 1.33;
     --sqx-text-subheading-weight: var(--sqx-weight-medium);
     --sqx-text-subheading-tracking: -0.012em;
