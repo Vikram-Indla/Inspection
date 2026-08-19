@@ -14,7 +14,7 @@ export type ReviewOutcomeStrings = {
   failTitle: string; failBody: string; failSub: string; tryAgain: string;
   successTitle: string; successBody: string; successSub: string;
   sPlan: string; sVisits: string; sAssign: string; sNotif: string; queued: string;
-  goVisits: string; openPlan: string; backConfig: string;
+  goPlanning: string; openPlan: string; backConfig: string;
   droppedH: string; droppedD: string;
 };
 
@@ -106,7 +106,7 @@ export function ReviewSuccess({ created, proposed, dropped, planId, headingRef, 
       headingRef={headingRef}
       live="status"
       actions={<>
-        <Button variant="primary" href="/visits">{strings.goVisits}</Button>
+        <Button variant="primary" href="/planning">{strings.goPlanning}</Button>
         {planId === null ? null : <Button variant="secondary" href={`/planning/plans/${planId}`}>{strings.openPlan}</Button>}
       </>}
     >

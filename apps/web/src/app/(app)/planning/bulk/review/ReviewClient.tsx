@@ -83,7 +83,7 @@ export type ReviewStrings = {
   failTitle: string; failBody: string; failSub: string; tryAgain: string;
   successTitle: string; successBody: string; successSub: string;
   sPlan: string; sVisits: string; sAssign: string; sNotif: string; queued: string;
-  goVisits: string; openPlan: string;
+  goPlanning: string; openPlan: string;
   // M6 — eligibility partition + acknowledgement + persisted drafts
   eligH: string; eligTotal: string; eligEligible: string; eligIneligible: string;
   eligToCreate: string; eligMissingLoc: string; eligConflicts: string; eligManualOverride: string;
