@@ -1,11 +1,11 @@
 import { supabaseServer } from "@/lib/supabase-server";
-import type { ErrorQueueRow, FeatureFlagRow, OperationsView, StatusCount } from "./types";
+import type { ErrorQueueRow, FeatureFlagRow, OperationsView, TallyEntry } from "./types";
 
 const OPEN_ERROR_STATUSES = ["failed", "retry_requested", "dependency_blocked", "dead_letter"];
 
-function countByStatus(rows: readonly ErrorQueueRow[]): StatusCount[] {
+function countBySource(rows: readonly ErrorQueueRow[]): TallyEntry[] {
   const tally = new Map<string, number>();
-  for (const row of rows) tally.set(row.status, (tally.get(row.status) ?? 0) + 1);
+  for (const row of rows) tally.set(row.source, (tally.get(row.source) ?? 0) + 1);
   return [...tally.entries()]
     .map(([key, count]) => ({ key, count }))
     .sort((a, b) => b.count - a.count);
@@ -34,7 +34,7 @@ export async function loadOperations(): Promise<OperationsView> {
     configuredCount: endpoints.filter(row => row.status === "configured").length,
     openErrorCount: errors.filter(row => OPEN_ERROR_STATUSES.includes(row.status)).length,
     publishedFlagCount: flags.filter(row => row.status === "published").length,
-    errorStatusCounts: countByStatus(errors),
+    errorSourceCounts: countBySource(errors),
     errorsError: Boolean(errorsRead.error),
     flagsError: Boolean(flagsRead.error),
     endpointsError: Boolean(endpointsRead.error),

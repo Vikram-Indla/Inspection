@@ -15,9 +15,12 @@ typecheck-enforced en/ar parity. Second, the retry/publish actions ran through t
 `/admin/security-access` still use — so those were left untouched and operations got
 its own `actions.ts` wrappers calling the same governed RPCs but returning codes,
 plus a SAQEEL action form. The owner asked for a chart "genuinely, not enforced":
-the error queue's governed `status` column became an **error-status distribution
-`BarSeries`** that renders only when the source is available and non-empty — at the
-current genuine-zero seed state it's correctly absent.
+the error queue became an **error-records-by-source `BarSeries`** — which
+integration is generating the error records, the cut an operator acts on — that
+renders only when the source is available and non-empty; at the current genuine-zero
+seed state it's correctly absent. (By source, not status, which would only echo the
+KPI + pills; a trend chart was rejected as it would imply the forbidden health
+claim.)
 
 **A note on legacy-contract decay.** The `mvp3-enterprise-contract` key-sweep
 (":113") counted `t("mvp3.…")` keys across four admin pages against a `>50` floor.

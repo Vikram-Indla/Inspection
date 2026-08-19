@@ -41,16 +41,25 @@ others were done ("no spacing and stuff"), **and add a chart if one genuinely fi
 
 ## Decisions
 
-**The chart — genuine, not forced.** The error queue carries a governed `status`
-across up to 50 records (`failed` / `retry_requested` / `dependency_blocked` /
-`resolved` / `dead_letter`). `queries.ts` tallies `errorStatusCounts`, and the
-screen renders an **error-status distribution `BarSeries`** (RTL-aware, `role="img"`)
-**only when the source is available and there is at least one record**
+**The chart — genuine, not forced, and by the right dimension.** The error queue is
+the one dataset with a categorical dimension worth aggregating. `queries.ts` tallies
+`errorSourceCounts` (records per `source`), and the screen renders an
+**error-records-by-source `BarSeries`** (RTL-aware, `role="img"`) **only when the
+source is available and there is at least one record**
 (`showChart = !errorsError && chartPoints.length > 0`). With zero records — the
-current seed state — the chart is simply absent. It summarises the visible records,
-labelled "the most recent 50 records visible to you — not a system-health claim",
-so it never implies a throughput or health claim (the existing "No throughput claim
-is derived" copy already guards the KPI).
+current seed state — the chart is simply absent.
+
+The dimension matters. A first pass cut it **by status** (failed / blocked / …), but
+that only echoes the "Open error records" KPI and the per-row status pills. **By
+source** — which integration (`senai_sync`, `export_jobs`, …) is generating the
+error records — is the aggregation the table doesn't give you and the one an operator
+acts on ("senai is the problem"). A **trend / over-time** chart (the classic
+resilience shape) was rejected outright: it would imply exactly the throughput /
+system-health claim the governance forbids ("No throughput claim is derived", "This
+isn't a claim about system health"). A count distribution is the only faithful chart
+shape here, and by-source is the useful cut. Labels come through `errorSourceLabel`
+(a `humaniseEnum` of the source key — a data value, not UI copy); the caption reads
+"the most recent 50 records visible to you — not a system-health claim".
 
 **Governed actions kept, but decoupled and bilingual.** The shared
 `mvp3-actions.ts` returns hard-coded English messages and `Mvp3ActionForm` uses
@@ -122,8 +131,8 @@ a number when its source failed.
 
 - Keyboard: retry/publish are real submit `Button`s; `DataTable` keeps row headers.
 - Status: never colour alone — every error/flag state is a `StatusPill` with a label.
-- Chart: `BarSeries` renders `role="img"` with a localized `aria-label`; hidden at
-  zero data.
+- Chart: error-records-by-source `BarSeries` renders `role="img"` with a localized
+  `aria-label`; hidden at zero data.
 - Single `<main>`, one `<h1>`, breadcrumb `Administration / System operations`.
 
 ## Env note

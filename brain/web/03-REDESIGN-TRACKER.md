@@ -41,9 +41,11 @@ approved (owner: "add a chart genuinely, not enforce"). Rebuilt thin `page.tsx`
 ops-action-form · skeleton) + new bilingual `adminOperations` namespace + framed
 `loading.tsx`. `ShellPageFrame` + `StatCard`×3 (one grid, one rhythm) + two
 `DataTable`s + `StatusPill` (governed error/flag status tones) + info-badge in the
-frame actions. **Chart (genuine, not forced):** an error-status distribution
+frame actions. **Chart (genuine, not forced):** an **error-records-by-source**
 `BarSeries` (RTL-aware) rendered **only when the source is available and non-empty**
-— with zero records it's correctly hidden. **Governed actions:** operations-local
+— with zero records it's correctly hidden. By source (which integration is
+failing), not by status, which would only echo the KPI + the per-row pills; a
+trend/over-time chart was rejected as it would imply the forbidden health claim. **Governed actions:** operations-local
 `actions.ts` wrappers call the same `mvp3_request_error_retry` /
 `mvp3_publish_feature_flag` RPCs but return **codes** mapped bilingually (the shared
 `mvp3-actions.ts` / `Mvp3ActionForm` left untouched — `/admin/devices` +

@@ -19,6 +19,10 @@ export function errorStatusLabel(status: string, strings: AdminOperationsMessage
   return map[status] ?? humaniseEnum(status, locale);
 }
 
+export function errorSourceLabel(source: string, locale: Locale): string {
+  return humaniseEnum(source, locale);
+}
+
 export function flagStatusLabel(status: string, strings: AdminOperationsMessages, locale: Locale): string {
   const map: Record<string, string> = strings.flagStatus;
   return map[status] ?? humaniseEnum(status, locale);

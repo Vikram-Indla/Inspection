@@ -19,7 +19,7 @@ export type FeatureFlagRow = {
   approved_by: string | null;
 };
 
-export type StatusCount = { key: string; count: number };
+export type TallyEntry = { key: string; count: number };
 
 export type OperationsView = {
   errors: readonly ErrorQueueRow[];
@@ -28,7 +28,7 @@ export type OperationsView = {
   configuredCount: number;
   openErrorCount: number;
   publishedFlagCount: number;
-  errorStatusCounts: readonly StatusCount[];
+  errorSourceCounts: readonly TallyEntry[];
   errorsError: boolean;
   flagsError: boolean;
   endpointsError: boolean;

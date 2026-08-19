@@ -22,9 +22,9 @@
     "sod": "Maker-checker enforced."
   },
   "chart": {
-    "title": "Error records by status",
+    "title": "Error records by source",
     "caption": "The most recent 50 records visible to you — not a system-health claim.",
-    "aria": "Error records by status, counted from the 50 most recent records"
+    "aria": "Error records by source, counted from the 50 most recent records"
   },
   "errorQueue": {
     "title": "Error queue",

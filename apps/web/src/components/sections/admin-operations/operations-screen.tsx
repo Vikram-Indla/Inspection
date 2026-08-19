@@ -4,7 +4,7 @@ import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/
 import StatCard from "@/components/saqeel/stat-card/stat-card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
-import { adminOperationsMessages, errorStatusLabel } from "@/features/admin-operations/strings";
+import { adminOperationsMessages, errorSourceLabel } from "@/features/admin-operations/strings";
 import type { OperationsView } from "@/features/admin-operations/types";
 import { fill } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
@@ -20,9 +20,9 @@ export default function OperationsScreen({ data, locale }: { data: OperationsVie
     data.endpointsError ? strings.stats.endpoints : null,
   ].filter((value): value is string => Boolean(value));
 
-  const chartPoints: readonly BarPoint[] = data.errorStatusCounts.map(entry => ({
+  const chartPoints: readonly BarPoint[] = data.errorSourceCounts.map(entry => ({
     key: entry.key,
-    label: errorStatusLabel(entry.key, strings, locale),
+    label: errorSourceLabel(entry.key, locale),
     value: entry.count,
     display: String(entry.count),
   }));
