@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-161.** Take T-162.
+implements the reservation. **Highest id in use: T-162.** Take T-163.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,42 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-162 · `/admin/delegation` (Delegation & governed-role hand-off) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-19-T-162-admin-delegation-migration](sessions/2026-08/2026-08-19-T-162-admin-delegation-migration.md)
+
+Temporarily delegate a governed role's authority to another authorized user —
+four URL-addressable views (Active / Received / New delegation / History) with a
+create form and per-row revoke. Legacy `AdminShell` + `panel`/`sq-field`/
+`sq-input`/`badge`/`btn`/raw `<table>`/`saqeel-state` + inline styles + `let` in
+`.tsx`; **WEB-015 raw controls** (delegate `<input>`, scope `<select>`, 2 `<input
+type=date>`, reason `<textarea>`, revoke `<input>`); ~50-literal inline
+`ar ? {…} : {…}` copy object; `◇`/`⚠` emoji-as-icon; the four view buttons were
+`btn-primary`/`btn-secondary` links. Delivered P0/P1 critique + widget mockup;
+**owner picked `SegmentedControl(href)`** over `Tabs` (keeps `?view=` shareable +
+server-render-per-view). Rebuilt thin `page.tsx` (180→18) →
+`features/admin-delegation/{queries,types,strings}` + `components/sections/
+admin-delegation/` (screen · cards · history-table · create-form · revoke-form ·
+msg · skeleton) + new bilingual `adminDelegation` namespace + framed `loading.tsx`.
+**SegmentedControl** (`tone="accent"`) view switcher; `TextInput`/`SaqeelSelect`/
+`DatePickerField`×2/`Textarea` (WEB-015); delegator a static read row (not a
+disabled input); `StatusPill` (active=success/expired=warning/revoked=neutral);
+`DataTable` history (`bleed={false}`); humanised scope labels (`sentenceCase`);
+`EmptyState` (icon, no emoji). `actions.ts` error strings → stable codes mapped
+client-side; RPCs (`create_delegation_by_email`/`revoke_delegation`) + all
+validation byte-for-byte; `layout.tsx` `allowedRoles={["admin"]}` untouched.
+**No regression:** `admin-development-closure-contract` (delegation RPC, reads
+`actions.ts`), `admin-supervisor-route-boundary` (reads `layout.tsx`),
+`shell-navigation` (nav label/href) all unaffected — verified pass. **Deleted**
+`DelegationForms.tsx`. typecheck/lint clean, typography PASSED (**−79**),
+date-inputs PASSED (**−4**), v5 **60** (adds 0), test:static **408/33 exact
+baseline**. **Verified live** (admin signed in): framed render across all four
+views, the create form's DS controls + governed scope dropdown, **axe 0** (27
+passes, form + history), light + dark (hairline), **200% zoom + Arabic-RTL +
+Arabic-mobile 375px 0 overflow**, humanised scopes + StatusPills in History.
+
+---
 
 ### T-161 · `/admin/notifications` (Notification & SLA rules) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`

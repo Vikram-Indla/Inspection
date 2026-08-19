@@ -1,6 +1,37 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-161 — the /admin/notifications migration`
+`Last updated: 2026-08-19` · `Updated by: T-162 — the /admin/delegation migration`
+
+## The `/admin` migration: the delegation console (2026-08-19)
+
+**T-162 migrated `/admin/delegation`** — temporarily delegate a governed role's
+authority to another authorized user, across four URL-addressable views (Active /
+Received / New delegation / History). The owner's headline ask was to make the
+four view buttons **the reusable tab component**; offered the fork and the owner
+picked `SegmentedControl(href)` over the `Tabs` (`role=tablist`) component — the
+views are `?view=`-addressable and server-rendered per view, so a nav toggle
+(shareable URL, `aria-current`, roving focus) is the right primitive where `Tabs`
+would force the page client and drop URL-addressability. Otherwise a textbook
+migration of this era: thin route (180→18) → `features/admin-delegation/*` + a
+7-file section directory + a new `adminDelegation` namespace; WEB-015 raw controls
+(a select, two `<input type=date>`, two text inputs, a textarea, and a *disabled*
+delegator input) onto `SaqeelSelect`/`DatePickerField`×2/`TextInput`/`Textarea`
+and a static read row; the history onto a `DataTable` with `sentenceCase`-humanised
+scopes; status onto a `StatusPill`; the `◇`/`⚠` emoji onto `EmptyState`; `let`
+out of the `.tsx`. `actions.ts` error strings → stable codes mapped client-side,
+with the `create_delegation_by_email`/`revoke_delegation` RPCs and every
+validation branch byte-for-byte, and `layout.tsx`'s `allowedRoles={["admin"]}`
+untouched. Three governed specs touch delegation (the RPC contract reads
+`actions.ts`, the supervisor boundary reads `layout.tsx`, shell-nav owns the nav
+label) — all unaffected, verified pass.
+
+**Live-verified on an admin sign-in** (clearing the T-161 footnote below): framed
+across all four views, the create form's DS controls + governed scope dropdown
+("Admin"), the History `DataTable` (humanised scopes, mono LTR windows, Expired/
+Revoked `StatusPill`s), **axe 0** (27 passes), light + dark (hairline), **200%
+zoom + Arabic-RTL + Arabic-mobile 375px 0 overflow**. The create/revoke *success*
+paths are env-limited (persisting needs a real delegate email + the RPC); the
+read views and both forms' wiring follow the pattern verified on T-161.
 
 ## The `/admin` migration: the notification rules console (2026-08-18)
 
@@ -18,11 +49,13 @@ RPCs stay the authority. Two governed contracts (`admin-platform-design-contract
 `queries.ts` + the screen + the en JSON, with the action-source asserts unchanged;
 every re-pointed string was grep-verified present.
 
-**A reminder on live verification.** The admin browser session dropped when the
-preview pane reopened, and the agent cannot enter credentials — so the live pass
-(axe, Arabic/RTL, zoom, writer-vs-read-only) is **owed on an admin sign-in**, the
-same footnote as T-154. The build is typecheck/lint/gates-green and test:static
-holds at 408/33; the owed item is purely the browser render, not the code.
+**Live verification — now done.** The admin session initially dropped when the
+preview pane reopened, but on the next admin sign-in the live pass completed:
+framed writer manager + DS form controls, **axe 0** (28 passes), light + dark,
+**200% zoom + Arabic-RTL + Arabic-mobile 0 overflow**, and the create submit
+RLS-refused for the seeded admin (the neutral error surfacing in the danger-toned
+`NotifMsg` — the maker-checker RLS authority working). The populated register is
+env-limited (the seeded admin's write is RLS-refused, so no row persists to list).
 
 ## The `/admin` migration: the GIS tree is done, and a nav-highlight bug fixed (2026-08-18)
 

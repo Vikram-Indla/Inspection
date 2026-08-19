@@ -1,0 +1,62 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.pair {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  flex-wrap: wrap;
+  min-inline-size: 0;
+}
+
+.arrow {
+  color: var(--sqx-text-muted);
+}
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--sqx-space-3);
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.staticValue {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+.revokeForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+  padding-block-start: var(--sqx-space-3);
+  border-block-start: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.revokeField {
+  flex: 1 1 14rem;
+  min-inline-size: 0;
+}
