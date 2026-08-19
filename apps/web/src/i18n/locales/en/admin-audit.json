@@ -1,0 +1,99 @@
+{
+  "breadcrumb": {
+    "label": "Audit",
+    "administration": "Administration",
+    "audit": "Audit"
+  },
+  "title": "Inspection Flight Recorder",
+  "code": "MVP2·M2-05",
+  "skip": "Skip to event chronology",
+  "portfolio": "All cases in current scope",
+  "modes": {
+    "label": "Audit replay modes",
+    "recorder": "Flight recorder",
+    "reconstruct": "Point in time",
+    "compare": "Compare",
+    "ledger": "Completeness",
+    "custody": "Custody",
+    "print": "Print-safe"
+  },
+  "filter": {
+    "case": "Case / object UUID",
+    "casePlaceholder": "00000000-0000-0000-0000-000000000000",
+    "search": "Search events",
+    "searchPlaceholder": "event type, actor, correlation",
+    "apply": "Apply"
+  },
+  "terms": {
+    "appendOnly": "Append-only",
+    "semantic": "Recorded semantic",
+    "generic": "Generic only",
+    "partial": "Partial",
+    "changed": "Changed",
+    "unchanged": "Unchanged",
+    "reconstructedStates": "reconstructed aggregate states",
+    "sourceEvents": "source events",
+    "last": "last"
+  },
+  "policy": "Operational view only. Export, reveal, redaction, retention, watermark, purge and legal-evidence claims are held by policy.",
+  "tags": {
+    "policyHeld": "POLICY_HELD",
+    "partialScope": "PARTIAL SCOPE.",
+    "degraded": "DEGRADED.",
+    "conflict": "CONFLICT",
+    "zeroDisclosure": "zero disclosure"
+  },
+  "banners": {
+    "partial": "Results reflect only what you can currently read.",
+    "degraded": "Semantic replay contracts aren't applied in this environment. Generic events that can't be changed stay visible, and they aren't promoted to official facts.",
+    "partialHistory": "PARTIAL HISTORY. The limited server read reached its safety cap. Reconstruction and completeness aren't confirmed for this result."
+  },
+  "states": {
+    "unauthorized": "You are not authorized to read audit events.",
+    "zero": "No audit facts are visible in your current scope."
+  },
+  "recorder": {
+    "detail": "Open provenance",
+    "close": "Close event detail",
+    "snapshot": "Point-in-time snapshot",
+    "governing": "Governing versions",
+    "correlation": "Correlation",
+    "legal": "Legal status",
+    "noEvent": "No event existed at this moment.",
+    "versions": "Versions",
+    "workflow": "Workflow",
+    "device": "Device / sync",
+    "evidence": "Evidence",
+    "when": "When",
+    "event": "Event",
+    "source": "Source",
+    "action": "Provenance"
+  },
+  "detail": {
+    "source": "Source",
+    "integrity": "Integrity",
+    "chain": "Chain",
+    "correlation": "Correlation",
+    "before": "Before",
+    "after": "After",
+    "payload": "Semantic payload",
+    "missing": "MISSING"
+  },
+  "timetravel": {
+    "at": "Reconstruct at",
+    "vs": "Compare with"
+  },
+  "ledger": {
+    "found": "FOUND",
+    "needs": "NEEDS_CONTRACT",
+    "missing": "MISSING",
+    "selectCase": "Select one case that isn't truncated, with a published ontology. Viewing all cases, or a partial page of events, never satisfies case completeness."
+  },
+  "loading": "Loading audit log",
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "status": "{a}–{b} of {n}",
+    "label": "Event chronology pages"
+  }
+}

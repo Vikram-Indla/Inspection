@@ -1,0 +1,83 @@
+{
+  "breadcrumb": {
+    "label": "System operations",
+    "administration": "Administration",
+    "operations": "System operations"
+  },
+  "title": "System operations and resilience",
+  "badge": "blocks safely when something fails",
+  "subtitle": "Live control-plane health. Sources that aren't available are never shown as zero.",
+  "sourcesUnavailable": {
+    "title": "Some data sources aren't available.",
+    "body": "Sources that aren't available are listed below. They're never shown as zero or empty."
+  },
+  "sourceUnavailable": "This source is not available. Records may exist that cannot be shown.",
+  "unavailable": "Not available",
+  "stats": {
+    "endpoints": "Endpoint contracts",
+    "configured": "{count} configured",
+    "openErrors": "Open error records",
+    "noThroughput": "No throughput claim is derived from this count.",
+    "publishedFlags": "Published flag versions",
+    "sod": "Maker-checker enforced."
+  },
+  "chart": {
+    "title": "Error records by source",
+    "caption": "The most recent 50 records visible to you — not a system-health claim.",
+    "aria": "Error records by source, counted from the 50 most recent records"
+  },
+  "errorQueue": {
+    "title": "Error queue",
+    "source": "Source",
+    "operation": "Operation",
+    "status": "Status",
+    "attempts": "Attempts",
+    "action": "Action",
+    "retry": "Request idempotent retry",
+    "empty": "No error records visible to you. This isn't a claim about system health."
+  },
+  "flags": {
+    "title": "Feature flag versions",
+    "name": "Flag",
+    "version": "Version",
+    "state": "State",
+    "value": "Value",
+    "action": "Checker action",
+    "publish": "Approve and publish",
+    "empty": "No feature flag versions.",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "errorStatus": {
+    "failed": "Failed",
+    "retry_requested": "Retry requested",
+    "dependency_blocked": "Dependency blocked",
+    "resolved": "Resolved",
+    "dead_letter": "Dead letter"
+  },
+  "flagStatus": {
+    "draft": "Draft",
+    "published": "Published",
+    "retired": "Retired"
+  },
+  "policyHold": {
+    "title": "Retention, backup target, and restore goals are held by policy.",
+    "body": "No purge or successful-restore claim is turned on until approved values and evidence of the run exist."
+  },
+  "actions": {
+    "working": "Working…"
+  },
+  "result": {
+    "session_expired": "Your session has ended. Sign in again.",
+    "missing_error": "The error record is missing.",
+    "missing_flag": "The feature flag is missing.",
+    "not_authorized": "You do not have permission to perform this action.",
+    "maker_checker": "A different security administrator must publish this feature flag.",
+    "not_draft": "The feature flag changed or is no longer a draft. Reload and try again.",
+    "not_retryable": "This error changed or is no longer retryable. Reload and try again.",
+    "write_failed": "The change could not be saved. Nothing was changed. Try again.",
+    "retry_requested_ok": "Retry requested. Delivery is not claimed until a receipt exists.",
+    "flag_published_ok": "Feature flag published by an independent approver."
+  },
+  "loading": "Loading system operations"
+}

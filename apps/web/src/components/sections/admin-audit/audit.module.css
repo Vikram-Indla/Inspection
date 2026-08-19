@@ -1,0 +1,171 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.skip {
+  position: absolute;
+  inset-inline-start: var(--sqx-space-3);
+  inset-block-start: var(--sqx-space-3);
+  z-index: var(--sqx-z-sticky);
+  padding: var(--sqx-space-2) var(--sqx-space-3);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-raised);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  transform: translateY(-200%);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+.casehead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sqx-space-3);
+}
+
+.headStatus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
+.field {
+  flex: 1 1 14rem;
+  min-inline-size: 0;
+}
+
+.banners {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.chronology {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.eventRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--sqx-space-3);
+}
+
+@media (max-width: 40rem) {
+  .eventRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eventBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.eventPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.modeForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
+.diffGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--sqx-space-3);
+}
+
+.code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: auto;
+  padding: var(--sqx-space-3);
+  border-radius: var(--sqx-radius-sm);
+  background: var(--sqx-surface-sunken);
+}
+
+.factGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sqx-space-1) var(--sqx-space-3);
+}
+
+.ledgerRow,
+.custodyRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2) var(--sqx-space-3);
+}
+
+.rowStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sqx-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sqx-space-4);
+  background: var(--sqx-surface-overlay);
+}
+
+.dialog {
+  inline-size: min(40rem, 100%);
+  max-block-size: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.dialogClose {
+  position: absolute;
+  inset-block-start: var(--sqx-space-3);
+  inset-inline-end: var(--sqx-space-3);
+}
+
+.grow {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.dateInput {
+  padding-block: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-3);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-raised);
+  color: inherit;
+}
+
+.dateInput:focus-visible {
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-strong);
+  outline-offset: var(--sqx-space-1);
+}

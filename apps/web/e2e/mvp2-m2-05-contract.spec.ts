@@ -12,8 +12,10 @@ import {
 
 const ROOT = path.resolve(__dirname, "../../..");
 const migration = fs.readFileSync(path.join(ROOT, "supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql"), "utf8");
-const page = fs.readFileSync(path.join(ROOT, "apps/web/src/app/(app)/admin/audit/page.tsx"), "utf8");
-const workspace = fs.readFileSync(path.join(ROOT, "apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx"), "utf8");
+const queries = fs.readFileSync(path.join(ROOT, "apps/web/src/features/admin-audit/queries.ts"), "utf8");
+const recorder = fs.readFileSync(path.join(ROOT, "apps/web/src/components/sections/admin-audit/audit-recorder.tsx"), "utf8");
+const enAuditJson = fs.readFileSync(path.join(ROOT, "apps/web/src/i18n/locales/en/admin-audit.json"), "utf8");
+const arAuditJson = fs.readFileSync(path.join(ROOT, "apps/web/src/i18n/locales/ar/admin-audit.json"), "utf8");
 const ontologyCsv = fs.readFileSync(path.join(ROOT, "product-contract/mvp2/m2-05/EVENT_ONTOLOGY.csv"), "utf8").trim().split("\n");
 const wiringCsv = fs.readFileSync(path.join(ROOT, "product-contract/mvp2/m2-05/REQUIREMENT_WIRING_MAP.csv"), "utf8").trim().split("\n");
 
@@ -111,11 +113,11 @@ test.describe("MVP2-CD-031-M2-05 semantic audit contract", () => {
   });
 
   test("never promotes generic trigger rows to canonical events", () => {
-    expect(page).toContain("GENERIC:${row.object_type}.${row.action}");
-    expect(page).toContain('provenance: "generic"');
-    expect(page).toContain('ingestionStatus: "generic_only"');
-    expect(workspace).toContain('generic: "Generic only"');
-    expect(workspace).toContain('generic: "عام فقط"');
+    expect(queries).toContain("GENERIC:${row.object_type}.${row.action}");
+    expect(queries).toContain('provenance: "generic"');
+    expect(queries).toContain('ingestionStatus: "generic_only"');
+    expect(enAuditJson).toContain('"generic": "Generic only"');
+    expect(arAuditJson).toContain('"generic": "عام فقط"');
   });
 
   test("wires only proven source emitters and keeps acknowledgement distinct from PKI", () => {
@@ -129,11 +131,11 @@ test.describe("MVP2-CD-031-M2-05 semantic audit contract", () => {
   });
 
   test("renders policy/provider truth and accessible focus recovery", () => {
-    expect(workspace).toContain('policyHeldTag:"POLICY_HELD"');
-    expect(workspace).toContain("held by policy");
-    expect(workspace).toContain("closeRef.current?.focus()");
-    expect(workspace).toContain("triggerRefs.current.get(id)?.focus()");
-    expect(workspace).toContain('role="dialog"');
-    expect(workspace).not.toContain("verified by EBDA");
+    expect(enAuditJson).toContain('"policyHeld": "POLICY_HELD"');
+    expect(enAuditJson).toContain("held by policy");
+    expect(recorder).toContain("closeRef.current?.focus()");
+    expect(recorder).toContain("triggerRefs.current.get(id)?.focus()");
+    expect(recorder).toContain('role="dialog"');
+    expect(recorder).not.toContain("verified by EBDA");
   });
 });

@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import WorkflowsSkeleton from "@/components/sections/admin-workflows/workflows-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading workflows…" ar="جارٍ تحميل سير العمل…" />;
+export default async function LoadingWorkflows() {
+  const locale = await getLocale();
+  return <WorkflowsSkeleton label={getMessages(locale).adminWorkflows.loading} />;
 }

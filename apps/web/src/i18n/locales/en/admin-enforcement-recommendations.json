@@ -1,0 +1,74 @@
+{
+  "breadcrumb": {
+    "label": "Enforcement recommendations",
+    "administration": "Administration",
+    "recommendations": "Enforcement recommendations"
+  },
+  "title": "Enforcement recommendations",
+  "permissionsUnavailable": {
+    "title": "Permissions unavailable",
+    "body": "Your permissions could not be verified. No recommendation data or action is shown; retry the page."
+  },
+  "unauthorized": {
+    "title": "Authorized role required",
+    "body": "This queue is available to Inspector, Planner, Ops, Compliance Admin, Auditor, Reviewer and Leadership roles."
+  },
+  "config": {
+    "title": "Enforcement policy: Not configured.",
+    "body": "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied."
+  },
+  "scope": {
+    "title": "Decision scope",
+    "body": "Decisions are read-only for now, until the database supports a safe decision step. A future approval will only record the recommendation decision — it will not apply a penalty, close a factory, send a legal notice, or skip the enforcement rules."
+  },
+  "readonly": {
+    "title": "Read-only for your role",
+    "body": "You can view this list. To decide, you need an Operations or Compliance Admin role — the database enforces this."
+  },
+  "pending": "Pending recommendations",
+  "empty": "No pending recommendations",
+  "loadError": "The recommendation queue is unavailable in this environment. No count is claimed.",
+  "measureLabel": "Recommended measure",
+  "unregistered": "unregistered/temporary",
+  "awaitingDecider": "Awaiting an Operations or Compliance Admin decision.",
+  "recent": "Recently decided",
+  "decidedLoadError": "Recent decisions are unavailable. No count is shown.",
+  "noneDecided": "No decisions recorded yet.",
+  "measure": {
+    "fine": "Financial fine",
+    "committee": "Refer to committee",
+    "warning": "Warning",
+    "closure": "Factory closure",
+    "unavailable": "Unavailable recommendation category"
+  },
+  "status": {
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "decidedTable": {
+    "factory": "Factory",
+    "measure": "Measure",
+    "decision": "Decision",
+    "decided": "Decided"
+  },
+  "decide": {
+    "legend": "Decision",
+    "approve": "Approve",
+    "reject": "Reject",
+    "reasonLabel": "Decision basis (required)",
+    "reasonPlaceholder": "Recorded with the audit event",
+    "submit": "Record decision",
+    "recording": "Recording…",
+    "success": "Decision recorded. The recommendation queue will refresh."
+  },
+  "error": {
+    "auth_required": "Your session is unavailable. Sign in again.",
+    "invalid_request": "Choose a valid decision.",
+    "reason_required": "A decision basis is required.",
+    "already_decided": "This recommendation was already decided. Refresh the queue.",
+    "maker_checker": "The recommender cannot decide their own recommendation.",
+    "write_failed": "The decision could not be recorded. No change was claimed.",
+    "backend_guard_required": "Recording a decision is not available yet — a safe database step still needs to be added."
+  },
+  "loading": "Loading enforcement recommendations"
+}

@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import SecuritySkeleton from "@/components/sections/admin-security-access/security-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading security access…" ar="جارٍ تحميل وصول الأمان…" />;
+export default async function LoadingSecurityAccess() {
+  const locale = await getLocale();
+  return <SecuritySkeleton label={getMessages(locale).adminSecurityAccess.loading} />;
 }

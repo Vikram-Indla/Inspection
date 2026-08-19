@@ -1,0 +1,52 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--sqx-space-3);
+}
+
+.decideForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+.cellStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.rowList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.grantRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-2) var(--sqx-space-3);
+}
+
+.grow {
+  flex: 1;
+  min-inline-size: 0;
+}

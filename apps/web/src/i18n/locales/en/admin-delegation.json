@@ -1,0 +1,100 @@
+{
+  "breadcrumb": {
+    "label": "Delegation",
+    "administration": "Administration",
+    "delegation": "Delegation"
+  },
+  "title": "Delegation",
+  "subtitle": "Temporarily delegate a governed role's authority to another authorized user.",
+  "tabs": {
+    "label": "Delegation views",
+    "active": "Active",
+    "received": "Received",
+    "new": "New delegation",
+    "history": "History"
+  },
+  "status": {
+    "active": "Active",
+    "expired": "Expired",
+    "revoked": "Revoked"
+  },
+  "card": {
+    "scope": "Scope",
+    "window": "Window",
+    "reason": "Reason",
+    "revokedNote": "Revoked"
+  },
+  "empty": {
+    "activeTitle": "No active delegations",
+    "activeBody": "You haven't created an active delegation in your authorized scope yet.",
+    "receivedTitle": "No delegations received",
+    "receivedBody": "No one has delegated an active role to you yet.",
+    "historyTitle": "No history",
+    "historyBody": "There are no delegations to show for your access."
+  },
+  "noScopes": {
+    "title": "No delegable roles",
+    "body": "You don't currently hold a role that can be delegated to another user."
+  },
+  "unavailable": {
+    "title": "Delegation list unavailable",
+    "body": "The delegation records could not be loaded. Nothing is inferred as zero.",
+    "retry": "Retry"
+  },
+  "table": {
+    "caption": "Delegation history",
+    "delegator": "Delegator",
+    "delegate": "Delegate",
+    "scope": "Scope",
+    "window": "Window",
+    "status": "Status"
+  },
+  "form": {
+    "delegator": "Delegator",
+    "delegatorYou": "you",
+    "delegate": "Delegate",
+    "delegatePlaceholder": "name@authority.gov.sa",
+    "delegateHelp": "Enter the email of an existing authorized user.",
+    "scope": "Scope (role)",
+    "scopePlaceholder": "Choose a role you hold",
+    "startsAt": "Starts",
+    "endsAt": "Ends",
+    "reason": "Reason",
+    "reasonPlaceholder": "Why this authority is being delegated",
+    "create": "Create delegation",
+    "creating": "Creating…",
+    "created": "Created"
+  },
+  "revoke": {
+    "reason": "Revocation reason",
+    "reasonPlaceholder": "Why this delegation is ending",
+    "submit": "Revoke",
+    "submitting": "Revoking…",
+    "done": "Revoked"
+  },
+  "result": {
+    "session_expired": "Your session expired. Sign in again.",
+    "delegate_required": "The delegate's email is required.",
+    "scope_required": "A scope is required.",
+    "reason_required": "A reason is required.",
+    "dates_required": "A start and end date are required.",
+    "missing_reference": "The delegation reference is missing.",
+    "revoke_reason_required": "A revocation reason is required.",
+    "self_not_allowed": "You cannot delegate to yourself.",
+    "window_invalid": "The end date must be after the start date.",
+    "scope_not_held": "You can only delegate a role you currently hold.",
+    "delegate_not_found": "That delegate could not be found in your authorized scope.",
+    "not_found": "That delegation could not be found.",
+    "not_active": "Only an active delegation can be revoked.",
+    "not_authorized": "Only the delegator or an Admin can revoke this delegation.",
+    "write_failed": "The change could not be saved. Nothing was changed. Try again."
+  },
+  "datePicker": {
+    "placeholder": "Pick a date",
+    "clear": "Clear",
+    "today": "Today",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "loading": "Loading delegation"
+}

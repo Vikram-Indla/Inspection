@@ -1,8 +1,8 @@
-import RouteLoading from "@/components/RouteLoading";
+import OperationsSkeleton from "@/components/sections/admin-operations/operations-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
-export default function Loading() {
-  return <RouteLoading en="Loading system operations…" ar="جارٍ تحميل عمليات النظام…" />;
+export default async function LoadingOperations() {
+  const locale = await getLocale();
+  return <OperationsSkeleton label={getMessages(locale).adminOperations.loading} />;
 }

@@ -1,6 +1,206 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-160 — the /admin/gis/spatial migration + nav fix`
+`Last updated: 2026-08-19` · `Updated by: T-167 — the /admin/security-access + /admin/devices migration`
+
+## The `/admin` migration: the MVP3 control plane is closed, shared plumbing retired (2026-08-19)
+
+**T-167 migrated the last two MVP3 control-plane consoles together** —
+`/admin/security-access` (access certification + evidence grants) and `/admin/devices`
+(device trust + governed commands) — completing the four-route set (integrations T-156,
+operations T-163, these). Both were the same operations-era legacy pattern, so the
+migration itself was routine (thin pages → `features/*` + section directories +
+`StatCard`/`DataTable`/`StatusPill`; two bilingual namespaces; route-local governed action
+wrappers returning codes). The notable part is the **cleanup that closing the set
+unlocked**:
+
+- **Retired the shared action plumbing.** `Mvp3ActionForm.tsx` + `mvp3-actions.ts` were used
+  only by these two routes (operations already had its own local wrappers). With both
+  migrated, they had zero importers and were deleted — the lint baseline fell by 269.
+- **Rewrote an obsolete contract instead of lowering it.** The `mvp3-enterprise` key-sweep
+  counted legacy `t("mvp3.…")` keys and checked each had an Arabic fallback in `lib/i18n.ts`.
+  All four routes are now off that pattern, so the sweep had nothing left; it became an en/ar
+  **parity check** across the four namespaces (matching key structure + real Arabic script) —
+  the guarantee preserved, transferred to where the copy now lives.
+
+A reminder that finishing a *set* of routes is worth more than finishing one: it's what lets
+you delete the shared scaffolding and retire the contracts that only existed to police the
+legacy pattern.
+
+## The `/admin` migration: the audit flight recorder, the highest-contract route (2026-08-19)
+
+**T-166 migrated `/admin/audit`** — the Inspection Flight Recorder, the most
+contract-coupled admin surface: **23 spec files** touch audit, several running live in
+CI and some reading exact source strings from the component. The rebuild is a textbook
+one (thin page → `features/admin-audit/*` + a section directory + a bilingual
+`adminAudit` namespace; `SegmentedControl` modes as the toggle; client `Pagination`;
+emoji → icons; framed skeleton) but the value was in the **disciplined spec re-pointing**:
+the generic-event mapping moved to `queries.ts`, the `auditTerms`/policy strings to the
+en/ar JSON, and the dialog focus-trap (`closeRef`/`triggerRefs`/`role="dialog"`) to
+`audit-recorder` — every asserted substring preserved and grep-verified, `test:static`
+held at 408/33, and the two source-reading contracts pass 12/12. The governed
+`lib/audit-replay` (reconstruct/compare/completeness — all pure functions, now computed
+server-side) is byte-for-byte, and every truth boundary (append-only, policy-held,
+honest partial-history/degraded, case-derived completeness, zero-disclosure) carries
+across.
+
+**A note on live-CI contracts.** `mvp2-m2-05-audit-replay` runs live against admin/inspector
+personas, asserting exact headings, the five mode-link names, RTL, no-overflow, and the
+policy copy. Those strings were kept identical, and I verified what I could locally with
+the admin persona (heading, toggle, dialog focus-trap, Completeness guard, and the exact
+`dir=rtl` + 0-overflow at 412px + "عرض تشغيلي فقط" check) — but full coverage is CI's, a
+residual the owner accepted when choosing the full rebuild. A reminder that some contracts
+can only be *fully* closed in the pipeline, and the honest move is to preserve their
+literals exactly and say so.
+
+## The `/admin` migration: the workflow builder + an honest lifecycle canvas (2026-08-19)
+
+**T-165 migrated `/admin/workflows`** — the largest admin surface yet: a workflow
+lifecycle builder (version cards, a state/transition canvas, a transition inspector, a
+VAL-01..06 validation rail, the SLA model, and the maker-checker publish flow). Three
+things make it notable. First, it had **zero Arabic** — every string was an
+English-only `t(key,"English")` fallback — now a full bilingual `adminWorkflows`
+namespace. Second, the owner's emoji ask: **five emoji were used as icons** (`🔀 ⛔ ✕ ✓
+⚠`) plus a hand-drawn `<svg>` chevron — all replaced with icon-registry glyphs and
+`StatusPill`s, dropping the v5 debt 60 → 56. Third, the 280-line `WfDeck` was split into
+a canvas orchestrator + inspector + rail under the 200-line ceiling, with the builder
+logic (`normalize`/`validate`, keyboard roving) carried across unchanged and the four
+governed action files left byte-for-byte.
+
+**The lifecycle canvas was genuinely wrong, and the fix is worth remembering.** On
+review the owner flagged it as misaligned. The old lane ordered states by raw BFS
+distance and drew a chevron between *every* adjacent card — so it showed
+`in_review → cancelled → closed` arrows that don't exist, while the real happy-path edge
+`in_review → closed` was pushed into the branch strip. For a tool that publishes state
+machines, a diagram implying transitions the machine lacks is the worst kind of wrong.
+The fix: build the lane as the real **spine-walk** (follow transitions from the initial
+state, prefer the non-terminal successor, append off-spine states last) and draw a
+chevron **only where a real transition connects two adjacent cards**. Now the happy path
+reads straight, branch terminals sit at the end without fake arrows, and the branch strip
+holds the genuine branches. Verified live in both directions (the lane mirrors correctly
+in RTL). A reminder that a faithful chrome migration still has to check that the
+*rendered* result tells the truth — re-skinning a broken diagram just makes a prettier
+broken diagram.
+
+## The `/admin` migration: the enforcement-recommendation review queue (2026-08-19)
+
+**T-164 migrated `/admin/enforcement-recommendations`** — the maker-checker review
+queue where inspector-submitted enforcement recommendations are approved or rejected.
+This was the most governance-dense admin route yet, and the value was in migrating the
+chrome while touching **none** of the decision logic: the reader/decider/writer role
+split (supervisors decide, admins read), the `ENFORCEMENT_P0_RPCS_DEPLOYED` backend
+feature-gate that returns `backend_guard_required` until a safe database transition
+exists, the maker-checker RPC with idempotency + receipt validation, and the three
+"Not configured / read-only decision scope" truth notices all carry across verbatim
+(`actions.ts` untouched). What changed is purely presentational: `AdminShell` → `ShellPageFrame`,
+the old `EmptyState` + **three `<svg>` icons** → the icon registry, a **headerless raw
+`<table>`** → a `DataTable` with real column headers, raw `sq-choice`/`sq-textarea` →
+`Choice`/`Textarea`, and ~40 inline `tr(key,en,ar)` ternaries → a proper bilingual
+namespace.
+
+**A sanctioned `useEffect`.** The decide form mints its idempotency key client-side via
+`useEffect` — this is the rule-10 external-sync exception, not a violation: the key must
+be unique per form instance and per page load (so a genuine second decision after a
+reload isn't deduped as a replay), which rules out both `useId` and a `useState` lazy
+initialiser (the latter would hydration-mismatch the hidden input). It's the correct
+escape hatch and what the original did.
+
+**The decide flow was verified live end-to-end** (a throwaway `pending` row seeded via
+the SQL editor + `supervisor1` granted a temporary read role, both removed after): the
+form renders, and submitting returns the `backend_guard_required` guard with nothing
+recorded — the expected terminal state while the flag is off.
+
+**Two enforcement-RLS findings surfaced (parked for a follow-up, not from this
+migration).** Getting a supervisor to *see* the queue exposed that the
+`enforcement_recommendations` **read** policy (a) excludes `admin`/`supervisor` — the
+very roles the UI admits via `isReader` — so those roles get an always-empty queue,
+and (b) still grants to `ops`/`compliance_admin`/`auditor`/`reviewer`/`leadership`,
+none of which survive in the later-trimmed `roles` catalog (`admin/inspector/planner/
+supervisor`). So today only `inspector`/`planner` can actually read the enforcement
+queue, and no admin/supervisor can — a governance gap worth a P0/P1 on the enforcement
+RLS, independent of the UI.
+
+## The `/admin` migration: the system-operations console + a genuine chart (2026-08-19)
+
+**T-163 migrated `/admin/operations`** — the MVP3 control-plane console (three
+health StatCards, an error queue with idempotent-retry, feature-flag versions with
+maker-checker publish, a policy-hold notice). This one carried two wrinkles worth
+remembering. First, **every string was the retiring `t("mvp3.operations.…",
+"English")` fallback** — the keys live nowhere but `lib/i18n.ts`, so the route was
+English-only; it now has a proper bilingual `adminOperations` namespace with
+typecheck-enforced en/ar parity. Second, the retry/publish actions ran through the
+**shared** `mvp3-actions.ts` + `Mvp3ActionForm`, which `/admin/devices` and
+`/admin/security-access` still use — so those were left untouched and operations got
+its own `actions.ts` wrappers calling the same governed RPCs but returning codes,
+plus a SAQEEL action form. The owner asked for a chart "genuinely, not enforced":
+the error queue became an **error-records-by-source `BarSeries`** — which
+integration is generating the error records, the cut an operator acts on — that
+renders only when the source is available and non-empty; at the current genuine-zero
+seed state it's correctly absent. (By source, not status, which would only echo the
+KPI + pills; a trend chart was rejected as it would imply the forbidden health
+claim.)
+
+**A note on legacy-contract decay.** The `mvp3-enterprise-contract` key-sweep
+(":113") counted `t("mvp3.…")` keys across four admin pages against a `>50` floor.
+As routes migrate off that fallback (integrations in T-156, operations now), the
+sweep shrinks; it's re-pointed to the two still-legacy routes with the floor lowered
+to `>40`, and operations' Arabic guarantee is transferred to a namespace-parity
+assertion. When `devices`/`security-access` migrate, this test's premise fully
+dissolves and it should be retired.
+
+## The `/admin` migration: the delegation console (2026-08-19)
+
+**T-162 migrated `/admin/delegation`** — temporarily delegate a governed role's
+authority to another authorized user, across four URL-addressable views (Active /
+Received / New delegation / History). The owner's headline ask was to make the
+four view buttons **the reusable tab component**; offered the fork and the owner
+picked `SegmentedControl(href)` over the `Tabs` (`role=tablist`) component — the
+views are `?view=`-addressable and server-rendered per view, so a nav toggle
+(shareable URL, `aria-current`, roving focus) is the right primitive where `Tabs`
+would force the page client and drop URL-addressability. Otherwise a textbook
+migration of this era: thin route (180→18) → `features/admin-delegation/*` + a
+7-file section directory + a new `adminDelegation` namespace; WEB-015 raw controls
+(a select, two `<input type=date>`, two text inputs, a textarea, and a *disabled*
+delegator input) onto `SaqeelSelect`/`DatePickerField`×2/`TextInput`/`Textarea`
+and a static read row; the history onto a `DataTable` with `sentenceCase`-humanised
+scopes; status onto a `StatusPill`; the `◇`/`⚠` emoji onto `EmptyState`; `let`
+out of the `.tsx`. `actions.ts` error strings → stable codes mapped client-side,
+with the `create_delegation_by_email`/`revoke_delegation` RPCs and every
+validation branch byte-for-byte, and `layout.tsx`'s `allowedRoles={["admin"]}`
+untouched. Three governed specs touch delegation (the RPC contract reads
+`actions.ts`, the supervisor boundary reads `layout.tsx`, shell-nav owns the nav
+label) — all unaffected, verified pass.
+
+**Live-verified on an admin sign-in** (clearing the T-161 footnote below): framed
+across all four views, the create form's DS controls + governed scope dropdown
+("Admin"), the History `DataTable` (humanised scopes, mono LTR windows, Expired/
+Revoked `StatusPill`s), **axe 0** (27 passes), light + dark (hairline), **200%
+zoom + Arabic-RTL + Arabic-mobile 375px 0 overflow**. The create/revoke *success*
+paths are env-limited (persisting needs a real delegate email + the RPC); the
+read views and both forms' wiring follow the pattern verified on T-161.
+
+## The `/admin` migration: the notification rules console (2026-08-18)
+
+**T-161 migrated `/admin/notifications`** — the maker-checker Notification & SLA
+rules console. It's a textbook migration of this era: thin route →
+`features/admin-notifications/*` + a 7-file section directory + a new namespace;
+WEB-015 raw controls (four selects, a number input, a textarea, a reason input)
+onto `SaqeelSelect`/`TextInput`/`Textarea`; the register onto a `DataTable` with a
+per-row actions column; the rule status onto a `StatusPill`; the emoji onto
+nothing. The **in-UI permission gate was already there** and carried across
+unchanged: writers (`admin` role) get the create/publish/deactivate manager,
+non-writers get a read-only register plus a notice — RLS and the maker-checker
+RPCs stay the authority. Two governed contracts (`admin-platform-design-contract`,
+`package-route-wiring-gaps`) were re-pointed from the old page/manager source to
+`queries.ts` + the screen + the en JSON, with the action-source asserts unchanged;
+every re-pointed string was grep-verified present.
+
+**Live verification — now done.** The admin session initially dropped when the
+preview pane reopened, but on the next admin sign-in the live pass completed:
+framed writer manager + DS form controls, **axe 0** (28 passes), light + dark,
+**200% zoom + Arabic-RTL + Arabic-mobile 0 overflow**, and the create submit
+RLS-refused for the seeded admin (the neutral error surfacing in the danger-toned
+`NotifMsg` — the maker-checker RLS authority working). The populated register is
+env-limited (the seeded admin's write is RLS-refused, so no row persists to list).
 
 ## The `/admin` migration: the GIS tree is done, and a nav-highlight bug fixed (2026-08-18)
 

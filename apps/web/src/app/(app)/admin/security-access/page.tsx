@@ -1,29 +1,10 @@
-import Shell from "@/app/(app)/admin/_components/AdminShell";
-import Mvp3ActionForm from "@/components/Mvp3ActionForm";
-import { decideAccessReview } from "../mvp3-actions";
-import { supabaseServer } from "@/lib/supabase-server";
-import { useT } from "@/lib/i18n";
+import SecurityScreen from "@/components/sections/admin-security-access/security-screen";
+import { loadSecurityAccess } from "@/features/admin-security-access/queries";
+import { getLocale } from "@/lib/i18n";
+
+export const dynamic = "force-dynamic";
 
 export default async function SecurityAccessPage() {
-  const [{ t }, sb] = await Promise.all([useT(), supabaseServer()]);
-  const [{ data: reviews, error }, { data: grants }, { count: roleCount }] = await Promise.all([
-    sb.from("mvp3_access_reviews").select("id,subject_user_id,scope,purpose,status,due_at,reviewed_at").order("due_at"),
-    sb.from("mvp3_evidence_access_grants").select("id,grantee_user_id,purpose,granted_at,expires_at,revoked_at").order("expires_at"),
-    sb.from("user_roles").select("user_id", { count: "exact", head: true }),
-  ]);
-  const now = Date.now();
-  return (
-    <Shell current="/admin/security-access" title={t("mvp3.security.title", "Security posture and access review")}
-      context={<span className="badge badge-info">{t("mvp3.security.badge", "purpose-bound evidence access")}</span>}>
-      <div className="alert"><div><strong>{t("mvp3.security.boundary", "Navigation is not authorization.")}</strong> {t("mvp3.security.boundaryBody", "Access policy enforces every read and action. This screen exposes only the signed-in actor's readable scope.")}</div></div>
-      {error ? <div className="alert alert-warning" role="alert">{t("mvp3.schema.pending", "This data is unavailable in this environment. Nothing is inferred.")}</div> : null}
-      <div className="sq-grid" style={{ marginBlock: "var(--space-4)" }}>
-        <section className="panel" style={{ padding: "var(--space-6)" }}><p className="t-caption">{t("mvp3.security.roleHoldings", "Role holdings visible to you")}</p><strong className="kpi-value">{roleCount ?? 0}</strong><p>{t("mvp3.security.notPermission", "Holdings are not an effective-permission proof.")}</p></section>
-        <section className="panel" style={{ padding: "var(--space-6)" }}><p className="t-caption">{t("mvp3.security.openReviews", "Open reviews")}</p><strong className="kpi-value">{(reviews ?? []).filter(x => x.status === "open").length}</strong><p>{(reviews ?? []).filter(x => x.status === "open" && new Date(x.due_at).getTime() < now).length} {t("mvp3.security.overdue", "overdue")}</p></section>
-        <section className="panel" style={{ padding: "var(--space-6)" }}><p className="t-caption">{t("mvp3.security.activeEvidence", "Active evidence grants")}</p><strong className="kpi-value">{(grants ?? []).filter(x => !x.revoked_at && new Date(x.expires_at).getTime() > now).length}</strong><p>{t("mvp3.security.expiry", "Every grant has purpose and expiry.")}</p></section>
-      </div>
-      <section className="panel stack" style={{ padding: "var(--space-6)" }}><h3>{t("mvp3.security.reviews", "Access certification queue")}</h3><div className="table-wrap"><table className="table"><thead><tr><th scope="col">{t("mvp3.security.subject", "Subject")}</th><th scope="col">{t("mvp3.security.scope", "Scope and purpose")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("common.action", "Independent decision")}</th></tr></thead><tbody>{(reviews ?? []).map(row => <tr key={row.id}><th scope="row"><bdi>{row.subject_user_id}</bdi></th><td><strong>{row.scope}</strong><div className="t-caption">{row.purpose}</div></td><td><span className={`badge ${row.status === "open" ? "badge-warning" : "badge-compliant"}`}>{row.status}</span><div className="t-caption">{new Date(row.due_at).toLocaleDateString()}</div></td><td>{row.status === "open" ? <Mvp3ActionForm action={decideAccessReview} submitLabel={t("mvp3.security.record", "Record decision")}><input type="hidden" name="reviewId" value={row.id}/><label>{t("mvp3.security.decision", "Decision")}<select name="decision" required defaultValue=""><option value="" disabled>—</option><option value="retain">{t("mvp3.security.retain", "Retain")}</option><option value="revoke">{t("mvp3.security.revoke", "Revoke")}</option></select></label><label>{t("common.reason", "Reason")}<textarea name="reason" minLength={8} required /></label></Mvp3ActionForm> : "—"}</td></tr>)}{!error && !(reviews ?? []).length ? <tr><td colSpan={4}>{t("mvp3.security.noReviews", "No access reviews visible to you.")}</td></tr> : null}</tbody></table></div></section>
-      <section className="panel stack" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-4)" }}><h3>{t("mvp3.security.grants", "Purpose-bound evidence grants")}</h3>{(grants ?? []).map(row => <div className="row" key={row.id} style={{ justifyContent: "space-between" }}><span><strong><bdi>{row.grantee_user_id}</bdi></strong><small className="t-caption"> · {row.purpose}</small></span><span className="badge">{row.revoked_at ? t("mvp3.security.revoked", "revoked") : new Date(row.expires_at).getTime() > now ? t("mvp3.security.active", "active") : t("mvp3.security.expired", "expired")}</span></div>)}{!(grants ?? []).length ? <p className="t-caption">{t("mvp3.security.noGrants", "No evidence grants visible to you.")}</p> : null}</section>
-    </Shell>
-  );
+  const [locale, data] = await Promise.all([getLocale(), loadSecurityAccess()]);
+  return <SecurityScreen data={data} locale={locale} />;
 }

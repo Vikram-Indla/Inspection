@@ -1,0 +1,101 @@
+{
+  "loading": "Loading notification rules…",
+  "dash": "—",
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration",
+    "hub": "Notification rules"
+  },
+  "title": "Notification & SLA rules",
+  "subtitle": "Governed event → channel → recipient → template rules for the delivery service",
+  "readonly": {
+    "title": "Read-only for your role",
+    "body": "You can view settings. Creating, publishing and deactivating rules need an admin settings role, and the system enforces this automatically."
+  },
+  "permissionsUnavailable": {
+    "title": "Permissions not available",
+    "body": "We couldn't check your settings permissions. Writes are turned off; reload the page."
+  },
+  "degraded": {
+    "title": "The notification rule register couldn't be read.",
+    "body": "Nothing is shown as zero — the count is unknown, not empty.",
+    "chip": "register not available"
+  },
+  "rolesUnavailable": "Recipient roles are not available. Rule creation is turned off; existing rules remain readable.",
+  "escalationNote": "SLA timers and escalation roles are stored as settings. Automatic breach-firing (a scheduled process that escalates when a timer runs out) is separate, and this screen does not build it.",
+  "form": {
+    "createTitle": "Create a draft rule",
+    "eventKey": "Event",
+    "eventPlaceholder": "Select an event",
+    "channel": "Channel",
+    "recipientRole": "Recipient role",
+    "rolePlaceholder": "Select a role",
+    "slaMinutes": "SLA timer (minutes)",
+    "slaPlaceholder": "e.g. 60",
+    "escalationRole": "Escalation role",
+    "escalationPlaceholder": "None",
+    "template": "Template",
+    "templatePlaceholder": "Review decision recorded: {decision}",
+    "templateNote": "No template catalogue is configured, so this is free text.",
+    "deactivationReason": "Deactivation reason",
+    "reasonPlaceholder": "Why is this rule being deactivated?"
+  },
+  "actions": {
+    "create": "Create draft rule",
+    "creating": "Creating…",
+    "publish": "Validate and publish",
+    "publishing": "Publishing…",
+    "deactivate": "Deactivate",
+    "deactivating": "Deactivating…",
+    "test": "Send test",
+    "testing": "Sending…"
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published",
+    "deactivated": "Deactivated"
+  },
+  "table": {
+    "event": "Event",
+    "channel": "Channel",
+    "recipient": "Recipient",
+    "sla": "SLA → escalation",
+    "status": "Status",
+    "version": "Version",
+    "actions": "Actions"
+  },
+  "missingRecipient": "Missing recipient",
+  "empty": {
+    "title": "No notification rules configured",
+    "body": "The register is empty. Create the first rule above."
+  },
+  "eventLabels": {
+    "assignment": "New visit assigned",
+    "reschedule": "Visit rescheduled",
+    "review_decision": "Review decided",
+    "virtual_closed": "Virtual session closed",
+    "virtual_rescheduled": "Virtual session rescheduled",
+    "virtual_scheduled": "Virtual session scheduled",
+    "visit_cancelled": "Visit cancelled"
+  },
+  "channelLabels": {
+    "inapp": "In-app",
+    "push": "Push",
+    "sms": "SMS",
+    "email": "Email"
+  },
+  "result": {
+    "expired": "Session expired — sign in again.",
+    "required": "Event, channel, recipient role and template are required.",
+    "bad_sla": "SLA timer must be a positive number of minutes.",
+    "sla_pair": "An SLA timer requires an escalation role, and vice versa.",
+    "duplicate": "A draft or published rule already exists for this event and channel.",
+    "missing_ref": "Missing rule reference.",
+    "maker_checker": "A different settings writer must approve this draft.",
+    "missing_recipient": "Missing recipient — recipient role is not set.",
+    "missing_reason": "A deactivation reason is required.",
+    "not_found": "Rule not found, or outside your scope.",
+    "notice_not_configured": "Provider not available — recorded as a test row only; no live provider is set up for this channel.",
+    "notice_delivered": "Test notification delivered."
+  }
+}

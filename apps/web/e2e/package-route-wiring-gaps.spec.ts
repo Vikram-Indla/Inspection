@@ -61,15 +61,16 @@ test.describe("Package-focused route wiring gaps", () => {
   });
 
   test("/admin/enforcement-recommendations separates reader/decider access and guarded writes", () => {
-    const page = source("src/app/(app)/admin/enforcement-recommendations/page.tsx");
+    const queries = source("src/features/admin-enforcement-recommendations/queries.ts");
+    const screen = source("src/components/sections/admin-enforcement-recommendations/enforcement-recs-screen.tsx");
     const action = source("src/app/(app)/admin/enforcement-recommendations/actions.ts");
 
     expectAdminBoundary();
-    expect(page).toContain("getUserRoles(user.id)");
-    expect(page).toContain('const isDecider = roles.includes("supervisor") || roles.includes("admin")');
-    expect(page).toContain("const isReader = isDecider");
-    expect(page).toContain('sb.from("enforcement_recommendations")');
-    expect(page).toContain("pendingError &&");
+    expect(queries).toContain("getUserRoles(user.id)");
+    expect(queries).toContain('const isDecider = roles.includes("supervisor") || roles.includes("admin")');
+    expect(queries).toContain("const isReader = isDecider");
+    expect(queries).toContain('sb.from("enforcement_recommendations")');
+    expect(screen).toContain("pendingError &&");
     expect(action).toContain('process.env.ENFORCEMENT_P0_RPCS_DEPLOYED !== "true"');
     expect(action).toContain('return { error: "backend_guard_required" }');
     expect(action).toContain('sb.rpc("decide_enforcement_recommendation"');
@@ -93,17 +94,19 @@ test.describe("Package-focused route wiring gaps", () => {
   });
 
   test("/admin/notifications keeps reads truthful and mutations provider-backed", () => {
-    const page = source("src/app/(app)/admin/notifications/page.tsx");
+    const queries = source("src/features/admin-notifications/queries.ts");
+    const screen = source("src/components/sections/admin-notifications/notifications-screen.tsx");
+    const copy = source("src/i18n/locales/en/admin-notifications.json");
     const action = source("src/app/(app)/admin/notifications/actions.ts");
 
     expectAdminBoundary();
-    expect(page).toContain("getServerUser()");
-    expect(page).toContain("getUserRoles(user.id)");
-    expect(page).toContain('sb.from("notification_rules")');
-    expect(page).toContain('const isWriter = roles.has("admin")');
-    expect(page).toContain("roleError ?");
-    expect(page).toContain("rulesError ? null : rows.map");
-    expect(page).toContain("Nothing is shown as zero");
+    expect(queries).toContain("getServerUser()");
+    expect(queries).toContain("getUserRoles(user.id)");
+    expect(queries).toContain('sb.from("notification_rules")');
+    expect(queries).toContain('roles.has("admin")');
+    expect(queries).toContain("roleRead.error");
+    expect(screen).toContain("data.rulesFailed");
+    expect(copy).toContain("Nothing is shown as zero");
     expect(action).toContain('sb.from("notification_rules").insert');
     expect(action).toContain('sb.rpc("publish_notification_rule"');
     expect(action).toContain('sb.rpc("deactivate_notification_rule"');

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-160.** Take T-161.
+implements the reservation. **Highest id in use: T-167.** Take T-168.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,313 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-167 · `/admin/security-access` + `/admin/devices` rebuilt on SAQEEL (MVP3 control-plane closed)
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 3h`
+`record:` [2026-08-19-T-167-security-access-devices-migration](sessions/2026-08/2026-08-19-T-167-security-access-devices-migration.md)
+
+The last two MVP3 control-plane consoles — access certification + evidence grants, and
+device trust + command evidence — migrated together, **completing the 4-route set**
+(integrations T-156, operations T-163, these T-167). Both were the same legacy pattern:
+`AdminShell` + `panel`/`badge`/`alert`/`kpi-value`/`t-caption`/raw `<table>`/`sq-grid` +
+inline styles; **English-only `t("mvp3.…","English")` fallbacks — zero Arabic** (rule 15);
+WEB-015 raw `<select>`+`<textarea>`; the shared legacy `Mvp3ActionForm`. **No emoji.**
+Rebuilt both thin (`page.tsx` 29→10 / devices similar) → `features/admin-{security-access,
+devices}/{queries,types,strings}` + `components/sections/admin-{security-access,devices}/`
+(screen · decide/command form · skeleton · module.css) + two new bilingual namespaces
+(`adminSecurityAccess`, `adminDevices`, en **and** ar) + framed `loading.tsx`.
+`ShellPageFrame` + `StatCard` + `DataTable` + `StatusPill` + `SaqeelSelect`/`Textarea`/
+`Button` forms; `formatDate`/`formatDateTime` (Asia/Riyadh); grant state + review overdue
+computed server-side. **Governed actions decoupled + bilingual:** route-local `actions.ts`
+call the same `mvp3_decide_access_review` / `mvp3_issue_device_command` RPCs but return
+**codes** (maker-checker "cannot review own", reason≥8, governed device commands, RLS
+authority all byte-for-byte). **Retired the shared plumbing:** with these the last two
+users gone, **deleted** `Mvp3ActionForm.tsx` + `mvp3-actions.ts` (zero imports; the lint
+baseline dropped 269). Every governed boundary preserved verbatim ("Navigation is not
+authorization", "Holdings are not effective-permission proof", purpose+expiry grants, "a
+queued command is not a completed wipe until acknowledged"). **No regression:**
+`mvp3-enterprise` (":113" key-sweep) **rewritten** — all four control-plane routes are off
+the legacy `t("mvp3.…")` pattern, so the obsolete `lib/i18n.ts` sweep became an en/ar
+**parity check** across the four namespaces (matching key structure + real Arabic script);
+`field-settings-contract` re-pointed (read the deleted `mvp3-actions.ts` → the new
+`devices/actions.ts`: `issueDeviceCommand` + `revalidatePath("/admin/devices")` +
+`mvp3_issue_device_command`); `mvp3-enterprise` existsSync (thin pages) + `shell-navigation`
+(nav labels) unaffected; the live `mvp3-retrofit` heading titles kept **exact** ("Security
+posture and access review", "Trusted device and offline administration"). typecheck/lint
+clean (**lint −269** from the deletions), typography PASSED, date-inputs PASSED, v5 **55**
+(adds 0), test:static **408/33 exact baseline** (rewritten + re-pointed specs pass). **Verified
+live** (admin): both framed en + ar with exact titles, boundary/rule notices verbatim,
+security's 3 StatCards + certification queue, devices' trust register + "N trusted" pill +
+command evidence, empty states, **axe 0** (26 / 25 passes), 0 overflow desktop + Arabic
+mobile 375px (stat grid stacks, dir=rtl mirrored). **Env note:** the seed has no reviews/
+grants/devices for this admin (genuine zero), so the decide/command forms + populated tables
+couldn't be exercised — they follow the verified `SaqeelSelect`/`Textarea`/`Button` +
+code-action pattern.
+
+---
+
+### T-166 · `/admin/audit` (Inspection Flight Recorder) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`
+`record:` [2026-08-19-T-166-admin-audit-migration](sessions/2026-08/2026-08-19-T-166-admin-audit-migration.md)
+
+The audit-replay flight recorder — the most contract-coupled admin route (**23 spec
+files**, several live in CI + reading exact source strings). 6 modes (recorder /
+reconstruct / compare / ledger / custody / print), a merged generic+semantic event
+stream, a 36-event ontology, a focus-trapped detail dialog. Legacy `AdminShell` + a
+bespoke **`ar-*` CSS system** in the frozen `saqeel-runtime.css` + `panel`/`badge`/
+`sq-banner`/`sq-field`/`sq-input`/`btn`/`sq-lozenge`/`t-caption`; ~60 inline `labels`/
+`auditTerms` strings ×2 (rule 15); **6 `let`** + `as unknown as` in `page.tsx` (rules 6,
+5); **4 emoji-as-icon** (`🛡 ⌕ × ∅`). Owner asks: skeleton spacing, proper pagination
+(250-row cap loaded at once), full redesign, toggles. Owner chose the full rebuild.
+Rebuilt thin `page.tsx` (156→24) → `features/admin-audit/{queries,types,strings}`
+(the reads with `let` legal in `.ts`, boundary-narrowed; reuses the governed
+`lib/audit-replay` types) + `components/sections/admin-audit/` (screen · recorder
+[client: paginated chronology + focus-trapped dialog] · timetravel [reconstruct+compare]
+· detail-modes [ledger+custody+print] · audit-code · skeleton · module.css) + new
+bilingual `adminAudit` namespace + framed `loading.tsx`. `ShellPageFrame` + `Card` +
+`StatusPill` + **`SegmentedControl`** modes (the toggle) + `TextInput` filter +
+`Pagination` (client, 25/page) + saqeel `EmptyState`; `IconButton` (dialog close +
+row reveal — ref-forwarded for the focus-trap); `formatDateTime` (Asia/Riyadh); the
+reconstruct/compare/completeness are the **pure `lib/audit-replay` functions computed
+server-side**. **All emoji → icons:** `🛡`→`restricted`, `⌕`→`search`, `×`→`dismiss`,
+`∅`→`—`. **Governed logic untouched:** `lib/audit-replay` byte-for-byte, and the append-
+only / policy-held / honest partial-history+degraded banners / case-derived completeness
+/ zero-disclosure all preserved. **Rule-10 note:** the dialog's Escape/Tab handling moved
+to a `document` keydown listener (external-sync `useEffect`) to satisfy jsx-a11y; the
+focus-trap the spec asserts (`closeRef`/`triggerRefs` focus, `role="dialog"`) stays.
+**Datetime note:** reconstruct/compare keep a raw `<input type="datetime-local">` (no DS
+datetime picker exists; the date-inputs gate + v5 both explicitly exempt it) — the one
+bounded raw control. **No regression:** `mvp2-m2-05-contract` re-pointed (page→`queries.ts`
+for the generic mapping; workspace terms/policy→en/ar JSON; dialog focus+`role="dialog"`
+→`audit-recorder.tsx`); `admin-platform-design-contract` re-pointed (auditTerms Arabic→
+ar JSON, policy-held→screen); `mvp3-enterprise` (existsSync page) + `shell-navigation`
+(nav label) unaffected; the live `mvp2-m2-05-audit-replay` stays green via preserved exact
+strings (heading, 5 mode-link names, RTL, no-overflow, policy). Renamed my "dossier"→
+"snapshot" so the pre-existing `terminology-regression` guard gains no new offenders.
+**Deleted** `AuditReplayWorkspace.tsx`. typecheck/lint clean, typography **PASSED (−124)**,
+date-inputs PASSED, v5 **55** (adds 0), test:static **408/33 exact baseline** (both
+re-pointed contracts pass). **Verified live** (admin): framed en + ar, h1 "Inspection
+Flight Recorder", append-only + POLICY_HELD, filter, the **modes toggle** (5 exact link
+names + correct hrefs), banners, the paginated chronology (250 events, generic-only pills),
+the **provenance dialog** (opens→focus close, JSON before/after, Escape→close+focus-return),
+Completeness mode (heading + "Select one case…"), **axe 0** (30 passes), **Arabic RTL at
+412px: dir=rtl, 0 overflow, عرض تشغيلي فقط** (the live test's exact check).
+
+---
+
+### T-165 · `/admin/workflows` (Workflow builder) rebuilt on SAQEEL + lifecycle-canvas fix
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`
+`record:` [2026-08-19-T-165-admin-workflows-migration](sessions/2026-08/2026-08-19-T-165-admin-workflows-migration.md)
+
+The biggest admin surface so far — a workflow lifecycle builder (canvas + branch
+strip + transition inspector + validation rail + SLA model + maker-checker publish).
+Legacy `AdminShell` + old `EmptyState` + a hand-drawn `<svg>` chevron (rule 8) +
+`panel`/`badge`/`alert`/`t-caption`/`id-code`/`select`/`sq-field`/`sq-input`/`btn`/
+`check`/`exc` + heavy inline styles + raw `<table>`s; **~80 English-only
+`t(key,"English")` fallbacks — zero Arabic** (rule 15); `page.tsx` ~210 + `WfDeck`
+~280 (over the ceiling); `payload as {…}` casts. Owner also flagged **five
+emoji-as-icon** (`🔀 ⛔ ✕ ✓ ⚠`). Delivered P0/P1 critique + widget, approved. Rebuilt
+thin `page.tsx` (210→9) → `features/admin-workflows/{queries,types,strings}` +
+`components/sections/admin-workflows/` (screen · version-card · **wf-deck split into
+canvas-orchestrator + wf-inspector + wf-rail** · sla-table · wf-forms · skeleton) +
+new bilingual `adminWorkflows` namespace (en **and** ar) + framed `loading.tsx`.
+`ShellPageFrame` + `Card` + `StatusPill` + `DataTable` + `Choice`/`Textarea`/`Button`
++ saqeel `EmptyState`; `formatDateTime` (Asia/Riyadh); module CSS is layout + tokens
+only (no shadow, no typography). **All emoji/`<svg>` → real icons:** `🔀`→`workflow`,
+`⛔`→`restricted`, `✕`→danger `StatusPill`, `✓`→success `StatusPill`, `⚠`→warning
+`StatusPill`, the `<svg>` chevron→`nextPage` icon, validation marks→`selected`/`dismiss`
+icons. **Governance untouched:** the 4 action files (`actions.ts` incl. the
+`NEUTRAL_LOAD_ERROR` a spec asserts, `sla`/`task`/`transition-actions`), `layout.tsx`,
+and `lib/workflow/{normalize,validate}` all byte-for-byte; the maker-checker SoD,
+distinct-approver publish, `NotYetBoundary` sim, and "Not configured" SLA states carry
+across. **Lifecycle-canvas fix (owner: "misalignment, doesn't look good"):** the old
+lane drew a chevron between every adjacent card and ordered by raw BFS distance, so it
+showed `in_review → cancelled → closed` arrows that **don't exist** while exiling the
+real `in_review → closed` edge to the branch strip. Rebuilt the lane as the real
+**spine-walk** (follow transitions from the initial state, prefer the non-terminal
+successor, append off-spine states last) and draw a chevron **only where a real
+transition connects two adjacent cards** — now `draft → scheduled → in_review → closed`
+is one honest path, `cancelled` sits at the end (no fake arrow), `scheduled → cancelled`
+is the branch chip; terminal captions toned. **No regression:** `mvp3-enterprise`
+(existsSync page), `neutral-error-sweep` (reads untouched `actions.ts`),
+`mvp3-retrofit` (live nav — title "Workflow builder" + `main h2` kept),
+`shell-navigation` (nav label) all unaffected — no re-point needed. **Deleted**
+`WfDeck.tsx`, `Controls.tsx`, `workflow-builder.module.css`. typecheck/lint clean,
+typography **PASSED (−123)**, date-inputs PASSED, v5 **56** (down from 60 — the emoji/
+svg removed; workflows adds 0), test:static **408/33 exact baseline**. **Verified live**
+(admin; a throwaway `config_versions` workflow draft seeded via SQL, removed after):
+the full builder — version card (object/status/**Approve-and-publish**/maker-checker
+chain), the **corrected lifecycle**, inspector (emoji-free "No actor set"/idempotent
+pills), validation rail (`selected`/`dismiss` icons), states rail, SLA + empty states —
+**axe 0** (31 passes), **200% zoom + Arabic-RTL (mirrored lane, left chevrons) +
+light + mobile 375px 0 overflow**. **Note:** action-layer error strings stay English
+(the governed, spec-asserted `actions.ts` is untouched) — the one bounded English path;
+all static UI is bilingual.
+
+---
+
+### T-164 · `/admin/enforcement-recommendations` (Enforcement recommendation review) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2.5h`
+`record:` [2026-08-19-T-164-admin-enforcement-recommendations-migration](sessions/2026-08/2026-08-19-T-164-admin-enforcement-recommendations-migration.md)
+
+The maker-checker enforcement-recommendation review queue — inspector-submitted
+`pending` recommendations land here; supervisors decide (approve/reject + reason),
+admins read-only, all behind an `ENFORCEMENT_P0_RPCS_DEPLOYED` backend-gate. Legacy
+`AdminShell` + the **old** `@/components/EmptyState` + **three `<svg>` icons from
+`@/app/icons`** (rule 8) + `alert`/`badge`/`panel`/`saqeel-state`/`t-caption`/a
+**headerless raw `<table>`** + inline styles; ~40 strings as inline `tr(key,en,ar)`
+ternaries (rule 15); `page.tsx` ~180 lines (rule 3); `as unknown as` casts (rule 5);
+`DecideForm` raw `sq-choice`/`sq-textarea`/`btn` (WEB-015). Delivered P0/P1 critique
++ widget mockup, approved. Rebuilt thin `page.tsx` (180→10) →
+`features/admin-enforcement-recommendations/{queries,types,strings}` (the reader/
+decider/writer resolution keeping the **exact** `isDecider`/`isReader` expressions
+the wiring spec asserts, the pending + decided reads with `CLEAN_FACTORY_CODES`
+scope, boundary-narrowed — no `as unknown as`) + `components/sections/
+admin-enforcement-recommendations/` (screen · pending-list · recommendation-card ·
+decide-form · decided-table · skeleton) + new bilingual
+`adminEnforcementRecommendations` namespace (every governance notice verbatim) +
+framed `loading.tsx`. `ShellPageFrame` + `Card` notices + `StatusPill` (measure +
+approved=success/rejected=danger) + `Choice`/`Textarea`/`Button` decide form +
+`DataTable` (the decided table **gains real column headers**, the legacy had none) +
+saqeel `EmptyState`; `formatDateTime` (Asia/Riyadh). **Governance preserved
+byte-for-byte:** the three notices (policy Not-configured, decision scope, read-only),
+the reader/decider/writer split, the `ENFORCEMENT_P0_RPCS_DEPLOYED`→`backend_guard_
+required` gate, and the maker-checker RPC `decide_enforcement_recommendation` with
+idempotency + receipt validation (`actions.ts` **untouched**). One rule-10 note: the
+decide form keeps a minimal `useEffect` to mint the client-only `crypto.randomUUID()`
+idempotency key — the sanctioned external-sync exception (a hydration-safe server
+value isn't possible). **No regression:** `package-route-wiring-gaps` (":63") re-pointed
+page → `queries.ts` (`getUserRoles`, the exact `isDecider`/`isReader` lines,
+`sb.from("enforcement_recommendations")`) + the screen (`pendingError &&`), the
+`actions.ts` asserts unchanged; no `layout.tsx` added (inherits the parent `/admin`
+boundary — `admin-supervisor-route-boundary` asserts it's inherited); shell nav label
+untouched. **Deleted** `DecideForm.tsx` + `responsive.module.css`. typecheck/lint
+clean, typography **PASSED (−91)**, date-inputs PASSED, v5 **60** (adds 0),
+test:static **408/33 exact baseline** (re-point passes). **Verified live** (admin =
+decider, non-writer): framed en + ar, both notices verbatim, **no read-only banner**
+(decider), pending + decided empty states, the "Recently decided" section present
+(decider-only), **axe 0** (26 passes), 200% zoom + Arabic-RTL mobile 375px **0
+overflow**. **Decide flow verified live** (throwaway seeded `pending` row +
+`supervisor1` granted a temporary read role, both removed after): the card renders
+the `ChoiceGroup` + reason `Textarea` + button + measure `StatusPill` + Riyadh-TZ
+timestamp, and submitting returns the **`backend_guard_required`** guard in a
+danger-toned message with nothing recorded (a successful decision is impossible here
+by design). **Surfaced two pre-existing RLS findings** (parked): the
+`enforcement_recommendations` read policy excludes admin/supervisor (only
+inspector/planner/… can read, so those roles see an empty queue) **and** references
+roles absent from the trimmed catalog — governance gaps independent of this UI
+migration.
+
+---
+
+### T-163 · `/admin/operations` (System operations & resilience) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-19-T-163-admin-operations-migration](sessions/2026-08/2026-08-19-T-163-admin-operations-migration.md)
+
+The MVP3 control-plane console — three health StatCards (endpoint contracts /
+open errors / published flags), an error queue with idempotent retry, feature-flag
+versions with maker-checker publish, a policy-hold notice. Legacy `AdminShell` +
+`panel`/`badge`/`alert`/`kpi-value`/`t-caption`/raw `<table>` + inline `style={{
+padding/marginBlockStart }}` on every block (the "no spacing"); **every string the
+retiring `t("mvp3.operations.…","English")` fallback — no keys in any JSON**; the
+whole page one 40-line inline `page.tsx`. Delivered P0/P1 critique + widget mockup,
+approved (owner: "add a chart genuinely, not enforce"). Rebuilt thin `page.tsx`
+(40→9) → `features/admin-operations/{queries,types,strings}` (the 3 reads keeping
+`errorsError`/`flagsError`/`endpointsError` + derived counts + `errorStatusCounts`)
++ `components/sections/admin-operations/` (screen · error-queue · flag-versions ·
+ops-action-form · skeleton) + new bilingual `adminOperations` namespace + framed
+`loading.tsx`. `ShellPageFrame` + `StatCard`×3 (one grid, one rhythm) + two
+`DataTable`s + `StatusPill` (governed error/flag status tones) + info-badge in the
+frame actions. **Chart (genuine, not forced):** an **error-records-by-source**
+`BarSeries` (RTL-aware) rendered **only when the source is available and non-empty**
+— with zero records it's correctly hidden. By source (which integration is
+failing), not by status, which would only echo the KPI + the per-row pills; a
+trend/over-time chart was rejected as it would imply the forbidden health claim. **Governed actions:** operations-local
+`actions.ts` wrappers call the same `mvp3_request_error_retry` /
+`mvp3_publish_feature_flag` RPCs but return **codes** mapped bilingually (the shared
+`mvp3-actions.ts` / `Mvp3ActionForm` left untouched — `/admin/devices` +
+`/admin/security-access` still use them). **No regression:**
+`admin-platform-design-contract` (":12 source failures distinct") re-pointed page →
+`queries.ts` (`errorsError`/`flagsError`/`endpointsError`) + en JSON ("never shown
+as zero or empty", "This source is not available…"); `mvp3-enterprise-contract`
+(":113 Arabic fallbacks") re-pointed — migrated routes leave the legacy `mvp3.`
+sweep, so it now sweeps only `security-access`+`devices` (45 keys, floor `>40`) and
+asserts the new `admin-operations` en/ar namespace parity; retrofit heading title
+kept **exactly** "System operations and resilience" + 3 `main h2`. typecheck/lint
+clean, typography **PASSED (−85)**, date-inputs PASSED, v5 **60** (adds 0),
+test:static **408/33 exact baseline** (both re-points pass). **Verified live**
+(admin signed in): framed en + ar, breadcrumb/title/badge/subtitle, 3 StatCards,
+both table sections' empty states (**genuine zero — no source-failure notice**, the
+truth model working), **axe 0** (26 passes), 200% zoom + Arabic-RTL + Arabic/en
+mobile 375px **0 overflow**, no console errors. **Env note:** the seeded DB has no
+`mvp3_error_queue`/`feature_flags`/endpoint rows for this admin, so the populated
+tables, retry/publish forms, and the chart couldn't be exercised — the chart is
+correctly hidden at zero data and uses the `BarSeries` API verified live on
+`/admin/gis` (T-159).
+
+---
+
+### T-162 · `/admin/delegation` (Delegation & governed-role hand-off) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-19-T-162-admin-delegation-migration](sessions/2026-08/2026-08-19-T-162-admin-delegation-migration.md)
+
+Temporarily delegate a governed role's authority to another authorized user —
+four URL-addressable views (Active / Received / New delegation / History) with a
+create form and per-row revoke. Legacy `AdminShell` + `panel`/`sq-field`/
+`sq-input`/`badge`/`btn`/raw `<table>`/`saqeel-state` + inline styles + `let` in
+`.tsx`; **WEB-015 raw controls** (delegate `<input>`, scope `<select>`, 2 `<input
+type=date>`, reason `<textarea>`, revoke `<input>`); ~50-literal inline
+`ar ? {…} : {…}` copy object; `◇`/`⚠` emoji-as-icon; the four view buttons were
+`btn-primary`/`btn-secondary` links. Delivered P0/P1 critique + widget mockup;
+**owner picked `SegmentedControl(href)`** over `Tabs` (keeps `?view=` shareable +
+server-render-per-view). Rebuilt thin `page.tsx` (180→18) →
+`features/admin-delegation/{queries,types,strings}` + `components/sections/
+admin-delegation/` (screen · cards · history-table · create-form · revoke-form ·
+msg · skeleton) + new bilingual `adminDelegation` namespace + framed `loading.tsx`.
+**SegmentedControl** (`tone="accent"`) view switcher; `TextInput`/`SaqeelSelect`/
+`DatePickerField`×2/`Textarea` (WEB-015); delegator a static read row (not a
+disabled input); `StatusPill` (active=success/expired=warning/revoked=neutral);
+`DataTable` history (`bleed={false}`); humanised scope labels (`sentenceCase`);
+`EmptyState` (icon, no emoji). `actions.ts` error strings → stable codes mapped
+client-side; RPCs (`create_delegation_by_email`/`revoke_delegation`) + all
+validation byte-for-byte; `layout.tsx` `allowedRoles={["admin"]}` untouched.
+**No regression:** `admin-development-closure-contract` (delegation RPC, reads
+`actions.ts`), `admin-supervisor-route-boundary` (reads `layout.tsx`),
+`shell-navigation` (nav label/href) all unaffected — verified pass. **Deleted**
+`DelegationForms.tsx`. typecheck/lint clean, typography PASSED (**−79**),
+date-inputs PASSED (**−4**), v5 **60** (adds 0), test:static **408/33 exact
+baseline**. **Verified live** (admin signed in): framed render across all four
+views, the create form's DS controls + governed scope dropdown, **axe 0** (27
+passes, form + history), light + dark (hairline), **200% zoom + Arabic-RTL +
+Arabic-mobile 375px 0 overflow**, humanised scopes + StatusPills in History.
+
+---
+
+### T-161 · `/admin/notifications` (Notification & SLA rules) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-18-T-161-admin-notifications-migration](sessions/2026-08/2026-08-18-T-161-admin-notifications-migration.md)
+
+The maker-checker notification-rules console (event → channel → recipient →
+template → SLA/escalation; publish needs a distinct approver; test; deactivate).
+Legacy `AdminShell` + `sq-*`/`sq-lozenge`/`badge` + WEB-015 raw controls (4
+`<select>`, SLA number, template textarea, reason input) + English-only + emoji.
+Rebuilt thin `page.tsx` (150→9) → `features/admin-notifications/{queries,types,
+strings}` + `components/sections/admin-notifications/` (screen · manager ·
+create-form · rules-table · row-actions · msg · skeleton) + new
+`adminNotifications` namespace. `SaqeelSelect`/`TextInput`/`Textarea` (WEB-015),
+`StatusPill` status, `DataTable` register, governed event/channel labels, framed
+skeleton. **Permission gate preserved** — writers get the manager, non-writers a
+read-only register + notice; RLS + maker-checker RPCs byte-for-byte. `actions.ts`
+codes→client map. **No regression:** `admin-platform-design-contract` +
+`package-route-wiring-gaps` re-pointed (page reads → queries/screen/en-JSON;
+action asserts unchanged); deleted `NotificationRulesManager.tsx`. typecheck/lint
+clean, typography/date-inputs PASSED, v5 **60** (adds 0), test:static **408/33**.
+**Verified live** (admin signed in): framed writer manager + DS form controls,
+axe **0**, light+dark, 200% zoom + Arabic-RTL + Arabic-mobile **0 overflow**, the
+create RLS-refusal surfacing the neutral error correctly. (Populated register is
+env-limited — the seeded admin's write is RLS-refused, so no row persists to list.)
+
+---
 
 ### T-160 · `/admin/gis/spatial` rebuilt on SAQEEL + sidebar double-highlight fix
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 1.5h`
