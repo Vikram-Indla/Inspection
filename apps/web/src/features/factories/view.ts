@@ -55,7 +55,7 @@ export type FactoryView = {
   };
 };
 
-export function buildFactoryView({ factory, locale, counts, movement, compliance, profile, now, freshnessUnavailable, sourceStatus }: {
+export function buildFactoryView({ factory, locale, counts, movement, compliance, profile, now, freshnessUnavailable }: {
   factory: FactoryRow;
   locale: "en" | "ar";
   counts: PortfolioCounts;
@@ -64,7 +64,6 @@ export function buildFactoryView({ factory, locale, counts, movement, compliance
   profile: FactoryProfileRecord | undefined;
   now: number;
   freshnessUnavailable: string;
-  sourceStatus: string;
 }): FactoryView {
   const { factories: copy } = getMessages(locale);
   const missing = copy.portfolio.missing;

@@ -19,19 +19,6 @@ function pair(bands: unknown, key: string): readonly [number, number] | null {
   return Number.isFinite(from) && Number.isFinite(to) ? [from, to] : null;
 }
 
-/**
- * The governed risk banding, read from `engine_settings` where `engine = 'risk'`
- * — the same row the `recalculate_factory_risk` function bands against.
- *
- * The meter needs this because a risk score has **no scale of its own**: it is a
- * weighted sum stored as `numeric(5,2)`, and the band cutoffs are configuration,
- * not constants. Drawing an arc against an assumed 0–100 would assert a ceiling
- * the platform does not guarantee (WEB-002 §9), so a screen that cannot read
- * this renders the number and no meter.
- *
- * Returns `null` on any missing or malformed part. The caller renders the score
- * without a meter rather than falling back to a ceiling nobody configured.
- */
 export async function queryRiskBands(sb: SupabaseClient): Promise<RiskBands | null> {
   const { data, error } = await sb
     .from("engine_settings")

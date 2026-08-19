@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { readDeviceReadiness, requestPersistentStorage, type DeviceReadinessSnapshot } from "@/lib/pwa/client";
 import { formatBytes } from "@/lib/pwa/readiness";
-import styles from "../settings.module.css";
+import styles from "./readiness.module.css";
 
 type Locale = "en" | "ar";
 
