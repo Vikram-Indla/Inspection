@@ -1,0 +1,35 @@
+stages:
+  - gitlab-clone
+
+variables:
+  PROJECT_FOLDER: ${CI_PROJECT_NAME}
+  APP_NAME: inspection-frontend
+
+gitlab-pull-deploy:
+  tags:
+    - inspection-shell
+
+  variables:
+    STAGE_NAME: "gitlab-clone"
+
+  stage: gitlab-clone
+
+  before_script:
+    - whoami
+    - pwd
+
+  script:
+    - COMMIT_ID=$(git rev-parse HEAD | cut -c1-7)
+    - IMAGE_TAG="${CI_PIPELINE_ID}-${COMMIT_ID}"
+    - cd "$CI_PROJECT_DIR/apps/web"
+    ## Ensure  .env is added under Varaible Settings.
+    - cp $DEV_ENV_FILE .env
+    # - sudo docker build -t inspection-frontend:$IMAGE_TAG -f "$CI_PROJECT_DIR/apps/web/Dockerfile" "$CI_PROJECT_DIR/apps/web"
+    - sudo docker build -t inspection-frontend:$IMAGE_TAG .
+    - sudo docker images
+    ##CleanUp the Images
+    - sudo docker images inspection-frontend --format "{{.Tag}}" | tail -n +4 | xargs -I {} docker rmi inspection-frontend:{} || true
+    - sudo docker stop inspection-frontend || true
+    - sudo docker rm inspection-frontend || true
+    - sudo docker run -d --name inspection-frontend --restart unless-stopped -p 3001:3001 inspection-frontend:$IMAGE_TAG
+    - sudo docker ps
