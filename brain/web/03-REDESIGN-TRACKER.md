@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-165.** Take T-166.
+implements the reservation. **Highest id in use: T-166.** Take T-167.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,55 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-166 · `/admin/audit` (Inspection Flight Recorder) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`
+`record:` [2026-08-19-T-166-admin-audit-migration](sessions/2026-08/2026-08-19-T-166-admin-audit-migration.md)
+
+The audit-replay flight recorder — the most contract-coupled admin route (**23 spec
+files**, several live in CI + reading exact source strings). 6 modes (recorder /
+reconstruct / compare / ledger / custody / print), a merged generic+semantic event
+stream, a 36-event ontology, a focus-trapped detail dialog. Legacy `AdminShell` + a
+bespoke **`ar-*` CSS system** in the frozen `saqeel-runtime.css` + `panel`/`badge`/
+`sq-banner`/`sq-field`/`sq-input`/`btn`/`sq-lozenge`/`t-caption`; ~60 inline `labels`/
+`auditTerms` strings ×2 (rule 15); **6 `let`** + `as unknown as` in `page.tsx` (rules 6,
+5); **4 emoji-as-icon** (`🛡 ⌕ × ∅`). Owner asks: skeleton spacing, proper pagination
+(250-row cap loaded at once), full redesign, toggles. Owner chose the full rebuild.
+Rebuilt thin `page.tsx` (156→24) → `features/admin-audit/{queries,types,strings}`
+(the reads with `let` legal in `.ts`, boundary-narrowed; reuses the governed
+`lib/audit-replay` types) + `components/sections/admin-audit/` (screen · recorder
+[client: paginated chronology + focus-trapped dialog] · timetravel [reconstruct+compare]
+· detail-modes [ledger+custody+print] · audit-code · skeleton · module.css) + new
+bilingual `adminAudit` namespace + framed `loading.tsx`. `ShellPageFrame` + `Card` +
+`StatusPill` + **`SegmentedControl`** modes (the toggle) + `TextInput` filter +
+`Pagination` (client, 25/page) + saqeel `EmptyState`; `IconButton` (dialog close +
+row reveal — ref-forwarded for the focus-trap); `formatDateTime` (Asia/Riyadh); the
+reconstruct/compare/completeness are the **pure `lib/audit-replay` functions computed
+server-side**. **All emoji → icons:** `🛡`→`restricted`, `⌕`→`search`, `×`→`dismiss`,
+`∅`→`—`. **Governed logic untouched:** `lib/audit-replay` byte-for-byte, and the append-
+only / policy-held / honest partial-history+degraded banners / case-derived completeness
+/ zero-disclosure all preserved. **Rule-10 note:** the dialog's Escape/Tab handling moved
+to a `document` keydown listener (external-sync `useEffect`) to satisfy jsx-a11y; the
+focus-trap the spec asserts (`closeRef`/`triggerRefs` focus, `role="dialog"`) stays.
+**Datetime note:** reconstruct/compare keep a raw `<input type="datetime-local">` (no DS
+datetime picker exists; the date-inputs gate + v5 both explicitly exempt it) — the one
+bounded raw control. **No regression:** `mvp2-m2-05-contract` re-pointed (page→`queries.ts`
+for the generic mapping; workspace terms/policy→en/ar JSON; dialog focus+`role="dialog"`
+→`audit-recorder.tsx`); `admin-platform-design-contract` re-pointed (auditTerms Arabic→
+ar JSON, policy-held→screen); `mvp3-enterprise` (existsSync page) + `shell-navigation`
+(nav label) unaffected; the live `mvp2-m2-05-audit-replay` stays green via preserved exact
+strings (heading, 5 mode-link names, RTL, no-overflow, policy). Renamed my "dossier"→
+"snapshot" so the pre-existing `terminology-regression` guard gains no new offenders.
+**Deleted** `AuditReplayWorkspace.tsx`. typecheck/lint clean, typography **PASSED (−124)**,
+date-inputs PASSED, v5 **55** (adds 0), test:static **408/33 exact baseline** (both
+re-pointed contracts pass). **Verified live** (admin): framed en + ar, h1 "Inspection
+Flight Recorder", append-only + POLICY_HELD, filter, the **modes toggle** (5 exact link
+names + correct hrefs), banners, the paginated chronology (250 events, generic-only pills),
+the **provenance dialog** (opens→focus close, JSON before/after, Escape→close+focus-return),
+Completeness mode (heading + "Select one case…"), **axe 0** (30 passes), **Arabic RTL at
+412px: dir=rtl, 0 overflow, عرض تشغيلي فقط** (the live test's exact check).
+
+---
 
 ### T-165 · `/admin/workflows` (Workflow builder) rebuilt on SAQEEL + lifecycle-canvas fix
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`

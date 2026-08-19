@@ -1,6 +1,32 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-19` · `Updated by: T-165 — the /admin/workflows migration`
+`Last updated: 2026-08-19` · `Updated by: T-166 — the /admin/audit migration`
+
+## The `/admin` migration: the audit flight recorder, the highest-contract route (2026-08-19)
+
+**T-166 migrated `/admin/audit`** — the Inspection Flight Recorder, the most
+contract-coupled admin surface: **23 spec files** touch audit, several running live in
+CI and some reading exact source strings from the component. The rebuild is a textbook
+one (thin page → `features/admin-audit/*` + a section directory + a bilingual
+`adminAudit` namespace; `SegmentedControl` modes as the toggle; client `Pagination`;
+emoji → icons; framed skeleton) but the value was in the **disciplined spec re-pointing**:
+the generic-event mapping moved to `queries.ts`, the `auditTerms`/policy strings to the
+en/ar JSON, and the dialog focus-trap (`closeRef`/`triggerRefs`/`role="dialog"`) to
+`audit-recorder` — every asserted substring preserved and grep-verified, `test:static`
+held at 408/33, and the two source-reading contracts pass 12/12. The governed
+`lib/audit-replay` (reconstruct/compare/completeness — all pure functions, now computed
+server-side) is byte-for-byte, and every truth boundary (append-only, policy-held,
+honest partial-history/degraded, case-derived completeness, zero-disclosure) carries
+across.
+
+**A note on live-CI contracts.** `mvp2-m2-05-audit-replay` runs live against admin/inspector
+personas, asserting exact headings, the five mode-link names, RTL, no-overflow, and the
+policy copy. Those strings were kept identical, and I verified what I could locally with
+the admin persona (heading, toggle, dialog focus-trap, Completeness guard, and the exact
+`dir=rtl` + 0-overflow at 412px + "عرض تشغيلي فقط" check) — but full coverage is CI's, a
+residual the owner accepted when choosing the full rebuild. A reminder that some contracts
+can only be *fully* closed in the pipeline, and the honest move is to preserve their
+literals exactly and say so.
 
 ## The `/admin` migration: the workflow builder + an honest lifecycle canvas (2026-08-19)
 

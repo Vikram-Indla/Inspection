@@ -30,12 +30,14 @@ test.describe("admin platform design truth contract", () => {
   });
 
   test("audit makes policy-held status prominent and localizes operational status labels", () => {
-    const source = read("apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx");
-    expect(source).toContain("auditTerms");
-    expect(source).toContain('appendOnly: "إضافة فقط"');
-    expect(source).toContain('changed: "متغير"');
-    expect(source).toContain("<strong>{L.policyHeldTag}</strong>");
-    expect(source).not.toContain('?"RECORDED SEMANTIC":"GENERIC ONLY"');
-    expect(source).not.toContain('?"CHANGED":"UNCHANGED"');
+    const arCopy = read("apps/web/src/i18n/locales/ar/admin-audit.json");
+    const screen = read("apps/web/src/components/sections/admin-audit/audit-screen.tsx");
+    const recorder = read("apps/web/src/components/sections/admin-audit/audit-recorder.tsx");
+    expect(arCopy).toContain('"terms"');
+    expect(arCopy).toContain('"appendOnly": "إضافة فقط"');
+    expect(arCopy).toContain('"changed": "متغير"');
+    expect(screen).toContain("{strings.tags.policyHeld}");
+    expect(recorder).not.toContain('?"RECORDED SEMANTIC":"GENERIC ONLY"');
+    expect(recorder).not.toContain('?"CHANGED":"UNCHANGED"');
   });
 });
