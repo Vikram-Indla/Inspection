@@ -1,5 +1,5 @@
-import { Overline, Text } from "@/components/saqeel/type";
 "use client";
+import { Overline, Text } from "@/components/saqeel/type";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { latestVersionNumber } from "./stale-check";

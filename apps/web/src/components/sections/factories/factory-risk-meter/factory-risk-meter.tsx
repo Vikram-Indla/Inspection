@@ -11,17 +11,6 @@ export type FactoryRiskMeterStrings = {
   readonly aria: string;
 };
 
-/**
- * The factory's risk score against its governed band scale.
- *
- * The number alone cannot say how far into a band a factory sits — 81.5 reads
- * the same whether it just crossed the threshold or is near the ceiling. The arc
- * says it at a glance.
- *
- * `bands` is required and nullable on purpose: the ceiling is configuration
- * (`engine_settings.risk`), never an assumption. With no governed bands there is
- * no scale, so this renders nothing and the caller's plain numeral stands.
- */
 export default function FactoryRiskMeter({ score, bands, locale, strings }: {
   score: number | null;
   bands: RiskBands | null;

@@ -83,7 +83,6 @@ export default function Factory360Portfolio({ factories, portfolioLabel, canCrea
     profile: profiles.get(selected.id),
     now,
     freshnessUnavailable: provenanceStrings.freshnessUnavailable,
-    sourceStatus: provenanceStrings.sourceStatus,
   });
   const provenance = provenanceDetail(selected, provenanceStrings, locale);
   const createHref = canCreateInspection && !selected.is_temporary ? planningHandoffHref(selected) : null;
