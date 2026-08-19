@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-160.** Take T-161.
+implements the reservation. **Highest id in use: T-161.** Take T-162.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,32 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-161 · `/admin/notifications` (Notification & SLA rules) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-18-T-161-admin-notifications-migration](sessions/2026-08/2026-08-18-T-161-admin-notifications-migration.md)
+
+The maker-checker notification-rules console (event → channel → recipient →
+template → SLA/escalation; publish needs a distinct approver; test; deactivate).
+Legacy `AdminShell` + `sq-*`/`sq-lozenge`/`badge` + WEB-015 raw controls (4
+`<select>`, SLA number, template textarea, reason input) + English-only + emoji.
+Rebuilt thin `page.tsx` (150→9) → `features/admin-notifications/{queries,types,
+strings}` + `components/sections/admin-notifications/` (screen · manager ·
+create-form · rules-table · row-actions · msg · skeleton) + new
+`adminNotifications` namespace. `SaqeelSelect`/`TextInput`/`Textarea` (WEB-015),
+`StatusPill` status, `DataTable` register, governed event/channel labels, framed
+skeleton. **Permission gate preserved** — writers get the manager, non-writers a
+read-only register + notice; RLS + maker-checker RPCs byte-for-byte. `actions.ts`
+codes→client map. **No regression:** `admin-platform-design-contract` +
+`package-route-wiring-gaps` re-pointed (page reads → queries/screen/en-JSON;
+action asserts unchanged); deleted `NotificationRulesManager.tsx`. typecheck/lint
+clean, typography/date-inputs PASSED, v5 **60** (adds 0), test:static **408/33**.
+**Verified live** (admin signed in): framed writer manager + DS form controls,
+axe **0**, light+dark, 200% zoom + Arabic-RTL + Arabic-mobile **0 overflow**, the
+create RLS-refusal surfacing the neutral error correctly. (Populated register is
+env-limited — the seeded admin's write is RLS-refused, so no row persists to list.)
+
+---
 
 ### T-160 · `/admin/gis/spatial` rebuilt on SAQEEL + sidebar double-highlight fix
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 1.5h`

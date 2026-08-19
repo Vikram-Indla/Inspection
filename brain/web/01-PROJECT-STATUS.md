@@ -1,6 +1,28 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-18` · `Updated by: T-160 — the /admin/gis/spatial migration + nav fix`
+`Last updated: 2026-08-18` · `Updated by: T-161 — the /admin/notifications migration`
+
+## The `/admin` migration: the notification rules console (2026-08-18)
+
+**T-161 migrated `/admin/notifications`** — the maker-checker Notification & SLA
+rules console. It's a textbook migration of this era: thin route →
+`features/admin-notifications/*` + a 7-file section directory + a new namespace;
+WEB-015 raw controls (four selects, a number input, a textarea, a reason input)
+onto `SaqeelSelect`/`TextInput`/`Textarea`; the register onto a `DataTable` with a
+per-row actions column; the rule status onto a `StatusPill`; the emoji onto
+nothing. The **in-UI permission gate was already there** and carried across
+unchanged: writers (`admin` role) get the create/publish/deactivate manager,
+non-writers get a read-only register plus a notice — RLS and the maker-checker
+RPCs stay the authority. Two governed contracts (`admin-platform-design-contract`,
+`package-route-wiring-gaps`) were re-pointed from the old page/manager source to
+`queries.ts` + the screen + the en JSON, with the action-source asserts unchanged;
+every re-pointed string was grep-verified present.
+
+**A reminder on live verification.** The admin browser session dropped when the
+preview pane reopened, and the agent cannot enter credentials — so the live pass
+(axe, Arabic/RTL, zoom, writer-vs-read-only) is **owed on an admin sign-in**, the
+same footnote as T-154. The build is typecheck/lint/gates-green and test:static
+holds at 408/33; the owed item is purely the browser render, not the code.
 
 ## The `/admin` migration: the GIS tree is done, and a nav-highlight bug fixed (2026-08-18)
 

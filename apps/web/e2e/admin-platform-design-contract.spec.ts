@@ -19,12 +19,13 @@ test.describe("admin platform design truth contract", () => {
   });
 
   test("notification creation fails closed when the governed role catalogue is unavailable", () => {
-    const page = read("apps/web/src/app/(app)/admin/notifications/page.tsx");
-    const manager = read("apps/web/src/app/(app)/admin/notifications/NotificationRulesManager.tsx");
-    expect(page).toContain("roleTableError");
-    expect(page).toContain("Rule creation is turned off; existing rules remain readable.");
-    expect(manager).toContain("rolesAvailable");
-    expect(manager).toContain("disabled={!rolesAvailable}");
+    const queries = read("apps/web/src/features/admin-notifications/queries.ts");
+    const form = read("apps/web/src/components/sections/admin-notifications/notif-create-form.tsx");
+    const copy = read("apps/web/src/i18n/locales/en/admin-notifications.json");
+    expect(queries).toContain("roleTableRead.error");
+    expect(copy).toContain("Rule creation is turned off; existing rules remain readable.");
+    expect(form).toContain("rolesAvailable");
+    expect(form).toContain("disabled={!rolesAvailable}");
   });
 
   test("audit makes policy-held status prominent and localizes operational status labels", () => {
