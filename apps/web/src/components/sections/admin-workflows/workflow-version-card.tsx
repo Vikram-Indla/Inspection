@@ -36,7 +36,7 @@ export default function WorkflowVersionCard({ version, strings, locale }: {
       />
       <CardBody>
         <Text tone="secondary">
-          {strings.chain.proposed} <Text as="strong" role="bodyStrong">{version.proposedByName ?? strings.deck.none}</Text>
+          {strings.chain.proposed} <Text as="strong" role="bodyStrong">{version.proposedByName ?? strings.chain.unknownUser}</Text>
           {version.created_at ? <> · <Text as="span" role="mono" dir="ltr">{formatDateTime(version.created_at, locale)}</Text></> : null}
           {" → "}
           {version.approvedByName

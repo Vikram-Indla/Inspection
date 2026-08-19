@@ -29,7 +29,8 @@
     "proposed": "Proposed by",
     "approved": "approved by",
     "distinct": "distinct approver",
-    "pending": "awaiting a distinct approver (maker-checker, enforced by the database)"
+    "pending": "awaiting a distinct approver (maker-checker, enforced by the database)",
+    "unknownUser": "Unknown user"
   },
   "deck": {
     "graph": "Lifecycle",

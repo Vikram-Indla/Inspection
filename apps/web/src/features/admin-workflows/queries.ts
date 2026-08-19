@@ -38,7 +38,7 @@ export async function loadWorkflows(): Promise<WorkflowsView> {
     ? (await sb.from("profiles").select("user_id, full_name").in("user_id", chainIds)).data ?? []
     : [];
   const nameOf = (uid: string | null): string | null =>
-    uid ? (profiles.find(p => p.user_id === uid)?.full_name ?? `${uid.slice(0, 8)}…`) : null;
+    uid ? (profiles.find(p => p.user_id === uid)?.full_name ?? null) : null;
 
   const versions: WorkflowVersion[] = rows.map(row => ({
     id: row.id,

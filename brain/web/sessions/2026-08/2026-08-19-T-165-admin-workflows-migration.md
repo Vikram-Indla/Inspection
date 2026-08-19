@@ -76,6 +76,18 @@ one honest path, `cancelled` sits at the end with a clean gap, and `scheduled �
 shows as the branch chip it is. Initial/terminal captions gained a quiet accent/success
 tone. `buildLane` is a pure, `let`-free recursive walk (rule 6).
 
+**Follow-up polish (two owner notes).** (1) *"Values aligned center in each card."* Added
+`justify-content: center` to the state card **and** render the initial/terminal caption
+only when it exists (the old code emitted a non-breaking-space second line for mid-states,
+which held the visible key at the top). Now a single-key card (`scheduled`, `in_review`)
+centres its key vertically (measured `keyVCenterOffset: 0`) while a two-line card centres
+its key+caption block — each card balanced. (2) *"Proposed by 40034d58… should be a proper
+name."* The maker/checker `nameOf` fell back to a raw `uid.slice(0,8)…` when a profile had
+no `full_name`; changed it to return `null` and the card now renders a localized
+`chain.unknownUser` ("Unknown user" / "مستخدم غير معروف") — never a raw uid. (The
+governed lifecycle labels — state keys, actors, guards, triggers, side effects — stay raw
+technical identifiers per the owner: those are the state machine, not UI copy.)
+
 **Bounded English on the error path.** The action files return neutral English error
 strings (`NEUTRAL_LOAD_ERROR` etc.). Rather than touch the governed, spec-asserted
 `actions.ts`, the forms display those strings as-is — the one bounded English path;

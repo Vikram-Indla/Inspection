@@ -80,7 +80,9 @@ export default function WfDeck({ payload, strings, locale }: {
                       className={`${styles.state} ${selectedState === s.key ? styles.stateSelected : ""}`}
                     >
                       <Text as="span" role="mono">{s.key}</Text>
-                      <Text as="span" role="label" tone={s.initial ? "accent" : s.terminal ? "success" : "muted"}>{s.initial ? d.initial : s.terminal ? d.terminal : " "}</Text>
+                      {s.initial || s.terminal ? (
+                        <Text as="span" role="label" tone={s.initial ? "accent" : "success"}>{s.initial ? d.initial : d.terminal}</Text>
+                      ) : null}
                     </button>
                     {connectsAfter(idx) ? (
                       <span className={styles.arrow}><Icon name="nextPage" size="sm" mirrored={locale === "ar"} /></span>
