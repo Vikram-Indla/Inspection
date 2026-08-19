@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-162.** Take T-163.
+implements the reservation. **Highest id in use: T-163.** Take T-164.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,51 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-163 · `/admin/operations` (System operations & resilience) rebuilt on SAQEEL
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-19-T-163-admin-operations-migration](sessions/2026-08/2026-08-19-T-163-admin-operations-migration.md)
+
+The MVP3 control-plane console — three health StatCards (endpoint contracts /
+open errors / published flags), an error queue with idempotent retry, feature-flag
+versions with maker-checker publish, a policy-hold notice. Legacy `AdminShell` +
+`panel`/`badge`/`alert`/`kpi-value`/`t-caption`/raw `<table>` + inline `style={{
+padding/marginBlockStart }}` on every block (the "no spacing"); **every string the
+retiring `t("mvp3.operations.…","English")` fallback — no keys in any JSON**; the
+whole page one 40-line inline `page.tsx`. Delivered P0/P1 critique + widget mockup,
+approved (owner: "add a chart genuinely, not enforce"). Rebuilt thin `page.tsx`
+(40→9) → `features/admin-operations/{queries,types,strings}` (the 3 reads keeping
+`errorsError`/`flagsError`/`endpointsError` + derived counts + `errorStatusCounts`)
++ `components/sections/admin-operations/` (screen · error-queue · flag-versions ·
+ops-action-form · skeleton) + new bilingual `adminOperations` namespace + framed
+`loading.tsx`. `ShellPageFrame` + `StatCard`×3 (one grid, one rhythm) + two
+`DataTable`s + `StatusPill` (governed error/flag status tones) + info-badge in the
+frame actions. **Chart (genuine, not forced):** an error-status distribution
+`BarSeries` (RTL-aware) rendered **only when the source is available and non-empty**
+— with zero records it's correctly hidden. **Governed actions:** operations-local
+`actions.ts` wrappers call the same `mvp3_request_error_retry` /
+`mvp3_publish_feature_flag` RPCs but return **codes** mapped bilingually (the shared
+`mvp3-actions.ts` / `Mvp3ActionForm` left untouched — `/admin/devices` +
+`/admin/security-access` still use them). **No regression:**
+`admin-platform-design-contract` (":12 source failures distinct") re-pointed page →
+`queries.ts` (`errorsError`/`flagsError`/`endpointsError`) + en JSON ("never shown
+as zero or empty", "This source is not available…"); `mvp3-enterprise-contract`
+(":113 Arabic fallbacks") re-pointed — migrated routes leave the legacy `mvp3.`
+sweep, so it now sweeps only `security-access`+`devices` (45 keys, floor `>40`) and
+asserts the new `admin-operations` en/ar namespace parity; retrofit heading title
+kept **exactly** "System operations and resilience" + 3 `main h2`. typecheck/lint
+clean, typography **PASSED (−85)**, date-inputs PASSED, v5 **60** (adds 0),
+test:static **408/33 exact baseline** (both re-points pass). **Verified live**
+(admin signed in): framed en + ar, breadcrumb/title/badge/subtitle, 3 StatCards,
+both table sections' empty states (**genuine zero — no source-failure notice**, the
+truth model working), **axe 0** (26 passes), 200% zoom + Arabic-RTL + Arabic/en
+mobile 375px **0 overflow**, no console errors. **Env note:** the seeded DB has no
+`mvp3_error_queue`/`feature_flags`/endpoint rows for this admin, so the populated
+tables, retry/publish forms, and the chart couldn't be exercised — the chart is
+correctly hidden at zero data and uses the `BarSeries` API verified live on
+`/admin/gis` (T-159).
+
+---
 
 ### T-162 · `/admin/delegation` (Delegation & governed-role hand-off) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`

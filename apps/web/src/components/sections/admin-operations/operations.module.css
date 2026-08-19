@@ -1,0 +1,34 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--sqx-space-3);
+}
+
+.actionForm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.statusCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+}
+
+.nameCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}

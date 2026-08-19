@@ -7,6 +7,7 @@ import arAdminDelegation from "./locales/ar/admin-delegation.json";
 import arAdminFactoryData from "./locales/ar/admin-factory-data.json";
 import arAdminGis from "./locales/ar/admin-gis.json";
 import arAdminNotifications from "./locales/ar/admin-notifications.json";
+import arAdminOperations from "./locales/ar/admin-operations.json";
 import arAdminIntegrations from "./locales/ar/admin-integrations.json";
 import arAdminSenaiData from "./locales/ar/admin-senai-data.json";
 import arAdminPlanningExpiry from "./locales/ar/admin-planning-expiry.json";
@@ -45,6 +46,7 @@ import enAdminDelegation from "./locales/en/admin-delegation.json";
 import enAdminFactoryData from "./locales/en/admin-factory-data.json";
 import enAdminGis from "./locales/en/admin-gis.json";
 import enAdminNotifications from "./locales/en/admin-notifications.json";
+import enAdminOperations from "./locales/en/admin-operations.json";
 import enAdminIntegrations from "./locales/en/admin-integrations.json";
 import enAdminSenaiData from "./locales/en/admin-senai-data.json";
 import enAdminPlanningExpiry from "./locales/en/admin-planning-expiry.json";
@@ -86,6 +88,7 @@ export type Messages = {
   readonly adminFactoryData: typeof enAdminFactoryData;
   readonly adminGis: typeof enAdminGis;
   readonly adminNotifications: typeof enAdminNotifications;
+  readonly adminOperations: typeof enAdminOperations;
   readonly adminSenaiData: typeof enAdminSenaiData;
   readonly adminPlanningExpiry: typeof enAdminPlanningExpiry;
   readonly adminPlanningLookups: typeof enAdminPlanningLookups;
@@ -118,8 +121,8 @@ export type Messages = {
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { adminComplianceRequests: enAdminComplianceRequests, adminDelegation: enAdminDelegation, adminIntegrations: enAdminIntegrations, adminFactoryData: enAdminFactoryData, adminGis: enAdminGis, adminNotifications: enAdminNotifications, adminSenaiData: enAdminSenaiData, adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, adminPlanningLookups: enAdminPlanningLookups, adminPlanningStatus: enAdminPlanningStatus, adminRiskModels: enAdminRiskModels, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldCompleted: enFieldCompleted, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, fieldNotifications: enFieldNotifications, fieldReports: enFieldReports, fieldSettings: enFieldSettings, fieldUnregistered: enFieldUnregistered, fieldVisits: enFieldVisits, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
-  ar: { adminComplianceRequests: arAdminComplianceRequests, adminDelegation: arAdminDelegation, adminIntegrations: arAdminIntegrations, adminFactoryData: arAdminFactoryData, adminGis: arAdminGis, adminNotifications: arAdminNotifications, adminSenaiData: arAdminSenaiData, adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, adminPlanningLookups: arAdminPlanningLookups, adminPlanningStatus: arAdminPlanningStatus, adminRiskModels: arAdminRiskModels, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldCompleted: arFieldCompleted, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, fieldNotifications: arFieldNotifications, fieldReports: arFieldReports, fieldSettings: arFieldSettings, fieldUnregistered: arFieldUnregistered, fieldVisits: arFieldVisits, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
+  en: { adminComplianceRequests: enAdminComplianceRequests, adminDelegation: enAdminDelegation, adminIntegrations: enAdminIntegrations, adminFactoryData: enAdminFactoryData, adminGis: enAdminGis, adminNotifications: enAdminNotifications, adminOperations: enAdminOperations, adminSenaiData: enAdminSenaiData, adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, adminPlanningLookups: enAdminPlanningLookups, adminPlanningStatus: enAdminPlanningStatus, adminRiskModels: enAdminRiskModels, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, fieldCompleted: enFieldCompleted, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, fieldNotifications: enFieldNotifications, fieldReports: enFieldReports, fieldSettings: enFieldSettings, fieldUnregistered: enFieldUnregistered, fieldVisits: enFieldVisits, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
+  ar: { adminComplianceRequests: arAdminComplianceRequests, adminDelegation: arAdminDelegation, adminIntegrations: arAdminIntegrations, adminFactoryData: arAdminFactoryData, adminGis: arAdminGis, adminNotifications: arAdminNotifications, adminOperations: arAdminOperations, adminSenaiData: arAdminSenaiData, adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, adminPlanningLookups: arAdminPlanningLookups, adminPlanningStatus: arAdminPlanningStatus, adminRiskModels: arAdminRiskModels, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, fieldCompleted: arFieldCompleted, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, fieldNotifications: arFieldNotifications, fieldReports: arFieldReports, fieldSettings: arFieldSettings, fieldUnregistered: arFieldUnregistered, fieldVisits: arFieldVisits, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {

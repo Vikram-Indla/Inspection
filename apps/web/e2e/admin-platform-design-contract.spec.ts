@@ -10,12 +10,13 @@ const read = (file: string) => fs.readFileSync(path.join(repoRoot, file), "utf8"
 
 test.describe("admin platform design truth contract", () => {
   test("operations keeps source failures distinct from genuine zero and empty states", () => {
-    const source = read("apps/web/src/app/(app)/admin/operations/page.tsx");
-    expect(source).toContain("errorsError");
-    expect(source).toContain("flagsError");
-    expect(source).toContain("endpointsError");
-    expect(source).toContain("never shown as zero or empty");
-    expect(source).toContain("This source is not available. Records may exist that cannot be shown.");
+    const queries = read("apps/web/src/features/admin-operations/queries.ts");
+    const copy = read("apps/web/src/i18n/locales/en/admin-operations.json");
+    expect(queries).toContain("errorsError");
+    expect(queries).toContain("flagsError");
+    expect(queries).toContain("endpointsError");
+    expect(copy).toContain("never shown as zero or empty");
+    expect(copy).toContain("This source is not available. Records may exist that cannot be shown.");
   });
 
   test("notification creation fails closed when the governed role catalogue is unavailable", () => {

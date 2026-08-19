@@ -1,6 +1,31 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-19` · `Updated by: T-162 — the /admin/delegation migration`
+`Last updated: 2026-08-19` · `Updated by: T-163 — the /admin/operations migration`
+
+## The `/admin` migration: the system-operations console + a genuine chart (2026-08-19)
+
+**T-163 migrated `/admin/operations`** — the MVP3 control-plane console (three
+health StatCards, an error queue with idempotent-retry, feature-flag versions with
+maker-checker publish, a policy-hold notice). This one carried two wrinkles worth
+remembering. First, **every string was the retiring `t("mvp3.operations.…",
+"English")` fallback** — the keys live nowhere but `lib/i18n.ts`, so the route was
+English-only; it now has a proper bilingual `adminOperations` namespace with
+typecheck-enforced en/ar parity. Second, the retry/publish actions ran through the
+**shared** `mvp3-actions.ts` + `Mvp3ActionForm`, which `/admin/devices` and
+`/admin/security-access` still use — so those were left untouched and operations got
+its own `actions.ts` wrappers calling the same governed RPCs but returning codes,
+plus a SAQEEL action form. The owner asked for a chart "genuinely, not enforced":
+the error queue's governed `status` column became an **error-status distribution
+`BarSeries`** that renders only when the source is available and non-empty — at the
+current genuine-zero seed state it's correctly absent.
+
+**A note on legacy-contract decay.** The `mvp3-enterprise-contract` key-sweep
+(":113") counted `t("mvp3.…")` keys across four admin pages against a `>50` floor.
+As routes migrate off that fallback (integrations in T-156, operations now), the
+sweep shrinks; it's re-pointed to the two still-legacy routes with the floor lowered
+to `>40`, and operations' Arabic guarantee is transferred to a namespace-parity
+assertion. When `devices`/`security-access` migrate, this test's premise fully
+dissolves and it should be retired.
 
 ## The `/admin` migration: the delegation console (2026-08-19)
 
