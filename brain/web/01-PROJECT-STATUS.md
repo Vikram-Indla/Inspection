@@ -1,6 +1,35 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-19` · `Updated by: T-164 — the /admin/enforcement-recommendations migration`
+`Last updated: 2026-08-19` · `Updated by: T-165 — the /admin/workflows migration`
+
+## The `/admin` migration: the workflow builder + an honest lifecycle canvas (2026-08-19)
+
+**T-165 migrated `/admin/workflows`** — the largest admin surface yet: a workflow
+lifecycle builder (version cards, a state/transition canvas, a transition inspector, a
+VAL-01..06 validation rail, the SLA model, and the maker-checker publish flow). Three
+things make it notable. First, it had **zero Arabic** — every string was an
+English-only `t(key,"English")` fallback — now a full bilingual `adminWorkflows`
+namespace. Second, the owner's emoji ask: **five emoji were used as icons** (`🔀 ⛔ ✕ ✓
+⚠`) plus a hand-drawn `<svg>` chevron — all replaced with icon-registry glyphs and
+`StatusPill`s, dropping the v5 debt 60 → 56. Third, the 280-line `WfDeck` was split into
+a canvas orchestrator + inspector + rail under the 200-line ceiling, with the builder
+logic (`normalize`/`validate`, keyboard roving) carried across unchanged and the four
+governed action files left byte-for-byte.
+
+**The lifecycle canvas was genuinely wrong, and the fix is worth remembering.** On
+review the owner flagged it as misaligned. The old lane ordered states by raw BFS
+distance and drew a chevron between *every* adjacent card — so it showed
+`in_review → cancelled → closed` arrows that don't exist, while the real happy-path edge
+`in_review → closed` was pushed into the branch strip. For a tool that publishes state
+machines, a diagram implying transitions the machine lacks is the worst kind of wrong.
+The fix: build the lane as the real **spine-walk** (follow transitions from the initial
+state, prefer the non-terminal successor, append off-spine states last) and draw a
+chevron **only where a real transition connects two adjacent cards**. Now the happy path
+reads straight, branch terminals sit at the end without fake arrows, and the branch strip
+holds the genuine branches. Verified live in both directions (the lane mirrors correctly
+in RTL). A reminder that a faithful chrome migration still has to check that the
+*rendered* result tells the truth — re-skinning a broken diagram just makes a prettier
+broken diagram.
 
 ## The `/admin` migration: the enforcement-recommendation review queue (2026-08-19)
 

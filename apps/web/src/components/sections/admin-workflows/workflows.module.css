@@ -1,0 +1,182 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.versionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.cardHeadRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sqx-space-3);
+}
+
+.headActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.deckGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  gap: var(--sqx-space-4);
+  align-items: start;
+}
+
+@media (max-width: 68rem) {
+  .deckGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deckMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
+.canvas {
+  overflow-x: auto;
+  padding-block: var(--sqx-space-2);
+}
+
+.lane {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sqx-space-2);
+  min-inline-size: max-content;
+}
+
+.laneItem {
+  display: contents;
+}
+
+.state {
+  flex: none;
+  inline-size: 8.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  align-items: center;
+  padding: var(--sqx-space-3) var(--sqx-space-2);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-md);
+  background: var(--sqx-surface-raised);
+  color: inherit;
+  cursor: pointer;
+}
+
+.state:hover {
+  border-color: var(--sqx-border-strong);
+}
+
+.stateSelected {
+  border-color: var(--sqx-border-strong);
+  background: var(--sqx-surface-subtle);
+}
+
+.arrow {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--sqx-text-muted);
+}
+
+.branches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+  margin-block-start: var(--sqx-space-3);
+  padding-block-start: var(--sqx-space-3);
+  border-block-start: var(--sqx-border-width-hair) dashed var(--sqx-border-subtle);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-1);
+  padding: var(--sqx-space-1) var(--sqx-space-2);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-pill);
+  background: var(--sqx-surface-raised);
+  color: inherit;
+  cursor: pointer;
+  min-inline-size: 0;
+}
+
+.chip:hover {
+  border-color: var(--sqx-border-strong);
+}
+
+.inspectorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--sqx-space-3);
+}
+
+.fieldStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.validationRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.stateRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+}
+
+.grow {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: start;
+  min-inline-size: 0;
+}

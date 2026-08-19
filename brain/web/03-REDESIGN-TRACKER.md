@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-164.** Take T-165.
+implements the reservation. **Highest id in use: T-165.** Take T-166.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,57 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-165 · `/admin/workflows` (Workflow builder) rebuilt on SAQEEL + lifecycle-canvas fix
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`
+`record:` [2026-08-19-T-165-admin-workflows-migration](sessions/2026-08/2026-08-19-T-165-admin-workflows-migration.md)
+
+The biggest admin surface so far — a workflow lifecycle builder (canvas + branch
+strip + transition inspector + validation rail + SLA model + maker-checker publish).
+Legacy `AdminShell` + old `EmptyState` + a hand-drawn `<svg>` chevron (rule 8) +
+`panel`/`badge`/`alert`/`t-caption`/`id-code`/`select`/`sq-field`/`sq-input`/`btn`/
+`check`/`exc` + heavy inline styles + raw `<table>`s; **~80 English-only
+`t(key,"English")` fallbacks — zero Arabic** (rule 15); `page.tsx` ~210 + `WfDeck`
+~280 (over the ceiling); `payload as {…}` casts. Owner also flagged **five
+emoji-as-icon** (`🔀 ⛔ ✕ ✓ ⚠`). Delivered P0/P1 critique + widget, approved. Rebuilt
+thin `page.tsx` (210→9) → `features/admin-workflows/{queries,types,strings}` +
+`components/sections/admin-workflows/` (screen · version-card · **wf-deck split into
+canvas-orchestrator + wf-inspector + wf-rail** · sla-table · wf-forms · skeleton) +
+new bilingual `adminWorkflows` namespace (en **and** ar) + framed `loading.tsx`.
+`ShellPageFrame` + `Card` + `StatusPill` + `DataTable` + `Choice`/`Textarea`/`Button`
++ saqeel `EmptyState`; `formatDateTime` (Asia/Riyadh); module CSS is layout + tokens
+only (no shadow, no typography). **All emoji/`<svg>` → real icons:** `🔀`→`workflow`,
+`⛔`→`restricted`, `✕`→danger `StatusPill`, `✓`→success `StatusPill`, `⚠`→warning
+`StatusPill`, the `<svg>` chevron→`nextPage` icon, validation marks→`selected`/`dismiss`
+icons. **Governance untouched:** the 4 action files (`actions.ts` incl. the
+`NEUTRAL_LOAD_ERROR` a spec asserts, `sla`/`task`/`transition-actions`), `layout.tsx`,
+and `lib/workflow/{normalize,validate}` all byte-for-byte; the maker-checker SoD,
+distinct-approver publish, `NotYetBoundary` sim, and "Not configured" SLA states carry
+across. **Lifecycle-canvas fix (owner: "misalignment, doesn't look good"):** the old
+lane drew a chevron between every adjacent card and ordered by raw BFS distance, so it
+showed `in_review → cancelled → closed` arrows that **don't exist** while exiling the
+real `in_review → closed` edge to the branch strip. Rebuilt the lane as the real
+**spine-walk** (follow transitions from the initial state, prefer the non-terminal
+successor, append off-spine states last) and draw a chevron **only where a real
+transition connects two adjacent cards** — now `draft → scheduled → in_review → closed`
+is one honest path, `cancelled` sits at the end (no fake arrow), `scheduled → cancelled`
+is the branch chip; terminal captions toned. **No regression:** `mvp3-enterprise`
+(existsSync page), `neutral-error-sweep` (reads untouched `actions.ts`),
+`mvp3-retrofit` (live nav — title "Workflow builder" + `main h2` kept),
+`shell-navigation` (nav label) all unaffected — no re-point needed. **Deleted**
+`WfDeck.tsx`, `Controls.tsx`, `workflow-builder.module.css`. typecheck/lint clean,
+typography **PASSED (−123)**, date-inputs PASSED, v5 **56** (down from 60 — the emoji/
+svg removed; workflows adds 0), test:static **408/33 exact baseline**. **Verified live**
+(admin; a throwaway `config_versions` workflow draft seeded via SQL, removed after):
+the full builder — version card (object/status/**Approve-and-publish**/maker-checker
+chain), the **corrected lifecycle**, inspector (emoji-free "No actor set"/idempotent
+pills), validation rail (`selected`/`dismiss` icons), states rail, SLA + empty states —
+**axe 0** (31 passes), **200% zoom + Arabic-RTL (mirrored lane, left chevrons) +
+light + mobile 375px 0 overflow**. **Note:** action-layer error strings stay English
+(the governed, spec-asserted `actions.ts` is untouched) — the one bounded English path;
+all static UI is bilingual.
+
+---
 
 ### T-164 · `/admin/enforcement-recommendations` (Enforcement recommendation review) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2.5h`

@@ -1,0 +1,100 @@
+{
+  "breadcrumb": {
+    "label": "Workflow builder",
+    "root": "Workflow settings",
+    "leaf": "Lifecycles"
+  },
+  "title": "Workflow builder",
+  "subtitle": "States, transitions, guards and SLA · workflow_admin only · versioned.",
+  "banner": {
+    "title": "Only approved changes.",
+    "body": "Transitions are checked against the published version only — there is no status bypass. Changes go from draft to publish, and the approver must be a different person, enforced by a database rule. Published versions cannot be changed. Risk and SLA values live in the engine settings and cannot be edited here."
+  },
+  "loadError": "The workflow settings could not be loaded. Nothing was changed. Try again.",
+  "empty": {
+    "title": "No workflow settings published",
+    "body": "Workflow state machines are versioned settings."
+  },
+  "object": "Object",
+  "status": {
+    "published": "Published",
+    "draft": "Draft",
+    "archived": "Archived"
+  },
+  "sod": {
+    "title": "You proposed this — a distinct checker must approve",
+    "desc": "You proposed this draft (the maker). A different checker must approve it — the database enforces this separation of duties."
+  },
+  "chain": {
+    "proposed": "Proposed by",
+    "approved": "approved by",
+    "distinct": "distinct approver",
+    "pending": "awaiting a distinct approver (maker-checker, enforced by the database)"
+  },
+  "deck": {
+    "graph": "Lifecycle",
+    "branches": "Branch transitions",
+    "inspector": "Transition inspector",
+    "transition": "Transition",
+    "states": "States",
+    "validation": "Validation",
+    "passed": "valid",
+    "failed": "resolve before publishing",
+    "initial": "initial",
+    "terminal": "terminal",
+    "actor": "Actor",
+    "noActor": "No actor set",
+    "allowedRole": "Allowed role",
+    "trigger": "Trigger",
+    "requires": "Requires",
+    "guards": "Guards",
+    "sideEffects": "Side effects",
+    "idempotent": "idempotent",
+    "noIdempotencyKey": "no idempotency key",
+    "selectHint": "Select a state to filter its outgoing transitions; select a transition row to inspect it.",
+    "selectTransition": "Select a transition from the table below to inspect its role, trigger, guards and side effects.",
+    "noTransitions": "No outgoing transitions from this state.",
+    "authoredElsewhere": "Read-only view of the governed payload. Change it by proposing a draft and editing the state-machine payload below — publishing needs a distinct approver.",
+    "none": "—"
+  },
+  "propose": {
+    "label": "New version label",
+    "placeholderSuffix": "-next",
+    "proposing": "Proposing…",
+    "button": "Propose draft from this version",
+    "created": "Draft created"
+  },
+  "editor": {
+    "payloadLabel": "State machine payload (object · states[] · transitions[])",
+    "saving": "Saving…",
+    "save": "Save draft",
+    "saved": "Saved"
+  },
+  "publish": {
+    "publishing": "Publishing…",
+    "approve": "Approve and publish"
+  },
+  "sim": {
+    "title": "Simulation and replay history",
+    "desc": "The graph and validation ledger above are live. Saved simulation and replay runs are not available, so no run history is shown.",
+    "pre1": "A stored set of simulation inputs",
+    "pre2": "Saved simulation runs with an audit trail",
+    "notYet": "Not available yet",
+    "whyPrereq": "Why / prerequisites"
+  },
+  "sla": {
+    "title": "SLA model",
+    "loadError": "The SLA calendars could not be loaded. Nothing was changed.",
+    "none": "No SLA calendar is set up. Deadlines, working days and escalation are governed inputs — until one is approved, timers stay pending and no deadline is shown.",
+    "calendar": "Calendar",
+    "workingDays": "Working days",
+    "hours": "Working hours",
+    "timezone": "Timezone",
+    "activation": "Activation",
+    "authorized": "Approved",
+    "pending": "Not approved",
+    "note": "Deadlines are computed only from an approved working calendar. There is no scheduler: a breach is never triggered on its own, and no default duration is assumed."
+  },
+  "notConfigured": "Not configured",
+  "loading": "Loading workflows"
+}
