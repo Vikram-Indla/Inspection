@@ -1,0 +1,41 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.commandForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+.cellStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.rowList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.commandRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-2) var(--sqx-space-3);
+}

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-166.** Take T-167.
+implements the reservation. **Highest id in use: T-167.** Take T-168.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,50 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-167 · `/admin/security-access` + `/admin/devices` rebuilt on SAQEEL (MVP3 control-plane closed)
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 3h`
+`record:` [2026-08-19-T-167-security-access-devices-migration](sessions/2026-08/2026-08-19-T-167-security-access-devices-migration.md)
+
+The last two MVP3 control-plane consoles — access certification + evidence grants, and
+device trust + command evidence — migrated together, **completing the 4-route set**
+(integrations T-156, operations T-163, these T-167). Both were the same legacy pattern:
+`AdminShell` + `panel`/`badge`/`alert`/`kpi-value`/`t-caption`/raw `<table>`/`sq-grid` +
+inline styles; **English-only `t("mvp3.…","English")` fallbacks — zero Arabic** (rule 15);
+WEB-015 raw `<select>`+`<textarea>`; the shared legacy `Mvp3ActionForm`. **No emoji.**
+Rebuilt both thin (`page.tsx` 29→10 / devices similar) → `features/admin-{security-access,
+devices}/{queries,types,strings}` + `components/sections/admin-{security-access,devices}/`
+(screen · decide/command form · skeleton · module.css) + two new bilingual namespaces
+(`adminSecurityAccess`, `adminDevices`, en **and** ar) + framed `loading.tsx`.
+`ShellPageFrame` + `StatCard` + `DataTable` + `StatusPill` + `SaqeelSelect`/`Textarea`/
+`Button` forms; `formatDate`/`formatDateTime` (Asia/Riyadh); grant state + review overdue
+computed server-side. **Governed actions decoupled + bilingual:** route-local `actions.ts`
+call the same `mvp3_decide_access_review` / `mvp3_issue_device_command` RPCs but return
+**codes** (maker-checker "cannot review own", reason≥8, governed device commands, RLS
+authority all byte-for-byte). **Retired the shared plumbing:** with these the last two
+users gone, **deleted** `Mvp3ActionForm.tsx` + `mvp3-actions.ts` (zero imports; the lint
+baseline dropped 269). Every governed boundary preserved verbatim ("Navigation is not
+authorization", "Holdings are not effective-permission proof", purpose+expiry grants, "a
+queued command is not a completed wipe until acknowledged"). **No regression:**
+`mvp3-enterprise` (":113" key-sweep) **rewritten** — all four control-plane routes are off
+the legacy `t("mvp3.…")` pattern, so the obsolete `lib/i18n.ts` sweep became an en/ar
+**parity check** across the four namespaces (matching key structure + real Arabic script);
+`field-settings-contract` re-pointed (read the deleted `mvp3-actions.ts` → the new
+`devices/actions.ts`: `issueDeviceCommand` + `revalidatePath("/admin/devices")` +
+`mvp3_issue_device_command`); `mvp3-enterprise` existsSync (thin pages) + `shell-navigation`
+(nav labels) unaffected; the live `mvp3-retrofit` heading titles kept **exact** ("Security
+posture and access review", "Trusted device and offline administration"). typecheck/lint
+clean (**lint −269** from the deletions), typography PASSED, date-inputs PASSED, v5 **55**
+(adds 0), test:static **408/33 exact baseline** (rewritten + re-pointed specs pass). **Verified
+live** (admin): both framed en + ar with exact titles, boundary/rule notices verbatim,
+security's 3 StatCards + certification queue, devices' trust register + "N trusted" pill +
+command evidence, empty states, **axe 0** (26 / 25 passes), 0 overflow desktop + Arabic
+mobile 375px (stat grid stacks, dir=rtl mirrored). **Env note:** the seed has no reviews/
+grants/devices for this admin (genuine zero), so the decide/command forms + populated tables
+couldn't be exercised — they follow the verified `SaqeelSelect`/`Textarea`/`Button` +
+code-action pattern.
+
+---
 
 ### T-166 · `/admin/audit` (Inspection Flight Recorder) rebuilt on SAQEEL
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`

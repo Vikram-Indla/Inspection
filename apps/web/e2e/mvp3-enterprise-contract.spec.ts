@@ -110,24 +110,23 @@ test.describe("MVP3 exact control and enterprise foundation", () => {
     for (const route of routes) expect(fs.existsSync(path.join(root, route)), route).toBe(true);
   });
 
-  test("ships reviewed Arabic fallbacks for every additive MVP3 control-plane key", () => {
-    // `integrations` (T-156) and `operations` (T-163) have migrated off the
-    // legacy `t("mvp3.…","English")` fallback onto proper en/ar namespaces, so
-    // they no longer contribute keys here. The remaining legacy routes keep the
-    // per-key Arabic-fallback guarantee; the migrated routes' Arabic coverage is
-    // now enforced by full en/ar JSON parity (typecheck) plus the parity check
-    // below.
-    const pages = ["security-access", "devices"]
-      .map(name => fs.readFileSync(path.join(root, `apps/web/src/app/(app)/admin/${name}/page.tsx`), "utf8"))
-      .join("\n");
-    const i18n = fs.readFileSync(path.join(root, "apps/web/src/lib/i18n.ts"), "utf8");
-    const keys = [...pages.matchAll(/t\("(mvp3\.[^"]+)"/g)].map(match => match[1]);
-    expect(keys.length).toBeGreaterThan(40);
-    for (const key of new Set(keys)) expect(i18n, key).toContain(`"${key}":`);
-
-    const enOps = fs.readFileSync(path.join(root, "apps/web/src/i18n/locales/en/admin-operations.json"), "utf8");
-    const arOps = fs.readFileSync(path.join(root, "apps/web/src/i18n/locales/ar/admin-operations.json"), "utf8");
-    expect(enOps).toContain('"title": "System operations and resilience"');
-    expect(arOps).toContain('"title":');
+  test("ships reviewed Arabic copy for every additive MVP3 control-plane surface", () => {
+    // All four MVP3 control-plane routes — integrations (T-156), operations
+    // (T-163), security-access + devices (T-167) — have migrated off the legacy
+    // `t("mvp3.…","English")` fallback onto proper `en`/`ar` namespaces. The
+    // old per-key sweep of `lib/i18n.ts` no longer has any keys to sweep, so the
+    // Arabic guarantee is transferred here: every control-plane namespace must
+    // ship both an `en` and an `ar` JSON with an identical key structure (a real
+    // translation, not an English placeholder), which en/ar typecheck parity
+    // already enforces and this asserts directly.
+    const namespaces = ["admin-integrations", "admin-operations", "admin-security-access", "admin-devices"];
+    const keysOf = (json: string): string[] => [...json.matchAll(/^\s{2}"([^"]+)":/gm)].map(match => match[1]).sort();
+    for (const ns of namespaces) {
+      const en = fs.readFileSync(path.join(root, `apps/web/src/i18n/locales/en/${ns}.json`), "utf8");
+      const ar = fs.readFileSync(path.join(root, `apps/web/src/i18n/locales/ar/${ns}.json`), "utf8");
+      expect(keysOf(ar), `${ns} en/ar top-level keys must match`).toEqual(keysOf(en));
+      // Arabic copy is real (contains Arabic-script characters), not an English echo.
+      expect(ar, `${ns} ar must contain Arabic script`).toMatch(/[؀-ۿ]/);
+    }
   });
 });

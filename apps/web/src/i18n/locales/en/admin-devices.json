@@ -1,0 +1,53 @@
+{
+  "breadcrumb": { "label": "Trusted devices", "administration": "Administration", "devices": "Trusted devices" },
+  "title": "Trusted device and offline administration",
+  "controlledRows": "{count} controlled rows",
+  "registerUnavailable": "Register not available",
+  "rule": {
+    "title": "Only trusted enrolled devices may open official inspection packages.",
+    "body": "A queued command is not a completed wipe until the device acknowledges it."
+  },
+  "schemaPending": "This data is unavailable in this environment. Nothing is inferred.",
+  "register": {
+    "title": "Device trust register",
+    "trusted": "{count} trusted",
+    "unavailable": "Not available",
+    "device": "Device",
+    "assignee": "Assigned inspector",
+    "status": "Trust state",
+    "lastSeen": "Last seen",
+    "action": "Command",
+    "empty": "No enrolled devices visible to you.",
+    "never": "Never",
+    "unassigned": "unassigned",
+    "unverified": "unverified",
+    "mdm": "MDM {reference}"
+  },
+  "command": {
+    "command": "Command",
+    "commandPlaceholder": "Choose a command",
+    "suspend": "Suspend",
+    "resume": "Resume",
+    "expire_packages": "Expire packages",
+    "remote_wipe": "Remote wipe",
+    "reason": "Reason",
+    "reasonPlaceholder": "Recorded with the command (min 8 characters)",
+    "queue": "Queue command",
+    "queuing": "Queuing…"
+  },
+  "evidence": {
+    "title": "Command evidence",
+    "unavailable": "Command evidence is not available. No command state is inferred.",
+    "empty": "No commands visible to you."
+  },
+  "result": {
+    "session_expired": "Your session has ended. Sign in again.",
+    "invalid_request": "Select a governed command and provide a meaningful reason.",
+    "not_authorized": "You do not have permission to perform this action.",
+    "device_not_found": "The device no longer exists or is outside your scope.",
+    "invalid": "The requested command or reason is invalid. Nothing was changed.",
+    "write_failed": "The change could not be saved. Nothing was changed. Try again.",
+    "queued": "Command queued. Completion awaits a genuine device acknowledgement."
+  },
+  "loading": "Loading trusted devices"
+}

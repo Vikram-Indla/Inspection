@@ -108,9 +108,10 @@ test.describe("PLAN v7 item 3 Field Settings + Trusted Devices contract", () => 
     expect(originalControlPlane).not.toContain("mvp3_devices_self_enroll_insert");
 
     const adminDevices = src("src/app/(app)/admin/devices/page.tsx");
-    const adminActions = src("src/app/(app)/admin/mvp3-actions.ts");
-    expect(adminDevices).toContain('current="/admin/devices"');
+    const adminActions = src("src/app/(app)/admin/devices/actions.ts");
     expect(adminActions).toContain("issueDeviceCommand");
+    expect(adminActions).toContain('revalidatePath("/admin/devices")');
+    expect(adminActions).toContain('sb.rpc("mvp3_issue_device_command"');
     expect(adminDevices).not.toContain("selfEnrollFieldDevice");
     expect(adminActions).not.toContain("selfEnrollFieldDevice");
   });

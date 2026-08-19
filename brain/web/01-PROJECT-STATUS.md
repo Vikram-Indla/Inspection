@@ -1,6 +1,30 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-19` · `Updated by: T-166 — the /admin/audit migration`
+`Last updated: 2026-08-19` · `Updated by: T-167 — the /admin/security-access + /admin/devices migration`
+
+## The `/admin` migration: the MVP3 control plane is closed, shared plumbing retired (2026-08-19)
+
+**T-167 migrated the last two MVP3 control-plane consoles together** —
+`/admin/security-access` (access certification + evidence grants) and `/admin/devices`
+(device trust + governed commands) — completing the four-route set (integrations T-156,
+operations T-163, these). Both were the same operations-era legacy pattern, so the
+migration itself was routine (thin pages → `features/*` + section directories +
+`StatCard`/`DataTable`/`StatusPill`; two bilingual namespaces; route-local governed action
+wrappers returning codes). The notable part is the **cleanup that closing the set
+unlocked**:
+
+- **Retired the shared action plumbing.** `Mvp3ActionForm.tsx` + `mvp3-actions.ts` were used
+  only by these two routes (operations already had its own local wrappers). With both
+  migrated, they had zero importers and were deleted — the lint baseline fell by 269.
+- **Rewrote an obsolete contract instead of lowering it.** The `mvp3-enterprise` key-sweep
+  counted legacy `t("mvp3.…")` keys and checked each had an Arabic fallback in `lib/i18n.ts`.
+  All four routes are now off that pattern, so the sweep had nothing left; it became an en/ar
+  **parity check** across the four namespaces (matching key structure + real Arabic script) —
+  the guarantee preserved, transferred to where the copy now lives.
+
+A reminder that finishing a *set* of routes is worth more than finishing one: it's what lets
+you delete the shared scaffolding and retire the contracts that only existed to police the
+legacy pattern.
 
 ## The `/admin` migration: the audit flight recorder, the highest-contract route (2026-08-19)
 

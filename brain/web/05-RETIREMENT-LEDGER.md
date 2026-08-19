@@ -201,12 +201,34 @@ spinner), `--sqx-mirror` (Icon, DateRangePicker, SegmentedControl).
 
 ---
 
+## T-161 … T-167 — the admin migrations delete their legacy components (2026-08-18 … 08-19)
+
+Each admin route migrated onto SAQEEL deleted the legacy component(s) it replaced,
+once zero imports remained:
+
+- **T-161** `/admin/notifications` — `NotificationRulesManager.tsx`.
+- **T-162** `/admin/delegation` — `DelegationForms.tsx`.
+- **T-164** `/admin/enforcement-recommendations` — `DecideForm.tsx` + `responsive.module.css`.
+- **T-165** `/admin/workflows` — `WfDeck.tsx` + `Controls.tsx` + `workflow-builder.module.css`.
+- **T-166** `/admin/audit` — `AuditReplayWorkspace.tsx` (and stopped consuming the frozen
+  `ar-*` block in `saqeel-runtime.css`).
+- **T-167** `/admin/security-access` + `/admin/devices` — the **shared** `components/
+  Mvp3ActionForm.tsx` + `app/(app)/admin/mvp3-actions.ts`. These were the MVP3 control-plane
+  action plumbing; with the last two consumer routes migrated they had **zero imports**, so
+  both were deleted (WEB-006 §4). The **ESLint baseline dropped by 269** as their pre-existing
+  legacy comments went with them.
+
+Ten files in total across the seven tasks. The shared MVP3 plumbing is the meaningful one:
+finishing the whole four-route control-plane set is what made it safe to remove.
+
+---
+
 ## Running total
 
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 36 |
+| Files deleted | 46 (10 from the T-161…T-167 admin migrations, incl. the shared `Mvp3ActionForm` + `mvp3-actions` plumbing) |
 | Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)**; **523 lines off the `/field` home — 3 components + its stylesheet — and 665 lines out of its route file (T-138)**; **480 lines off `/field/my-tasks` — 3 components + its stylesheet — and 595 lines out of its route file (T-140)**; **203 lines off `/field/drafts` — `FieldDraftList` + its stylesheet — and 139 lines out of its route file (T-141)**; **65 lines off `/field/establishments` — its stylesheet — and 391 lines out of its route file (T-142)**; **177 lines off `/field/establishments/unregistered` — the old form + `PackageTypeSelector` — and 83 lines out of its route file (T-143)**; **218 lines off `/field/visits` — `VisitsClient` + `data.ts` + stylesheet + `FieldCalendarBoard` — and 69 lines out of its two route files (T-144)**; **454 lines off `/field/notifications` — `NotificationAttentionCenter` + `notification-meta` + stylesheet — and 260 lines out of its two route files (T-145)**; **97 lines off `/field/completed` — `CompletedHistoryCache` + its stylesheet — and 181 lines out of its two route files (T-146)** |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 

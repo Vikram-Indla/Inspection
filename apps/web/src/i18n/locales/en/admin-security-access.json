@@ -1,0 +1,55 @@
+{
+  "breadcrumb": { "label": "Access review", "administration": "Administration", "audit": "Access review" },
+  "title": "Security posture and access review",
+  "badge": "purpose-bound evidence access",
+  "boundary": {
+    "title": "Navigation is not authorization.",
+    "body": "Access policy enforces every read and action. This screen exposes only the signed-in actor's readable scope."
+  },
+  "schemaPending": "This data is unavailable in this environment. Nothing is inferred.",
+  "stats": {
+    "roleHoldings": "Role holdings visible to you",
+    "notPermission": "Holdings are not an effective-permission proof.",
+    "openReviews": "Open reviews",
+    "overdue": "{count} overdue",
+    "activeEvidence": "Active evidence grants",
+    "expiry": "Every grant has purpose and expiry."
+  },
+  "reviews": {
+    "title": "Access certification queue",
+    "subject": "Subject",
+    "scope": "Scope and purpose",
+    "status": "Status",
+    "action": "Independent decision",
+    "empty": "No access reviews visible to you.",
+    "due": "Due {date}"
+  },
+  "status": { "open": "Open", "closed": "Closed" },
+  "decide": {
+    "decision": "Decision",
+    "decisionPlaceholder": "Choose a decision",
+    "retain": "Retain",
+    "revoke": "Revoke",
+    "reason": "Reason",
+    "reasonPlaceholder": "Recorded with the decision (min 8 characters)",
+    "record": "Record decision",
+    "recording": "Recording…"
+  },
+  "grants": {
+    "title": "Purpose-bound evidence grants",
+    "empty": "No evidence grants visible to you.",
+    "active": "Active",
+    "revoked": "Revoked",
+    "expired": "Expired"
+  },
+  "result": {
+    "session_expired": "Your session has ended. Sign in again.",
+    "invalid_request": "Select a decision and provide a meaningful reason.",
+    "not_authorized": "You do not have permission to perform this action.",
+    "cannot_review_own": "You cannot decide your own access review. Another security administrator must decide it.",
+    "review_not_open": "The access review changed or is no longer open. Reload and try again.",
+    "write_failed": "The change could not be saved. Nothing was changed. Try again.",
+    "recorded": "Access review decision recorded with actor and timestamp."
+  },
+  "loading": "Loading access review"
+}
