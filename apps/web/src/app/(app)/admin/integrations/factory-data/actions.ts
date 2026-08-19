@@ -139,7 +139,7 @@ export async function mutateFactoryMasterData(_: FactoryDataResult, formData: Fo
     const validFrom = String(formData.get("valid_from") ?? "").trim();
     const validTo = String(formData.get("valid_to") ?? "").trim();
     if (!title || !["license", "cr", "safety_cert", "layout", "other"].includes(docType)) return { error: "invalid_document" };
-    if (validFrom && validTo && validTo < validFrom) return { error: "Valid-to must be on or after valid-from." };
+    if (validFrom && validTo && validTo < validFrom) return { error: "invalid_valid_range" };
     ({ error } = await gate.sb.from("factory_documents").insert({ factory_id: factoryId, doc_type: docType, title, reference_no: referenceNo || null, valid_from: validFrom || null, valid_to: validTo || null, storage_path: null, uploaded_by: gate.user.id, source_system: "inspection_platform" }));
   } else if (operation === "representative") {
     const fullName = String(formData.get("full_name") ?? "").trim();
@@ -152,7 +152,7 @@ export async function mutateFactoryMasterData(_: FactoryDataResult, formData: Fo
     let annualCapacity: number | null = null;
     if (capacityRaw) {
       annualCapacity = Number(capacityRaw);
-      if (!Number.isFinite(annualCapacity) || annualCapacity < 0) return { error: "Annual capacity must be a non-negative number." };
+      if (!Number.isFinite(annualCapacity) || annualCapacity < 0) return { error: "invalid_capacity" };
     }
     ({ error } = await gate.sb.from("factory_products").insert({ factory_id: factoryId, name, hs_code: String(formData.get("hs_code") ?? "").trim() || null, unit: String(formData.get("unit") ?? "").trim() || null, annual_capacity: annualCapacity, is_primary: formData.get("is_primary") === "on", created_by: gate.user.id }));
   } else if (operation === "material") {

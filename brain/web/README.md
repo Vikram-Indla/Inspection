@@ -12,7 +12,7 @@ between them. What is not written here did not happen.
 1. **`01-PROJECT-STATUS.md`** — where the redesign stands right now.
 2. **`03-REDESIGN-TRACKER.md`** — the work board. Take the top unblocked item in
    NOW unless told otherwise.
-3. **The rule documents your task names** — `rules/WEB-000` … `WEB-014`.
+3. **The rule documents your task names** — `rules/WEB-000` … `WEB-015`.
    Read them before writing a line of code, not after review rejects the diff.
 4. **`04-COMPONENT-LEDGER.md`** — what the design system already provides. Never
    build something that exists.
@@ -40,6 +40,7 @@ between them. What is not written here did not happen.
 | [`rules/WEB-012-no-direct-dom-mutation.md`](rules/WEB-012-no-direct-dom-mutation.md) | **Never mutate the DOM directly.** The DOM is render output; changes flow through state and render, never through `innerHTML`/`appendChild`/`setAttribute`/`classList`/`style` writes |
 | [`rules/WEB-013-translation-resources.md`](rules/WEB-013-translation-resources.md) | **No hardcoded copy, ever.** Every user-visible word lives in `i18n/locales/{en,ar}/<namespace>.json` and is loaded by key; no namespace for the page means you create one in both locales, not that you inline the text |
 | [`rules/WEB-014-typography-contract.md`](rules/WEB-014-typography-contract.md) | **No typography in feature code, ever.** Nine roles; if it is a sentence it is `body`; text renders through `Text`/`Heading`/`Overline`/`Mono`/`Metric`; cards are `Card`/`CardHeader` with a fixed slot order. Ratcheted by `npm run gates:typography` |
+| [`rules/WEB-015-form-controls.md`](rules/WEB-015-form-controls.md) | **Design components only, every input placeholdered.** No raw `<input>`/`<select>`/`<textarea>` (hidden inputs excepted); dates use `DatePickerField`/`DatePicker`, never `<input type="date">` (removed from `TextInputType`); every input carries a real-example placeholder from i18n; a missing control is built in `components/saqeel/` first, never bridged with raw HTML. Ratcheted by `npm run gates:date-inputs` |
 
 **Task prompts are deliberately short.** Everything a prompt does not say is in
 `WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
@@ -67,7 +68,10 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
    shadow, radius, or z-index outside the primitives block of
    `apps/web/src/saqeel.css`. Only `var(--sqx-*)`. `saqeel.css` is core tokens
    only — component styles are colocated CSS Modules, and **a missing token
-   stops the work** rather than being added inline.
+   stops the work** rather than being added inline. This discipline is what let
+   the entire visual language be swapped on 2026-08-17 by retargeting one file,
+   re-skinning 28 migrated routes without editing any of them. **Elevation is a
+   hairline, not a shadow; the acid-lime accent is a fill, never text.**
 8. **No `<svg>` in application code.** Icons come from `lucide-react` through
    the icon registry, by semantic name.
 9. **No `alt=""`.** Every image carries alt text that conveys purpose. A

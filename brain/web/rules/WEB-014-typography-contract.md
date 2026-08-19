@@ -38,22 +38,57 @@ the application has.
 
 | Role | Size | Line | Weight | Tracking | Used for — and nothing else |
 |---|---|---|---|---|---|
-| `display` | 30px | 1.15 | 700 | -0.02em | The page title. **Exactly one per route.** |
-| `heading` | 20px | 1.30 | 600 | -0.01em | Card and section titles. The only card-title size in the app. |
-| `subheading` | 16px | 1.40 | 600 | 0 | A named group *inside* a card. |
-| `body` | 14px | 1.60 | 400 | 0 | **Every sentence of prose, everywhere.** |
-| `body-strong` | 14px | 1.60 | 600 | 0 | Emphasis inside body; the value in a key–value row. |
-| `label` | 12px | 1.40 | 600 | 0.01em | Form labels, table column headers, the key in a key–value row. |
-| `overline` | 11px | 1.30 | 700 | 0.08em | The uppercase eyebrow above a card title. |
-| `metric` | 28px | 1.10 | 700 | -0.02em | KPI numerals. Every number in the app is this one size. |
-| `mono` | 13px | 1.50 | 500 | 0 | CRs, plant numbers, notice numbers, model versions, IDs. |
+| `display` | 32px | 1.13 | 510 | -0.022em | The page title. **Exactly one per route.** |
+| `heading` | 24px | 1.33 | 400 | -0.012em | Card and section titles. The only card-title size in the app. |
+| `subheading` | 20px | 1.33 | 510 | -0.012em | A named group *inside* a card. |
+| `body` | 15px | 1.60 | 400 | -0.011em | **Every sentence of prose, everywhere.** |
+| `body-strong` | 15px | 1.60 | 590 | -0.011em | Emphasis inside body; the value in a key–value row. |
+| `label` | 13px | 1.20 | 510 | 0 | Form labels, table column headers, the key in a key–value row. |
+| `overline` | 13px | 1.20 | 510 | 0.06em | The uppercase eyebrow above a card title. |
+| `metric` | 32px | 1.13 | 510 | -0.022em | KPI numerals. Every number in the app is this one size. |
+| `mono` | 13px | 1.50 | 400 | -0.013em | CRs, plant numbers, notice numbers, model versions, IDs. |
 
-### 2.0 One typeface — IBM Plex Sans Arabic, and nothing else
+**The scale caps at weight 590.** The language forbids 700+ outright, so
+`--sqx-weight-bold` is an alias of `semibold` rather than a heavier cut. If a
+heading is not carrying enough emphasis, the fix is size or tone — never weight.
 
-`--sqx-font-sans` resolves to `var(--font-plex-arabic)`, the **next/font scoped
-family**, which is the only webfont this application loads. `--sqx-font-mono` is
-an alias of it: the `mono` role differs from `body` by tabular numerals and
-weight, **not by typeface**.
+**13px is the floor.** There is no size below it, and `body` at 15px is the
+smallest prose. A screen that wants something smaller wants `label`, or wants
+less on it.
+
+### 2.0 Two typefaces, split by script
+
+`--sqx-font-sans` resolves to `var(--font-inter)` then `var(--font-plex-arabic)`
+— both **next/font scoped families**, both self-hosted, and the only webfonts
+this application loads. Inter carries Latin; IBM Plex Sans Arabic carries
+Arabic.
+
+**The split needs no `[lang]` selector and must not acquire one.** Inter ships
+no Arabic coverage, so Arabic glyphs fall through to Plex on their own, per
+glyph, inside the same string. A `:lang(ar)` font override would break mixed
+runs — a CR number inside an Arabic sentence — and is a defect.
+
+**That only holds because Inter is loaded with `adjustFontFallback: false`, and
+it is load-bearing.** `next/font` otherwise synthesises an `"<name> Fallback"`
+face from a local system font and inserts it into the stack immediately after
+the real one. That synthetic face **does** carry Arabic, so it captures every
+Arabic glyph before the chain ever reaches Plex — measured at 49.81px against
+Plex's 55.33px, i.e. Arabic silently rendering in a system face with the wrong
+metrics, on every route, while the stack still *named* Plex.
+
+```
+adjustFontFallback default   inter, "inter Fallback", plexArabic, …   Arabic = 49.81  WRONG
+adjustFontFallback: false    inter, plexArabic, …                     Arabic = 55.55  Plex
+```
+
+**Never trust a font stack by reading it.** This defect shipped for two tasks
+because the stack named Plex and looked correct; only a width measurement of
+Arabic text found it. Measure each script separately — Latin passing tells you
+nothing about Arabic.
+
+`--sqx-font-mono` is a real monospace stack: the `mono` role differs from `body`
+by typeface *and* tabular numerals. The language reserves it for issue-ID-shaped
+text — never headings, never prose.
 
 This is stated as law because it was silently broken for a long time and nobody
 could see it. The token used to read
@@ -71,13 +106,31 @@ just quietly renders something else. Only `var(--sqx-font-sans)` /
 `var(--sqx-font-mono)` are permitted, and adding a second family is a change
 request that must also add the `next/font` loader in `app/layout.tsx`.
 
-To verify the face actually in use, measure it rather than reading the stack:
+To verify the face actually in use, measure it rather than reading the stack —
+and **do not use `document.fonts.check()` or a canvas `ctx.font` probe.** Both
+are unreliable and both produced a wrong answer in this repository: the canvas
+API silently mis-parses a quoted family and falls back, so the width matches a
+bogus baseline and appears to confirm the font is missing.
+
+Lay out a hidden span carrying the element's own computed size and weight, then
+compare rendered widths across candidate families:
 
 ```js
-const ctx = document.createElement('canvas').getContext('2d');
-const w = (f) => (ctx.font = `400 16px ${f}`, ctx.measureText('Probe 0123').width);
-w(getComputedStyle(document.documentElement).getPropertyValue('--sqx-font-sans')) === w('plexArabic')
+const el = document.querySelector('h1'), cs = getComputedStyle(el);
+const probe = (family) => {
+  const s = document.createElement('span');
+  s.textContent = 'Probe 0123456789';
+  s.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-size:${cs.fontSize};font-weight:${cs.fontWeight}`;
+  s.style.fontFamily = family;
+  document.body.appendChild(s);
+  const w = s.getBoundingClientRect().width; s.remove(); return w;
+};
+probe(cs.fontFamily) === probe(getComputedStyle(document.documentElement).getPropertyValue('--font-inter'))
 ```
+
+This is the check that caught Inter **not rendering at all** while the stack
+named it, and the same check that confirmed it once self-hosted. A font claim is
+a width measurement or it is a guess.
 
 Arabic line-heights are overridden per role in the `:lang(ar)` block of
 `saqeel.css`. You never set them at a call site.

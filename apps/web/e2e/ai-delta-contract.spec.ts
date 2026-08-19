@@ -61,9 +61,9 @@ test.describe("contextual AI delta contract", () => {
   });
 
   test("inspector daily briefing starts in My assignments and has a human review path", () => {
-    const field = SRC("src/app/(app)/field/page.tsx");
+    const field = SRC("src/features/field-home/queries.ts");
     expect(field).toContain("getOrGenerateBriefing");
-    expect(field).toContain("DailyBriefingCard");
+    expect(SRC("src/components/sections/field-home/field-home-screen.tsx")).toContain("<FieldDailyBrief");
     const briefing = SRC("src/lib/ai/briefing.ts");
     expect(briefing).toContain('"inspector_daily_briefing"');
     expect(briefing).toContain("MVP1-M03-001");

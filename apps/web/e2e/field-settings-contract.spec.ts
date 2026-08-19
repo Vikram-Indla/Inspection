@@ -8,7 +8,8 @@ const migrationPath = "../../supabase/migrations/20260723090200_mvp3_devices_sel
 const migration = src(migrationPath);
 const originalControlPlane = src("../../supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql");
 const actions = src("src/app/(app)/field/settings/actions.ts");
-const client = src("src/app/(app)/field/settings/FieldSettingsClient.tsx");
+const client = src("src/components/sections/field-settings/settings-panels.tsx");
+const settingsCopy = src("src/i18n/locales/en/field-settings.json");
 const devicesPage = src("src/app/(app)/field/settings/devices/page.tsx");
 const devicesClient = src("src/app/(app)/field/settings/devices/TrustedDevicesClient.tsx");
 
@@ -89,14 +90,15 @@ test.describe("PLAN v7 item 3 Field Settings + Trusted Devices contract", () => 
     expect(client).toContain('href="/locale?set=en"');
     expect(client).toContain('href="/locale?set=ar"');
     expect(client).toContain("localForUser");
-    expect(client).toContain("export default function FieldSettingsClient({");
+    expect(client).toContain("export default function SettingsPanels({");
     expect(client).toContain("appVersion,");
     expect(client).toContain("local.peekAll()");
     expect(client).toContain("local.conflicts()");
     expect(client).not.toContain("local.remove(");
     expect(client).not.toContain("local.resolveConflict(");
     expect(client).not.toMatch(/indexedDB\.deleteDatabase|localStorage\.clear|\.clear\(\)/);
-    expect(client).toContain('"Clear cache"');
+    expect(client).toContain("copy.data.clearCache");
+    expect(settingsCopy).toContain('"Clear cache"');
     expect(client).toContain("note={notConfigured}");
   });
 

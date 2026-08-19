@@ -53,20 +53,29 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
       "--sqx-text-disabled: var(--sqx-grey-600);",
       "--sqx-text-disabled: var(--sqx-grey-500);",
     ]);
-    expect(saqeel).toContain("--sqx-grey-600: #637381;");
-    expect(saqeel).toContain("--sqx-grey-500: #919EAB;");
-    expect(contrast("#637381", "#ffffff")).toBeGreaterThanOrEqual(4.5); // light: grey-600 on white cards
-    expect(contrast("#919EAB", "#1C252E")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on raised grey-800
-    expect(contrast("#919EAB", "#141A21")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on default grey-900
+    expect(saqeel).toContain("--sqx-grey-600: #62666D;");
+    expect(saqeel).toContain("--sqx-grey-500: #8A8F98;");
+    expect(contrast("#62666D", "#ffffff")).toBeGreaterThanOrEqual(4.5); // light: grey-600 on white cards
+    expect(contrast("#8A8F98", "#23252A")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on raised grey-800
+    expect(contrast("#8A8F98", "#161718")).toBeGreaterThanOrEqual(4.5); // dark: grey-500 on default grey-900
   });
 
   test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
     const tokens = read("src/app/tokens.css");
-    expect(tokens).toContain('--font-body:    var(--font-plex-arabic'); // one self-hosted bilingual metric system
+    const saqeelSheet = read("src/app/saqeel.css");
+    expect(tokens).toContain("--font-body:    var(--sqx-font-sans);");  // the frozen sheet defers to the design system
+    expect(saqeelSheet).toContain("--sqx-font-sans: var(--font-inter"); // Latin: self-hosted Inter
+    expect(saqeelSheet).toContain("var(--font-plex-arabic");            // Arabic: self-hosted Plex, per-glyph fallback
     expect(tokens).toContain('"IBM Plex Sans Arabic"');                 // Arabic-first stack present
-    expect(tokens).toContain("--type-display-size: 28px;");            // SAQEEL scale supersedes 32px
-    expect(tokens).toContain("--type-body-size: 14px;");              // 14px body supersedes 16px minimum
-    expect(tokens).toContain("--type-table-size: 13px;");             // 13px tables
+    // The frozen scale now defers to the approved language rather than pinning
+    // its own px. Asserting the alias is a stronger contract than a literal:
+    // it fails if the frozen sheet ever re-acquires an independent scale.
+    expect(tokens).toContain("--type-display-size: var(--sqx-text-display-size);");
+    expect(tokens).toContain("--type-body-size: var(--sqx-text-body-size);");
+    expect(tokens).toContain("--type-table-size: var(--sqx-text-label-size);");
+    expect(saqeelSheet).toContain("--sqx-text-display-size: 2rem;");   // 32px display
+    expect(saqeelSheet).toContain("--sqx-text-body-size: 0.9375rem;"); // 15px body
+    expect(saqeelSheet).toContain("--sqx-text-label-size: 0.8125rem;"); // 13px floor
     expect(tokens).not.toMatch(/retired input font|retired-mono|Barlow/);      // retired runtime fonts stay absent
   });
 
@@ -101,11 +110,9 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
     expect(dashboard).not.toContain("linear-gradient");
     expect(authenticated).not.toContain("--sq-color-prism-magenta");
     expect(mapPanel).not.toContain("backdrop-filter: blur(12px)"); // current value is blur(4px) on .map-panel — 12px never reintroduced
-    // The only page-owned gradient in the authenticated tree is the my-tasks
-    // map backdrop, and it is token-valued end to end.
-    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(1);
-    expect(read("src/app/(app)/field/my-tasks/my-tasks.module.css"))
-      .toContain("linear-gradient(135deg, var(--surface-sunken), var(--accent-soft))");
+    // WEB-009 §11: the gradient budget is zero. The last page-owned gradient
+    // was the my-tasks map backdrop, removed when that screen migrated.
+    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(0);
     expect(skeleton).toContain(".sq-skeleton");
   });
 

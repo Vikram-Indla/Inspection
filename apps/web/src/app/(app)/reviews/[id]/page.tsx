@@ -15,7 +15,7 @@ export default async function ReviewWorkspacePage({ params, searchParams }: {
   const loaded = await loadReviewDetail(await supabaseServer(), id, strings.detail, locale);
 
   return (
-    <Shell current="/reviews" title={strings.detail.ws.title.replace("{factory}", loaded.kind === "ready" ? loaded.factory.name : "")}>
+    <Shell current="/reviews" title="">
       <ReviewWorkspaceScreen loaded={loaded} query={query} strings={strings.detail} locale={locale} />
     </Shell>
   );

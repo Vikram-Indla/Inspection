@@ -1,0 +1,66 @@
+{
+  "title": "الإعدادات",
+  "back": "رجوع",
+  "loading": "جارٍ تحميل الإعدادات",
+  "notConfigured": "غير مهيأ",
+  "sections": {
+    "general": "عام",
+    "notifications": "الإشعارات",
+    "security": "الأمان",
+    "connectivity": "الاتصال والمزامنة",
+    "data": "البيانات والتخزين",
+    "about": "حول"
+  },
+  "general": {
+    "appearance": "المظهر",
+    "language": "اللغة",
+    "textSize": "حجم النص"
+  },
+  "theme": {
+    "toLight": "التبديل إلى الوضع الفاتح",
+    "toDark": "التبديل إلى الوضع الداكن"
+  },
+  "language": {
+    "arabic": "العربية",
+    "english": "English",
+    "switch": "لغة الواجهة"
+  },
+  "notifications": {
+    "tasks": "إشعارات المهام والمواعيد",
+    "urgent": "التنبيهات العاجلة",
+    "sound": "صوت الإشعارات"
+  },
+  "security": {
+    "devices": "القفل الحيوي والأجهزة الموثوقة",
+    "delegation": "تفويض الغياب",
+    "audit": "كل إجراء داخل جلستك موثّق ومراجَع · اتصال مشفّر"
+  },
+  "connectivity": {
+    "syncStatus": "حالة المزامنة",
+    "conflicts": "حل التعارضات",
+    "autoSync": "مزامنة تلقائية",
+    "offlineMaps": "خرائط بدون اتصال",
+    "syncNow": "مزامنة الآن"
+  },
+  "syncState": {
+    "synced": "متزامن",
+    "offline": "غير متصل",
+    "pending": "جارٍ التحميل…",
+    "syncing": "جارٍ التزامن",
+    "conflict": "تعارض",
+    "failed": "غير متاح"
+  },
+  "data": {
+    "readiness": "جاهزية الجهاز",
+    "storageUsed": "المساحة المستخدمة",
+    "clearCache": "مسح الذاكرة المؤقتة"
+  },
+  "about": {
+    "appVersion": "إصدار التطبيق",
+    "appVersionDefault": "يُحدَّد عند النشر",
+    "help": "المساعدة والدعم",
+    "privacy": "سياسة الخصوصية"
+  },
+  "signOut": "تسجيل الخروج",
+  "copyright": "صقيل — وزارة الصناعة والثروة المعدنية © 2026"
+}

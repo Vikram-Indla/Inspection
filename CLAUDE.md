@@ -41,7 +41,11 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
 6. **No `let` in `.tsx`.** Ever.
 7. **No literal visual values.** No hex, rgb, px, rem, font-family, font-size,
    shadow, radius, or z-index outside `apps/web/src/app/saqeel.css`. Only
-   `var(--token)`.
+   `var(--token)`. This is what let the whole visual language be replaced on
+   2026-08-17 by retargeting one file — 28 migrated routes re-skinned without
+   being edited. A hardcoded value opts that route out of the next one.
+7a. **Elevation is a hairline, not a shadow**, and the acid-lime accent is a
+   **fill, never text** (1.23:1 on white). Full law: WEB-002 §1, §7, §8.
 7b. **No typography in feature code — ever.** `font-size`, `font-weight`,
    `font-family`, `font-style`, `line-height` and `letter-spacing` may not appear
    in any `.css` outside `src/components/saqeel/`, and `font: var(--sqx-text-*)`
@@ -49,7 +53,10 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
    `Heading`, `Overline`, `Mono` and `Metric` from `components/saqeel`. Nine
    roles exist and no more; `caption`, `body-lg`, `title` and `code` are retired
    aliases you must never write. **If it is a sentence, it is `body` — there is
-   no smaller prose size.** Cards are `Card`/`CardHeader`, whose slot order
+   no smaller prose size.** The scale caps at weight **590** (700+ is banned) and
+   floors at **13px**. Inter carries Latin, IBM Plex Sans Arabic carries Arabic,
+   split per glyph — **never add a `:lang(ar)` font override**, it breaks mixed
+   runs like a CR number inside an Arabic sentence. Cards are `Card`/`CardHeader`, whose slot order
    (eyebrow → title → description) is structural. Enforced by
    `npm run gates:typography`, which is a ratchet: the violation count may only
    go down. **Read `brain/web/rules/WEB-014-typography-contract.md` in full
@@ -110,14 +117,19 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
 
 ## Design authority
 
-The approved design is `design/final-cut/saqeel-revamp.html`. Open it in a
-browser and inspect it. Do not work from screenshots or from prose descriptions
-of it.
+The approved design is **`design/linear/design.md`** with its token files,
+adopted 2026-08-17. Read it before styling anything.
+`design/final-cut/saqeel-revamp.html` is the superseded structural reference —
+its **markup structure** (element order, nesting, semantics) still governs per
+rule 4 below; its colour, type, radii and elevation do not.
 
 1. **`apps/web/src/saqeel.css` is the single source of visual truth.** Raw colour
    and size values appear only in its primitives block. Everything else consumes
    `var(--sqx-*)`. The prefix is `--sqx-` / `.sqx-` — never `--sq-`, `.sq-`, or
-   `.saqeel-`, all of which collide with the frozen legacy sheets.
+   `.saqeel-`, all of which collide with the frozen legacy sheets. **SAQEEL is
+   the system; the visual language it renders is `design/linear/`**, approved
+   2026-08-17. The two are separate: the language has been replaced once already
+   without the system changing.
 2. **`saqeel.css` is core tokens only.** No component classes. Adding a token is
    a change request, not a task step: if a component appears to need a new one,
    it almost always needs an existing one. A genuine gap **stops the work** and

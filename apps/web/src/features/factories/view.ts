@@ -1,4 +1,5 @@
 import { fill, getMessages } from "@/i18n/messages";
+import { formatCount, formatDecimal } from "@/i18n/numbers";
 import { formatDate } from "@/lib/dates";
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import type { FactoryMetric } from "@/components/sections/factories/factory-snapshot/factory-snapshot";
@@ -87,7 +88,7 @@ export function buildFactoryView({ factory, locale, counts, movement, compliance
   const numberMetric = (key: string, label: string, value: number | null, tone: StatusTone): FactoryMetric => ({
     key,
     label,
-    value: value === null ? copy.snapshot.notAvailable : String(value),
+    value: value === null ? copy.snapshot.notAvailable : formatDecimal(value, locale),
     tone: value === null ? "neutral" : tone,
     kind: value === null ? "text" : "number",
   });
@@ -166,7 +167,7 @@ export function buildFactoryView({ factory, locale, counts, movement, compliance
       : fill(riskChange > 0 ? copy.trends.rising : riskChange < 0 ? copy.trends.falling : copy.trends.steady,
         { n: Math.abs(riskChange) }),
     riskTone: riskChange === null || riskChange === 0 ? "neutral" : riskChange > 0 ? "danger" : "success",
-    riskCurrent: movement ? String(movement.latest.score) : copy.snapshot.notAvailable,
+    riskCurrent: movement ? formatDecimal(movement.latest.score, locale) : copy.snapshot.notAvailable,
 
     compliance: {
       reports: records.reports.map(report => ({

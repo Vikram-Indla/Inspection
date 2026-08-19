@@ -1,7 +1,7 @@
 import { type InputHTMLAttributes, type ReactNode } from "react";
 import styles from "./text-input.module.css";
 
-export type TextInputType = "text" | "search" | "email" | "tel" | "url" | "number" | "password" | "date";
+export type TextInputType = "text" | "search" | "email" | "tel" | "url" | "number" | "password";
 
 export type TextInputProps = {
   name?: string;

@@ -94,6 +94,28 @@ task that supersedes them lands.
 
 | File | Deleted | Replaced by | Bytes removed |
 | --- | --- | --- | --- |
+| `components/field/CompletedHistoryCache.tsx` (94 lines) | 2026-08-17 | `components/sections/field-completed/completed-history-list` + `completed-card` (T-146) — one importer, the route; the offline cache logic preserved verbatim | 94 lines |
+| `app/(app)/field/completed/completed.module.css` (3 lines) | 2026-08-17 | `components/sections/field-completed/completed.module.css` (T-146) | 3 lines |
+| `app/(app)/field/notifications/NotificationAttentionCenter.tsx` (263 lines) | 2026-08-17 | `components/sections/field-notifications/notification-attention-list` + `notification-row` (T-145) — one importer, the route; the offline/receipt logic preserved verbatim | 263 lines |
+| `app/(app)/field/notifications/notification-meta.ts` (75 lines) | 2026-08-17 | `features/field-notifications/meta.ts` (T-145) — raw `<svg>` paths + hardcoded colours/labels replaced by a category→{IconName, tone} map | 75 lines |
+| `app/(app)/field/notifications/notifications.module.css` (116 lines) | 2026-08-17 | `components/sections/field-notifications/notifications.module.css` (T-145) | 116 lines |
+| `app/(app)/field/visits/VisitsClient.tsx` (100 lines) | 2026-08-17 | `components/sections/field-visits/visits-list` + `visit-card` (T-144) — one importer, the route; the `FieldVisit` type moved to `features/field-visits/rows.ts` | 100 lines |
+| `app/(app)/field/visits/data.ts` (46 lines) | 2026-08-17 | `features/field-visits/queries.ts` (T-144) — narrows from `unknown`, drops the `as unknown as Row[]` cast | 46 lines |
+| `app/(app)/field/visits/visits.module.css` (29 lines) | 2026-08-17 | `components/sections/field-visits/visits.module.css` (T-144) | 29 lines |
+| `app/(app)/field/visits/calendar/FieldCalendarBoard.tsx` (43 lines) | 2026-08-17 | `components/sections/field-visits/calendar-board` (T-144) — UTC date logic preserved verbatim | 43 lines |
+| `app/(app)/field/establishments/unregistered/UnregisteredEstablishmentForm.tsx` (128 lines) | 2026-08-17 | `components/sections/field-unregistered/unregistered-form` (T-143) — one importer, the route; the governed `actions.ts` it calls was left untouched | 128 lines |
+| `components/PackageTypeSelector.tsx` (49 lines) | 2026-08-17 | `components/sections/field-unregistered/package-type-select` (T-143) — orphaned when the form above stopped importing it; native-radio contract preserved | 49 lines |
+| `app/(app)/field/establishments/establishments.module.css` (65 lines) | 2026-08-17 | `components/sections/field-establishments/establishments.module.css` (T-142) — imported only by the rebuilt route markup | 65 lines |
+| `components/field/FieldDraftList.tsx` (159 lines) | 2026-08-17 | `components/sections/field-drafts/draft-list` (T-141) — one importer, the drafts route; the offline merge logic was carried across, only the presentation and the `let`s deleted | 159 lines |
+| `app/(app)/field/drafts/drafts.module.css` (44 lines) | 2026-08-17 | `components/sections/field-drafts/drafts.module.css` (T-141) — imported only by the deleted route markup | 44 lines |
+| `app/(app)/field/my-tasks/AssignmentTaskBrowser.tsx` (211 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks-list` (T-140) — one importer, the route it replaced; its logic (`assignment-task-model`) was reused, only the UI deleted | 211 lines |
+| `app/(app)/field/my-tasks/TaskHeaderStatus.tsx` (73 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks-sync-status` (T-140) — one importer | 73 lines |
+| `app/(app)/field/my-tasks/PrepareAssignmentAction.tsx` (42 lines) | 2026-08-17 | `components/sections/field-my-tasks/prepare-assignment-action` (T-140) — one importer | 42 lines |
+| `app/(app)/field/my-tasks/my-tasks.module.css` (154 lines) | 2026-08-17 | `components/sections/field-my-tasks/my-tasks.module.css` (T-140) — imported only by the three components deleted above | 154 lines |
+| `components/field/FieldMetricStrip.tsx` (151 lines) | 2026-08-17 | `components/sections/field-home/field-mission-metrics` (T-138) — **one importer, the route that replaced it**, so deleted rather than banner-marked | 151 lines |
+| `components/field/DailyBriefingCard.tsx` (132 lines) | 2026-08-17 | `components/sections/field-home/field-daily-brief` (T-138) — one importer | 132 lines |
+| `components/field/FieldHome.tsx` (46 lines) | 2026-08-17 | `components/sections/field-home/field-map-canvas` (T-138) — one importer | 46 lines |
+| `app/(app)/field/field-home.module.css` (194 lines) | 2026-08-17 | `components/sections/field-home/field-home.module.css` (T-138) — imported only by the three components deleted above | 194 lines |
 | `components/sections/planning/planning-filter-bar` (11.4 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~11.4 KB |
 | `components/sections/planning/planning-quick-actions` (2 files, 6.8 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~6.8 KB |
 | `components/sections/planning/planning-visit-table` (5.2 KB) | 2026-08-12 | nothing — dead parallel tree, zero importers (T-077) | ~5.2 KB |
@@ -143,13 +165,49 @@ already failing** — it asserted `ContextualAiPanel` and `AC-0016` inside
 
 ---
 
+## T-133 — the dead design-system sheet, deleted (2026-08-17)
+
+`components/saqeel/primitives/primitives.module.css` — **1,301 lines, deleted.**
+
+It was never marked, because it was never *replaced*: it was simply unreachable.
+Verified against the full T-077 death checklist before deleting, not just the
+import graph:
+
+```
+code importers                 0   (only use-media-query.ts is imported from that folder, and it is .ts)
+e2e specs reading it as text   0
+scripts naming it              0
+component ledger row           0   (the ledger documents use-media-query.ts, which stays)
+retirement ledger row          0
+```
+
+Deleting it also removed **14 `retired-typography-role` violations**, which is
+why the typography gate moved 115 → **129 removed** in the same change. That is
+the independent confirmation the file was real and its rules were counted.
+
+Its tokens went with it, once re-scanned to zero consumers:
+
+| Removed from `saqeel.css` | Count |
+| --- | --- |
+| `--sqx-gradient-*` definitions | 13 |
+| `--sqx-rim-light`, `--sqx-ease-sweep`, `--sqx-flow-angle/-from/-to`, `--sqx-sweep-start/-end/-skew` | 14 declarations |
+| `@keyframes sqx-flow`, `sqx-sweep`, `sqx-drift` | 3 |
+
+`saqeel.css` **1,023 → 930 lines**. Braces verified balanced (26/26), no
+malformed declarations, and every live token re-checked as still resolving in the
+browser. **Kept deliberately:** `--sqx-glare-050` and `--sqx-duration-flow` (the
+skeleton shimmer), `--sqx-duration-sweep` and `--sqx-ease-linear` (the button
+spinner), `--sqx-mirror` (Icon, DateRangePicker, SegmentedControl).
+
+---
+
 ## Running total
 
 | | |
 | --- | --- |
 | Files marked | 8 (4 shell/visits pre-dating this work, 4 in the unreachable `/admin/compliance-approvals` segment) |
-| Files deleted | 13 |
-| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053) |
+| Files deleted | 36 |
+| Source bytes removed | ~37 KB deleted outright; ~2,870 source lines rewritten out of the compliance and enforcement screens (T-036…T-041); 243 net lines off `/planning` (T-053); **1,301 lines of dead design-system CSS + 93 lines of orphaned tokens and keyframes (T-133)**; **523 lines off the `/field` home — 3 components + its stylesheet — and 665 lines out of its route file (T-138)**; **480 lines off `/field/my-tasks` — 3 components + its stylesheet — and 595 lines out of its route file (T-140)**; **203 lines off `/field/drafts` — `FieldDraftList` + its stylesheet — and 139 lines out of its route file (T-141)**; **65 lines off `/field/establishments` — its stylesheet — and 391 lines out of its route file (T-142)**; **177 lines off `/field/establishments/unregistered` — the old form + `PackageTypeSelector` — and 83 lines out of its route file (T-143)**; **218 lines off `/field/visits` — `VisitsClient` + `data.ts` + stylesheet + `FieldCalendarBoard` — and 69 lines out of its two route files (T-144)**; **454 lines off `/field/notifications` — `NotificationAttentionCenter` + `notification-meta` + stylesheet — and 260 lines out of its two route files (T-145)**; **97 lines off `/field/completed` — `CompletedHistoryCache` + its stylesheet — and 181 lines out of its two route files (T-146)** |
 | CSS bytes removed from legacy sheets | ~4.0 KB (`m6-library.module.css` T-036, `violations/Controls.module.css` T-041, `planning-buckets.module.css` T-053) |
 
 Update this table in every session that deletes anything. It is the clearest

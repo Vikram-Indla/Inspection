@@ -1,3 +1,4 @@
+import type { DatePickerFieldStrings } from "@/components/saqeel/date-picker-field/date-picker-field";
 import type { DraftEditorStrings } from "@/app/(app)/admin/packages/DraftEditor";
 import type { ImpactStrings } from "@/app/(app)/admin/packages/ImpactPanel";
 import type { PreviewStrings } from "@/app/(app)/admin/packages/PackagePreview";
@@ -40,7 +41,16 @@ export async function loadEditorStrings(
     }
   }
 
+  const datePickerStrings: DatePickerFieldStrings = {
+    placeholder: t("common.date.select", "Select a date"),
+    clear: t("common.clear", "Clear"),
+    today: t("common.today", "Today"),
+    previousMonth: t("common.previousMonth", "Previous month"),
+    nextMonth: t("common.nextMonth", "Next month"),
+  };
+
   const publishStrings: PublishStrings = {
+    datePicker: datePickerStrings,
     newDraftLabel: t("admin.pkg.newDraft.label", "New draft version label"),
     creating: t("admin.pkg.newDraft.creating", "Creating…"),
     createDraft: t("admin.pkg.newDraft.create", "Create draft"),
@@ -51,7 +61,7 @@ export async function loadEditorStrings(
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
     published: t("admin.pkg.publish.published", "Version published. It can no longer be changed."),
     publishHint: t("admin.pkg.publish.hint", "Publishing rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must be a different person from the creator."),
-    effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
+    effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivationReasonPlaceholder: t("admin.pkg.deactivate.reasonPlaceholder", "Why this version is being deactivated"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
   const newPackageStrings: NewPackageStrings = {
     heading: t("admin.pkg.create.heading", "Create a new package"),
@@ -103,6 +113,13 @@ export async function loadEditorStrings(
     heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings."),
     key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Locked historical template version."), saved: t("admin.template.saved", "Saved"),
     typeForm: t("admin.template.type.form", "Form"), typeReport: t("admin.template.type.report", "Report"), typeActionForm: t("admin.template.type.actionForm", "Action form"), typePenalty: t("admin.template.type.penalty", "Penalty"),
+    keyPlaceholder: t("admin.template.keyPlaceholder", "Example: chem-storage-checklist"),
+    versionPlaceholder: t("admin.template.versionPlaceholder", "v1"),
+    titleEnPlaceholder: t("admin.template.titleEnPlaceholder", "Example: Chemical storage inspection"),
+    titleArPlaceholder: t("admin.template.titleArPlaceholder", "مثال: تفتيش تخزين المواد الكيميائية"),
+    reasonPlaceholder: t("admin.template.reasonPlaceholder", "Why this version is being deactivated"),
+    schemaPlaceholder: t("admin.template.schemaPlaceholder", '{"fields":[]}'),
+    datePicker: datePickerStrings,
   };
   const previewStrings: PreviewStrings = {
     open: t("admin.pkg.preview.open", "Open field preview"), close: t("admin.pkg.preview.close", "Close field preview"),

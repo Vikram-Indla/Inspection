@@ -194,7 +194,7 @@ export default function Shell({ children, title, context, topbar }: {
         <header className="sq-pagehead sq-pagehead--route">
           <div className="sq-pagehead__row">
             <div className="sq-pagehead__context">
-              <Heading level={2} visual="display">{title}</Heading>
+              <Heading level={1} visual="display">{title}</Heading>
               {context}
             </div>
           </div>

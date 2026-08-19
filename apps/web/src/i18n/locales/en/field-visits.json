@@ -1,0 +1,65 @@
+{
+  "title": "My visits",
+  "scope": "Assigned to you",
+  "calendarTitle": "Visit calendar",
+  "calendarScope": "Prepared visits assigned to you",
+  "error": "Assigned visits are temporarily unavailable. Please try again.",
+  "loading": "Loading assigned visits",
+  "noValue": "—",
+  "km": "km",
+  "sync": {
+    "online": "Online",
+    "offline": "Offline",
+    "syncNow": "Sync now",
+    "syncing": "Syncing…"
+  },
+  "views": {
+    "aria": "Assigned visit views",
+    "list": "List",
+    "calendar": "Calendar",
+    "map": "Map"
+  },
+  "segments": {
+    "aria": "Visit timing",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "completed": "Completed"
+  },
+  "search": {
+    "label": "Search by visit no., establishment, CR, or license",
+    "sortLabel": "Sort assigned visits",
+    "soonest": "Soonest first",
+    "latest": "Latest first"
+  },
+  "risk": {
+    "aria": "Risk priority",
+    "all": "All",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "empty": {
+    "heading": "No assigned visits match this view.",
+    "body": "Change the timing, risk, or search filter."
+  },
+  "loadMore": "Load more visits",
+  "twoStates": "Two states per visit: planning then field execution — always separate.",
+  "cta": {
+    "directions": "Directions",
+    "continue": "Continue",
+    "results": "View results",
+    "start": "Start",
+    "view": "View"
+  },
+  "calendar": {
+    "view": "Calendar view",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "previous": "Previous",
+    "next": "Next",
+    "today": "Today",
+    "empty": "No prepared visits in this range.",
+    "more": "+{count} more"
+  }
+}

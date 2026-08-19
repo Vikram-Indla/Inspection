@@ -1,6 +1,856 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-16` · `Updated by: T-126 — /admin/packages workbench`
+`Last updated: 2026-08-18` · `Updated by: T-160 — the /admin/gis/spatial migration + nav fix`
+
+## The `/admin` migration: the GIS tree is done, and a nav-highlight bug fixed (2026-08-18)
+
+**T-160 finished the GIS tree with `/admin/gis/spatial` and fixed a real
+navigation bug.** The spatial canvas is a small feature-flagged subroute
+(`FEATURE_SPATIAL_CANVAS` → `NotYetBoundary` when off), migrated the same way as
+its parent: thin route → `features/admin-gis-spatial/*` + `components/sections/
+admin-gis-spatial/*`, reusing the `adminGis` namespace with a `spatial` section
+(a subroute's copy belongs to its parent's namespace, not a new one). The
+`gis_admin` in-UI gate carried across from the studio.
+
+**The lesson is the sidebar double-highlight.** `isShellRouteCurrent` marks a nav
+item active on an exact match *or a path-prefix* match — so a parent route lights
+up on any child. That's correct when the child has no nav item of its own
+(`/operations` on `/operations/live`), but wrong when the child *is* a separate
+nav item: `/admin/gis` lit up alongside `/admin/gis/spatial`. The file already
+carried exact-match special cases for `/dashboard` and `/admin` for exactly this
+reason; `/admin/gis` needed the same. **The rule to remember: a parent nav route
+must be exact-match whenever one of its children is a distinct nav item** — and
+the `isShellRouteCurrent` unit test now locks it (`/admin/gis/spatial` → `/admin/
+gis` is `false`). Applying the in-UI `gis_admin` gate meant re-pointing two live
+`mvp2` M2-06 governance tests: the gate hides the create form for a non-gis_admin,
+so "create is denied" is now enforced before submit (no input offered) rather than
+by an RLS error after — the guarantee preserved and strengthened.
+
+## The `/admin` migration: the GIS geofencing studio, with a permission gate (2026-08-18)
+
+**T-159 took on the most interactive admin surface yet — `/admin/gis`.** A live
+Mapbox map of 612 factory pins, linked map↔registry selection, a geofence-radius
+editor, filters, a legend, and a settings table, in a 279-line client component.
+The rebuild kept every interaction (the `GeoMap` Mapbox engine is untouched) and
+split the client under the 200-line ceiling into a `gis-studio` container +
+presentational `gis-toolbar`/`gis-map-panel`/`gis-registry`. The lesson worth
+carrying: **a large interactive client migrates by extracting a state container
+that composes presentational children — the map/table/panel become dumb, the
+container owns the derivations** (filtered/located/markers/selected), and a
+selection `useEffect` becomes a derived value (WEB-004).
+
+**The permission gate is now an in-UI state, not a post-submit surprise.** Editing
+a geofence needs the `gis_admin` role (RLS `factories_update`); the route only
+needs `admin`. `loadGis()` resolves `gis_admin` server-side and returns `canEdit`,
+so a non-gis_admin admin sees the coordinates read-only with a "View only —
+gis_admin required" notice instead of an editor that would fail on save. RLS stays
+the authority (the action still returns an `rls` code), but the block is honest
+up front. This is the pattern for any surface where route access and write
+capability differ: resolve the write role in the loader, gate the control in the
+UI, keep RLS as the backstop.
+
+**Accessibility caught a real gap.** The old registry selected a factory on a
+row `onClick` — not keyboard-reachable. The migrated registry's name cell is a
+focus `Button`, and an axe pass caught a selected-row muted-label contrast
+(4.45:1 on the accent-tinted highlight) fixed by `tone="muted"` → `"secondary"`.
+Three specs (`mapbox-provider`, `ipad-gps-policy`, `neutral-error-sweep`) were
+re-pointed to the new files with every guarantee intact. Verified: axe 0,
+Arabic/RTL + 200% zoom 0 overflow, test:static 408/33. Parked: the feature-flagged
+`/admin/gis/spatial` subroute (T-160).
+
+## The `/admin` migration: the integrations tree is complete (2026-08-18)
+
+**T-158 finished the tree — `/admin/integrations/factory-data`, the WEB-015 one.**
+The Factory data console had 18 raw controls (a file input, 2 date inputs, 3
+selects, ~10 text/number/email inputs, 2 checkboxes) and English-only copy. The
+owner's asks were specific: **use our uploader** for the CSV and **DS controls for
+every field**. The key discovery is that the DS **already ships what you need** —
+`components/saqeel/file-upload` is a drag-and-drop uploader that submits through a
+plain `<form action>` (so the server action reads `csv_file` from `FormData`
+unchanged) and drives a client preview through its `onSelect` callback; no new
+component was built. Every field moved onto `TextInput`/`SaqeelSelect`/
+`DatePickerField`/`Choice` wrapped in `Field`, and the two raw date inputs became
+`DatePickerField` — WEB-015 satisfied end to end. **Before reaching for a raw
+input or building a new control, check `components/saqeel/` — the primitive is
+usually already there.**
+
+**Action-result copy: codes → client i18n map.** `actions.ts` stays logic-only,
+returning stable codes; a `resultMessage(code, strings)` helper maps them to en/ar
+copy in the client, and the shared `mapFactoryError` neutral output (a Factory-360
+util, not this route's copy) passes through untouched. That's the clean split when
+an action's errors must be localized without threading locale into governed
+server logic. Two governed contracts (`admin-integration-truth-states` test 2,
+`factory360-admin-control-plane` tests 3–4) were re-pointed to the new files + en
+JSON with every guarantee intact, and the orphaned old client forms deleted.
+
+**The three integrations routes — index (T-156), senai-data (T-157),
+factory-data (T-158) — are all migrated.** `AdminDestinationFrame` no longer lists
+`/admin/integrations` on its retirement pending-list. Verified across all three:
+axe 0, Arabic/RTL + 200% zoom 0 overflow, test:static 408/33.
+
+## The `/admin` migration: SENAI data console is done, one toggle (2026-08-18)
+
+**T-157 took the second integrations route and the owner's steer with it.** The
+`/admin/integrations/senai-data` console (Sources / Endpoints / Field mapping /
+Sync & reconcile) was 415 lines on `AdminShell` with **four separate pill tabs**;
+the owner pointed at the tab bar and asked for **one single toggle with proper
+spacing.** The four `<Link>` pills became a single `SegmentedControl` — because it
+renders as one connected `<nav>` of Links (with a sliding pill + `aria-current`)
+whenever every item carries an `href`, the URL-query tab state (`?tab=sources`)
+is untouched and each section still server-renders its own data. This is the
+distinction to remember: the on-page `Tabs` primitive (T-152) is for panels that
+switch client-side; a `SegmentedControl` with `href` items is the right control
+for cross-render section switches that must stay bookmarkable and server-driven.
+The rebuild also moved onto `ShellPageFrame` + one `--sqx-stack-section` stack (the
+spacing fix), kept all four tables as `DataTable`s (which own their overflow and
+stack on mobile), and **preserved the FND-007 write-back assertion as derived**
+(`holds`/`breach` from `SENAEI_MASTER_DATA_WRITE_BACK_ENDPOINTS.length`), never
+asserted. Verified: axe **0**, Arabic/RTL + 200% zoom **0 overflow**, typography
+**−43**, v5 61→**60**, test:static **408/33**. Only `factory-data` (T-158, a
+17-raw-input WEB-015 pass) remains in the tree.
+
+## The `/admin` migration: System connections index is done (2026-08-18)
+
+The admin streak continues — T-151 (form controls + WEB-015), T-152
+(planning/lookups + the `Tabs` primitive), T-153 (planning/status), T-154
+(compliance-requests), T-155 (risk/models), and now **T-156 — the
+`/admin/integrations` index** (System connections: endpoint registry + API/rule
+events + data-sharing exports). It moved the route **off `AdminDestinationFrame`**
+(the `@retiring` legacy frame, whose retirement note named this exact route) onto
+`ShellPageFrame` + `Card`/`DataTable`/`StatusPill`, mirroring the migrated
+`access-frame`. The owner's two flags are fixed: **card spacing** (every block a
+`Card` in one `--sqx-stack-section` stack, `.split` auto-fit grids — uniform token
+gaps for the per-panel inline padding) and the **skeleton** (a framed
+`IntegrationsSkeleton`, and `admin/loading.tsx` gained the reusable `framed` prop
+so the flush cross-section entry skeleton is inset for **every** admin route).
+
+**The owner scoped the integrations tree as three tasks and picked "no drawer".**
+"The whole legacy" under `/admin/integrations` is ~805 lines across three routes;
+the index shipped as T-156, with **senai-data (T-157)** and **factory-data
+(T-158, 17 raw inputs / WEB-015)** parked as their own tasks. The endpoint
+registry became a clean `DataTable` (no shared record drawer), status a
+`StatusPill` with a `formatDateTime` provenance line — and **no governance content
+was lost** (the "configuration ≠ connectivity" banner, the three governance
+points, and the reconstruction note all carried across as `Card`s).
+
+**Re-pointing a route off a shared legacy frame ripples into cross-route specs.**
+Three contracts were re-pointed, every guarantee preserved: `admin-integration-
+truth-states` (page → queries/screen/registry/en-JSON), `mvp3-retrofit-regression`
+(heading casing to house-style `System connections`), and `admin-core-orchestrator`
+— integrations removed from its `OWNED_DESTINATIONS` + `RECORD_SURFACES` arrays
+(the legacy `data-saqeel-admin-destination` frame + drawer it no longer has),
+kept in the nav + SQL-seed arrays. That orchestrator was already partly stale for
+earlier-migrated routes — flagged as a separate cleanup. Verified: axe **0**,
+Arabic/RTL 375px + 200% zoom **0 overflow**, typography **−7**, test:static
+**408/33**.
+
+## The `/field` migration: the settings hub is done (2026-08-18)
+
+Ten slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
+establishments surface (T-142+T-143), visits list + calendar (T-144),
+notifications list + detail (T-145), `/field/completed` list + receipt
+(T-146), `/field/reports` submitted-report library + inline document
+(T-148), and **the `/field/settings` hub (T-150)**. Remaining: the three parked
+settings sub-routes (`devices`, `conflicts`, `readiness`), `feedback`, the
+enforcement `*-reports` screens, and the two large execution screens
+(`[visitId]` startup, the 1,991-line `inspection/[id]/Workspace`).
+
+**T-150 showed a surface too big for one task, and scoped down.** `/field/
+settings` is 4 routes / 14 files / ~2,300 lines; the hub migrated, the three
+500/478/199-line sub-route clients parked as their own tasks (hub links keep
+working). It also re-pointed **five specs** across the split — including the
+gated `field-settings-contract` #5, whose pinned `"Clear cache"` English literal
+became a governed-row + namespace assertion — preserving every guarantee while
+the copy moved to i18n. The pattern is now routine: a migration that moves a file
+the static specs read must re-point them, and a literal they pin becomes a
+key-plus-namespace check, never a weakened guarantee.
+
+**T-148 split a 213-line client under the 200-line ceiling and killed the last
+`as unknown as` in the slice.** `ReportsLibrary` became `reports-library` (150,
+`SegmentedControl` tabs + `ListRow` records) + `report-document` (120, the inline
+immutable document); `queries.ts` narrows `row.visits` from `unknown` instead of
+`as unknown as Visit`. The frozen legacy `FieldConnectivityBanner` (`sq-banner`,
+`var(--space-3)`, literal radius) was dropped for a token-clean
+`ReportsConnectivity` leaf over the same `connectivityState` util — a migrated
+screen never reaches back into the parallel system for a shared widget. The
+`let active` unmount guard became a `useRef` (rule 6). `[id]/page.tsx` stays the
+thin governed redirect to `/reports/inspection/[id]`.
+
+**T-146 confirmed the `<main>` and emoji rules on a screen that had both.** Both
+completed pages rendered their own `<main>` inside the shell's (the T-144
+duplicate-main bug) and used a literal `🔒` as the lock icon (a v5 `emoji-as-icon`
+flag). The fixes are now settled reflexes: render a `<div>`, and a pictographic
+glyph is never an icon — it comes from the registry (`restricted` = Lock). Both
+are cheap to miss and invisible to the WCAG tags, so the verification pass counts
+`<main>` and greps the body for emoji every time.
+
+## The `/field` migration: notifications (list + detail) are done (2026-08-17)
+
+Seven slices now: home (T-138), my-tasks (T-140), drafts (T-141), the
+establishments surface (T-142+T-143), visits list + calendar (T-144), and
+**`/field/notifications` list + detail (T-145)**. The report surfaces
+(`completed`, `reports`, `settings`) and the two large execution screens
+(`[visitId]` startup, the 1,991-line `inspection/[id]/Workspace`) remain.
+
+**T-145 set the rule for a component that stores raw `<svg>` as data.** The old
+`notification-meta.ts` carried literal SVG `d` paths (and hardcoded colours and
+EN/AR labels) as a lookup table — an icon vocabulary that read as data but was a
+rule-8 (`<svg>`) + rule-15 (copy) + rule-7 (colour) violation all at once. The
+fix is a **category → {registry `IconName`, semantic tone}** map: the glyph is a
+name resolved through the registry, the colour is a tone resolved through tokens,
+the label is an i18n key. Any "icon metadata" table in the codebase should be
+this shape, never raw paths. And **a tone-coloured tile is a neutral surface with
+a tone-coloured glyph** — not a per-tone coloured background, because the soft
+surfaces are incomplete (`--sqx-surface-warning` does not exist) and
+`--sqx-surface-accent` is a tint (T-142), so a coloured-tile approach is
+inconsistent and risks the acid-lime contrast trap.
+
+## The `/field` migration: visits list + calendar are done (2026-08-17)
+
+T-138 home, T-140 my-tasks, T-141 drafts, T-142+T-143 the establishments surface
+(list + create form), **T-144 the `/field/visits` list and its `/calendar`
+subroute**. Six slices done; the large execution screens (`[visitId]` startup,
+the 1,991-line `inspection/[id]/Workspace`) and the report/notification surfaces
+remain.
+
+**T-144 surfaced a landmark bug the WCAG tags cannot see.** `AppShell` owns the
+one `<main id="main-content">`; every migrated field screen renders a `<div>`
+inside it. The old `VisitsClient` and its `loading.tsx` each rendered their *own*
+`<main>` — a second landmark nested in the shell's. Nothing in the WCAG A/AA tag
+set flags a duplicate main; only the best-practice `landmark-no-duplicate-main`
+rule does, and only if you run it explicitly and count `<main>` in the browser.
+**Standing rule for field migrations: render a `<div>`, never `<main>` — the
+shell owns the landmark — and count `document.querySelectorAll('main')` in
+verification, because a stray one is otherwise silent.**
+
+## The `/field` migration: the establishments surface is done (2026-08-17)
+
+T-138 home, T-140 `/field/my-tasks`, T-141 `/field/drafts`, T-142
+`/field/establishments` (list), **T-143 `/field/establishments/unregistered`**
+(create form). **The establishments surface is now fully migrated.** The gap
+T-137 measured below is closed for those five routes; the rest of the channel
+(`/field/visits`, `visits/calendar`, `[visitId]`, `inspection/[id]`, and the
+report/notification surfaces) still carries it.
+
+**T-143 set the rule for migrating a governed form.** The create form calls
+`create_immediate_visit` through `actions.ts`, which is asserted by
+`field-establishment-incidents` and is governed server logic. The rule: **migrate
+the UI *around* a governed action, never through it** — leave `actions.ts`
+byte-for-byte, import it unchanged, and rebuild only the presentation. Same
+principle as reusing `assignment-task-model` in T-140: governed logic with a
+passing contract is a fixed point the migration flows around.
+
+## The `/field` migration: home, my-tasks, drafts, establishments done (2026-08-17)
+
+T-138 home, T-140 `/field/my-tasks`, T-141 `/field/drafts`, **T-142
+`/field/establishments`** (main list).
+
+**T-142 hardened the acid-lime fill rule into a token distinction, because it
+mis-bit twice in one screen.** `--sqx-surface-accent` is a **soft dark-olive
+tint** meant to sit *behind normal text*; it is NOT the bright lime fill. Putting
+dark/inverse text on it gives ~1.23:1 (the active tab, and the card avatar, both
+failed this way). The bright acid-lime **fill** is `--sqx-action-primary-bg` with
+`--sqx-action-primary-text` as its void ink — the tokens the primary Button uses.
+Rule for every future component: want the lime *fill*, reach for the
+action-primary tokens; `surface-accent` is only ever a subtle background.
+
+**And a container-width rule for field list pages.** The home pattern is *two*
+lines — `max-inline-size: var(--sqx-grid-min-lg)` **and**
+`@media (min-width: 60em) { max-inline-size: none }`. The first alone clamps a
+grid to a 384px single column; a card-grid screen needs both, or the grid never
+gets to fan out.
+
+## The `/field` migration: home, my-tasks and drafts are done (2026-08-17)
+
+T-138 migrated the home route, T-140 `/field/my-tasks`, **T-141
+`/field/drafts`**.
+
+**T-141 established the rule for migrating a client component with `let` debt.**
+The old `FieldDraftList` carried six `let`s inside an offline-read effect —
+baselined on its path, but rule 6 (no `let` in `.tsx`, ever) means the *migrated*
+file lands at zero. The pattern that works: one `async safeRead<T>() →
+{value, ok}` helper turns each `try/catch`-per-read into a `const`, `Promise.all`
+replaces a mutating accumulator loop, and the failure flag is derived from the
+`ok`s. Behaviour is preserved exactly while the migrated file is clean — the same
+discipline the typography and copy rules already demand.
+
+## The `/field` migration: home and my-tasks are done (2026-08-17)
+
+T-138 migrated the home route; **T-140 migrated `/field/my-tasks`**, the
+master/detail screen.
+
+**A pattern is now confirmed across both slices: the same GeoMap "Map
+unavailable" heading (`h4`) is valid or a skip depending purely on the heading
+level of the section that frames it.** On the home map card it sits under an `h3`
+title (`h3→h4`, fine); in the my-tasks Visit Location section it sits under an
+`h2` (`h2→h4`, a skip). T-140 gave GeoMap an additive `unavailableHeadingLevel`
+prop (default 4) rather than guessing — any future map placed under an `h2`
+section must pass `3`.
+
+**And the same enum-translation trap caught both slices: governed enum values
+(risk band, licence status, visit state) must read the shared `visits.enum`
+namespace, not a screen-local table.** The old code did this through
+`t("enum.<v>")`; a screen-local status map silently drops the Arabic for
+`low`/`medium`/`high`. Both T-138 and T-140 route governed enums through
+`enumLabel(messages.visits.enum, …)`.
+
+## The `/field` home migration is done (2026-08-17)
+
+T-138 migrated the first slice.
+
+```
+route file        677 lines → 12
+headings          0 → 1>2>2>3>2>3>3>2>2>2>2   one h1, one main, no skips
+rendered sizes    11.5·12·12.5·13·13.5·14·14.5·16·19  →  13·15·24·32
+weight cap        700 → 590
+raw <svg>         15 → 0            inline style={{}}   66 → 2
+hardcoded copy    48 keys → 0       axe   0 across EN/dark, AR/dark, AR/light
+```
+
+**The lesson that shaped the whole task: bound a slice by the import graph, not by
+the directory.** `FieldHeader` has **34 importers** and `FieldHeaderSync` **4**.
+Rewriting either — both sit in `components/field/` and both look like "the field
+home's header" — would have silently restyled 33 unmigrated screens. `FieldHome`,
+`FieldMetricStrip` and `DailyBriefingCard` had **exactly one importer each**, so
+those were the ones safe to delete. This is T-136's "a filename grep is not an
+import graph" applied *before* writing code instead of after review.
+
+**The parallel stylesheet is still linked** by `field/layout.tsx` and still comes
+out last, per the standing correction: a CSS Module class beats its element
+selectors on specificity, so removing the `<link>` early would break the
+unmigrated screens, not the migrated one.
+
+## `/field` has no heading structure at all, and it is now measured (2026-08-17)
+
+**Partly resolved by T-138** — the home route now has a full outline and the
+approved scale. Everything below still holds for `/field/my-tasks` and the rest of
+the channel.
+
+The Inspector pass in T-137 produced the biggest finding of the accessibility
+work, and it is not a heading skip:
+
+```
+/field           headings 0 · role="heading" 0
+/field/my-tasks  5 headings, all h3, no h1
+```
+
+Every visual heading on the field home is a `<div>` or `<span>` — including the
+page title:
+
+```
+"Good afternoon, …"          <div>   16px / 700
+"AI Daily Brief"             <span>  14px / 600
+"Today's operations map"     <div class="t-label">  13px / 500
+"Inspections"                <div>   12.5px / 600
+```
+
+**A screen-reader user has nothing to navigate the field home by.** That is worse
+than a skip and **invisible to `heading-order`**, which only fires on an increase
+greater than one — so a clean axe run on `/field` means nothing about its outline.
+
+The same session, same viewport, tells the design story in one line:
+
+```
+/dashboard        13 · 15 · 20 · 24 · 32                       the approved scale
+/field/my-tasks   11.5 · 12 · 12.5 · 13 · 13.5 · 14 · 14.5 · 16 · 19
+```
+
+Nine ad-hoc sizes, five below the 13px floor, weight 700 above the 590 cap.
+`/saqeel-ds/saqeel/styles.css` is still linked, so the T-129→T-132 token promotion
+— which moved the whole application onto one palette, typeface and scale by
+retargeting one file — **never reached `/field` at all.** The standing CORRECTION
+is confirmed by measurement: that sheet is a separate system, not a `--sqx-*`
+override, and only migrating the routes removes it.
+
+**`/field` is now the largest single accessibility and design-language gap in the
+application**, and for the first time it is quantified rather than asserted.
+
+## A screen you have only seen in one role is a screen you have not seen (2026-08-17)
+
+`/admin/planning/expiry` was built in T-127 and ported in T-134, always under a
+Planner session — which only ever renders its **access-refusal** state. The first
+Admin render showed "Superseded" truncating to "Supers…" in every row.
+
+The measurement misled twice before it settled:
+
+```
+pill root    scrollW 89 = clientW 89   "no overflow"
+label child  scrollW 75 > clientW 59   truncated
+```
+
+The root reported no overflow **because the label child absorbed it**. Cause was a
+12% status column leaving a 91px content box for a pill needing ~101px.
+
+Two habits this reinforces: check the element that actually clips, not its
+container; and **a route gated by capability needs a session that holds the
+capability before it can be called verified.**
+
+## `page-has-heading-one` does not fire, so count the `h1`s yourself (2026-08-17)
+
+Across every axe run in T-135–T-137, `page-has-heading-one` reported nothing —
+including on `/field`, which has **zero** headings, and `/dashboard`, which has no
+`h1`. It sits outside the WCAG tags and did not run even when requested by rule
+name.
+
+**Any gate for this must count `document.querySelectorAll('h1')` directly.**
+Relying on the axe rule would have reported those pages clean.
+
+## Promoting a heading level breaks the outline below it (2026-08-17)
+
+T-136 changed `Shell`'s page title from `level={2}` to `level={1}`, giving **88 of
+107 call sites an `h1`** they never had. It also **introduced a heading skip**:
+
+```
+/visits before   H2 → H3 → H2 → H2   valid
+/visits after    H1 → H3 → H2 → H2   heading-order violation
+after the fix    H1 → H2 → H2 → H2   clean
+```
+
+Any content heading that began at h3 under the old h2 becomes a skip under the new
+h1. The cause here was **`ContextualAiPanel.tsx` hardcoding `<h3>`** — the legacy
+AI panel, already in the retirement ledger, superseded by `AdvisoryStrip` which
+uses `level={2}`. One line fixed **6** surfaces.
+
+**A heading skip is not a WCAG AA failure.** axe's WCAG tags were clean before and
+after; only the best-practice `heading-order` rule ever reported it. So promoting a
+shared heading level is a change that **must** be checked with that rule
+specifically, and **19 files still render `level={3}`/`<h3>`** on routes no Planner
+session can reach.
+
+## A filename grep is not an import graph (2026-08-17)
+
+T-136 spent real effort adding a `standalone` prop to `AccessState` to resolve a
+duplicate-`h1` conflict on six routes — then checked the import graph:
+
+```
+importers of components/AccessState    2   both shell-less /launch pages
+the six *AccessState wrappers          render neither <main> nor h1
+```
+
+The six components share a naming pattern with `AccessState` and nothing else. The
+conflict never existed; the prop was unused API on a primitive and was reverted in
+full. **Grep the imports before believing the names.**
+
+## `/reviews/[id]` rendered the same title twice (2026-08-17)
+
+The route computed `ws.title.replace("{factory}", …)` for the shell title and
+`review-workspace` computed it again for its own `h1`. Pre-existing, invisible
+because both were "the page title", and it would have become two `h1`s under
+T-136. Fixed by passing `title=""` — the convention `/execution` and `/analytics`
+already follow, where the content owns the heading.
+
+## axe has finally been run, and 0 violations is not the whole story (2026-08-17)
+
+`axe-core@4.12.1` was already a dependency. T-135 ran it against
+`wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa`:
+
+```
+/dashboard  dark  · en     30 passes  0 violations  2 incomplete
+/dashboard  light · en     30 passes  0 violations  2 incomplete
+/dashboard  dark  · ar     30 passes  0 violations  2 incomplete
+/factories  dark  · en     33 passes  0 violations  3 → 2 after the fix
+```
+
+**The first real axe evidence this programme has** — eight records had listed it
+as owed. It is 572 KB, too large to inject in one evaluate call, so it was served
+from `public/` for the run and deleted immediately (verified by `rm`, a 404, and a
+clean `git status`). **That hand-copy is a trap if repeated; the run belongs in a
+script.**
+
+**It found one genuine defect no gate could see.** `CountBadge` put `aria-label`
+on a bare `<span>` with no role, which ARIA prohibits — so the label was being
+**discarded by assistive technology entirely** at both call sites. T-122's rule
+arriving from a new direction: *an `aria-*` attribute is a no-op unless the element
+it lands on can carry it.*
+
+**And the caveat that matters more than the zero.** `/factories` measures
+**`main: 1, h1: 0`**, and axe's own `page-has-heading-one` **did not flag it**,
+because that rule sits outside the WCAG tags. The missing-`h1` problem recorded
+against `/dashboard` is not route-specific: legacy `Shell` renders the page title
+as `<Heading level={2}>`, so **all 77 routes importing it have no `h1`**.
+
+**A clean axe run under the WCAG tags does not mean the heading outline is
+sound** — and "axe: 0 violations" is exactly the kind of number that stops people
+looking further.
+
+## One 18-line file was serving two `main` landmarks to 31 routes (2026-08-17)
+
+`components/RouteLoading.tsx` rendered `<main className="sq-content">` while both
+shells already render `<main id="main-content">`
+(`app-shell.tsx:42`, `ShellClient.tsx:649`). Every one of its **31 importing
+routes** served a duplicate landmark while loading, plus `glyph="◫"`, an
+`EmptyState` import from the closed `components/` root, and the banned
+`isAr ? ar : en` ternary — four breaches in eighteen lines.
+
+Rebuilt on `SkeletonRegion`, which already carries
+`role="status" aria-busy aria-live`, removing three of the four at once and adding
+**no file to the closed directory** because the primitives bring their own styles.
+
+**The fourth could not be fixed here and the count is the reason:** the 31 callers
+pass literal `en="…" ar="…"` pairs — **~62 hardcoded strings** — so the ternary is
+the API, not the file. Removing it means 31 callers and 31 new i18n namespaces.
+
+## CORRECTION — the ID collisions are 6, not 3, and T-046 was used four times (2026-08-17)
+
+The entry below headed *"Two sessions ran at once and the working tree is
+entangled"* calls the T-076/T-101 incident **"the third ID collision"**. Counted
+across `02-SESSION-LOG.md`:
+
+```
+T-026  /factories snapshot hero        vs  /enforcement-library
+T-027  /factories compliance           vs  Five-route rebuild + Jira canon
+T-046  FOUR different /planning/bulk slices, all numbered T-046
+T-077  delete the dead planning tree   vs  /visits/[id] bilingual resources
+T-078  repair the responsive spec      vs  /visits/[id] read surface
+```
+
+**Six colliding IDs across 13 rows**, each pair a different title describing
+different work — genuine collisions, not double-logged rows.
+
+This document already prescribed the fix after the first one — *claim the ID in
+the tracker at the start of a task* — and already observed that nothing
+implements it. T-127…T-134 have each advanced "Highest id in use" by hand, so the
+practice is live, but **nothing stops a concurrent session taking the same
+number**. The cheapest real control is a gate that fails on a duplicate `T-NNN`
+in the session log: it is the one-line grep that produced the table above.
+
+## The component ledger held two divergent copies of itself (2026-08-17)
+
+`04-COMPONENT-LEDGER.md` had a whole second ledger appended below the first, so
+the same component appeared twice with different notes and anyone reading past
+the halfway point got stale facts. Merged in T-134: **177 unique rows recovered,
+0 lost, 574 → 351 lines.**
+
+**Neither copy was a superset**, which is why "take the newer one" would have
+destroyed 86 rows:
+
+```
+A 91 rows · B 173 rows · union 177
+only in A  type · route-error · dashboard/enforcement-trend · dashboard/executive-brief
+only in B  86 rows (regulations, enforcement, approvals, factories workspaces)
+shared 87  only 2 differ — Button, date-range-presets — A longer in both
+```
+
+**Length is not evidence of supersession.** For the two differing rows, A was
+verified to carry *every* fact B had before B was discarded — phrase by phrase,
+because B's text was not contained verbatim in A even though A held all of its
+content.
+
+**The only visible symptom of a 223-line duplication was duplicate headings**, in
+a 574-line table where nobody would notice them. The ledger now opens with a
+banner and one instruction: search for the row before appending.
+
+## The component ledger contains two divergent copies of itself (2026-08-17)
+
+`04-COMPONENT-LEDGER.md` is 574 lines and reads as **[newer ledger] + [older
+ledger] appended**. Lines 5–23 repeat at 232–250, and then the copies diverge:
+
+```
+line  24   | `Button` | inherited | **`name` / `value` (T-040)**: a form with more…
+line 251   | `Button` | inherited | accepts `className` — must lose the escape hatch…
+```
+
+Same component, two different notes, one file. **This is the document whose whole
+job is *never build what already exists*** — and a reader who scrolls to the
+second half gets stale facts about components the first half describes correctly.
+
+Found while running T-133's death checklist, which is the point: the checklist
+sends you to the ledger, and the ledger turned out to be the unreliable one.
+
+**Do not fix it with a dedupe.** It needs a row-by-row merge, because the two
+halves are not identical and a mechanical pass would delete real rows. Parked
+with the line ranges.
+
+## A gate delta is evidence that a deletion was real (2026-08-17)
+
+T-133 deleted `primitives.module.css` (1,301 lines, zero importers). The proof it
+was not a phantom came from the typography gate moving **115 → 129 violations
+removed** — the baseline had recorded that file's 14 `retired-typography-role`
+entries, so a file contributing to the baseline is one the scanner really reads.
+
+**Two sequencing rules worth keeping.** Run the orphan scan **after** the
+deletion, or the dead file's own references count as consumers. And chase
+**keyframes as well as tokens**: `sqx-flow`, `sqx-sweep` and `sqx-drift` were all
+defined in `saqeel.css` and referenced nowhere, found only by listing every
+`animation-name` in `src/` and diffing against the `@keyframes` definitions.
+
+## The typography divide is closed, and the risk was where nobody looked (2026-08-17)
+
+T-132 repointed the frozen `--type-*` scale at `--sqx-text-*`. One file, no
+component touched, and the app now has **one typeface, one scale and one palette
+across migrated and legacy routes alike**.
+
+T-131 flagged the **heading jumps** (17→24px, 22→32px) as the danger. Measuring
+consumption first showed they are ~32 call sites, while the real mass is
+**208 consumers below 13px** — `--type-caption-font` alone has **105**:
+
+```
+caption-font 105 (12px) · micro 76 (11.5px) · body-strong 39 · compact-size 29
+body-font 22 · label-size 18 · heading-lg 15 · title 11 · display 6
+```
+
+**Count the consumers before you rank the risk.** The scary-looking change was
+marginal; the boring one was the whole job.
+
+Result, measured: `/factories` renders 13 · 15 · 20 · 24 · 32 with a 13px floor
+and weights ≤ 590; **zero elements past the viewport at 960px, and at 320px the
+document scrollWidth is exactly 320.** Arabic keeps the same sizes with looser
+leading (1.55 / 1.80) because `tokens.css`'s RTL block overrides line-heights
+only, never sizes — the one thing most likely to have broken.
+
+## Aliasing a pinned value beats swapping it (2026-08-17)
+
+Four specs across T-131 and T-132 pinned literal values in `tokens.css`
+(`--font-body: var(--font-plex-arabic`, `--type-display-size: 28px`,
+`--type-page-title-size: 22px`, `--type-body-size: 14px`). Every one was
+**strengthened rather than edited down to whatever shipped**: they now assert the
+frozen sheet *aliases* the design system, plus that `saqeel.css` holds the
+approved value. That fails if the frozen sheet ever re-acquires an independent
+scale, which the literal could never detect.
+
+Two of those assertions carried comments asserting the *previous* decision —
+"SAQEEL scale supersedes 32px", "14px body supersedes 16px minimum". Those are
+now false. **When you re-point an assertion, re-read its comment: a stale comment
+on a passing test is worse than a failing one.**
+
+## `next/font`'s synthetic fallback silently ate Arabic for two tasks (2026-08-17)
+
+`--sqx-font-sans` named `inter, plexArabic, …` and looked correct. It rendered:
+
+```
+stack in the DOM   inter, "inter Fallback", plexArabic, "plexArabic Fallback", …
+Arabic measured    49.81px   ← a local system face
+Plex would be      55.33px
+```
+
+`next/font` synthesises an **`"<name> Fallback"`** face from a local font and
+inserts it immediately after the real one. That synthetic face **carries
+Arabic**, so it captured every Arabic glyph before the chain ever reached Plex.
+**Arabic rendered in the wrong face, with the wrong metrics, on every migrated
+route from T-129 until T-131** — while the stack still named Plex.
+
+Fixed with `adjustFontFallback: false` on the Inter loader: Arabic now measures
+55.55px, Latin 101.61px ≡ Inter.
+
+**Nothing could have caught this by reading.** The stack was right, Latin was
+right, the typography gate checks declarations rather than rendering, and
+T-129's own Arabic pass measured letter-spacing and digit shape — not the
+typeface. **Measure each script separately; Latin passing tells you nothing
+about Arabic.**
+
+## The legacy routes already had the new palette (2026-08-17)
+
+T-131 opened as "migrate ~80 legacy routes" and found the job mostly done:
+`tokens.css` holds **149 custom properties, 64 of which already alias
+`--sqx-*`** and 4 of which carry a raw value. T-129's palette reached every
+legacy route the day it landed.
+
+What was left was typography — and it split cleanly in two. The **typeface** was
+two token lines. The **sizes** (14px body vs 15px, 28px display vs 32px) are
+layout-affecting across ~80 routes and were deliberately deferred rather than
+bulk-edited.
+
+**Measure the gap before scoping the sweep.** The route-by-route plan would have
+been eighty tasks for a job that was two lines plus one deferred decision.
+
+## A token that resolves to `none` poisons a comma list (2026-08-17)
+
+`card.module.css` declared `box-shadow: var(--sqx-shadow-card), var(--sqx-rim-light)`
+and `--sqx-rim-light` is `none` in **both** themes. `none` is only valid as the
+*sole* value of `box-shadow`, so the declaration was invalid and dropped —
+**every Card in the application has been rendering with no box-shadow at all.**
+
+```
+inset 0 0 0 1px #23252A, none   →  computed: none
+inset 0 0 0 1px #23252A         →  computed: rgb(35,37,42) 0 0 0 1px inset
+```
+
+Nothing looked wrong, because the card's `border` was already drawing the single
+hairline the language wants. It would have looked wrong the moment anyone gave
+`--sqx-rim-light` a value: every card would have silently gained a doubled edge.
+
+**A CSS custom property is not inert when it resolves to a keyword.** If a token
+can be `none`, it cannot sit in a comma-separated list.
+
+## A contrast check is only as good as its background resolution (2026-08-17)
+
+Two false failures in two tasks, from opposite directions:
+
+```
+T-129  selected segment read 1.3:1   the lime pill is a SIBLING span — walking up misses it
+T-130  11 pills read 4.16:1          the rows were inner label spans whose own bg is transparent,
+                                     and transparent parses to black
+```
+
+Resolved to the nearest **painted** ancestor, the real numbers are 4.61 and
+10.22, and the page measures **0 failures across 302 elements**. T-130 nearly
+"corrected" a palette that was already correct; what stopped it was recomputing
+the same pair three ways — from hex, from the computed strings, and live — and
+getting 4.61 every time.
+
+**Never compare against a transparent element's own background, never assume the
+painted surface is an ancestor, and re-measure a failure before fixing it.**
+
+## The no-literals rule is what let art direction change in one file (2026-08-17)
+
+T-129 replaced the entire visual language by retargeting **128 values in
+`saqeel.css`**. **254 files consume `var(--sqx-*)`; none was edited**, and 28
+migrated routes adopted the new language for free. `/operations` was verified
+rendering it having never been opened.
+
+The rule had always been justified as tidiness. It is actually the thing that
+lets the system survive a change of art direction, and WEB-002 §1 now says so.
+
+**The corollary is the warning:** a component holding one hardcoded value opts
+that route out of the *next* change, silently.
+
+## A theme-asymmetric token is invisible unless both themes are measured (2026-08-17)
+
+`--sqx-text-link`, `-accent`, `--sqx-action-tertiary-text` and
+`--sqx-segment-label` pointed at pale lime **in the dark block only**, so links
+rendered chromatic — against the rule written in the same session. The light
+block was already neutral and correct, **which is exactly why it survived**:
+every check that looked at light passed.
+
+Same shape one level up: **white ink on a lime fill measured 1.1:1**, because
+repointing brand to a *light* colour broke every token that assumed "brand fill
+is dark, so ink is white".
+
+**Measure both themes, or measure nothing.**
+
+## An ancestor walk is not a background test (2026-08-17)
+
+A contrast scan reported the selected segment at **1.3:1** and was wrong. The
+lime pill is a **sibling `<span>`** that slides behind the segment, so walking
+the ancestor chain for a non-transparent background finds the graphite root and
+misses the pill entirely. `::before` / `::after` were empty too.
+
+When a design paints selection with a sliding indicator, query for the painted
+colour rather than walking up — and re-check a "failure" before fixing it.
+
+## `inline-flex` inside a column flex container is full-width, and it looked like a design choice (2026-08-17)
+
+Owner-reported on `/dashboard`: every status label — *Not configured*,
+*Unavailable*, *Decision required* — rendered as a **full-width bar** instead of
+a chip. The badge was `display: inline-flex`, which reads as "hugs its content",
+but a flex item's cross size defaults to `stretch`, and in a **column** container
+the cross axis is the inline one.
+
+```
+before   badge 225px in a 225px card
+after    badge 118–145px in a 225–257px card
+```
+
+**Fixed with `inline-size: fit-content`, not `align-self: flex-start`** — the
+latter fixes the column case and silently breaks baseline alignment wherever the
+same primitive sits in a row. Applied to `Badge` and `Button` so the whole class
+is closed at the primitive.
+
+**No gate can see this**, and it does not look like a bug in a screenshot — it
+looks like a deliberately full-width status strip.
+
+## Two features vanished again, and again only the T-111 audit saw them (2026-08-17)
+
+T-128 rebuilt `/dashboard` and dropped **`ExecutiveBrief`** and
+**`SearchResults`** without noticing. Typecheck, lint, typography, v5 and the
+408-test static suite were all green on the result.
+
+`ExecutiveBrief` carries `MVP2-REQ-0056,MVP2-REQ-0057,SCR-WEB-010`, so removing
+it is a **contract change, not a design one** (T-109). `SearchResults` is the
+only thing that renders for `?q=`, so the topbar search would have gone silently
+dead.
+
+This is the fourth instance of the same shape — T-111, T-124, T-126, now T-128.
+**The audit is the only control that has ever caught it:** diff the *old*
+component tree against the new, because a screen's feature set is visible only in
+its previous version. It is now cheap enough that there is no excuse:
+
+```
+ls the old component directory  →  18 live components
+grep the new tree for each      →  2 with no counterpart
+```
+
+## A categorical palette is three colours, twice now, for measured reasons (2026-08-17)
+
+The Linear reference offers six accent colours. Run through contrast-as-fill and
+pairwise ΔE with deutan/protan simulation, **three survive**:
+
+```
+iris ~ lavender     ΔE 1.6 deutan     indistinguishable
+green ~ red         ΔE 5.8 deutan     the classic pair
+acid-lime           1.23:1 on light   invisible as a fill
+signal-teal         2.41:1 on light   fails
+```
+
+`iris`, `pulse-green` and `fog` are ≥3:1 as fills in **both** themes with a
+minimum pairwise ΔE of 19.7. **SAQEEL's own palette capped at three for the same
+reason** — this is not a quirk of one system, it is what a two-theme categorical
+scale costs. A fourth category folds into a rest slot or facets.
+
+## A style reference is not a design system until someone measures it (2026-08-17)
+
+T-127 built `/admin/planning/expiry` in the experimental Linear language at
+`apps/web/experimental/`. **Two of its own specifications fail WCAG AA**, and
+both were found by measuring the rendered page, not by reading the palette:
+
+```
+badge spec   rgba(255,255,255,0.05) ground + #8a8f98 text   3.25:1   FAIL at 13px
+"muted body text" role   ash #62666d on void                3.45:1   large-text only
+```
+
+The badge number is the nastier one: **the tint lightens the ground**, so a pair
+that measures 5.86:1 on the card measures 3.25:1 inside the badge. A palette
+check against surface colours would have passed it. **Composite the alpha against
+the real ancestor chain, or the number is fiction.**
+
+Three more results worth carrying forward. **The light theme needed no invention
+— the ladder inverts**: `fog` is muted text on dark, `ash` is muted text on
+light, `graphite`/`smoke` hairlines become `bone`/`mist`, all from the reference's
+own 16 colours. **The accent survives both themes only as a fill**: `#e4f222` is
+1.23:1 as text on white and 16.15:1 as a fill with near-black ink. And
+**decorative hairlines are not control borders** — `graphite` on `void` is 1.30:1,
+correct for a divider under 1.4.11 and insufficient for an input edge.
+
+## Four token names collided with the frozen sheet, and a `:root` block would have hit every route (2026-08-17)
+
+`apps/web/experimental/variables.css` defines `--radius-sm`, `--radius-md`,
+`--shadow-sm` and `--shadow-md` — **all four already exist in `src/app/tokens.css`**.
+Dropped into `:root` as written, an experiment scoped to one route would have
+changed radii and shadows application-wide.
+
+**Prefix and class-scope any parallel token set before it renders once.** T-127
+uses `--lnr-*` on a wrapper class, so deleting the directory removes the
+experiment completely. Also discarded: `experimental/theme.css` is a **Tailwind
+v4 `@theme` block** duplicating `variables.css` verbatim, and this repo has no
+Tailwind (WEB-002 §3).
+
+## A font claim is a width measurement — and the headline typeface is not rendering (2026-08-17)
+
+T-095's rule paid out again. The experimental system's identity is *"Inter
+Variable with cv01, ss03 and zero on"*; measured:
+
+```
+as declared   500.20      ← identical to Plex Arabic: that is what renders
+plexArabic    500.20
+Inter         435.25      ← absent, not resolving
+```
+
+`app/layout.tsx` self-hosts IBM Plex Sans Arabic **deliberately**, so the build
+never depends on a Google fetch — which means Inter cannot simply be linked; it
+must be self-hosted the same way. **Anyone judging the experiment today is seeing
+its colour, spacing, shape and hierarchy in the ministry typeface, not its
+typography.** Say so before asking for a verdict.
+
+## `hasText` is a substring match, and `cd-044` was one version away from failing (2026-08-17)
+
+`section(page).locator("tr", { hasText: "v1" })` matches any row containing
+`v1` — including `v10`. The spec's own create-version test grows that section on
+every run and it is **already at v9**, so the next run fails Playwright strict
+mode with an error indistinguishable from a migration regression.
+
+**Found only because the rebuilt page was read in the browser.** Re-pointed to an
+exact cell match. Worth a sweep: any `hasText` carrying a short prefixed
+identifier (`v1`, `P1`, `R1`) has this defect latent in it.
 
 ## A component that compiles, typechecks and passes every gate can still be rendered by nothing (2026-08-16)
 

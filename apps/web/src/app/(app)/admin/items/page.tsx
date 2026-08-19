@@ -240,7 +240,7 @@ export default async function Items({
       {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
           authorization; the write path is RLS-guarded and every row change is audited. */}
       <section className="panel sq-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--space-6)" }}>
-        <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
+        <h2 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h2>
         <p className="t-caption" style={{ margin: 0 }}>
           {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require the admin role. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
         </p>
@@ -248,14 +248,14 @@ export default async function Items({
 
       {!error && isWriter && (
         <section className="panel stack" aria-labelledby="cd007-create-h" style={{ padding: "var(--space-6)" }}>
-          <h3 id="cd007-create-h" style={{ margin: 0 }}>{t("admin.items.r2.create.heading", "Add an inspection item")}</h3>
+          <h2 id="cd007-create-h" style={{ margin: 0 }}>{t("admin.items.r2.create.heading", "Add an inspection item")}</h2>
           <NewItemForm clauses={clauseOptions} clauseUnavailable={clauseUnavailable} strings={strings} />
         </section>
       )}
 
       {!error && rows.length > 0 && (
         <section className="stack" aria-labelledby="cd007-preview-h">
-          <h3 id="cd007-preview-h" style={{ margin: 0 }}>{t("admin.items.r2.preview.heading", "Runtime preview — what the inspector sees")}</h3>
+          <h2 id="cd007-preview-h" style={{ margin: 0 }}>{t("admin.items.r2.preview.heading", "Runtime preview — what the inspector sees")}</h2>
           <ItemPreview items={previewItems} strings={previewStrings} />
         </section>
       )}
@@ -269,7 +269,7 @@ export default async function Items({
 
       {!error && rows.length > 0 && (
         <section className="stack" aria-labelledby="cd007-catalogue-h">
-          <h3 id="cd007-catalogue-h" style={{ margin: 0 }}>{t("admin.items.r2.catalogue.heading", "Catalogue")}</h3>
+          <h2 id="cd007-catalogue-h" style={{ margin: 0 }}>{t("admin.items.r2.catalogue.heading", "Catalogue")}</h2>
           <div className="table-wrap"><table className="table">
             <caption className="sr-only">{t("admin.items.r2.catalogue.heading", "Catalogue")}</caption>
             <thead><tr>
@@ -339,12 +339,12 @@ export default async function Items({
 
       {!error && rows.length > 0 && isWriter && (
         <section className="panel stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--space-6)" }}>
-          <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Item history")}</h3>
+          <h2 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Item history")}</h2>
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to see its change history; broad access to the full audit table is not given.")}</p>
           {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
             : !auditItem ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
             : auditResult.error ? <div className="alert alert-warning" role="alert">{t("admin.items.r2.audit.unavailable", "History couldn't load — reload to retry. This does not mean the history is empty.")}</div>
-            : <div className="stack" style={{ gap: "var(--space-2)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
+            : <div className="stack" style={{ gap: "var(--space-2)" }}><h3 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h3>
               {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No activity found for this item.")}</p>
                 : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </div>}

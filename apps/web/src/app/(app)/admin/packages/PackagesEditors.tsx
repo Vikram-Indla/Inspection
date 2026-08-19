@@ -79,7 +79,7 @@ export default function PackagesEditors({ data, query, locale, bags, impact }: {
     return (
       <DesignerScreen
         data={data}
-        deactivateFor={target => <DeactivatePackage strings={bags.publish} versionId={target.id} />}
+        deactivateFor={target => <DeactivatePackage strings={bags.publish} versionId={target.id} locale={locale} />}
         designer={canDesign && version ? (
           <>
             <DraftEditor
@@ -104,7 +104,7 @@ export default function PackagesEditors({ data, query, locale, bags, impact }: {
         ) : null}
         impact={<ImpactPanel data={(version && impact.get(version.id)) ?? EMPTY_IMPACT} strings={bags.impact} />}
         locale={locale}
-        newDraftForm={<NewDraftForm packageId={data.selection.pkg.id} strings={bags.publish} />}
+        newDraftForm={<NewDraftForm packageId={data.selection.pkg.id} strings={bags.publish} locale={locale} />}
         preview={version ? previewFor(version) : null}
         query={query}
         selection={data.selection}
@@ -121,7 +121,7 @@ export default function PackagesEditors({ data, query, locale, bags, impact }: {
       query={query}
       readAt={Date.now()}
       templateRegistry={data.canWrite && !data.templatesUnavailable
-        ? <TemplateRegistry strings={bags.template} templates={data.templates} />
+        ? <TemplateRegistry strings={bags.template} templates={data.templates} locale={locale} />
         : null}
     />
   );

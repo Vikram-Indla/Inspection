@@ -116,6 +116,9 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(isShellRouteCurrent("/operations", "/dashboard")).toBe(false);
     expect(isShellRouteCurrent("/operations", "/operations")).toBe(true);
     expect(isShellRouteCurrent("/operations/live", "/operations")).toBe(true);
+    expect(isShellRouteCurrent("/admin/gis", "/admin/gis")).toBe(true);
+    expect(isShellRouteCurrent("/admin/gis/spatial", "/admin/gis")).toBe(false);
+    expect(isShellRouteCurrent("/admin/gis/spatial", "/admin/gis/spatial")).toBe(true);
   });
 
   test("scope consumers are explicit and non-consuming pages stay disabled", () => {

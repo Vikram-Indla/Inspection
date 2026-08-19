@@ -1,0 +1,105 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sqx-space-3);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  inline-size: 100%;
+  min-inline-size: 60rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table caption {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.table th {
+  text-align: start;
+  vertical-align: bottom;
+  padding-block: var(--sqx-space-3);
+  padding-inline: var(--sqx-space-4);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-default);
+}
+
+.table td {
+  vertical-align: top;
+  padding-block: var(--sqx-space-4);
+  padding-inline: var(--sqx-space-4);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.colVersion { inline-size: 6%; }
+.colStatus { inline-size: 15%; }
+.colOffset { inline-size: 8%; }
+.colReason { inline-size: 18%; }
+.colReasonWide { inline-size: 26%; }
+.colNotify { inline-size: 14%; }
+.colScope { inline-size: 13%; }
+.colEffective { inline-size: 12%; }
+.colActions { inline-size: 14%; }
+
+.liveRow td {
+  background: var(--sqx-surface-subtle);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-3);
+}
+
+.editorCell {
+  padding-block: var(--sqx-space-5);
+  background: var(--sqx-surface-subtle);
+}
+
+.reasonCell {
+  overflow-wrap: anywhere;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-tight);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-xs), 1fr));
+  gap: var(--sqx-space-4);
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-6);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-4);
+}

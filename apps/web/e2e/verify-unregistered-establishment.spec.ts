@@ -16,10 +16,11 @@ test("INSP-605 unregistered establishment — real submit via create_immediate_v
   await page.getByRole("button", { name: /Capture current location/i }).click();
   await expect(page.locator('input[readonly]').first()).toHaveValue(/24\.71/, { timeout: 10_000 });
 
-  // Report type — PackageTypeSelector renders as .sq-typecard radio labels.
-  await page.locator(".sq-typecard").first().click();
+  // Report type — the package selector renders a radiogroup labelled by its
+  // "Report type" heading; pick the first inspection package.
+  await page.getByRole("radiogroup", { name: /Report type/i }).getByRole("radio").first().check();
 
-  await page.getByRole("button", { name: "Complaint received", exact: true }).click();
+  await page.getByRole("radio", { name: "Complaint received", exact: true }).check();
   await page.fill("#ue-notes", "E2E verification — unregistered facility discovered in the field");
   await page.getByRole("button", { name: /Create visit/i }).click();
 

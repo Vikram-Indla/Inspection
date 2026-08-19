@@ -2,7 +2,7 @@ import { useT } from "@/lib/i18n";
 import { getMessages } from "@/i18n/messages";
 import type { OperationsData } from "@/features/operations/queries";
 import type { OperationsScope } from "@/features/operations/scope";
-import RevampOperationsCenter from "../RevampOperationsCenter";
+import OperationsCenter from "../OperationsCenter";
 import type { OperationsMapWorkspaceStrings } from "../OperationsMapWorkspace";
 import { buildOperationsModel } from "./model";
 import {
@@ -70,7 +70,7 @@ export default async function OperationsOverview({ data, scope }: {
           )} <strong>{data.outOfScopeRecordCount}</strong>
         </div></div>
       )}
-      <RevampOperationsCenter
+      <OperationsCenter
         locale={locale}
         view={scope.view}
         mapEntries={buildMapEntries(data, model, lab)}

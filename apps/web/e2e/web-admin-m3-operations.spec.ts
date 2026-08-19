@@ -17,7 +17,7 @@ const pageSource = [
   "src/app/(app)/operations/sections/queues-section.tsx",
   "src/app/(app)/operations/sections/export-section.tsx",
 ].map(read).join("\n");
-const centerSource = read("src/app/(app)/operations/RevampOperationsCenter.tsx");
+const centerSource = read("src/app/(app)/operations/OperationsCenter.tsx");
 const enOpsCopy = read("src/i18n/locales/en/operations.json");
 const arOpsCopy = read("src/i18n/locales/ar/operations.json");
 const mapSource = read("src/app/(app)/operations/OperationsMapWorkspace.tsx");

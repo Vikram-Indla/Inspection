@@ -37,14 +37,16 @@ const task = (overrides: Partial<AssignmentTask> = {}): AssignmentTask => ({
 // without mutating shared inspection data.
 test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
   test("assigned work stays inspector-scoped and exposes the canonical states", () => {
-    const page = read("src/app/(app)/field/my-tasks/page.tsx");
-    expect(page).toContain('.eq("inspector_id", user.id)');
-    expect(page).toContain('["published", "expired"].includes');
-    expect(page).toContain("assignmentStatus: a.status");
-    expect(page).toContain("packageVersionId: a.visits.package_version_id");
-    expect(page).toContain('redirect("/login")');
+    const queries = read("src/features/field-my-tasks/queries.ts");
+    const route = read("src/app/(app)/field/my-tasks/page.tsx");
+    const copy = read("src/i18n/locales/en/field-my-tasks.json");
+    expect(queries).toContain('.eq("inspector_id", user.id)');
+    expect(queries).toContain('["published", "expired"].includes');
+    expect(queries).toContain("assignmentStatus: row.assignmentStatus");
+    expect(queries).toContain("packageVersionId: row.visit.packageVersionId");
+    expect(route).toContain('redirect("/login")');
     for (const state of ["Today", "Active", "Upcoming", "Needs attention", "Returned", "Expired"]) {
-      expect(page).toContain(`"${state}"`);
+      expect(copy).toContain(`"${state}"`);
     }
   });
 
@@ -72,9 +74,9 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
   });
 
   test("accept/prepare and return actions preserve governed workflows", () => {
-    const browser = read("src/app/(app)/field/my-tasks/AssignmentTaskBrowser.tsx");
+    const browser = read("src/components/sections/field-my-tasks/my-tasks-list.tsx");
     const prepare = read("src/app/(app)/field/my-tasks/actions.ts");
-    const prepareControl = read("src/app/(app)/field/my-tasks/PrepareAssignmentAction.tsx");
+    const prepareControl = read("src/components/sections/field-my-tasks/prepare-assignment-action.tsx");
     const prepareMigration = read("../../supabase/migrations/20260725152000_assignment_accept_prepare.sql");
     const startup = read("src/app/(app)/field/[visitId]/Startup.tsx");
     const actions = read("src/app/(app)/field/[visitId]/actions.ts");
@@ -103,7 +105,8 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
   });
 
   test("attention filter is sourced only from unread visit-linked notifications", () => {
-    const page = read("src/app/(app)/field/my-tasks/page.tsx");
+    const queries = read("src/features/field-my-tasks/queries.ts");
+    const rows = read("src/features/field-my-tasks/rows.ts");
     const model = read("src/app/(app)/field/my-tasks/assignment-task-model.ts");
     const highWithoutNotification = task({ id: "high", priority: "high", unreadAlertCount: 0 });
     const ordinaryWithNotification = task({ id: "notified", priority: "low", unreadAlertCount: 1 });
@@ -113,17 +116,18 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
     expect(filterAssignmentTasks([highWithoutNotification, ordinaryWithNotification], {
       filter: "alerts", query: "", sort: "asc", locale: "en", now: "2026-07-25T12:00:00+03:00",
     }).map((row) => row.id)).toEqual(["notified"]);
-    expect(page).toContain('.from("notifications")');
-    expect(page).toContain('.eq("recipient", user.id)');
-    expect(page).toContain("payload?.visit_id");
-    expect(page).toContain("isNotificationUnread(row)");
+    expect(queries).toContain('.from("notifications")');
+    expect(queries).toContain('.eq("recipient", user.id)');
+    expect(rows).toContain("payload.visit_id");
+    expect(rows).toContain("isUnread(");
     expect(model).toContain("return task.unreadAlertCount > 0");
     expect(model).not.toContain("ALERT_PRIORITIES");
   });
 
   test("Arabic/RTL and offline presentation remain truthful", () => {
-    const browser = read("src/app/(app)/field/my-tasks/AssignmentTaskBrowser.tsx");
-    const page = read("src/app/(app)/field/my-tasks/page.tsx");
+    const browser = read("src/components/sections/field-my-tasks/my-tasks-list.tsx");
+    const en = read("src/i18n/locales/en/field-my-tasks.json");
+    const ar = read("src/i18n/locales/ar/field-my-tasks.json");
     const layout = read("src/app/(app)/field/layout.tsx");
     const offline = connectivityPresentation(false, {
       online: "متصل",
@@ -135,13 +139,17 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
       refreshAvailable: false,
     });
     expect(browser).toContain("navigator.onLine");
-    expect(page).toContain("server refresh is unavailable. Information shown may be stale");
-    expect(page).not.toContain("cached assignment details remain available");
-    expect(page).toContain('"Prepared", "جاهزة"');
-    expect(page).toContain('"Urgent", "عاجلة"');
+    expect(en).toContain("server refresh is unavailable. Information shown may be stale");
+    expect(en).not.toContain("cached assignment details remain available");
+    // Each locale file carries only its own language (WEB-013): the English and
+    // Arabic halves of the old in-code tr(key, en, ar) pairs are asserted apart.
+    expect(en).toContain('"prepared": "Prepared"');
+    expect(ar).toContain('"prepared": "جاهزة"');
+    expect(en).toContain('"urgent": "Urgent"');
+    expect(ar).toContain('"urgent": "عاجلة"');
     expect(layout).toContain('dir={locale === "ar" ? "rtl" : "ltr"}');
-    expect(page).toContain('"Package linked"');
-    expect(page).toContain('"Package not linked"');
-    expect(page).not.toContain('"Offline ready"');
+    expect(en).toContain('"Package linked"');
+    expect(en).toContain('"Package not linked"');
+    expect(en).not.toContain('"Offline ready"');
   });
 });

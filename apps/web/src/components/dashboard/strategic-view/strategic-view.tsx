@@ -188,7 +188,6 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
             coverage={coverage}
             locale={locale}
             strings={dashboard.charts.coverage}
-            headingId="dashboard-strategic-blocked"
           />
           <RequirementRegister
             metrics={requirementStrip.metrics}

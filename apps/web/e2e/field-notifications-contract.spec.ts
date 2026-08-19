@@ -42,19 +42,20 @@ test.describe("PLAN v7 item 2 Field Notifications contract", () => {
   });
 
   test("detail route uses the real recipient-scoped row and records the first receipt on open", () => {
-    const route = SRC("src/app/(app)/field/notifications/[id]/page.tsx");
+    const route = SRC("src/features/field-notifications/queries.ts");
     const actions = SRC("src/app/(app)/field/actions.ts");
-    const dashboard = SRC("src/app/(app)/field/page.tsx");
+    const dashboard = SRC("src/features/field-home/queries.ts");
+    const copy = SRC("src/i18n/locales/en/field-notifications.json");
 
     expect(route).toContain('.from("notifications")');
-    expect(route).toContain('.select("id, event_key, payload, delivery_state, read_at, created_at")');
+    expect(route).toContain('"id, event_key, payload, delivery_state, read_at, created_at"');
     expect(route).toContain('.eq("recipient", user.id)');
     expect(route).toContain(".maybeSingle()");
     expect(route).toContain("notificationReadPatch(notification.delivery_state");
     expect(route).toContain(".update(patch)");
     expect(route).toContain('.is("read_at", null)');
     expect(route).toContain("notificationPayloadEntries(notification.payload)");
-    expect(route).toContain("No notification payload is available.");
+    expect(copy).toContain("No notification payload is available.");
 
     expect(actions).toContain('.select("id, delivery_state, read_at")');
     expect(actions).toContain("notificationReadPatch(row.delivery_state");

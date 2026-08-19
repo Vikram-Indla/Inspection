@@ -12,13 +12,18 @@ test.describe("neutral provider-error boundary", () => {
     for (const p of [
       "src/app/(app)/admin/items/page.tsx",
       "src/app/(app)/admin/violations/page.tsx",
-      "src/app/(app)/admin/gis/page.tsx",
     ]) {
       const src = SRC(p);
       expect(src, `${p} must log provider diagnostics`).toContain("logProviderError");
       expect(src, `${p} must not render provider message`).not.toMatch(/\{(?:error|clauseError|err)\??\.message\}/);
       expect(src).toContain("NEUTRAL_LOAD_ERROR");
     }
+
+    const gisQueries = SRC("src/features/admin-gis/queries.ts");
+    const gisScreen = SRC("src/components/sections/admin-gis/gis-screen.tsx");
+    expect(gisQueries, "gis load must log provider diagnostics").toContain("logProviderError");
+    expect(gisQueries, "gis load must not render provider message").not.toMatch(/\{(?:error|clauseError|err)\??\.message\}/);
+    expect(gisScreen, "gis error surface must use governed neutral copy").toContain("strings.error.body");
   });
 
   test("admin publish/draft actions and notification adapter never return raw provider text", () => {

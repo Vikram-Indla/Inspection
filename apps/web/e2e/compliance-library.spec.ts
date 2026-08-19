@@ -28,8 +28,8 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
     expect(items).not.toContain('sq-btn sq-btn--prominent sq-link');
     expect(regulations).not.toContain('sq-btn sq-btn--prominent sq-link');
     expect(items).toContain("request_type=modify");
-    expect(requestCreate).toContain("requestedTitle");
-    expect(requestCreate).toContain("requestedDescription");
+    expect(requestCreate).toContain("sp.title");
+    expect(requestCreate).toContain("sp.description");
   });
 
   test("reviewers can verify configuration but route and page remain read-only", () => {

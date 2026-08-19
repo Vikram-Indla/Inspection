@@ -33,9 +33,11 @@ export const MAX_SERIES = CHART_SERIES.length;
  * cards are about the same kind of thing, and so the application does not render
  * every bar and every meter in one colour.
  *
- * Two slots carry meaning elsewhere and are chosen with that in mind:
- * `CHART_SERIES[1]` resolves to `--sqx-warning-*` and `CHART_SERIES[2]` to the
- * AI accent. Neutral tallies therefore take `volume`, not `rate`.
+ * `CHART_SERIES[2]` resolves to the AI accent, which WEB-002 reserves for AI
+ * features. Data series never take it: `coverage` is a proportion (43% of
+ * measures have a live source), so it shares the `rate` slot rather than
+ * borrowing the AI colour it is not entitled to. `CHART_SERIES[1]` resolves to
+ * `--sqx-warning-*`, so neutral tallies take `volume`, not `rate`.
  *
  * Measured contrast against both surfaces, both themes, all three slots:
  * **≥ 5.7:1** — every one clears the 3:1 floor for a graphical object.
@@ -45,8 +47,8 @@ export const SERIES_ROLE = {
   volume: 0,
   /** Proportions of a whole — rates and shares. */
   rate: 1,
-  /** What the platform knows about itself — coverage and blocking reasons. */
-  coverage: 2,
+  /** Coverage and blocking reasons — a proportion, so it takes the rate slot. */
+  coverage: 1,
 } as const;
 
 export function seriesColour(index: number): string {

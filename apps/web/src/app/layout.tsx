@@ -38,11 +38,21 @@ const plexArabic = localFont({
   display: "swap",
 });
 
+const inter = localFont({
+  src: [
+    { path: "../fonts/inter/inter-latin-wght-normal.woff2", weight: "100 900", style: "normal" },
+    { path: "../fonts/inter/inter-latin-ext-wght-normal.woff2", weight: "100 900", style: "normal" },
+  ],
+  variable: "--font-inter",
+  display: "swap",
+  adjustFontFallback: false,
+});
+
 export const viewport = {
   themeColor: [
-    // Matches --sqx-surface-canvas in each theme (IRP palette, 2026-08).
+    // Matches --sqx-surface-canvas in each theme (approved reference, 2026-08-17).
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#080B10" },
+    { media: "(prefers-color-scheme: dark)", color: "#08090A" },
   ],
   // iPad standalone PWA: draw under the status bar / home indicator so the field
   // chrome's env(safe-area-inset-*) padding (FieldHeader/FieldNav) governs the
@@ -69,7 +79,7 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   return (
-    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={plexArabic.variable} suppressHydrationWarning>
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={`${inter.variable} ${plexArabic.variable}`} suppressHydrationWarning>
       <head><ThemeScript /><DeviceScript /></head>
       <body><PwaRegister /><ThemeChannelSync />{children}</body>
     </html>

@@ -1,21 +1,38 @@
 # WEB-002 — Design System Law (SAQEEL)
 
 > Status: **BINDING**.
-> The design system is **SAQEEL**. It is the only visual vocabulary this app has.
+> The design system is **SAQEEL** — that is the name, the `--sqx-` prefix, and
+> the component layer. Its **visual language**, adopted 2026-08-17 on the
+> manager's approval, is the reference at `design/linear/design.md`.
 > Astryx is banned — no `ax-` class, no `ax-` token, no `astryx.css` import, zero
 > references. This carries forward the existing repository law and is not
 > negotiable at task level.
 
 ---
 
-## 1. Why Saqeel and not something else
+## 1. One system, one language
 
-The repository already owns an audited, owner-approved token sheet
-(`apps/web/src/app/tokens.css`) with contrast ratios recorded per token, a dark
-theme, an RTL story, and ten canonical status roles. That is the expensive part
-of a design system and it already exists and already passes accessibility
-review. What is missing is a disciplined **component layer** on top of it. This
-programme builds that layer. It does not restart the token work.
+SAQEEL is the **system**: the prefix, the primitives, the ledger, the gates.
+The **language** it renders is the approved reference. Those are separate
+things and the distinction matters, because the language has now been replaced
+once (IRP → the reference, 2026-08-17) without the system changing at all.
+
+That replacement is the proof the architecture works. Because every component
+consumes `var(--sqx-*)` and never a literal, retargeting the token sheet
+re-skinned **28 already-migrated routes without editing one of them**. A
+component that hardcodes a value opts out of that and is a defect, not a
+shortcut.
+
+Three things the language fixes, which are law and not taste:
+
+1. **Surfaces separate by a HAIRLINE, not a shadow.** Elevation is the surface
+   ladder plus a 1px inset ring. Only genuinely floating layers — menu, modal —
+   earn a drop shadow.
+2. **The accent is a FILL, never text.** Acid lime measures 1.23:1 on white. No
+   label, link or body copy is ever chromatic; text accents are neutral plus an
+   underline.
+3. **Status is the one place chroma carries meaning**, and it is derived and
+   measured (§7).
 
 ---
 
@@ -30,8 +47,19 @@ and the reduced-motion block.
 It holds **no component classes**. Component styling is §6.
 
 `apps/web/src/app/tokens.css` is the **frozen legacy** sheet. It is still
-consumed by hundreds of files and is retired screen by screen. Never edit it,
-never add to it, never delete from it.
+consumed by hundreds of files and is retired screen by screen. Never add a token
+to it, never change a value in it, never delete from it.
+
+**One edit is permitted, and only one: repointing a declaration at
+`var(--sqx-*)`.** That is not growth — it *shrinks* the sheet's authority, moving
+a decision out of frozen legacy and into the design system, and it is how a
+change of visual language reaches the routes the sheet still styles without
+touching them. T-131 and T-132 used it to bring one typeface and one type scale
+to ~80 legacy routes by editing two blocks of aliases.
+
+Everything else about the sheet stays frozen. A new property, a new raw value, or
+a deletion is still forbidden, and "I was only aliasing" does not cover any of
+them.
 
 ### The prefix
 
@@ -263,13 +291,34 @@ roles are fixed by the token sheet: `critical`, `major`, `warning`, `compliant`,
 `info`, `pending`, `draft`, `onhold`, `completed`, `disabled`. New roles require
 a token change request, not a new colour in a component.
 
+**The five status families are derived, not taken from the reference.** The
+reference calls its green and red *"supporting accents, not status colours"* —
+guidance written for a marketing site, which cannot govern a platform where
+severity is legally meaningful. `success`, `error` and `info` are its
+pulse-green, coral-red and signal-teal verbatim; `warning` and `major` have no
+counterpart and were derived in its saturation idiom, because acid lime cannot
+serve as warning — it **is** the primary action, and a warning pill would be
+indistinguishable from a CTA.
+
+Two asymmetries in the token sheet exist for measured reasons and must not be
+"tidied up":
+
+- **`main` is the graphic fill on dark; `dark` is the graphic fill on light.**
+  Warning and info at full strength measure 2.25:1 and 2.41:1 on white — under
+  the 3:1 WCAG 1.4.11 requires for a dot, bar or border.
+- **Text on a tint uses `darker` (light) / `light` (dark)**, never `main`.
+
 ---
 
 ## 8. Density, motion, and elevation
 
 - Two densities only: `comfortable` (default) and `compact` (dense grids). They
   are a prop on the primitive, driven by token pairs. No third.
-- Elevation is a fixed ladder, `--sqx-elevation-0` … `-4`. Nothing between rungs.
+- **Elevation is a hairline.** `--sqx-elevation-1` and `-2` are `inset 0 0 0 1px`
+  rings; only `-3` (menu) and `-4` (modal) carry a drop, and it stays tight
+  rather than soft. A component that reaches for a shadow to separate a card
+  from the canvas is working against the language — use the surface ladder and
+  the ring.
 - Motion uses `--sqx-duration-*` and `--sqx-ease-*` only, and every animation is
   disabled under `prefers-reduced-motion: reduce`.
 - Z-index comes from the token ladder (`--sqx-z-sticky`, `--sqx-z-toast`, …). A

@@ -1,11 +1,8 @@
-import { formatCount, formatPercent } from "@/i18n/numbers";
-import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
-import { SERIES_ROLE } from "@/components/saqeel/charts/chart-palette";
-import Gauge from "@/components/saqeel/charts/gauge/gauge";
-import { Heading, Text } from "@/components/saqeel/type";
+import { type CSSProperties } from "react";
+import { Metric, Text } from "@/components/saqeel/type";
 import type { MeasureCoverage } from "@/features/dashboard/strip";
 import { fill } from "@/i18n/messages";
-import { isRtl } from "@/i18n/direction";
+import { formatCount, formatPercent } from "@/i18n/numbers";
 import type { Locale } from "@/lib/i18n";
 import styles from "./measure-coverage.module.css";
 
@@ -13,16 +10,24 @@ export type MeasureCoverageStrings = {
   readonly meterLabel: string;
   readonly meterAria: string;
   readonly ratio: string;
-  readonly reasons: string;
-  readonly reasonsAria: string;
   readonly allLive: string;
 };
 
-export default function MeasureCoverage({ coverage, locale, strings, headingId }: {
+type SegmentTone = "live" | "blocked";
+
+type Segment = {
+  readonly key: string;
+  readonly label: string;
+  readonly count: number;
+  readonly tone: SegmentTone;
+};
+
+type SegmentStyle = CSSProperties & Record<"--sqx-seg", string>;
+
+export default function MeasureCoverage({ coverage, locale, strings }: {
   coverage: MeasureCoverage;
   locale: Locale;
   strings: MeasureCoverageStrings;
-  headingId: string;
 }) {
   if (!coverage.total) return null;
 
@@ -30,43 +35,50 @@ export default function MeasureCoverage({ coverage, locale, strings, headingId }
     live: formatCount(coverage.live, locale),
     total: formatCount(coverage.total, locale),
   };
-  const points: readonly BarPoint[] = coverage.reasons.map(reason => ({
-    key: reason.key,
-    label: reason.label,
-    value: reason.count,
-    display: formatCount(reason.count, locale),
-  }));
-  const peak = Math.max(...coverage.reasons.map(reason => reason.count), 1);
+  const segments: readonly Segment[] = [
+    { key: "live", label: strings.meterLabel, count: coverage.live, tone: "live" as const },
+    ...coverage.reasons.map(reason => ({
+      key: reason.key,
+      label: reason.label,
+      count: reason.count,
+      tone: "blocked" as const,
+    })),
+  ].filter(segment => segment.count > 0);
 
   return (
-    <div className={styles.root}>
-      <Gauge
-        percent={coverage.percent}
-        series={SERIES_ROLE.coverage}
-        display={formatPercent(coverage.percent, locale)}
-        label={strings.meterLabel}
-        caption={fill(strings.ratio, counts)}
-        ariaLabel={fill(strings.meterAria, counts)}
-        size="sm"
-      />
-      <div className={styles.reasons}>
-        {points.length ? (
-          <>
-            <Heading level={3} visual="subheading" id={headingId}>{strings.reasons}</Heading>
-            <BarSeries
-              points={points}
-              domainMax={peak}
-              series={SERIES_ROLE.coverage}
-              ariaLabel={strings.reasonsAria}
-              rtl={isRtl(locale)}
-              barSize={30}
-              labelWidth={112}
-            />
-          </>
-        ) : (
-          <Text tone="secondary">{strings.allLive}</Text>
-        )}
+    <figure className={styles.root} role="img" aria-label={fill(strings.meterAria, counts)}>
+      <div className={styles.head}>
+        <Metric>{formatPercent(coverage.percent, locale)}</Metric>
+        <span className={styles.identity}>
+          <Text role="label" as="span">{strings.meterLabel}</Text>
+          <Text role="label" tone="muted" as="span">{fill(strings.ratio, counts)}</Text>
+        </span>
       </div>
-    </div>
+
+      <div className={styles.track} aria-hidden="true">
+        {segments.map(segment => (
+          <span
+            key={segment.key}
+            className={styles.segment}
+            data-tone={segment.tone}
+            style={{ "--sqx-seg": String(segment.count) } as SegmentStyle}
+          />
+        ))}
+      </div>
+
+      <ul className={styles.legend}>
+        {segments.map(segment => (
+          <li key={segment.key} className={styles.legendItem}>
+            <span className={styles.swatch} data-tone={segment.tone} aria-hidden="true" />
+            <Text role="label" as="span" dir="auto">{segment.label}</Text>
+            <Text role="label" tone="secondary" as="span" numeric>{formatCount(segment.count, locale)}</Text>
+          </li>
+        ))}
+      </ul>
+
+      {coverage.reasons.length === 0 ? (
+        <Text role="label" tone="secondary" as="figcaption">{strings.allLive}</Text>
+      ) : null}
+    </figure>
   );
 }

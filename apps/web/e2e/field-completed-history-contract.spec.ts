@@ -74,13 +74,11 @@ test.describe("TASK-IPAD-COMPLETED-HISTORY-001 contract", () => {
   });
 
   test("list and detail enforce inspector scope, immutable backing, and no mutation controls", () => {
-    const list = read("src/app/(app)/field/completed/page.tsx");
-    const detail = read("src/app/(app)/field/completed/[id]/page.tsx");
-    expect(list).toContain('.eq("inspector_id", user.id)');
-    expect(list).toContain("submission_versions");
-    expect(detail).toContain("submission_versions!inner");
-    expect(detail).toContain('.eq("inspector_id", user.id)');
-    expect(detail).not.toMatch(/<form|action=|from\\(\"checklist_responses\"\\)|from\\(\"evidence\"\\)/);
+    const queries = read("src/features/field-completed/queries.ts");
+    expect(queries).toContain('.eq("inspector_id", user.id)');
+    expect(queries).toContain("submission_versions");
+    expect(queries).toContain("submission_versions!inner");
+    expect(queries).not.toMatch(/<form|action=|from\\(\"checklist_responses\"\\)|from\\(\"evidence\"\\)/);
   });
 
   test("cached history is user-scoped, display-only, and absent from outbox operations", () => {

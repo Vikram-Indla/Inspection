@@ -93,7 +93,6 @@ export default function OperationalView({ locale, metrics, projection, partialSo
             coverage={coverage}
             locale={locale}
             strings={dashboard.charts.coverage}
-            headingId="dashboard-operational-blocked"
           />
           <RequirementRegister
             metrics={requirementStrip.metrics}

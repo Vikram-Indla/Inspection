@@ -55,20 +55,20 @@ test.describe("TASK-IPAD-NOTIFICATIONS-ASSIGNMENT-CHANGES-001", () => {
   });
 
   test("UI refresh and acknowledgement repeat recipient and first-receipt guards", () => {
-    const page = SRC("src/app/(app)/field/notifications/page.tsx");
-    const center = SRC("src/app/(app)/field/notifications/NotificationAttentionCenter.tsx");
+    const queries = SRC("src/features/field-notifications/queries.ts");
+    const center = SRC("src/components/sections/field-notifications/notification-attention-list.tsx");
+    const copy = SRC("src/i18n/locales/en/field-notifications.json");
     const migrations = [
       SRC("../../supabase/migrations/0002_rbac_audit.sql"),
       SRC("../../supabase/migrations/0015_w1_field_home.sql"),
       SRC("../../supabase/migrations/0027_cd023_immediate_visit_atomic.sql"),
     ].join("\n");
 
-    expect(page).toContain('.eq("recipient", user.id)');
+    expect(queries).toContain('.eq("recipient", user.id)');
     expect(center).toContain('.eq("recipient", userId)');
-    expect(center).toContain('.eq("recipient", props.userId)');
     expect(center).toContain('.is("read_at", null)');
     expect(center).toContain("if (!online)");
-    expect(page).toContain("No acknowledgement was recorded.");
+    expect(copy).toContain("No acknowledgement was recorded.");
     expect(center).toContain('window.addEventListener("online", onOnline)');
     expect(migrations).toContain("create policy notif_own on notifications for select");
     expect(migrations).toContain("create policy notif_update_recipient on notifications for update");

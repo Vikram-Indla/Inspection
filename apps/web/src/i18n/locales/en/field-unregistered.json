@@ -1,0 +1,36 @@
+{
+  "title": "Unregistered establishment",
+  "subtitle": "Create a visit for a facility not in the system",
+  "back": "Back",
+  "note": "This creates an immediate, self-assigned visit against a system-generated placeholder identity — photo and GPS capture stand in for a registered name until reconciliation.",
+  "photosNote": "Photo capture is not available for this flow. Location and report type are captured below.",
+  "location": {
+    "heading": "Location",
+    "capture": "Capture current location",
+    "locating": "Locating…",
+    "captured": "Captured location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "mapLabel": "Captured location map",
+    "error": "Location could not be captured. Try again."
+  },
+  "report": {
+    "heading": "Report type",
+    "hint": "Select the inspection package that applies to this facility.",
+    "label": "Inspection package"
+  },
+  "reason": {
+    "heading": "Reason",
+    "complaint": "Complaint received",
+    "incident": "Incident / accident report",
+    "referral": "Referral from authority",
+    "other": "Other",
+    "otherHint": "Justify the \"Other\" reason in Notes below."
+  },
+  "notes": {
+    "heading": "Notes",
+    "placeholder": "Additional detail about this visit"
+  },
+  "submit": "Create visit",
+  "submitting": "Submitting…"
+}

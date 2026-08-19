@@ -2,10 +2,12 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import Button from "@/components/saqeel/button/button";
+import DatePickerField, { type DatePickerFieldStrings } from "@/components/saqeel/date-picker-field/date-picker-field";
 import Field from "@/components/saqeel/field/field";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import { Text } from "@/components/saqeel/type";
+import type { Locale } from "@/lib/i18n";
 import {
   approveAndPublish,
   createDraftVersion,
@@ -24,6 +26,7 @@ export type NewPackageStrings = {
 };
 
 export type PublishStrings = {
+  datePicker: DatePickerFieldStrings;
   newDraftLabel: string;
   creating: string;
   createDraft: string;
@@ -34,7 +37,7 @@ export type PublishStrings = {
   approvePublish: string;
   published: string;
   publishHint: string;
-  effectiveTo: string; deactivationReason: string; deactivate: string; deactivating: string; deactivated: string;
+  effectiveTo: string; deactivationReason: string; deactivationReasonPlaceholder: string; deactivate: string; deactivating: string; deactivated: string;
 };
 
 function useFeedbackFocus(state: PkgResult) {
@@ -81,7 +84,7 @@ export function NewPackageForm({ strings: s }: { strings: NewPackageStrings }) {
   );
 }
 
-export function NewDraftForm({ packageId, strings: s }: { packageId: string; strings: PublishStrings }) {
+export function NewDraftForm({ packageId, strings: s, locale }: { packageId: string; strings: PublishStrings; locale: Locale }) {
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(createDraftVersion, {});
   const feedbackRef = useFeedbackFocus(state);
 
@@ -98,7 +101,7 @@ export function NewDraftForm({ packageId, strings: s }: { packageId: string; str
         />
       </Field>
       <Field htmlFor={`effective-from-${packageId}`} label={s.effectiveFrom}>
-        <TextInput id={`effective-from-${packageId}`} name="effective_from" required type="date" />
+        <DatePickerField id={`effective-from-${packageId}`} name="effective_from" label={s.effectiveFrom} locale={locale} strings={s.datePicker} />
       </Field>
       <Button busy={pending} disabled={pending} type="submit" variant="primary">
         {pending ? s.creating : s.createDraft}
@@ -108,7 +111,7 @@ export function NewDraftForm({ packageId, strings: s }: { packageId: string; str
   );
 }
 
-export function DeactivatePackage({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {
+export function DeactivatePackage({ versionId, strings: s, locale }: { versionId: string; strings: PublishStrings; locale: Locale }) {
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(deactivatePackageVersion, {});
   const feedbackRef = useFeedbackFocus(state);
 
@@ -116,10 +119,10 @@ export function DeactivatePackage({ versionId, strings: s }: { versionId: string
     <form action={formAction} aria-busy={pending} className={styles.row}>
       <input name="version_id" type="hidden" value={versionId} />
       <Field htmlFor={`effective-to-${versionId}`} label={s.effectiveTo}>
-        <TextInput id={`effective-to-${versionId}`} name="effective_to" required type="date" />
+        <DatePickerField id={`effective-to-${versionId}`} name="effective_to" label={s.effectiveTo} locale={locale} strings={s.datePicker} />
       </Field>
       <Field htmlFor={`deactivation-reason-${versionId}`} label={s.deactivationReason}>
-        <TextInput id={`deactivation-reason-${versionId}`} name="deactivation_reason" required />
+        <TextInput id={`deactivation-reason-${versionId}`} name="deactivation_reason" placeholder={s.deactivationReasonPlaceholder} required />
       </Field>
       <Button busy={pending} disabled={pending} type="submit" variant="danger">
         {pending ? s.deactivating : s.deactivate}

@@ -1,0 +1,98 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--sqx-stack-tight);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  padding: var(--sqx-space-4);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-raised);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-5);
+  margin: 0;
+  padding: 0;
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  list-style: none;
+}
+
+.tab {
+  display: block;
+  padding-block: var(--sqx-space-2);
+  border-block-end: var(--sqx-border-width-thick) solid transparent;
+  color: var(--sqx-text-secondary);
+  text-decoration: none;
+}
+
+.tab:hover {
+  color: var(--sqx-text-accent);
+}
+
+.tab[aria-current="page"] {
+  border-block-end-color: var(--sqx-border-accent);
+  color: var(--sqx-text-accent);
+}
+
+.tab:focus-visible {
+  border-radius: var(--sqx-radius-xs);
+  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-space-1);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--sqx-stack-tight);
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.activityRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+}
+
+.activityMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.governanceList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 48rem) {
+  .tabs {
+    gap: var(--sqx-space-4);
+  }
+}

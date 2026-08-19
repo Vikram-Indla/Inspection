@@ -13,7 +13,7 @@ const read = (f: string) => fs.readFileSync(path.join(webRoot, f), "utf8");
 const css = "src/components/field/field-a11y.module.css";
 const liveRegion = "src/components/field/LiveRegion.tsx";
 const workspace = "src/app/(app)/field/inspection/[id]/Workspace.tsx";
-const myTasks = "src/app/(app)/field/my-tasks/page.tsx";
+const myTasks = "src/components/sections/field-my-tasks/my-tasks-screen.tsx";
 
 test.describe("SCR-IPAD a11y — blocker navigation helper (jump to first)", () => {
   const g = (over: Partial<BlockerGroup> & { key: string }): BlockerGroup =>

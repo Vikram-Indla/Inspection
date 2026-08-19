@@ -1,0 +1,53 @@
+{
+  "total": 19,
+  "files": [
+    {
+      "file": "src/app/(app)/admin/delegation/DelegationForms.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/app/(app)/admin/integrations/factory-data/MasterDataForms.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/app/(app)/admin/packages/PackagePreview.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/app/(app)/factories/[id]/Controls.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/app/(app)/field/destruction-reports/DestructionReportForm.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/app/(app)/field/facility-reports/FacilityReportForm.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/app/(app)/field/inspection/[id]/Workspace.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/app/(app)/field/summons-notices/SummonsNoticeForm.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/app/(app)/visits/VisitsBoard.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/components/saqeel/inputs/DateRangePicker.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/components/ShellClient.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/lib/dates.ts",
+      "count": 1
+    }
+  ]
+}

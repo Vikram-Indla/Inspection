@@ -34,30 +34,30 @@ invalid.
 
 ---
 
-## 3 · Two depths, and no third
+## 3 · Depth is a hairline, not a shadow
 
+This is the language's central structural claim and the easiest thing to get
+wrong, because every other design system teaches the opposite.
+
+- A card is told apart from the canvas by **`--sqx-elevation-1`** — a 1px inset
+  ring — plus its step on the surface ladder. **Not** by a drop shadow.
 - Inputs and wells read **sunken**: `--sqx-surface-sunken`.
-- Menus, popovers, panels and floating things read **raised**:
-  `--sqx-surface-raised` + `--sqx-shadow-menu`.
+- Only genuinely floating layers — menu (`-3`), modal (`-4`) — carry a drop, and
+  it is tight rather than soft.
 
-That is the entire depth story. There is no third level and no in-between
-shadow.
+A component that adds an ambient shadow to lift a card off the page is fighting
+the language. If a surface is not reading, the fix is the ladder or the ring,
+never a softer, larger shadow.
 
 ---
 
-## 4 · The rim light
+## 4 · The rim light is subordinate to the ring
 
-Every raised surface carries `--sqx-rim-light`, a 1px inner highlight on its top
-edge — menus, popovers, the selected segment, the switch thumb, floating cards.
+`--sqx-rim-light` survives for surfaces that genuinely float — menus, popovers,
+the switch thumb. It is **not** how a card separates from the canvas; §3 is.
 
-```
---sqx-rim-light
-  dark:  inset 0 1px 0 rgb(255 255 255 / .045)
-  light: inset 0 1px 0 rgb(255 255 255 / .85)
-```
-
-This is what makes a dark interface look lit rather than flat, and it costs one
-token. Raised surfaces only — a rim light on a sunken input is wrong.
+A rim light on a sunken input is wrong, and a rim light standing in for a
+missing hairline is wrong.
 
 ---
 
@@ -76,9 +76,13 @@ colour change alone.
 
 ## 6 · Three radii
 
-Controls `--sqx-radius-control`. Menus, panels and cards `--sqx-radius-card`.
-Pills, badges and avatars `--sqx-radius-pill`. Inline chips
-`--sqx-radius-inline`. Nothing uses any other value.
+Controls `--sqx-radius-control` (6px). Menus, panels and cards
+`--sqx-radius-card` (12px). Pills, badges and avatars `--sqx-radius-pill`.
+Inline chips `--sqx-radius-inline` (2px). Nothing uses any other value.
+
+**12px is the ceiling.** The language caps card radius there, so
+`--sqx-radius-xl` and `-2xl` resolve to the same 12px rather than growing. A
+surface that wants to look softer does not get a larger radius.
 
 ---
 
@@ -150,22 +154,22 @@ specular pass reads as a rendering error.
 
 ---
 
-## 11 · Gradients are rationed
+## 11 · Gradients are spent, not rationed
 
-The entire application budget is **two places**:
+The budget is now **zero**. The language forbids decorative gradients on
+buttons, cards and text outright, and the app has no hero band to spend the
+exception on.
 
-1. the active navigation indicator
-2. the one primary CTA per screen
-
-No other component carries a gradient — not a search field, not a selected menu
-row, not a switch, not a selected segment, not a badge, not a card. The reason
-neon looks cheap is almost never the colour; it is the quantity.
+The active navigation indicator and the primary CTA are **flat acid lime with
+void ink** — measured 16.15:1 at rest, 13.07:1 hover, 10.31:1 pressed, so the
+control darkens under the pointer and contrast only ever stays within AA.
 
 Selection is expressed flat, with `--sqx-surface-accent` and
 `--sqx-text-accent`.
 
-Ambient chrome gradients (the shell rail and topbar) are a separate, static,
-theme-following tint — never animated, never neon.
+**The accent is a fill and never text.** Acid lime measures 1.23:1 on white; a
+lime label is invisible in light mode, and darkening it far enough to read turns
+it olive. A text accent is neutral plus an underline.
 
 ---
 

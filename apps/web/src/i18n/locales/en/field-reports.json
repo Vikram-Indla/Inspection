@@ -1,0 +1,41 @@
+{
+  "title": "Reports library",
+  "subtitle": "Submitted inspection history",
+  "back": "Back",
+  "loading": "Loading reports library",
+  "noValue": "—",
+  "offline": "Offline — showing submitted reports cached on this device. No submitted version can be changed here.",
+  "weak": "Connection is weak — this server-backed report list may take longer to refresh.",
+  "error": "The server report list is temporarily unavailable. Cached submitted reports remain available below.",
+  "empty": {
+    "title": "No submitted reports",
+    "body": "A report appears here only after a final version is submitted."
+  },
+  "tabs": {
+    "records": "Visit records",
+    "visits": "Prior establishment visits",
+    "recordsHint": "Submitted records available to this inspector — open a document to view its immutable version.",
+    "visitsHint": "Prior visit reports for the selected establishment."
+  },
+  "version": "Version",
+  "signed": "Signed",
+  "submittedBadge": "Submitted",
+  "open": "Open document",
+  "prior": {
+    "title": "Not configured",
+    "body": "Select an establishment context before prior visits can be shown."
+  },
+  "document": {
+    "unavailableTitle": "Document unavailable offline",
+    "unavailableBody": "This submitted document is not cached on this device. Reconnect and open the reports library to cache it.",
+    "close": "Close",
+    "title": "Submitted report",
+    "submittedAt": "Submitted",
+    "inspector": "Inspector",
+    "answers": "Checklist responses",
+    "notes": "Inspector notes",
+    "downloadPdf": "Download PDF",
+    "downloadUnavailable": "PDF document not configured",
+    "print": "Print"
+  }
+}

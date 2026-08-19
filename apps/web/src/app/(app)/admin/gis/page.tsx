@@ -1,107 +1,11 @@
-import Shell from "@/app/(app)/admin/_components/AdminShell";
-import { supabaseServer } from "@/lib/supabase-server";
-import { useT } from "@/lib/i18n";
-import GisStudio, { type GisFactory, type GisSettings, type GisStrings } from "./GisStudio";
-import EmptyState from "@/components/EmptyState";
-import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
+import GisScreen from "@/components/sections/admin-gis/gis-screen";
+import { loadGis } from "@/features/admin-gis/queries";
+import { getLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-// SCR-ADM-070 — GIS Studio (ENG-06 governed values · SB20 geofencing map · ENG-08)
-// All copy flows through t() (SB19) — English in code, Arabic from ui_strings.
 export default async function GisStudioPage() {
-  const { t } = await useT();
-  const sb = await supabaseServer();
-  const [engRes, facRes] = await Promise.all([
-    sb.from("engine_settings").select("settings, version_label").eq("engine", "gis").single(),
-    sb.from("factories")
-      .select("id, factory_code, name, city, region, official_lat, official_lng, risk_band, risk_score, geofence_radius_m")
-      .order("name"),
-  ]);
-  if (engRes.error) logProviderError("admin gis settings read", engRes.error);
-  if (facRes.error) logProviderError("admin gis factories read", facRes.error);
-  const err = engRes.error || facRes.error;
-  const s = (engRes.data?.settings ?? {}) as Record<string, unknown>;
-  const factories = (facRes.data ?? []) as GisFactory[];
-  const settingsRows: [string, string, string][] = [
-    [t("gis.settings.gps", "GPS accuracy for check-in"), `≤ ${String(s?.gps_accuracy_checkin_max_m)} m`, "ERR-GEO-001 threshold"],
-    [t("gis.settings.arrival", "Arrival detection radius"), `${String(s?.arrival_detection_radius_m)} m`, "STM-JRN-002"],
-    [t("gis.settings.fence", "Geofence default radius"), `${String(s?.geofence_default_radius_m)} m (${t("gis.settings.fenceNote", "per-factory override on the map")})`, "STM-JRN-003"],
-    [t("gis.settings.telemetry", "Telemetry interval"), `${String(s?.telemetry_interval_s)} s`, "ENG-06"],
-    [t("gis.settings.deviation", "Route deviation alert"), JSON.stringify(s?.route_deviation), "SB14 step 5"],
-    [t("gis.settings.retention", "Retention"), JSON.stringify(s?.retention), "FND-009 policy"],
-  ];
+  const [locale, data] = await Promise.all([getLocale(), loadGis()]);
 
-  const strings: GisStrings = {
-    loadingTitle: t("gis.loading.title", "Loading map"),
-    loadingBody: t("gis.loading.body", "Preparing the KSA geofencing view."),
-    searchLabel: t("gis.search.label", "Search factories"),
-    searchPlaceholder: t("gis.search.placeholder", "Search by name, code, city or region…"),
-    filterRegionAll: t("gis.filter.regionAll", "All regions"),
-    filterBandAll: t("gis.filter.bandAll", "All risk bands"),
-    shownOf: t("gis.count.shown", "factories shown"),
-    noResults: t("gis.count.noResults", "No factories match the current filters."),
-    noCoords: t("gis.count.noCoords", "without coordinates (table only)"),
-    selectTitle: t("gis.select.title", "Select a factory pin"),
-    selectBody: t("gis.select.body", "Click any pin to see its official coordinates and set its geofence radius."),
-    coordsLabel: t("gis.coords.label", "Official coordinates — owned by the GIS administrator"),
-    coordsCaption: t("gis.coords.caption", "Field observation never overwrites the official pin."),
-    radiusLabel: t("gis.radius.label", "Geofence radius (m)"),
-    radiusHint: t("gis.radius.hint", "Tip: with this factory selected, click the map to set the fence edge at that point. Blank override falls back to the engine default"),
-    save: t("gis.radius.save", "Save radius"),
-    saving: t("gis.radius.saving", "Saving…"),
-    saved: t("gis.radius.saved", "saved"),
-    defaultsTitle: t("gis.defaults.title", "Engine defaults (read-only)"),
-    defaultsCheckin: t("gis.defaults.checkin", "Check-in accuracy"),
-    defaultsArrival: t("gis.defaults.arrival", "Arrival detection"),
-    defaultsFence: t("gis.defaults.fence", "Default geofence"),
-    legendCaption: t("gis.legend.caption", "risk-band pin tones"),
-    bandHigh: t("gis.band.high", "high"),
-    bandMedium: t("gis.band.medium", "medium"),
-    bandLow: t("gis.band.low", "low"),
-    bandUnbanded: t("gis.band.unbanded", "unbanded"),
-    thCode: t("gis.table.code", "Code"),
-    thName: t("gis.table.name", "Factory"),
-    thRegion: t("gis.table.region", "Region"),
-    thCity: t("gis.table.city", "City"),
-    thBand: t("gis.table.band", "Risk band"),
-    thRadius: t("gis.table.radius", "Geofence radius"),
-    thCoords: t("gis.table.coords", "Official coordinates"),
-    radiusDefault: t("gis.table.radiusDefault", "default"),
-  };
-
-  return (
-    <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
-      context={<span className="id-code">{engRes.data?.version_label}</span>}>
-      <div className="sq-stack sq-stack--roomy">
-        <div className="alert"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These values are stamped on every geo event, and the settings version is recorded with each check-in. Official coordinates stay owned by the GIS administrator; field observations never overwrite them. Per-factory geofence radii are edited on the map below.")}</div></div>
-
-        {err && (
-          <div className="alert alert-critical" role="alert">
-            <div><strong>{t("gis.error.title", "GIS data not available.")}</strong> {t("gis.error.body", NEUTRAL_LOAD_ERROR)}</div>
-          </div>
-        )}
-
-        {!err && factories.length === 0 && (
-          <EmptyState glyph="◎" title={t("gis.empty.title", "No factories registered")}
-            body={t("gis.empty.body", "The Factory list is empty — geofences appear here once factories are synced.")} />
-        )}
-
-        {!err && factories.length > 0 && (
-          <GisStudio factories={factories} gis={s as GisSettings} strings={strings} />
-        )}
-
-        {!err && (
-          <div className="table-wrap"><table className="table">
-            {/* The "Contract" column rendered nothing but internal contract IDs
-                (ENG-06, STM-JRN-002, FND-009 …) — traceability data, not
-                something a GIS administrator can act on. The reference moves to
-                a data attribute so it stays greppable without being on screen. */}
-            <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th></tr></thead>
-            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k} data-contract-ref={c}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td></tr>)}</tbody>
-          </table></div>
-        )}
-      </div>
-    </Shell>
-  );
+  return <GisScreen data={data} locale={locale} />;
 }

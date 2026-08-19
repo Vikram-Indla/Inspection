@@ -1,0 +1,19 @@
+{
+  "title": "Drafts",
+  "back": "Back",
+  "draftsWord": "drafts",
+  "unavailable": "Field data is temporarily unavailable (ERR-OPS-001). Try again.",
+  "intro": "Inspections saved locally and not yet submitted. Resume where you left off; they sync when connectivity is available.",
+  "heading": "Drafts to resume",
+  "empty": "No drafts to resume",
+  "resume": "Resume",
+  "localDraft": "Local inspection draft",
+  "syncPending": "Pending sync",
+  "syncLocal": "Saved locally",
+  "loading": "Loading local drafts…",
+  "localUnavailable": "Local drafts are temporarily unavailable. Server drafts remain visible.",
+  "storeKey": "Key",
+  "itemsQueued": "{count} items queued",
+  "offlineNote": "Drafts are stored on your device and stay available offline until final submission.",
+  "grounding": "Drafts are read from this device's local store, one entry per inspection item."
+}

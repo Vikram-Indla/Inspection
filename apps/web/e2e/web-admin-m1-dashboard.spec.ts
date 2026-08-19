@@ -136,7 +136,7 @@ test.describe("WA-M1-AC-001/002/005 source truth and negative contracts", () => 
     }
 
     // The two governed-absence sentences these lines used to assert belonged to
-    // RevampStrategicView, which no longer renders. Both claims survive in the
+    // StrategicView, which no longer renders. Both claims survive in the
     // shipped surface — the missing violation issue time in the registry note
     // that blocks STR-KPI-003, and "no generated claim until a provider returns
     // evidence-linked output" as STR-KPI-012's stop line plus the brief's own

@@ -105,8 +105,8 @@ test.describe("PLAN v7 item 6 — user-scoped field offline state", () => {
       "src/app/(app)/field/inspection/[id]/FactoryVerification.tsx",
       "src/components/field/FieldHeaderSync.tsx",
       "src/components/field/PreInspectionPackSheet.tsx",
-      "src/app/(app)/field/settings/FieldSettingsClient.tsx",
-      "src/components/field/FieldDraftList.tsx",
+      "src/components/sections/field-settings/settings-panels.tsx",
+      "src/components/sections/field-drafts/draft-list.tsx",
     ];
     for (const caller of callers) {
       const source = read(caller);

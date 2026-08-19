@@ -27,3 +27,15 @@ export function formatPercent(value: number, locale: Locale, fractionDigits = 0)
   const digits = formatCount(value, locale, fractionDigits);
   return locale === "ar" ? `٪${digits}` : `${digits}%`;
 }
+
+/**
+ * A measured value that may carry a fraction — a risk score, a mean duration.
+ *
+ * Unlike `formatCount` the fraction is not forced: `81.5` keeps its half and
+ * `82` stays whole, so a scale of whole numbers is never dressed up as precise.
+ */
+export function formatDecimal(value: number, locale: Locale, maxFractionDigits = 1): string {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
+    maximumFractionDigits: maxFractionDigits,
+  }).format(value);
+}

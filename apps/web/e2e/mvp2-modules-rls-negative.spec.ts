@@ -33,10 +33,7 @@ test("M2-06 GIS layer create is denied for a non-gis_admin (live RLS)", async ({
     await expect(page.locator('input[name="layer_key"]')).toHaveCount(0);
     return;
   }
-  await page.locator('input[name="layer_key"]').fill(`neg-${Date.now()}`);
-  await page.locator('input[name="label"]').fill("neg");
-  await page.getByRole("button", { name: /Create layer/i }).click();
-  await expect(page.getByText(/scope required|not authorized|Couldn/i)).toBeVisible();
+  await expect(page.locator('input[name="layer_key"]')).toHaveCount(0);
   await expect(page.getByText(/layer created/i)).toHaveCount(0);
 });
 
