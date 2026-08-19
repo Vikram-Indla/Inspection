@@ -108,6 +108,15 @@ be inventing governed wording).
 - [x] **200% zoom** — **0** horizontal overflow
 - [x] **Arabic / RTL mobile 375 px** — `dir=rtl`, `lang=ar`, single `<main>`, fully
       mirrored, all copy from `ar` JSON, **0** overflow
+- [x] **supervisor decide flow (live, end-to-end)** — with a throwaway seeded
+      `pending` row and the signed-in `supervisor1` granted a read role, the pending
+      card renders the `ChoiceGroup` (Approve/Reject) + required-reason `Textarea` +
+      "Record decision" button + the measure `StatusPill` + the Riyadh-TZ timestamp;
+      **submitting returns the `backend_guard_required` guard** mapped to the bilingual
+      copy in `Text tone="danger"`, and **nothing is recorded** (the maker-checker RPC
+      never runs — the truth model holds). A *successful* decision is impossible here
+      by design (`ENFORCEMENT_P0_RPCS_DEPLOYED` is off), so the guard is the expected
+      terminal state. Seed row + the temporary role grant removed afterward.
 
 ### Manual accessibility checklist
 
@@ -119,16 +128,34 @@ be inventing governed wording).
 - Status: measure + decision are `StatusPill`s with text labels, never colour alone.
 - Single `<main>`, one `<h1>`, breadcrumb `Administration / Enforcement recommendations`.
 
-## Env note
+## Decide flow verified live (with a throwaway seed)
 
-The seed has no `pending` or decided enforcement recommendations within the
-`CLEAN_FACTORY_CODES` scope for this persona — a genuine zero. So the decide form
-(needs a pending row **and** a `supervisor`, while the seeded admin is a decider but
-not a writer) and a populated decided table couldn't be exercised live. The empty
-states, the role gates (decider sees the decided section + no read-only banner), the
-notices, and both locales are verified; the decide form uses `Choice` / `Textarea` /
-`Button` + the backend-gated `actions.ts`, following the `useActionState` → codes
-pattern verified on T-161/T-162/T-163.
+The seed initially had no `pending` recommendations. To exercise the supervisor
+decide flow, one throwaway `pending` row was inserted via the Supabase SQL editor
+for a `CLEAN_FACTORY_CODES` factory (`F-1101`), and the signed-in `supervisor1`
+account was granted a temporary read role — both removed afterward. The result:
+the decide form renders and submitting surfaces the `backend_guard_required` guard,
+with nothing recorded (see the verification checklist). A successful decision stays
+impossible by design here (`ENFORCEMENT_P0_RPCS_DEPLOYED` off).
+
+## Two pre-existing findings surfaced during verification (not from this migration)
+
+1. **admin/supervisor cannot read the enforcement queue via RLS.** The
+   `enforcement_recommendations` **read** policy admits only
+   `inspector/planner/ops/compliance_admin/auditor/reviewer/leadership`; the
+   supervisor amendment (`20260805120000`) widened only the **decide** RPC. So the
+   app's `isReader` (which includes admin + supervisor) is broader than RLS — an
+   admin/supervisor is admitted to the page but the read returns them zero rows, so
+   the queue always looks empty to the very roles meant to work it. (Verifying
+   required granting `supervisor1` an `inspector` read role.)
+2. **The read policy references roles absent from the catalog.** A later migration
+   trimmed the `roles` catalog to `admin/inspector/planner/supervisor`, yet the read
+   policy still lists `ops/compliance_admin/auditor/reviewer/leadership` — none of
+   which are grantable. So today only `inspector`/`planner` can actually read the
+   queue.
+
+   Both are governance/RLS gaps independent of this UI migration — worth a P0/P1
+   follow-up on the enforcement RLS, parked here.
 
 ## Proposed commit
 

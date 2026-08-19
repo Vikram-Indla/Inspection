@@ -25,6 +25,21 @@ reload isn't deduped as a replay), which rules out both `useId` and a `useState`
 initialiser (the latter would hydration-mismatch the hidden input). It's the correct
 escape hatch and what the original did.
 
+**The decide flow was verified live end-to-end** (a throwaway `pending` row seeded via
+the SQL editor + `supervisor1` granted a temporary read role, both removed after): the
+form renders, and submitting returns the `backend_guard_required` guard with nothing
+recorded — the expected terminal state while the flag is off.
+
+**Two enforcement-RLS findings surfaced (parked for a follow-up, not from this
+migration).** Getting a supervisor to *see* the queue exposed that the
+`enforcement_recommendations` **read** policy (a) excludes `admin`/`supervisor` — the
+very roles the UI admits via `isReader` — so those roles get an always-empty queue,
+and (b) still grants to `ops`/`compliance_admin`/`auditor`/`reviewer`/`leadership`,
+none of which survive in the later-trimmed `roles` catalog (`admin/inspector/planner/
+supervisor`). So today only `inspector`/`planner` can actually read the enforcement
+queue, and no admin/supervisor can — a governance gap worth a P0/P1 on the enforcement
+RLS, independent of the UI.
+
 ## The `/admin` migration: the system-operations console + a genuine chart (2026-08-19)
 
 **T-163 migrated `/admin/operations`** — the MVP3 control-plane console (three

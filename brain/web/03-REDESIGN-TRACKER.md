@@ -64,10 +64,16 @@ test:static **408/33 exact baseline** (re-point passes). **Verified live** (admi
 decider, non-writer): framed en + ar, both notices verbatim, **no read-only banner**
 (decider), pending + decided empty states, the "Recently decided" section present
 (decider-only), **axe 0** (26 passes), 200% zoom + Arabic-RTL mobile 375px **0
-overflow**. **Env note:** the seed has no pending/decided recommendations in the
-`CLEAN_FACTORY_CODES` scope, so the decide form (needs a pending row + supervisor)
-and a populated decided table couldn't be exercised — the form uses `Choice`/
-`Textarea`/`Button` + the backend-gated action, following the verified pattern.
+overflow**. **Decide flow verified live** (throwaway seeded `pending` row +
+`supervisor1` granted a temporary read role, both removed after): the card renders
+the `ChoiceGroup` + reason `Textarea` + button + measure `StatusPill` + Riyadh-TZ
+timestamp, and submitting returns the **`backend_guard_required`** guard in a
+danger-toned message with nothing recorded (a successful decision is impossible here
+by design). **Surfaced two pre-existing RLS findings** (parked): the
+`enforcement_recommendations` read policy excludes admin/supervisor (only
+inspector/planner/… can read, so those roles see an empty queue) **and** references
+roles absent from the trimmed catalog — governance gaps independent of this UI
+migration.
 
 ---
 
