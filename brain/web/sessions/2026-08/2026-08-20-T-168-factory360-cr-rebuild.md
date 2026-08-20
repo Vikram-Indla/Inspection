@@ -72,10 +72,44 @@ empty states, industrial + government tables, chemical/customs (customs correctl
 timeline, cross-provider reconciliation (**Unverified master**). AR: fully mirrored,
 Arabic labels throughout, no console errors from the route.
 
+## Follow-up (same day) — 2-column layout, sibling cleanup, spec re-points
+
+Owner: "3-column grid → make it 2, there's a lot of free space and clutter", and
+"clean up the sibling factory routes".
+
+- **3-col → 2-col.** `FactoryWorkspace` gained an opt-in `columns?: "two" | "three"`
+  (default "three", so the `/factories` list is untouched); the ≥100rem third-column
+  rule and the `.start { grid-row: span 2 }` are now guarded to `[data-columns="three"]`.
+  The CR screen passes `columns="two"` and **folds both rails into one filled
+  sidebar** (`start` = license rail + context rail, no `end`) — main widens from
+  ~57% to ~71%, the empty third column is gone, and the stranded free space under
+  the short license rail is filled. Verified at 1680px: `grid-template-columns:
+  400px 961px`, one aside, `docOverflowX: 0`. Dropped the redundant **"Selected
+  context"** card (CR/License/Plant duplicated the header + identity + license cards).
+- **Sibling DSV5 cleanup.** `/factories/page.tsx` + `/factories/[id]/page.tsx`: removed
+  the deprecated emoji `glyph=` on the legacy `EmptyState` (`⛔ 🏭 ∅`); `[id]` UTC
+  `toISOString().slice()` display timestamps (syncedText, risk recalculated, `stamp`,
+  `day`) → `formatDateTime`/`formatDate` (Asia/Riyadh). **No factory-route DSV5
+  violations remain.** (The gate is absolute-fail with ~30 more violations app-wide —
+  admin/items, admin/risk, dashboard, field, planning, visits, analytics — so it stays
+  red until an app-wide sweep; those are separate, some in the concurrent planning area.)
+- **Spec re-points (T-168 had broken two).** `factory360-cr-dossier-contract.spec.ts`
+  read the old monolithic page + the deleted CSS — rewritten to assert the same
+  contract (read-only, exact permissions, CR→license→plant, approved-only compliance,
+  business-event timeline, media separation, no invented SLA) against the distributed
+  **surface** (page + loader + `cr-dossier/{queries,view}` + the `factory360-cr` tree)
+  and the `factoriesCr` en JSON, plus an en/ar **parity** check; the 3-column CSS test
+  became a 2-column-workspace + RTL-`dir` test. `factory360-ipad-field.spec.ts` WEB
+  const re-pointed page → `cr-dossier/queries.ts` (where the loader import now lives).
+
+**Gates after follow-up:** typecheck clean, eslint **0** (−279), typography PASSED,
+date-inputs PASSED, **`test:static` 407 passed / 0 failed** (both re-points pass).
+
 ## Parked
 
 - Timeline event titles for **snake_case** keys not in `timeline.events`
   (`visit_planned`, `source_sync`, …) fall back to `humaniseEnum` — English in AR.
   Same behaviour as legacy; a small AR polish if the RPC's key set is enumerated.
-- Sibling factory routes (`/factories`, `/factories/[id]`) still carry the emoji /
-  utc-slice DSV5 debt — separate tasks.
+- `check:design-system-v5` full green needs an app-wide emoji/utc-slice sweep
+  (~30 violations across admin/items, admin/risk, dashboard, field, planning,
+  visits, analytics) — separate tasks; some touch the concurrent planning area.

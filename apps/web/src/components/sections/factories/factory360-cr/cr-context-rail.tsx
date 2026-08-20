@@ -28,11 +28,6 @@ export default function CrContextRail({ dossier, aiProviderState, fmt, strings, 
   if (!cr) return null;
   const src = fmt.sourceState(licenseError, selected, Boolean(selected));
 
-  const contextItems: Definition[] = [
-    { label: strings.context.cr, value: <Mono>{cr.cr_number}</Mono> },
-    { label: strings.context.license, value: <Mono>{fmt.text(selected?.license_number)}</Mono> },
-    { label: strings.context.plant, value: <Mono>{fmt.text(selected?.plant_number)}</Mono> },
-  ];
   const sourceItems: Definition[] = [
     { label: strings.source.record, value: strings.source.localCopy },
     { label: strings.source.system, value: <Mono>{fmt.text(selected?.source_system ?? cr.source_system)}</Mono> },
@@ -48,11 +43,6 @@ export default function CrContextRail({ dossier, aiProviderState, fmt, strings, 
 
   return (
     <>
-      <Card as="section" labelledBy="f360cr-context">
-        <CardHeader level="h2" titleId="f360cr-context" title={strings.context.heading} />
-        <CardBody><DefinitionList items={contextItems} /></CardBody>
-      </Card>
-
       <Card as="section" labelledBy="f360cr-source">
         <CardHeader level="h2" titleId="f360cr-source" title={strings.source.heading} trailing={<StatusPill tone={src.tone}>{src.label}</StatusPill>} />
         <CardBody>

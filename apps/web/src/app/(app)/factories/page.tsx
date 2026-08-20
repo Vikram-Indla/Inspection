@@ -25,7 +25,7 @@ export default async function Factories({ searchParams }: {
   if (!permissions["view_factory_360"]) {
     return (
       <Shell current="/factories" title={t("f360.title", "Factory 360")}>
-        <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
+        <EmptyState title={t("f360.permission.title", "Factory 360 access required")}
           body={t("f360.permission.body", "You do not have access to factory profiles.")} />
       </Shell>
     );
@@ -100,7 +100,7 @@ export default async function Factories({ searchParams }: {
     <Shell current="/factories" title="">
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
-        <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}
+        <EmptyState title={t("f360.empty.title", "No factories in the list")}
           body={t("f360.empty.desc", "Factory identity records sync from the national source.")} />
       )}
       {!error && !isEmpty && <>

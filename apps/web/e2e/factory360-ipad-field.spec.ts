@@ -7,7 +7,7 @@ const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
 
 const IPAD = "src/app/(app)/field/factory-360/[id]/page.tsx";
-const WEB = "src/app/(app)/factories/cr/[id]/page.tsx";
+const WEB = "src/features/factories/cr-dossier/queries.ts";
 const LOADER = "src/lib/factory360/dossier.ts";
 const OFFLINE = "src/lib/factory360/offline-snapshot.ts";
 const SNAP_ROUTE = "src/app/api/field/factory-360/snapshot/route.ts";

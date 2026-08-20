@@ -24,11 +24,16 @@ export default function Factory360CrScreen({ data, strings, locale }: {
 
   return (
     <FactoryWorkspace
+      columns="two"
       startLabel={strings.licenses.heading}
       endLabel={strings.context.heading}
       top={dossier.licenseError ? <EmptyState variant="inline" tone="warning" title={strings.licenses.degraded} size="sm" /> : undefined}
-      start={<CrLicenseRail dossier={dossier} fmt={fmt} strings={strings} locale={locale} />}
-      end={<CrContextRail dossier={dossier} aiProviderState={aiProviderState} fmt={fmt} strings={strings} locale={locale} />}
+      start={
+        <>
+          <CrLicenseRail dossier={dossier} fmt={fmt} strings={strings} locale={locale} />
+          <CrContextRail dossier={dossier} aiProviderState={aiProviderState} fmt={fmt} strings={strings} locale={locale} />
+        </>
+      }
     >
       <CrRegistry dossier={dossier} fmt={fmt} strings={strings} />
       <CrSelected dossier={dossier} visits={visits} visitsFailed={visitsFailed} fmt={fmt} strings={strings} />

@@ -19,10 +19,10 @@ export default function CrSkeleton({ label, railLabel, contextLabel }: {
   return (
     <SkeletonRegion label={label}>
       <FactoryWorkspace
+        columns="two"
         startLabel={railLabel}
         endLabel={contextLabel}
-        start={<SkeletonPanel lines={6} />}
-        end={<><SkeletonPanel lines={3} /><SkeletonPanel lines={4} /></>}
+        start={<><SkeletonPanel lines={4} /><SkeletonPanel lines={3} /><SkeletonPanel lines={4} /></>}
       >
         <SkeletonPanel lines={6} />
         <SkeletonPanel lines={5} />
