@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody } from "@/components/saqeel/card/card";
 import Field from "@/components/saqeel/field/field";
@@ -28,7 +28,6 @@ export default function AnalyticsFilters({ query, strings, locale }: {
   locale: Locale;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
   const filters = strings.filters;
   const ui: "ar" | "en" = locale === "ar" ? "ar" : "en";
 
@@ -55,7 +54,7 @@ export default function AnalyticsFilters({ query, strings, locale }: {
       }
     }
     const suffix = params.toString();
-    router.push(suffix ? `${pathname}?${suffix}` : pathname);
+    router.push(suffix ? `/analytics?${suffix}` : "/analytics");
   };
 
   const option = (value: string) => {
@@ -145,7 +144,7 @@ export default function AnalyticsFilters({ query, strings, locale }: {
           </Field>
 
           <span className={styles.actions}>
-            <Button variant="tertiary" size="sm" href={pathname} label={filters.reset}>{filters.reset}</Button>
+            <Button variant="tertiary" size="sm" href="/analytics" label={filters.reset}>{filters.reset}</Button>
           </span>
         </div>
       </CardBody>
