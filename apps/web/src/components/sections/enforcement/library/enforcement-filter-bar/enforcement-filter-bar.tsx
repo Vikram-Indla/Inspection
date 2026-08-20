@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import type { KeyboardEvent } from "react";
 import Button from "@/components/saqeel/button/button";
-import Field from "@/components/saqeel/field/field";
+import DateRangePicker, { type DateRangePreset } from "@/components/saqeel/date-range-picker/date-range-picker";
 import SaqeelSelect, { type SelectOption } from "@/components/saqeel/select/select";
+import { formatDateRange } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 import styles from "./enforcement-filter-bar.module.css";
 
 export type EnforcementFilterStrings = {
@@ -10,70 +13,117 @@ export type EnforcementFilterStrings = {
   readonly searchLabel: string;
   readonly searchPlaceholder: string;
   readonly status: string;
-  readonly range: string;
   readonly region: string;
+  readonly range: string;
+  readonly anyDate: string;
+  readonly from: string;
+  readonly to: string;
+  readonly pickStart: string;
+  readonly pickEnd: string;
+  readonly clearDate: string;
   readonly apply: string;
   readonly clear: string;
   readonly export: string;
 };
 
-type Selection = { readonly status: string; readonly range: string; readonly region: string };
+type Override = Partial<Record<"q" | "status" | "from" | "to" | "region", string>>;
 
 export default function EnforcementFilterBar({
-  action, search, status, range, region, statusOptions, rangeOptions, regionOptions,
-  filtered, clearHref, exportHref, strings,
+  locale, search, status, from, to, region, statusOptions, regionOptions, presets,
+  monthLabels, filtered, clearHref, exportHref, strings,
 }: {
-  action: string;
+  locale: Locale;
   search: string;
   status: string;
-  range: number;
+  from: string;
+  to: string;
   region: string;
   statusOptions: readonly SelectOption[];
-  rangeOptions: readonly SelectOption[];
   regionOptions: readonly SelectOption[];
+  presets: readonly DateRangePreset[];
+  monthLabels: { previous: string; next: string };
   filtered: boolean;
   clearHref: string;
   exportHref: string;
   strings: EnforcementFilterStrings;
 }) {
-  const [selection, setSelection] = useState<Selection>({
-    status,
-    range: range ? String(range) : "",
-    region,
-  });
-  const bind = (key: keyof Selection) => (value: string) =>
-    setSelection(previous => ({ ...previous, [key]: value }));
+  const router = useRouter();
+  const pathname = usePathname();
+  const ui: "ar" | "en" = locale === "ar" ? "ar" : "en";
+
+  const go = (overrides: Override) => {
+    const merged = { q: search, status, from, to, region, ...overrides };
+    const params = new URLSearchParams();
+    if (merged.q) params.set("q", merged.q);
+    if (merged.status) params.set("status", merged.status);
+    if (merged.from) params.set("from", merged.from);
+    if (merged.to) params.set("to", merged.to);
+    if (merged.region) params.set("region", merged.region);
+    const suffix = params.toString();
+    router.push(suffix ? `${pathname}?${suffix}` : pathname);
+  };
+
+  const commitSearch = (value: string) => {
+    const next = value.trim();
+    if (next !== search) go({ q: next });
+  };
+  const onSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitSearch(event.currentTarget.value);
+    }
+  };
 
   return (
-    <form className={styles.bar} action={action} role="search" aria-label={strings.aria}>
-      <input type="hidden" name="status" value={selection.status} />
-      <input type="hidden" name="range" value={selection.range} />
-      <input type="hidden" name="region" value={selection.region} />
-
+    <div className={styles.bar} role="search" aria-label={strings.aria}>
       <input
+        key={search}
         className={styles.input}
         type="search"
-        name="q"
         defaultValue={search}
         placeholder={strings.searchPlaceholder}
         aria-label={strings.searchLabel}
+        onKeyDown={onSearchKeyDown}
+        onBlur={event => commitSearch(event.currentTarget.value)}
       />
 
-      <Field label={strings.status}>
-        <SaqeelSelect options={statusOptions} value={selection.status} onChange={bind("status")} label={strings.status} />
-      </Field>
-      <Field label={strings.range}>
-        <SaqeelSelect options={rangeOptions} value={selection.range} onChange={bind("range")} label={strings.range} />
-      </Field>
-      <Field label={strings.region}>
-        <SaqeelSelect options={regionOptions} value={selection.region} onChange={bind("region")} label={strings.region} />
-      </Field>
+      <SaqeelSelect
+        options={statusOptions}
+        value={status}
+        onChange={value => go({ status: value })}
+        label={strings.status}
+      />
+      <DateRangePicker
+        label={strings.range}
+        from={from}
+        to={to}
+        onChange={range => go({ from: range.from, to: range.to })}
+        displayValue={from && to ? formatDateRange(from, to, locale) : strings.anyDate}
+        presets={presets}
+        locale={ui}
+        monthLabels={monthLabels}
+        strings={{
+          from: strings.from,
+          to: strings.to,
+          pickStart: strings.pickStart,
+          pickEnd: strings.pickEnd,
+          reset: strings.clearDate,
+          apply: strings.apply,
+          empty: strings.anyDate,
+        }}
+        clearable
+      />
+      <SaqeelSelect
+        options={regionOptions}
+        value={region}
+        onChange={value => go({ region: value })}
+        label={strings.region}
+      />
 
       <div className={styles.actions}>
-        <Button type="submit" variant="primary" size="sm" label={strings.apply}>{strings.apply}</Button>
-        {filtered ? <Button variant="link" size="sm" href={clearHref} label={strings.clear}>{strings.clear}</Button> : null}
-        <Button variant="secondary" size="sm" href={exportHref} label={strings.export}>{strings.export}</Button>
+        {filtered ? <Button variant="link" href={clearHref} label={strings.clear}>{strings.clear}</Button> : null}
+        <Button variant="secondary" href={exportHref} label={strings.export}>{strings.export}</Button>
       </div>
-    </form>
+    </div>
   );
 }

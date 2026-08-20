@@ -3,6 +3,7 @@ import { riyadhToday } from "@/lib/dates";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { resolveRegionId } from "@/lib/ksa-regions";
 import { getLocale } from "@/lib/i18n";
 
 const csv = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
@@ -17,9 +18,11 @@ export async function GET(request: Request) {
   const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
 
   const url = new URL(request.url);
+  const isoDay = /^\d{4}-\d{2}-\d{2}$/;
   const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
   const status = url.searchParams.get("status") ?? "";
-  const range = Number(url.searchParams.get("range") ?? 0);
+  const fromParam = url.searchParams.get("from") ?? "";
+  const toParam = url.searchParams.get("to") ?? "";
   const region = url.searchParams.get("region") ?? "";
   const { data, error } = await sb.from("violations")
     .select("id,invalidated_at,inspections(submitted_at,visits(factories(name,factory_code,license_number,region))),violation_codes(title,code),action_forms(form_type,status,due_at)")
@@ -34,7 +37,14 @@ export async function GET(request: Request) {
     violation_codes: { title: string; code: string } | null;
     action_forms: Array<{ form_type: string; status: string; due_at: string | null }> | null;
   };
-  const cutoff = range ? Date.now() - range * 86_400_000 : 0;
+  const fromMs = isoDay.test(fromParam) ? new Date(`${fromParam}T00:00:00`).getTime() : null;
+  const toMs = isoDay.test(toParam) ? new Date(`${toParam}T23:59:59.999`).getTime() : null;
+  const withinWindow = (submittedAt: string | null) => {
+    if (fromMs === null && toMs === null) return true;
+    if (!submittedAt) return false;
+    const at = new Date(submittedAt).getTime();
+    return (fromMs === null || at >= fromMs) && (toMs === null || at <= toMs);
+  };
   const rows = ((data ?? []) as unknown as Row[]).filter(row => {
     const factory = row.inspections?.visits?.factories;
     if (isTestFixtureEstablishment(factory)) return false;
@@ -43,8 +53,8 @@ export async function GET(request: Request) {
     const haystack = `${factory?.name ?? ""} ${factory?.license_number ?? ""} ${row.violation_codes?.title ?? ""} ${row.violation_codes?.code ?? ""}`.toLowerCase();
     return (!q || haystack.includes(q))
       && (!status || (status === "closed" ? closed : !closed))
-      && (!region || factory?.region === region)
-      && (!cutoff || !!row.inspections?.submitted_at && new Date(row.inspections.submitted_at).getTime() >= cutoff);
+      && (!region || resolveRegionId(factory?.region) === region)
+      && withinWindow(row.inspections?.submitted_at ?? null);
   });
   const lines = [
     [

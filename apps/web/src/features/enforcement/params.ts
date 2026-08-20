@@ -1,16 +1,5 @@
-import { PAST_DATE_RANGE_PRESETS } from "@/components/saqeel/date-range-picker/date-range-presets";
-
 export const ENFORCEMENT_ALIAS_ROUTE = "/admin/violations";
 export const ENFORCEMENT_ROUTE = "/enforcement-library";
-
-/**
- * The date filter offers the shared past-window vocabulary rather than a set of
- * its own. `date-range-presets` exists so "last 30 days" means the same thing
- * and reads the same way on every screen; defining a local 30/90/365 here was
- * the exact drift it was written to prevent.
- */
-export const ENFORCEMENT_RANGES: readonly number[] = PAST_DATE_RANGE_PRESETS.map(preset => preset.days);
-export type EnforcementRange = number;
 
 export type EnforcementScopeInput = Record<string, string | string[] | undefined>;
 
@@ -18,22 +7,27 @@ export type EnforcementScope = {
   readonly routeBase: string;
   readonly search: string;
   readonly status: string;
-  readonly range: EnforcementRange | 0;
+  readonly from: string;
+  readonly to: string;
   readonly region: string;
   readonly violationId: string;
 };
 
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? "";
 
-const isRange = (value: number) => ENFORCEMENT_RANGES.includes(value);
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+const day = (value: string) => (ISO_DAY.test(value.trim()) ? value.trim() : "");
 
 export function readEnforcementScope(input: EnforcementScopeInput): EnforcementScope {
-  const range = Number.parseInt(first(input.range), 10);
+  const from = day(first(input.from));
+  const to = day(first(input.to));
+  const reversed = Boolean(from && to && from > to);
   return {
     routeBase: first(input.__shellRoute) === ENFORCEMENT_ALIAS_ROUTE ? ENFORCEMENT_ALIAS_ROUTE : ENFORCEMENT_ROUTE,
     search: first(input.q).trim(),
     status: first(input.status).trim(),
-    range: isRange(range) ? range : 0,
+    from: reversed ? to : from,
+    to: reversed ? from : to,
     region: first(input.region).trim(),
     violationId: first(input.violation).trim(),
   };
@@ -44,7 +38,8 @@ function enforcementQuery(scope: EnforcementScope, overrides: Partial<Enforcemen
   const query = new URLSearchParams();
   if (next.search) query.set("q", next.search);
   if (next.status) query.set("status", next.status);
-  if (next.range) query.set("range", String(next.range));
+  if (next.from) query.set("from", next.from);
+  if (next.to) query.set("to", next.to);
   if (next.region) query.set("region", next.region);
   if (next.violationId) query.set("violation", next.violationId);
   return query;
