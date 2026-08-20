@@ -61,11 +61,6 @@
   background: var(--sqx-surface-raised);
 }
 
-.day[data-today="true"] {
-  border-color: var(--sqx-border-accent);
-  background: var(--sqx-surface-raised);
-}
-
 .dayHead {
   display: flex;
   align-items: baseline;

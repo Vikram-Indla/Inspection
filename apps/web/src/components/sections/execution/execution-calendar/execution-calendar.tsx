@@ -53,14 +53,11 @@ export default function ExecutionCalendar({
 
       <div className={styles.grid}>
         <ul className={styles.weekdays} aria-hidden="true">
-          {weekdays.map(day => {
-            const iso = day.toISOString();
-            return (
-              <li className={styles.weekday} key={dayKey(day)} data-today={dayKey(day) === todayKey}>
-                <Text as="span" role="label" tone="muted">{labels.weekday(iso)}</Text>
-              </li>
-            );
-          })}
+          {weekdays.map(day => (
+            <li className={styles.weekday} key={dayKey(day)} data-today={dayKey(day) === todayKey}>
+              <Text as="span" role="label" tone="muted">{labels.weekday(day.toISOString())}</Text>
+            </li>
+          ))}
         </ul>
 
         <ul className={styles.days}>
@@ -72,7 +69,7 @@ export default function ExecutionCalendar({
             const showMonth = index === 0 || labels.isMonthStart(iso);
             return (
               <li className={styles.day} key={key} aria-label={labels.date(iso)}
-                data-today={isToday} data-filled={dayRows.length > 0}
+                data-filled={dayRows.length > 0}
                 onDragOver={event => event.preventDefault()}
                 onDrop={event => onDrop(event, key)}>
                 <span className={styles.dayHead}>
@@ -80,7 +77,7 @@ export default function ExecutionCalendar({
                     <span className={styles.inlineWeekday}>
                       <Text as="span" role="label" tone="muted">{labels.weekday(iso)}</Text>
                     </span>
-                    <Metric tone={isToday ? "accent" : "primary"}>{labels.dayNumber(iso)}</Metric>
+                    <Metric tone={isToday ? "info" : "primary"}>{labels.dayNumber(iso)}</Metric>
                     {showMonth ? (
                       <Text as="span" role="overline" tone="muted">{labels.monthShort(iso)}</Text>
                     ) : null}
