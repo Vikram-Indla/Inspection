@@ -1,4 +1,6 @@
-import { formatDate, formatDateTime } from "@/lib/dates";
+import {
+  formatDate, formatDateTime, formatDayOfMonth, formatMonthShort, formatWeekdayShort, riyadhDateParts,
+} from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { executionMessages } from "./strings";
 
@@ -10,6 +12,10 @@ export type ExecutionLabels = {
   readonly dateTime: (value: string | null) => string;
   readonly range: (from: string | null, to: string | null) => string;
   readonly count: (value: number) => string;
+  readonly weekday: (value: string) => string;
+  readonly dayNumber: (value: string) => string;
+  readonly monthShort: (value: string) => string;
+  readonly isMonthStart: (value: string) => boolean;
 };
 
 export function buildLabels(locale: Locale): ExecutionLabels {
@@ -33,5 +39,9 @@ export function buildLabels(locale: Locale): ExecutionLabels {
       ? `${date(from)} ${messages.table.rangeSeparator} ${date(to)}`
       : absent,
     count: value => value.toLocaleString(locale === "ar" ? "ar-SA" : "en-SA"),
+    weekday: value => formatWeekdayShort(value, locale),
+    dayNumber: value => formatDayOfMonth(value, locale),
+    monthShort: value => formatMonthShort(value, locale),
+    isMonthStart: value => riyadhDateParts(value).day === 1,
   };
 }

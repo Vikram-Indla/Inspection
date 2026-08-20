@@ -44,6 +44,30 @@ export function formatDate(value: string | number | Date, locale: Locale): strin
   return `${day} ${month} ${year}`;
 }
 
+export function formatWeekdayShort(value: string | number | Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    timeZone: TIME_ZONE,
+    calendar: CALENDAR,
+    weekday: "short",
+  }).format(toDate(value));
+}
+
+export function formatDayOfMonth(value: string | number | Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    timeZone: TIME_ZONE,
+    calendar: CALENDAR,
+    day: "numeric",
+  }).format(toDate(value));
+}
+
+export function formatMonthShort(value: string | number | Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    timeZone: TIME_ZONE,
+    calendar: CALENDAR,
+    month: "short",
+  }).format(toDate(value));
+}
+
 /** "18 Jul 2026, 11:40 (Riyadh)"; with `{ hour12: true }`,
  *  "18 Jul 2026, 8:28 PM (Riyadh)" / "١٨ يوليو ٢٠٢٦، ٨:٢٨ م (الرياض)". */
 export function formatDateTime(
