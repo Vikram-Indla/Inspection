@@ -167,6 +167,10 @@ export async function loadReviewDetail(
     .sort((a, b) => String(b.decided_at).localeCompare(String(a.decided_at)))[0] ?? null;
 
   const versionLabel = `${strings.ws.version} v${latest?.version_number ?? "—"}`;
+  const resultLabels: Record<string, string> = strings.ws.resultLabel;
+  const decisionLabels: Record<string, string> = strings.ws.decisionLabel;
+  const resultLabel = (value: string): string => resultLabels[value] ?? value.replace(/_/g, " ");
+  const decisionLabel = (value: string): string => decisionLabels[value] ?? value.replace(/_/g, " ");
   const unavailable = (source: string, value: string): TraceNode => ({ value, source, unavailable: true });
   const present = (value: string, source: string): TraceNode => ({ value, source });
   const answers = Object.entries(latest?.snapshot?.answers ?? {});
@@ -192,7 +196,7 @@ export async function loadReviewDetail(
     return {
       key,
       question: present(item?.title ?? key, versionLabel),
-      response: present(rawResponse.replace(/_/g, " "), versionLabel),
+      response: present(resultLabel(rawResponse), versionLabel),
       evidence: linkedEvidence.length > 0
         ? present(`${linkedEvidence.length} · ${linkedEvidence[0].evidence_type}`, `${versionLabel} · ${strings.ws.trace.evidence}`)
         : unavailable(`${versionLabel} · ${strings.ws.trace.evidence}`, strings.ws.trace.unavailable),
@@ -206,7 +210,7 @@ export async function loadReviewDetail(
         ? present(`${action.required_correction ?? strings.ws.trace.action} · ${action.status}`, `${strings.ws.trace.action} · ${action.owner_name ?? strings.ws.trace.unavailable}`)
         : present(strings.ws.trace.unavailable, strings.ws.actionForms),
       decision: decidedReview
-        ? present(`${decidedReview.decision ?? ""}${decidedReview.decision_reason ? ` · ${decidedReview.decision_reason}` : ""}`,
+        ? present(`${decidedReview.decision ? decisionLabel(decidedReview.decision) : ""}${decidedReview.decision_reason ? ` · ${decidedReview.decision_reason}` : ""}`,
           `${strings.ws.trace.decision} · ${decidedReview.decided_at ? formatDateTime(decidedReview.decided_at, locale) : "—"}`)
         : unavailable(strings.ws.trace.decision, strings.ws.trace.unavailable),
     };

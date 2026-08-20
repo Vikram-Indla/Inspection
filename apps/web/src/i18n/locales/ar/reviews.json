@@ -176,6 +176,18 @@
         "returned": "أُعيد للتصحيح",
         "rejected": "مرفوض"
       },
+      "resultLabel": {
+        "compliant": "مطابق",
+        "non_compliant": "غير مطابق",
+        "not_applicable": "لا ينطبق",
+        "na": "لا ينطبق",
+        "partial": "مطابقة جزئية"
+      },
+      "decisionLabel": {
+        "approve": "معتمد",
+        "return": "أُعيد للتصحيح",
+        "reject": "مرفوض"
+      },
       "timelineEvent": {
         "submitted": "تم التقديم",
         "resubmitted": "أُعيد التقديم",

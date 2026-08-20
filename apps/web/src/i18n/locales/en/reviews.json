@@ -176,6 +176,18 @@
         "returned": "Returned",
         "rejected": "Rejected"
       },
+      "resultLabel": {
+        "compliant": "Compliant",
+        "non_compliant": "Non-compliant",
+        "not_applicable": "Not applicable",
+        "na": "Not applicable",
+        "partial": "Partially compliant"
+      },
+      "decisionLabel": {
+        "approve": "Approved",
+        "return": "Returned",
+        "reject": "Rejected"
+      },
       "timelineEvent": {
         "submitted": "Submitted",
         "resubmitted": "Resubmitted",
