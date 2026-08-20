@@ -79,8 +79,11 @@ export default function ReviewWorkspace({ loaded, query, strings, locale }: {
       <FindingTraceChain traces={loaded.traces} strings={ws.trace} />
 
       <div className={styles.body}>
-        <div className={styles.record}>
+        <div className={styles.tabsRow}>
           <ReviewTabs tabs={tabs} active={active} basePath={`/reviews/${loaded.inspectionId}`} />
+        </div>
+
+        <div className={styles.record}>
           <ReviewPanels tab={active} data={loaded} strings={strings} locale={locale} />
         </div>
 
