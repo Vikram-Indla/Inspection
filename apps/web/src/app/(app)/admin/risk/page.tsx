@@ -3,8 +3,11 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
+import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import { Text } from "@/components/saqeel/type";
 import RiskForm, { type RiskLabels } from "./RiskForm";
 import { createAdminRecordDrawerLabels } from "../_components/adminRecordDrawerCopy";
+import styles from "./risk-studio.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +58,9 @@ export default async function RiskStudio() {
     t("admin.revamp.risk.governance.rls", copy("Risk-owner authorization is rechecked on every write.", "يُعاد التحقق من صلاحية مالك المخاطر وأمن الصفوف عند كل كتابة.")),
     t("admin.revamp.risk.governance.trace", copy("Scores can always be reproduced from the stored inputs and the settings version.", "يمكن دائماً إعادة إنتاج الدرجات من المدخلات المخزنة وإصدار الإعدادات.")),
   ];
+  const governanceLabel = t("admin.revamp.governance", copy("Governance on this surface", "الحوكمة في هذه الواجهة"));
+  const reconstructionLabel = t("admin.revamp.reconstruction", copy("Reconstruction note", "ملاحظة إعادة البناء"));
+  const reconstructionNote = t("admin.revamp.risk.note", copy("Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist.", "تم حذف أوزان النموذج ونطاقاته وأوقات إعادة الحساب عمداً. تقرأ هذه الواجهة إعدادات المحرك الفعلية، بينما يبقى تفسير درجة كل مصنع في سجل المصنع حيث توجد مدخلات الحساب."));
 
   return (
     <AdminDestinationFrame
@@ -67,8 +73,6 @@ export default async function RiskStudio() {
       labels={{
         administration: t("navigation.administration", copy("Administration", "الإدارة")),
         breadcrumb: t("common.breadcrumb", copy("Breadcrumb", "مسار التنقل")),
-        governance: t("admin.revamp.governance", copy("Governance on this surface", "الحوكمة في هذه الواجهة")),
-        reconstruction: t("admin.revamp.reconstruction", copy("Reconstruction note", "ملاحظة إعادة البناء")),
       }}
       metrics={[
         {
@@ -96,8 +100,6 @@ export default async function RiskStudio() {
         title: t("admin.revamp.risk.gate.title", copy("The two risk lifecycles remain explicit", "تظل دورتا حياة المخاطر واضحتين")),
         body: t("admin.revamp.risk.gate.body", copy("Engine settings take effect only through the existing risk-owner action, after validation and confirmation. Model drafts use a separate maker-checker route. This screen does not treat the two as one.", "لا تصبح إعدادات المحرك نافذة إلا عبر إجراء مالك المخاطر الحالي بعد التحقق والتأكيد. تستخدم مسودات النماذج مساراً منفصلاً لفصل المُعدّ عن المعتمد. لا تعامل هذه الشاشة العقدين كعقد واحد.")),
       }}
-      governance={riskGovernance}
-      reconstructionNote={t("admin.revamp.risk.note", copy("Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist.", "تم حذف أوزان النموذج ونطاقاته وأوقات إعادة الحساب عمداً. تقرأ هذه الواجهة إعدادات المحرك الفعلية، بينما يبقى تفسير درجة كل مصنع في سجل المصنع حيث توجد مدخلات الحساب."))}
       context={<span className="id-code">{data?.version_label ?? notConfigured}</span>}
     >
       <div className="alert"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio.")}</strong> {t("admin.risk.banner.before", "Weights and bands are live engine settings")} {t("admin.risk.banner.after", "— scores must be able to be reproduced from stored inputs plus this version. Only the risk owner can write; everyone else is blocked. Every save is recorded in the Activity Log, which can't be changed.")}</div></div>
@@ -110,7 +112,7 @@ export default async function RiskStudio() {
       )}
 
       {!error && !data && (
-        <EmptyState glyph="⚖" title={t("admin.risk.empty.title", "No risk model stored")}
+        <EmptyState title={t("admin.risk.empty.title", "No risk model stored")}
           body={t("admin.risk.empty.desc", "No risk settings exist in your allowed scope. Create one through the approved setup process before using this studio.")} />
       )}
 
@@ -126,10 +128,7 @@ export default async function RiskStudio() {
         />
       )}
 
-      {/* Per-factory "why this score" trace needs a selected factory and its
-          stored scoring inputs — neither is read on this settings screen. Shown
-          as an honest boundary rather than a fabricated worked example. */}
-      <div style={{ maxInlineSize: 720 }}>
+      <div className={styles.footer}>
         <NotYetBoundary
           title={t("admin.risk.trace.title", "Why this factory? — worked calculation trace")}
           consequence={t("admin.risk.trace.desc", "A line-by-line score trace isn’t shown here — this screen configures the model, not individual factories.")}
@@ -141,6 +140,22 @@ export default async function RiskStudio() {
           notAvailableLabel={t("admin.risk.notYet", "Not available yet")}
           detailLabel={t("common.whyPrereq", "Why / prerequisites")}
         />
+
+        <Card as="section" role="note" labelledBy="risk-reconstruction">
+          <CardHeader level="h2" titleId="risk-reconstruction" title={reconstructionLabel} />
+          <CardBody><Text as="p" tone="secondary">{reconstructionNote}</Text></CardBody>
+        </Card>
+
+        <div className={styles.span}>
+          <Card as="section" role="note" labelledBy="risk-governance">
+            <CardHeader level="h2" titleId="risk-governance" title={governanceLabel} />
+            <CardBody>
+              <div className={styles.governance}>
+                {riskGovernance.map(item => <Text as="p" key={item} tone="secondary">{item}</Text>)}
+              </div>
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </AdminDestinationFrame>
   );

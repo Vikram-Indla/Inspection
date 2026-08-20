@@ -1,0 +1,5 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}

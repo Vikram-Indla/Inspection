@@ -1,11 +1,12 @@
 /* @retiring 2026-08-16 · replaced-by components/app-shell/shell-page-frame/shell-page-frame · pending /admin/integrations,/admin/localization,/admin/packages,/admin/risk · delete-when 0-imports */
 import type { ReactNode } from "react";
-import Link from "next/link";
+import Button from "@/components/saqeel/button/button";
 import Shell from "@/components/Shell";
 import {
   AdminRecordDrawerProvider,
   type AdminRecordDrawerLabels,
 } from "./AdminRecordDrawer";
+import styles from "./admin-destination-frame.module.css";
 
 export type AdminMetric = {
   label: string;
@@ -27,8 +28,6 @@ export type AdminGate = {
 export type AdminFrameLabels = {
   administration: string;
   breadcrumb: string;
-  governance: string;
-  reconstruction: string;
 };
 
 export default function AdminDestinationFrame({
@@ -39,8 +38,6 @@ export default function AdminDestinationFrame({
   metrics,
   tabs,
   gate,
-  governance,
-  reconstructionNote,
   labels,
   children,
   context,
@@ -54,8 +51,6 @@ export default function AdminDestinationFrame({
   metrics: readonly AdminMetric[];
   tabs: readonly AdminTab[];
   gate?: AdminGate;
-  governance: readonly string[];
-  reconstructionNote: string;
   labels: AdminFrameLabels;
   children: ReactNode;
   context?: ReactNode;
@@ -90,16 +85,16 @@ export default function AdminDestinationFrame({
             ))}
           </section>
 
-          <nav className="tabs" aria-label={`${title} sections`}>
+          <nav className={styles.tabs} aria-label={`${title} sections`}>
             {tabs.map(tab => (
-              <Link
-                className={`tab${tab.current ? " is-active" : ""}`}
-                href={tab.href}
-                aria-current={tab.current ? "page" : undefined}
+              <Button
                 key={`${tab.href}-${tab.label}`}
+                href={tab.href}
+                variant={tab.current ? "primary" : "secondary"}
+                size="sm"
               >
                 {tab.label}
-              </Link>
+              </Button>
             ))}
           </nav>
 
@@ -113,23 +108,6 @@ export default function AdminDestinationFrame({
           ) : null}
 
           {children}
-
-          <aside className="row" aria-label={`${title} — ${labels.governance}`}>
-            <section className="panel grow">
-              <header className="panel-header">
-                <h2 className="panel-title">{labels.governance}</h2>
-              </header>
-              <div className="panel-body stack">
-                {governance.map(item => <p key={item}>{item}</p>)}
-              </div>
-            </section>
-            <section className="panel grow">
-              <header className="panel-header">
-                <h2 className="panel-title">{labels.reconstruction}</h2>
-              </header>
-              <p className="panel-body">{reconstructionNote}</p>
-            </section>
-          </aside>
         </div>
       </AdminRecordDrawerProvider>
     </Shell>
