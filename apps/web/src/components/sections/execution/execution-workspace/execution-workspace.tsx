@@ -127,12 +127,14 @@ export default function ExecutionWorkspace({
           ) : null}
           <Text tone="muted">{messages.map.note}</Text>
           {markersOf(visible).length ? (
-            <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markersOf(visible)}
-              selectedId={selected?.id} fitMarkers height="100%" ariaLabel={messages.map.label}
-              onMarkerClick={id => {
-                const row = visible.find(candidate => candidate.id === id);
-                if (row) openVisit(row);
-              }} />
+            <div className={styles.mapCanvas}>
+              <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markersOf(visible)}
+                selectedId={selected?.id} fitMarkers height="100%" ariaLabel={messages.map.label}
+                onMarkerClick={id => {
+                  const row = visible.find(candidate => candidate.id === id);
+                  if (row) openVisit(row);
+                }} />
+            </div>
           ) : (
             <EmptyState icon="map" title={messages.empty.mapTitle} description={messages.empty.mapBody} />
           )}

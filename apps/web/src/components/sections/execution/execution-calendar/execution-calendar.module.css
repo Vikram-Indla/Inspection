@@ -14,11 +14,17 @@
 
 .days {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: var(--sqx-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (max-width: 48rem) {
+  .days {
+    grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  }
 }
 
 .day {
