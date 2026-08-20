@@ -26,6 +26,8 @@ export default function ReviewWorkspace({ loaded, query, strings, locale }: {
   locale: Locale;
 }) {
   const ws = strings.ws;
+  const statusLabels: Record<string, string> = ws.inspectionStatus;
+  const statusLabel = (status: string) => statusLabels[status] ?? status.replace(/_/g, " ");
 
   if (loaded.kind === "unauthorized") {
     return <EmptyState icon="restricted" tone="danger" title={ws.unauthTitle} description={ws.unauthBody} />;
@@ -55,7 +57,7 @@ export default function ReviewWorkspace({ loaded, query, strings, locale }: {
       <div className={styles.head}>
         <Heading level={1}>{ws.title.replace("{factory}", loaded.factory.name)}</Heading>
         <span className={styles.chips}>
-          <StatusPill tone="info">{loaded.inspectionStatus.replace(/_/g, " ")}</StatusPill>
+          <StatusPill tone="info">{statusLabel(loaded.inspectionStatus)}</StatusPill>
           {loaded.latest ? <Mono>v{loaded.latest.version_number} · {ws.latest}</Mono> : null}
           {!loaded.canDecide
             ? <StatusPill tone="warning">{fill(ws.readOnlyRole, { role: loaded.viewerRole ?? "—" })}</StatusPill>
@@ -111,7 +113,7 @@ export default function ReviewWorkspace({ loaded, query, strings, locale }: {
           ) : (
             <Card as="section">
               <CardBody>
-                <Text tone="muted">{fill(ws.noOpenDecision, { status: loaded.inspectionStatus.replace(/_/g, " ") })}</Text>
+                <Text tone="muted">{fill(ws.noOpenDecision, { status: statusLabel(loaded.inspectionStatus) })}</Text>
               </CardBody>
             </Card>
           )}

@@ -169,6 +169,29 @@
         "prior": "القرارات السابقة",
         "timeline": "المسار الزمني"
       },
+      "inspectionStatus": {
+        "under_review": "قيد المراجعة",
+        "submitted": "تم التقديم",
+        "approved": "معتمد",
+        "returned": "أُعيد للتصحيح",
+        "rejected": "مرفوض"
+      },
+      "timelineEvent": {
+        "submitted": "تم التقديم",
+        "resubmitted": "أُعيد التقديم",
+        "review_opened": "فُتحت المراجعة",
+        "approved": "معتمد",
+        "returned": "أُعيد للتصحيح",
+        "rejected": "مرفوض",
+        "reviewer_comment": "تعليق المراجع",
+        "compliance_handoff": "إحالة الامتثال"
+      },
+      "timelineObject": {
+        "submission_versions": "نسخة التقديم",
+        "reviews": "مراجعة",
+        "review_comments": "تعليق المراجع",
+        "compliance_inspection_handoffs": "إحالة الامتثال"
+      },
       "timelineHeading": "الخط الزمني المعتمد للمراجعة",
       "timelineNote": "أحداث التقديم وإعادة التقديم والمراجعة والتعليقات وإحالة الامتثال المعتمدة.",
       "timelineUnavailable": "الخط الزمني المعتمد غير متاح.",

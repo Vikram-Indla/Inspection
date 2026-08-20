@@ -135,12 +135,15 @@ export default function ReviewPanels({ tab, data, strings, locale }: {
   }
 
   if (tab === "timeline") {
+    const eventLabels: Record<string, string> = ws.timelineEvent;
+    const objectLabels: Record<string, string> = ws.timelineObject;
     const columns: readonly DataColumn<TimelineEvent>[] = [
       { key: "at", header: ws.version, isRowHeader: true, numeric: true,
         cell: row => <Text as="span" numeric>{formatDateTime(row.occurred_at, locale)}</Text> },
-      { key: "object", header: ws.colItem, cell: row => <Text as="span">{row.object_type.replace(/_/g, " ")}</Text> },
+      { key: "object", header: ws.colItem,
+        cell: row => <Text as="span">{objectLabels[row.object_type] ?? row.object_type.replace(/_/g, " ")}</Text> },
       { key: "event", header: ws.colResponse,
-        cell: row => <Text as="span" tone="secondary">{row.event_key.replace(/_/g, " ").toLowerCase()}</Text> },
+        cell: row => <Text as="span" tone="secondary">{eventLabels[row.event_key] ?? row.event_key.replace(/_/g, " ")}</Text> },
     ];
     return (
       <Panel title={ws.timelineHeading}>
