@@ -1,6 +1,22 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-19` · `Updated by: T-167 — the /admin/security-access + /admin/devices migration`
+`Last updated: 2026-08-20` · `Updated by: T-168 — the /factories/cr/[id] Factory 360 rebuild`
+
+## Factory 360 rebuilt: the largest legacy surface is on SAQEEL, T-020 closed (2026-08-20)
+
+**T-168 rebuilt the canonical Factory 360** — `/factories/cr/[id]?license=` (the
+target `/factories/[id]` redirects to) — the last wholly-legacy screen of its size:
+a 410-line `page.tsx`, 14 data sections + a license rail + a context rail on the
+frozen `.sq-*` sheets, ~130 hardcoded literals, emoji glyphs, raw tables/selects/
+img/form, and a one-bar skeleton. Full SAQEEL rebuild over the **unchanged governed
+`loadFactory360Dossier` projection**: thin 40-line route → `features/factories/
+cr-dossier/{queries,view}` + `components/sections/factories/factory360-cr/` (16 files,
+each ≤136 lines) + a bilingual `factoriesCr` namespace (English from the legacy `t()`
+fallbacks, **Arabic lifted verbatim from the approved `FACTORY360_AR_FALLBACK`**). The
+approved-compliance trend is now a real `BarSeries`; no charts invented elsewhere.
+Verified live EN + AR/RTL on the owner's URL. Lint −279, typography −144. **This closes
+the long-deferred T-020.** The two sibling factory routes (`/factories`,
+`/factories/[id]`) remain semi-legacy (emoji + utc-slice DSV5 debt) as separate tasks.
 
 ## The `/admin` migration: the MVP3 control plane is closed, shared plumbing retired (2026-08-19)
 

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-167.** Take T-168.
+implements the reservation. **Highest id in use: T-168.** Take T-169.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,19 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-168 · `/factories/cr/[id]` — Factory 360 rebuilt on SAQEEL (the T-020 rebuild)
+`status: done` · `rules: WEB-000..015` · `est: 6h`
+`record:` [2026-08-20-T-168-factory360-cr-rebuild](sessions/2026-08/2026-08-20-T-168-factory360-cr-rebuild.md)
+
+The canonical Factory 360 (`/factories/[id]` redirects here) and the largest
+wholly-legacy surface left: a 410-line `page.tsx`, 14 sections + two rails on the
+frozen `.sq-*` sheets. Full SAQEEL rebuild — thin 40-line route, `factoriesCr`
+namespace (English from the legacy `t()` fallbacks, Arabic from the approved
+`FACTORY360_AR_FALLBACK`), `cr-dossier` feature module over the unchanged governed
+projection, `FactoryWorkspace` + Card/DataTable/DefinitionList/StatusPill panels,
+and the approved-compliance trend as a real `BarSeries`. Verified EN + AR/RTL.
+Lint −279, typography −144. **This closes T-020.**
 
 ### T-167 · `/admin/security-access` + `/admin/devices` rebuilt on SAQEEL (MVP3 control-plane closed)
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 3h`

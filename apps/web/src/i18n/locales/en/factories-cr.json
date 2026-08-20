@@ -1,0 +1,298 @@
+{
+  "title": "Factory 360",
+  "badge": "Factory 360",
+  "loading": "Loading Factory 360 profile",
+  "loadingDetail": "Loading the selected registration, license and recorded source metadata.",
+  "permission": {
+    "title": "Factory 360 access required",
+    "body": "You do not have access to this factory profile."
+  },
+  "notFound": {
+    "title": "Factory 360 profile unavailable",
+    "body": "Factory registration not found or not available to you.",
+    "neutral": "The factory list is temporarily unavailable. Nothing was changed."
+  },
+  "meta": {
+    "source": "Source",
+    "recorded": "recorded"
+  },
+  "source": {
+    "degraded": "Degraded",
+    "notAvailable": "Not available",
+    "empty": "No records",
+    "available": "Available",
+    "heading": "Source status and freshness",
+    "record": "Record used here",
+    "localCopy": "SAQEEL canonical copy",
+    "system": "Source system",
+    "timestamp": "Recorded sync timestamp",
+    "noSla": "Freshness is shown as a recorded source fact; no unapproved staleness threshold is inferred."
+  },
+  "section": {
+    "degraded": "This source section is degraded; other sections remain available."
+  },
+  "licenses": {
+    "heading": "Licenses and plants",
+    "count": "{count} licenses",
+    "one": "1 license",
+    "empty": "No industrial license is mapped to this CR.",
+    "degraded": "Industrial-license data is temporarily degraded; CR identity remains available.",
+    "select": "Select a license"
+  },
+  "fields": {
+    "plant": "Plant",
+    "riskLevel": "Risk level",
+    "status": "Status",
+    "type": "Type",
+    "stage": "Stage",
+    "name": "Name",
+    "reference": "Reference",
+    "date": "Date",
+    "category": "Category",
+    "title": "Title",
+    "validity": "Validity",
+    "sourceSystem": "Source"
+  },
+  "cr": {
+    "heading": "Commercial registration and legal identity",
+    "number": "CR number",
+    "unified": "Unified number",
+    "legalEn": "Legal name (English)",
+    "legalAr": "Legal name (Arabic)",
+    "dates": "Issued / expires",
+    "owner": "Owner details",
+    "portfolio": "All licenses",
+    "totalLicenses": "Total licenses",
+    "licenseStates": "Active / expired / suspended",
+    "highestRisk": "Highest-risk license",
+    "approvedInspections": "Approved inspections",
+    "openViolations": "Open violations",
+    "openViolationsUnavailable": "Not available — runtime violations have no governed open/closed state",
+    "activePenalties": "Active penalties",
+    "activePenaltiesUnavailable": "Not available — current penalty statuses do not define Active/Expired/Cancelled",
+    "noAggregate": "All-licenses facts only. No CR-level risk score or compliance rate is calculated."
+  },
+  "license": {
+    "heading": "Selected license, plant and address",
+    "number": "Industrial license",
+    "factory": "Factory",
+    "statusStage": "Status / stage",
+    "dates": "Issued / expires",
+    "holder": "License holder",
+    "address": "Address",
+    "coordinates": "Coordinates",
+    "exports": "Exports products?",
+    "exportsYes": "Yes",
+    "exportsNo": "No",
+    "exportsUnknown": "Unknown",
+    "unavailable": "Select a mapped industrial license to load plant facts."
+  },
+  "context": {
+    "heading": "Selected context",
+    "cr": "CR",
+    "license": "License",
+    "plant": "Plant"
+  },
+  "visits": {
+    "heading": "Visit summary",
+    "boundary": "Operational context only. Inspection answers, evidence, findings, reviewer comments and personal contact data are excluded.",
+    "reference": "Visit reference",
+    "date": "Date",
+    "type": "Type",
+    "planningStatus": "Planning status",
+    "operationalStatus": "Visit status",
+    "locationSource": "Location source",
+    "coordinates": "Coordinates",
+    "filterStatus": "Planning status",
+    "filterType": "Visit type",
+    "all": "All",
+    "empty": "No source-backed visits are available.",
+    "filteredEmpty": "No visits match the selected filters."
+  },
+  "observed": {
+    "heading": "Official vs latest approved observed snapshot",
+    "rule": "The observed column shows the official record as it was when someone submitted a report that was later approved. It does not change the current official record.",
+    "field": "Field",
+    "official": "Current official",
+    "captured": "Observed at submission",
+    "result": "Comparison",
+    "same": "Unchanged",
+    "changed": "Changed or unavailable",
+    "capturedAt": "Captured",
+    "origin": "Origin approved report",
+    "empty": "No approved report has a governed factory snapshot for this selected license yet.",
+    "fields": {
+      "cr_number": "CR number",
+      "industrial_license_number": "Industrial license",
+      "plant_number": "Plant number",
+      "factory_name": "Factory name",
+      "region": "Region",
+      "city": "City",
+      "source_system": "Source system"
+    }
+  },
+  "compliance": {
+    "heading": "Approved inspection compliance",
+    "rule": "Calculated only from the latest final submitted version of approved inspections and the checklist version used for the inspection. Returned or rejected inspections stay visible below, but they never affect this rate.",
+    "notAvailable": "Not available",
+    "na": "No eligible approved scored answers",
+    "trend": "Approved compliance trend",
+    "trendCaption": "Approved-inspection compliance rate, oldest to newest."
+  },
+  "reports": {
+    "heading": "Inspection reports",
+    "number": "Inspection",
+    "version": "Latest final version",
+    "compliance": "Approved compliance",
+    "notSubmitted": "Not submitted",
+    "open": "Open report",
+    "empty": "No inspection reports are available for the selected plant."
+  },
+  "violations": {
+    "heading": "Approved inspection violations and corrective actions",
+    "title": "Violation",
+    "severity": "Severity",
+    "corrective": "Corrective action",
+    "grace": "Grace period",
+    "graceDays": "{count} days",
+    "origin": "Originating approved report",
+    "empty": "No violations from approved inspection reports are visible in your scope."
+  },
+  "industrial": {
+    "heading": "Industrial information",
+    "hsCode": "HS / activity code",
+    "quantity": "Quantity / capacity",
+    "production": "Real / maximum production",
+    "pricePrimary": "Price / primary",
+    "empty": "No source-backed products, spare parts, machines, production lines or raw materials are available."
+  },
+  "government": {
+    "heading": "Government records",
+    "empty": "Government-domain records are unavailable until a governed source contract supplies them."
+  },
+  "chemicalCustoms": {
+    "heading": "Chemical permits and customs exemptions",
+    "noPlant": "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number."
+  },
+  "chemicalPermits": {
+    "heading": "Chemical permits",
+    "approval": "Approval number",
+    "empty": "No chemical permits found for this plant."
+  },
+  "customsExemptions": {
+    "heading": "Customs exemptions",
+    "decree": "Decree number",
+    "empty": "No customs exemptions found for this plant."
+  },
+  "documents": {
+    "heading": "Documents and factory media",
+    "restricted": "restricted",
+    "restrictedBody": "Document metadata requires Factory Documents permission.",
+    "download": "Download",
+    "downloadUnavailable": "File unavailable",
+    "downloadRestricted": "Download restricted",
+    "empty": "No source-backed document metadata is available."
+  },
+  "media": {
+    "official": "Official factory gallery",
+    "alt": "Official factory image",
+    "boundary": "Only official factory/profile media appears here. Inspection evidence remains linked to its inspection report and is never merged into this gallery.",
+    "evidence": "Linked inspection evidence",
+    "origin": "Origin report",
+    "originContext": "Origin context",
+    "ocr": "Contextual OCR",
+    "evidenceEmpty": "No linked inspection, arrival or violation evidence is visible in your scope."
+  },
+  "timeline": {
+    "heading": "Business-event timeline",
+    "rule": "Source-backed sync, visit, submission, approval, penalty and risk events.",
+    "empty": "No business events are available for the selected license.",
+    "event": "Event",
+    "detail": "Detail",
+    "events": {
+      "crIssued": "CR issued",
+      "crExpiry": "CR expiry",
+      "licenseIssued": "Selected industrial license issued",
+      "licenseExpiry": "Selected industrial license expiry",
+      "reportSubmitted": "Inspection report submitted",
+      "governmentRecorded": "Government record received",
+      "penaltyIssued": "Penalty notice issued",
+      "riskCalculated": "Risk engine calculation completed"
+    }
+  },
+  "xpc": {
+    "heading": "Source and cross-provider reconciliation",
+    "conflicts": "Conflicts",
+    "unverified": "Unverified master",
+    "reconciled": "Reconciled",
+    "rule": "Facts are checked once, by the system. Industry Shared master data is not verified yet, so it is not used. Inspection API values give context. Approved report facts are the most reliable. If facts conflict, we show the conflict — we never hide or overwrite it.",
+    "cr": "Commercial registration",
+    "license": "Industrial license",
+    "plant": "Plant",
+    "activities": "Activities / products / materials",
+    "workforce": "Workforce / contacts / delegations",
+    "workforceNote": "Industry-shared contract not supplied",
+    "package": "Checklist version / submission version",
+    "discrepancies": "Reconciliation",
+    "none": "No reconcilable facts"
+  },
+  "risk": {
+    "heading": "Saved risk",
+    "advisory": "Advisory",
+    "restricted": "Risk detail requires Factory Risk permission.",
+    "source": "SAQEEL-calculated advisory. It does not change the master record.",
+    "version": "Model",
+    "calculated": "Calculated",
+    "snapshots": "{count} saved snapshots",
+    "aiDisclosure": "Explain this saved risk (advisory)",
+    "aiTitle": "Explain saved risk",
+    "aiDescription": "Advisory only. The explanation is restricted to saved Risk Engine facts and cannot recalculate or change risk.",
+    "aiGenerate": "Explain recorded factors",
+    "aiUnavailable": "AI explanation unavailable",
+    "aiEvidence": "Source references",
+    "aiAdvisory": "Human decision required"
+  },
+  "enforcement": {
+    "heading": "Penalty history",
+    "origin": "Origin report",
+    "empty": "No penalty notices are visible in your scope."
+  },
+  "actions": {
+    "heading": "Actions",
+    "openMap": "Open map",
+    "planSingle": "Plan a single visit",
+    "exportPdf": "Print / Save permitted PDF",
+    "restricted": "No create-inspection or export action is permitted for your role."
+  },
+  "enum": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "active": "Active",
+    "expired": "Expired",
+    "suspended": "Suspended",
+    "cancelled": "Cancelled",
+    "approved": "Approved",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "returned": "Returned",
+    "rejected": "Rejected",
+    "published": "Published",
+    "draft": "Draft",
+    "in_progress": "In progress",
+    "completed": "Completed",
+    "issued": "Issued",
+    "industrial": "Industrial",
+    "operational": "Operational",
+    "periodic": "Periodic",
+    "immediate": "Immediate",
+    "follow_up": "Follow-up",
+    "new": "New",
+    "authoritative": "Authoritative",
+    "contract_unverified": "Contract unverified",
+    "conflicting": "Conflicting",
+    "permission_restricted": "Permission restricted",
+    "unavailable": "Unavailable",
+    "contextual": "Contextual"
+  }
+}
