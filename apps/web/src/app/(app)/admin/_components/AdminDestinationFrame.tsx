@@ -90,8 +90,9 @@ export default function AdminDestinationFrame({
               <Button
                 key={`${tab.href}-${tab.label}`}
                 href={tab.href}
-                variant={tab.current ? "primary" : "secondary"}
+                variant="link"
                 size="sm"
+                iconEnd={tab.current ? undefined : "externalLink"}
               >
                 {tab.label}
               </Button>
