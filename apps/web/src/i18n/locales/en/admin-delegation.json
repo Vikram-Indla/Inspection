@@ -59,6 +59,16 @@
     "scopePlaceholder": "Choose a role you hold",
     "startsAt": "Starts",
     "endsAt": "Ends",
+    "dateRange": {
+      "label": "Validity window",
+      "pickStart": "Choose a start date",
+      "pickEnd": "Choose an end date",
+      "apply": "Apply",
+      "empty": "Not set",
+      "next7": "Next 7 days",
+      "next30": "Next 30 days",
+      "next90": "Next 90 days"
+    },
     "reason": "Reason",
     "reasonPlaceholder": "Why this authority is being delegated",
     "create": "Create delegation",

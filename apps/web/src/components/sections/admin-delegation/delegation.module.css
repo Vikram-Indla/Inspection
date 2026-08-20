@@ -28,11 +28,13 @@
   gap: var(--sqx-space-4);
 }
 
-.formGrid {
+.fieldGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-  gap: var(--sqx-space-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--sqx-grid-min-md)), 1fr));
+  gap: var(--sqx-space-4);
+  align-items: start;
 }
+
 
 .formActions {
   display: flex;

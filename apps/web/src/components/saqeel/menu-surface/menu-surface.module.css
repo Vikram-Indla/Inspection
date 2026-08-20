@@ -37,9 +37,11 @@
 }
 
 /* A dialog panel (the date range picker) sizes itself; capping it at the list
-   height is what forced it to scroll in both directions. */
+   height is what forced it to scroll in both directions, and stretching it to a
+   wide trigger is what stranded its content against a wall of empty space. */
 .root[role="dialog"] {
   max-block-size: var(--sqx-menu-avail-h, none);
+  min-inline-size: 0;
 }
 
 /* A panel opening upward should rise into place, not drop into it. */
