@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-169.** Take T-170.
+implements the reservation. **Highest id in use: T-171.** Take T-172.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -23,7 +23,38 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 
 ## NOW
 
-### T-168 · `/factories/cr/[id]` — Factory 360 rebuilt on SAQEEL (the T-020 rebuild)
+### T-171 · `/admin/risk` — Risk Studio rebuilt on SAQEEL, AdminDestinationFrame retired (SCR-ADM-060 / CD-014)
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-009, WEB-013, WEB-014, WEB-015` · `est: 3h`
+`record:` [2026-08-21-T-171-admin-risk-migration](sessions/2026-08/2026-08-21-T-171-admin-risk-migration.md)
+
+The Risk Studio (live factor weights + score bands over `engine_settings`), last
+consumer of the `@retiring` `AdminDestinationFrame`. Rebuilt thin (162 → 12) on
+`ShellPageFrame` + the sibling `RiskSectionNav`, `admin-risk` feature module,
+`risk-studio-screen` + controlled `risk-form`, new bilingual `adminRisk`
+namespace. Server action now returns typed error codes (no English copy leaking
+from `.ts`). **Retired 1,097 lines** — the whole `AdminDestinationFrame` +
+`AdminRecordDrawer` subsystem, zero imports remaining. Seeded the missing risk
+`engine_settings` row from the accepted `DECISIONS_ACCEPTED_2026-07-11` config
+(restored, not invented — WEB rule 9). Verified EN + AR/RTL live, populated
+(100% Σ, band chips, confirm-live save gate), zero overflow. typecheck 0, lint
+−369, typography −248, no v5 violations in the new files.
+
+### T-170 · `/admin/items` — Inspection Item Catalogue rebuilt on SAQEEL (CD-007 / SCR-ADM-020)
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 4h`
+`record:` [2026-08-21-T-170-admin-items-migration](sessions/2026-08/2026-08-21-T-170-admin-items-migration.md)
+
+The semantic item catalogue + read-only runtime-preview strip, last legacy admin
+console surface on the frozen `.sq-*` sheets and the `t()`/ui_strings copy path.
+Full SAQEEL rebuild — thin route, `admin-items` feature module (`queries.ts` +
+`types.ts`) over the unchanged governed projection, `items-screen` +
+`item-forms` + `item-preview` sections (`DataTable`/`Card`/`StatusPill`/`Select`),
+new bilingual `adminItems` namespace (~100 keys, EN + AR), dark-knob toggle fix.
+Actor ids resolved to names via the `display_names` RPC (no raw UUID). Verified
+EN + AR/RTL live as Admin. Six contract specs re-pointed to the feature/section
+split — three of which were **already red at HEAD** from concurrent committed
+migrations (regulations `ba382425`/`3f394e95`, packages, violations→enforcement
+`bbc4a602`); chased each guard/copy to its new home. typecheck 0, lint −353,
+typography −220, static suite 408/0.
 `status: done` · `rules: WEB-000..015` · `est: 6h`
 `record:` [2026-08-20-T-168-factory360-cr-rebuild](sessions/2026-08/2026-08-20-T-168-factory360-cr-rebuild.md)
 

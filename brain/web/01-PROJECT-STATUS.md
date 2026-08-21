@@ -1,6 +1,44 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-20` · `Updated by: T-168 — the /factories/cr/[id] Factory 360 rebuild`
+`Last updated: 2026-08-21` · `Updated by: T-171 — the /admin/risk Risk Studio rebuild`
+
+## `/admin/risk` rebuilt: the AdminDestinationFrame subsystem is retired (2026-08-21)
+
+**T-171 rebuilt the Risk Studio** (SCR-ADM-060 / CD-014 — live factor weights +
+score bands over `engine_settings`) and deleted the `@retiring`
+`AdminDestinationFrame` + `AdminRecordDrawer` subsystem it was the last consumer
+of — **1,097 lines of legacy gone**. `page.tsx` **162 → 12** on `ShellPageFrame`
++ the shared `RiskSectionNav`, `features/admin-risk/{queries,types}` +
+`sections/admin-risk/{risk-studio-screen,risk-form}`, new bilingual `adminRisk`
+namespace. The controlled form keeps the governed logic verbatim
+(`validateWeights`/`validateBands`, Σ=1.00 gate, confirm-live, `saveRiskSettings`)
+but the server action now returns **typed error codes** instead of English copy.
+Band chips are labelled `StatusPill`s; last-updated is `formatDateTime` (Riyadh),
+not utc-slice. **Seeded the missing risk `engine_settings` row from the accepted
+`DECISIONS_ACCEPTED_2026-07-11` config** — restored, not invented (rule 9); absent
+data still renders the governed empty state. Verified live EN + AR/RTL, populated.
+lint −369, typography −248, zero v5 violations in the new files.
+
+## `/admin/items` rebuilt: the last legacy admin-console surface is on SAQEEL (2026-08-21)
+
+## `/admin/items` rebuilt: the last legacy admin-console surface is on SAQEEL (2026-08-21)
+
+**T-170 rebuilt the Inspection Item Catalogue** (CD-007 / SCR-ADM-020) — semantic
+catalogue + read-only runtime-preview strip — off the frozen `.sq-*` sheets and
+the `t()`/ui_strings copy path. `page.tsx` **360 → 32**, `Controls.tsx`
+**306 → deleted**, over the unchanged governed projection: `features/admin-items/
+{queries,types}` + `components/sections/admin-items/{items-screen,item-forms,
+item-preview}` + a bilingual **`adminItems`** namespace (EN 90 + AR 90). Catalogue
+is now a true `DataTable`, governance a named region, status a `StatusPill`, the
+preview a read-only projection. **Audit actors resolve to names via `display_names`
+— no raw uuid anywhere** ([[never-show-raw-ids]] is now binding). Verified live as
+Admin, EN + AR/RTL. Six contract specs re-pointed — three were already red at HEAD
+from concurrent committed migrations (regulations, packages, violations→enforcement)
+that never re-pointed their own specs; chased each guard/copy to its new `features/*`
+home. typecheck 0, lint −353, typography −220, static suite **408/0**. Committed
+`6d142b6d`. **Open, not this task:** `lib/analytics/query-state.ts:18` fails the v5
+gate (utc-slice) — pre-existing in the `bbc4a602` demo-dataset commit, flagged to
+the human before the demo.
 
 ## Factory 360 rebuilt: the largest legacy surface is on SAQEEL, T-020 closed (2026-08-20)
 

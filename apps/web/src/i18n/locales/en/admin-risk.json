@@ -1,0 +1,78 @@
+{
+  "title": "Risk Settings",
+  "subtitle": "Risk factors, evaluation method and weighting",
+  "loading": "Loading risk…",
+  "notConfigured": "Not configured",
+  "breadcrumb": { "label": "Breadcrumb", "administration": "Administration" },
+  "banner": {
+    "title": "This is the Risk Studio.",
+    "body": "Weights and bands are live engine settings — scores must be reproducible from stored inputs plus this version. Only the risk owner can write; everyone else is blocked. Every save is recorded in the Activity Log, which can’t be changed."
+  },
+  "metric": {
+    "total": "Configured weight total",
+    "totalNote": "Derived from the stored factor weights",
+    "factors": "Factors in current settings",
+    "factorsNote": "No prototype factors are added",
+    "version": "Settings version",
+    "versionNote": "Read from the engine settings"
+  },
+  "error": {
+    "title": "Couldn’t load risk settings.",
+    "body": "We couldn’t verify the existing settings. Nothing changed; retry or check your risk-owner access."
+  },
+  "empty": {
+    "title": "No risk model stored",
+    "body": "No risk settings exist in your allowed scope. Create one through the approved setup process before using this studio."
+  },
+  "form": {
+    "factorsTitle": "Factors & weights (must sum to 1.00)",
+    "bandsTitle": "Bands",
+    "lowEnds": "Low ends at",
+    "mediumEnds": "Medium ends at",
+    "high": "High",
+    "sumOk": "Σ weights = 1.00",
+    "sumBad": "Σ weights = {sum} — must equal 1.00 before saving",
+    "save": "Save settings (risk owner only)",
+    "saving": "Saving…",
+    "saved": "Saved — takes effect right away",
+    "savedNote": "Saving writes factors and bands to the engine settings after the weights-sum check. It takes effect right away for new score calculations — there is no draft or approval step on this screen.",
+    "lastUpdated": "Last updated",
+    "bandLow": "Low",
+    "bandMedium": "Medium",
+    "bandHigh": "High",
+    "invalidBands": "Bands must use whole numbers and cover 0–100 without gaps.",
+    "confirmLive": "I understand this setting takes effect right away for new score calculations.",
+    "weightAria": "Weight for {factor}"
+  },
+  "saveError": {
+    "weightRange": "Every weight must be a number between 0 and 1 — your draft is preserved.",
+    "weightSum": "Weights must sum to 1.00 — your draft is preserved.",
+    "bandBounds": "Band boundaries must be whole numbers with 0 ≤ low < medium ≤ 99 — your draft is preserved.",
+    "provider": "Couldn’t save — risk-owner scope is required. Nothing changed."
+  },
+  "governance": {
+    "label": "Governance on this surface",
+    "sum": "The stored factor total must equal the engine’s accepted invariant before a save.",
+    "rls": "Risk-owner authorization is rechecked on every write.",
+    "trace": "Scores can always be reproduced from the stored inputs and the settings version."
+  },
+  "reconstruction": {
+    "label": "Reconstruction note",
+    "note": "Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist."
+  },
+  "trace": {
+    "title": "Why this factory? — worked calculation trace",
+    "desc": "A line-by-line score trace isn’t shown here — this screen configures the model, not individual factories.",
+    "pre1": "A selected factory and its stored scoring inputs",
+    "pre2": "The per-factor normalized values used at scoring time",
+    "notYet": "Not available yet",
+    "whyPrereq": "Why / prerequisites"
+  },
+  "factor": {
+    "violation_history_24mo": "Violation history (24 months)",
+    "last_outcome_recency_severity": "Last outcome recency & severity",
+    "license_status": "License status",
+    "activity_hazard_class": "Activity hazard class",
+    "open_corrective_actions": "Open corrective actions"
+  }
+}
