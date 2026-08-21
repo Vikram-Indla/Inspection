@@ -72,7 +72,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     // inspector reads one consistent statement of WHERE the fence came from.
     fenceFactoryOverride: tr("field.start.factoryOverride", "(factory override — )", "(تجاوز خاص بالمنشأة — )"),
     fenceEngineDefault: tr("field.start.engineDefault", "(engine default — )", "(الافتراضي من المحرّك — )"),
-    fenceNotConfigured: tr("field.travel.fenceNotConfigured", "Not configured", "غير مُهيّأ"),
+    fenceNotConfigured: tr("field.travel.fenceNotConfigured", "N/A", "لا ينطبق"),
     fenceUnconfiguredChip: tr("field.travel.fenceUnconfiguredChip", "Radius not configured", "النطاق غير مُهيّأ"),
     fenceUnconfiguredNote: tr(
       "field.travel.fenceUnconfiguredNote",
@@ -115,7 +115,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
   // governed sources and additionally falls back to a 150 m code constant
   // because it must still gate arrival when nothing is governed. This screen
   // gates nothing — it only displays — so it stops at the governed chain and
-  // renders `null` honestly ("Not configured") rather than printing that code
+  // renders `null` honestly ("N/A") rather than printing that code
   // constant as if it were policy. Whenever either governed source resolves,
   // travel and Startup carry the identical number, so the two surfaces never
   // disagree about a real fence; when neither does, travel shows no radius, no

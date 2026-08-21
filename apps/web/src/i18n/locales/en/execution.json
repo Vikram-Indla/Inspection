@@ -88,7 +88,7 @@
     "action": "Action",
     "view": "View",
     "unassigned": "Unassigned",
-    "notConfigured": "Not configured",
+    "notConfigured": "N/A",
     "notRecorded": "Not recorded",
     "coordinatesRecorded": "Official coordinates recorded",
     "coordinatesMissing": "No official coordinates",

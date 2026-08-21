@@ -11,7 +11,7 @@ export default async function WorkloadRiskSection({ data, model }: {
 }) {
   const { t, locale } = await useT();
   const lab = makeLabelers(locale, t);
-  const missing = lab.local("Not configured", "غير مهيأ");
+  const missing = lab.local("N/A", "لا ينطبق");
   return (
     <>
       <OperationsWorkloadTable

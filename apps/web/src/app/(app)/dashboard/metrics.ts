@@ -226,7 +226,7 @@ export function buildDashboardMetrics(input: {
    * OPS-KPI-002 "expiring soon" lead-time, expressed as the fraction of a
    * visit's execution window that must have elapsed before it counts as
    * expiring (governed SLA/urgency policy, ADM-DASH-007). Null/undefined when
-   * no such policy is published — the metric then stays "Not configured"
+   * no such policy is published — the metric then stays "N/A"
    * rather than hard-coding a threshold.
    */
   slaWarnAtFraction?: number | null;
@@ -331,7 +331,7 @@ export function buildDashboardMetrics(input: {
   const overdueRows = eligibleForSla.filter(v => Date.parse(v.window_end) < nowMs);
   // OPS-KPI-002 expiring soon — visits not yet overdue whose execution window
   // has passed the governed warn fraction (ADM-DASH-007). Null when the SLA
-  // urgency policy is not published, so presentation can render "Not configured".
+  // urgency policy is not published, so presentation can render "N/A".
   const warnFraction = input.slaWarnAtFraction;
   const expiringSoonRows = warnFraction == null ? null : eligibleForSla.filter(v => {
     const start = Date.parse(v.window_start);

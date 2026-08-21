@@ -2,7 +2,7 @@
   "title": "Risk Settings",
   "subtitle": "Risk factors, evaluation method and weighting",
   "loading": "Loading risk…",
-  "notConfigured": "Not configured",
+  "notConfigured": "N/A",
   "breadcrumb": { "label": "Breadcrumb", "administration": "Administration" },
   "banner": {
     "title": "This is the Risk Studio.",

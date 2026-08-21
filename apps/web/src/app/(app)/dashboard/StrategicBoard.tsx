@@ -83,7 +83,7 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
             question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
             title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
             value={null}
-            emptyText={copy(locale, "Not configured", "غير مهيأ")}
+            emptyText={copy(locale, "N/A", "لا ينطبق")}
             definition={copy(locale, "Completed inspections as a percentage of the annual inspection target", "التفتيشات المكتملة كنسبة مئوية من المستهدف السنوي للتفتيش")}
             example={copy(locale, `${strategic.completedInspections} completed inspections; no governed annual target is configured.`, `${strategic.completedInspections} تفتيشاً مكتملاً؛ لا يوجد مستهدف سنوي معتمد.`)}
             interpretation={copy(locale, "Coverage remains withheld until Administration publishes the governed inspection-cycle target.", "تبقى التغطية محجوبة حتى تنشر الإدارة مستهدف دورة التفتيش المعتمد.")}
@@ -198,7 +198,7 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
             question={copy(locale, "Which factories still require inspection this year?", "ما المصانع التي لا تزال تتطلب تفتيشاً هذا العام؟")}
             title={copy(locale, "Factories pending annual inspection", "المصانع بانتظار التفتيش السنوي")}
             value={null}
-            emptyText={copy(locale, "Not configured", "غير مهيأ")}
+            emptyText={copy(locale, "N/A", "لا ينطبق")}
             definition={copy(locale, "Active factories with no completed inspection in the governed inspection year", "المصانع النشطة دون تفتيش مكتمل في سنة التفتيش المعتمدة")}
             example={copy(locale, `${factories.length} factories are visible, but the annual-cycle policy is not configured.`, `${factories.length} مصنعاً ظاهراً، لكن سياسة الدورة السنوية غير مهيأة.`)}
             interpretation={copy(locale, "The screen withholds a count until the inspection-year policy is published.", "تحجب الشاشة العدد حتى نشر سياسة سنة التفتيش.")}
@@ -226,7 +226,7 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
             <span className="tl-meta">{copy(locale, "Executive AI brief", "موجز الذكاء الاصطناعي التنفيذي")}</span>
             <h2>{copy(locale, "Provider output withheld", "تم حجب مخرجات المزود")}</h2>
             <p>{copy(locale, "No generated claim is shown until a configured provider returns evidence-linked output for this scope.", "لا يُعرض أي ادعاء مولد حتى يعيد مزود مهيأ مخرجات مرتبطة بالأدلة لهذا النطاق.")}</p>
-            <span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span>
+            <span className="badge badge-pending">{copy(locale, "N/A", "لا ينطبق")}</span>
             <span className="tl-meta">{copy(locale, "Authoritative dashboard records remain available.", "تظل سجلات لوحة القيادة المعتمدة متاحة.")}</span>
           </div>
         </article>

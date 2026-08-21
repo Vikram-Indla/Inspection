@@ -58,4 +58,4 @@ export function isRateMetric(key: string): boolean {
 // value the platform may not invent — a cohort rule, a lineage lookback, a
 // composite weighting, an exposure threshold, an SLA target, or a capacity
 // denominator — so it renders as a state, never as a number.
-export const UNCONFIGURED_ANALYTICS=[["Planning-to-submission cohort","Decision required"],["Repeat violation lineage/lookback","Unavailable"],["Risk-to-attention snapshot rules","Decision required"],["Health Score","Not configured"],["Licence exposure","Not configured"],["SLA urgency","Not configured"],["Capacity/utilization","Not configured"]].map(([title,state])=>({title,state}));
+export const UNCONFIGURED_ANALYTICS=[["Planning-to-submission cohort","Decision required"],["Repeat violation lineage/lookback","Unavailable"],["Risk-to-attention snapshot rules","Decision required"],["Health Score","N/A"],["Licence exposure","N/A"],["SLA urgency","N/A"],["Capacity/utilization","N/A"]].map(([title,state])=>({title,state}));

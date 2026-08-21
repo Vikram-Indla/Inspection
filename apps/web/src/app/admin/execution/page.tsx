@@ -290,7 +290,7 @@ export default async function ExecutionControlPlane() {
                     colFormats: t("admin.execution.evidence.col.formats", "Allowed file types"),
                     colMaxSize: t("admin.execution.evidence.col.maxSize", "Max size (MB)"),
                     colMaxDuration: t("admin.execution.evidence.col.maxDuration", "Max duration (min)"),
-                    notConfigured: t("admin.execution.evidence.notConfigured", "Not configured"),
+                    notConfigured: t("admin.execution.evidence.notConfigured", "N/A"),
                     notConfiguredHint: t("admin.execution.evidence.notConfiguredHint", "absent from the policy — this type is not permitted until configured"),
                     formatsHint: t("admin.execution.evidence.formatsHint", "Comma-separated, e.g. jpeg, png"),
                     retentionLabel: t("admin.execution.evidence.retention", "Evidence retention (years)"),

@@ -146,7 +146,7 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
               <tr key={row.id}>
                 <th scope="row">{row.nameResolved ? row.name : <span className="badge badge-pending">{copy(locale, "Unresolved identity", "هوية غير محلولة")}</span>}</th>
                 <td className="cell-num">{row.active}</td>
-                <td><span className="badge badge-pending">{copy(locale, "Not configured", "غير مهيأ")}</span></td>
+                <td><span className="badge badge-pending">{copy(locale, "N/A", "لا ينطبق")}</span></td>
               </tr>
             )) : <tr><td colSpan={3}>{copy(locale, "No inspector assignments are visible in this scope.", "لا توجد إسنادات مفتشين ظاهرة ضمن هذا النطاق.")}</td></tr>}
               </tbody>

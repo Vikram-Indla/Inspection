@@ -12,7 +12,7 @@
 //
 // Nothing in this module invents a report type, a record type, a delta count
 // or a package content list. A surface with no governed row renders
-// "Not configured" and names what a sponsor must supply.
+// "N/A" and names what a sponsor must supply.
 import { supabaseServer } from "@/lib/supabase-server";
 
 export type PackageSection = {

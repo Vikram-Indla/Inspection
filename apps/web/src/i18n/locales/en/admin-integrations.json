@@ -1,6 +1,6 @@
 {
   "loading": "Loading system connections…",
-  "notConfigured": "Not configured",
+  "notConfigured": "N/A",
   "unavailable": "Not available",
   "breadcrumb": {
     "label": "Breadcrumb",

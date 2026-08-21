@@ -112,7 +112,7 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
     executionMode: tr("field.incidents.executionMode", "Execution mode", "نمط التنفيذ"),
     physical: tr("field.incidents.physical", "Physical", "ميداني"),
     virtual: tr("field.incidents.virtual", "Virtual", "عن بُعد"),
-    notConfigured: tr("common.notConfigured", "Not configured", "غير مهيأ"),
+    notConfigured: tr("common.notConfigured", "N/A", "لا ينطبق"),
   };
 
   // Segment links keep whatever real context the route was reached with.

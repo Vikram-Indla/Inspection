@@ -22,7 +22,7 @@
   "submittedBadge": "Submitted",
   "open": "Open document",
   "prior": {
-    "title": "Not configured",
+    "title": "N/A",
     "body": "Select an establishment context before prior visits can be shown."
   },
   "document": {

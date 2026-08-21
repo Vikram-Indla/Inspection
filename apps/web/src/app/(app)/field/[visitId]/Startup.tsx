@@ -174,7 +174,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   // arrival gate fails closed instead of inventing a value or provenance.
   const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? null;
   const fenceConfigured = fence != null;
-  const fenceDisplay = fenceConfigured ? fence : (locale === "ar" ? "غير مهيأ" : "Not configured");
+  const fenceDisplay = fenceConfigured ? fence : (locale === "ar" ? "لا ينطبق" : "N/A");
   const fenceUnavailable = locale === "ar"
     ? "نطاق الوصول غير مهيأ. لا يمكن تأكيد الوصول حتى تضبط الإدارة نطاقاً محكوماً؛ يظل مسار التجاوز المحكوم متاحاً عندما يوجد نطاق وتكون القراءة خارجه."
     : "Arrival radius is not configured. Check-in is blocked until administration provides a governed radius; the governed override path remains available when a configured radius is exceeded.";

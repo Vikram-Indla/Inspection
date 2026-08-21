@@ -40,7 +40,7 @@
     "areaValue": "Compliance configuration",
     "system": "System"
   },
-  "notConfigured": "Not configured",
+  "notConfigured": "N/A",
   "unavailable": "Unavailable",
   "unknownUser": "Unknown user",
   "area": {

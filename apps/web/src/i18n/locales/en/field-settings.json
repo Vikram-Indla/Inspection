@@ -2,7 +2,7 @@
   "title": "Settings",
   "back": "Back",
   "loading": "Loading settings",
-  "notConfigured": "Not configured",
+  "notConfigured": "N/A",
   "sections": {
     "general": "General",
     "notifications": "Notifications",

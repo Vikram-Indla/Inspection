@@ -48,7 +48,7 @@
     "caption": "Planning visits",
     "empty": "No visits match",
     "noValue": "Not assigned",
-    "notConfigured": "Not configured",
+    "notConfigured": "N/A",
     "referenceUnavailable": "Reference not available",
     "colVisitRef": "Visit Reference",
     "colPlanningType": "Planning Type",
@@ -159,13 +159,13 @@
     "quickCreateVisit": "Create a visit",
     "aria": "Planning assistant",
     "stripTitle": "AI insights and recommendations",
-    "insightsEmptyTitle": "Not configured",
+    "insightsEmptyTitle": "N/A",
     "insightsEmptyBody": "AI insights are not configured for this workspace.",
     "quickTitle": "Quick Actions"
   },
   "stats": {
     "groupLabel": "Planning counts — select one to filter the list",
-    "notConfigured": "Not configured",
+    "notConfigured": "N/A",
     "activeNote": "Filtering the list",
     "needsPlanning": "Needs Planning",
     "highRisk": "High-Risk Factories",
@@ -440,7 +440,7 @@
     "returned": "Returned",
     "published": "Published",
     "expired": "Expired",
-    "notConfigured": "Not configured",
+    "notConfigured": "N/A",
     "activeNote": "Filtering the list"
   },
   "toolbar": {
@@ -512,7 +512,7 @@
       "statusChanged": "Status Changed",
       "aiScore": "AI Score"
     },
-    "notConfigured": "Not configured"
+    "notConfigured": "N/A"
   },
   "pagination": {
     "summary": "Showing {shown} of {total} scoped visits · page {page} of {pages}",

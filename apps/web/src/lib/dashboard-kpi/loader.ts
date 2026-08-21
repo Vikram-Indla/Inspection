@@ -87,7 +87,7 @@ export type ResolvedPolicyGates = {
 
 /**
  * Resolve the policy gates that flip STR-KPI-007/008 and OPS-KPI-002 from
- * "Not configured" to live. Reads only published heads/versions the caller may
+ * "N/A" to live. Reads only published heads/versions the caller may
  * see (RLS authoritative); any read failure degrades to "not configured" rather
  * than fabricating a governed value.
  */

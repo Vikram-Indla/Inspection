@@ -27,7 +27,7 @@ export type ProjectionContext = {
   /**
    * True when the governed inspection-cycle policy (ADM-DASH-005) is published.
    * Gates STR-KPI-007 (coverage) and STR-KPI-008 (uninspected) from
-   * "Not configured" to live — the computed values already exist, but must not
+   * "N/A" to live — the computed values already exist, but must not
    * be shown until the cycle policy that defines "due" is governed.
    */
   cyclePolicyConfigured?: boolean;

@@ -75,7 +75,7 @@ export default function TravelClient({
   factoryTone: GeoTone;
   /** Governed geofence radius: factory override (SB20) → ENG-06 engine default.
    *  `null` = neither source is governed. It is NEVER substituted with a code
-   *  constant here: an ungoverned fence renders as "Not configured", draws no
+   *  constant here: an ungoverned fence renders as "N/A", draws no
    *  ring and produces no in/out verdict. */
   fenceRadiusM: number | null;
   /** Which governed source supplied fenceRadiusM, so the screen can state the
@@ -377,7 +377,7 @@ export default function TravelClient({
                 )}
               <div className={`t-caption ${styles.metaRow}`}>
                 {/* Radius + its governance provenance, or an explicit
-                    "Not configured" — never a bare plausible number. */}
+                    "N/A" — never a bare plausible number. */}
                 <span data-testid="travel-fence-radius">
                   {strings.geofenceRadius}:{" "}
                   {fenceRadiusM != null

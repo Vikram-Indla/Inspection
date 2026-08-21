@@ -18,7 +18,7 @@ export default async function ExportSection({ data, model, scope }: {
   const unavailable = getMessages(locale).common.state.unavailable;
   const highlights = buildHighlights(data, model, lab, performanceAnchor, unavailable);
   const monitorRows = buildMonitorRows(data, model);
-  const notConfigured = lab.local("Not configured", "غير مهيأ");
+  const notConfigured = lab.local("N/A", "لا ينطبق");
   const exportStrings: OpsExportStrings = {
     heading: t("ops.export.heading", "Export CSV:"),
     scopeNote: t("ops.export.scopeNote", "The receipt and CSV use this exact region/city scope and row count."),

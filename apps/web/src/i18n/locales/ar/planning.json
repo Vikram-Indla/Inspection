@@ -159,7 +159,7 @@
     "quickCreateVisit": "إنشاء زيارة",
     "aria": "مساعد التخطيط",
     "stripTitle": "رؤى وتوصيات الذكاء الاصطناعي",
-    "insightsEmptyTitle": "غير مهيأ",
+    "insightsEmptyTitle": "لا ينطبق",
     "insightsEmptyBody": "رؤى الذكاء الاصطناعي غير مهيأة لمساحة العمل هذه.",
     "quickTitle": "إجراءات سريعة"
   },
@@ -440,7 +440,7 @@
     "returned": "مرجعة",
     "published": "منشورة",
     "expired": "منتهية",
-    "notConfigured": "غير مهيأ",
+    "notConfigured": "لا ينطبق",
     "activeNote": "يُصفّي القائمة"
   },
   "toolbar": {
@@ -512,7 +512,7 @@
       "statusChanged": "تغيّر الحالة",
       "aiScore": "درجة الذكاء الاصطناعي"
     },
-    "notConfigured": "غير مهيأ"
+    "notConfigured": "لا ينطبق"
   },
   "pagination": {
     "summary": "عرض {shown} من {total} زيارة ضمن نطاقك · صفحة {page} من {pages}",
