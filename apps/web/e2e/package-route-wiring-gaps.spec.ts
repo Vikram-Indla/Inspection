@@ -43,16 +43,17 @@ test.describe("Package-focused route wiring gaps", () => {
   });
 
   test("/admin/dashboard-config uses governed tables and RPCs with guarded controls", () => {
-    const page = source("src/app/admin/dashboard-config/page.tsx");
+    const queries = source("src/features/admin-dashboard-config/queries.ts");
+    const screen = source("src/components/sections/admin-dashboard-config/dashboard-config-screen.tsx");
     const action = source("src/app/admin/dashboard-config/actions.ts");
 
     expectAdminBoundary();
     for (const table of ["mvp3_kpi_definitions", "dashboard_config_heads", "dashboard_config_versions", "dashboard_config_parameters", "user_roles"]) {
-      expect(page).toContain(`sb.from("${table}")`);
+      expect(queries).toContain(`sb.from("${table}")`);
     }
-    expect(page).toContain('const canWrite = ["admin", "supervisor"]');
-    expect(page).toContain('const canReview = roleKeys.has("admin")');
-    expect(page).toContain("!migrationApplied ?");
+    expect(queries).toContain('["admin", "supervisor"]');
+    expect(queries).toContain('roleKeys.has("admin")');
+    expect(screen).toContain("migrationApplied");
     for (const rpc of ["dash_create_config_draft", "dash_submit_config", "dash_return_config", "dash_publish_config"]) {
       expect(action).toContain(`sb.rpc("${rpc}"`);
     }

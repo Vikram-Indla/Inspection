@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
+import { stripLocale } from "@/lib/locale-path";
 import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell from "@/components/notifications/notification-bell";
 import type { NotificationStrings } from "@/features/shell/notification-strings";
@@ -153,7 +154,8 @@ export default function ShellClient({
     setHydratedPathname(current);
   }, [current]);
   const fieldOnly = isFieldOnlyPersona(roles);
-  const adminWorkspace = current === "/admin" || current.startsWith("/admin/");
+  const routePath = stripLocale(current);
+  const adminWorkspace = routePath === "/admin" || routePath.startsWith("/admin/");
   // The canonical Claude Design topbar always exposes the assistant entry.
   // Provider and route-level availability are enforced by the destination.
   const aiVisible = true;

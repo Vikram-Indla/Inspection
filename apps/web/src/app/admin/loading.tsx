@@ -5,6 +5,7 @@ import RouteLoading from "@/components/RouteLoading";
 export default function AdminConfigurationLoading() {
   return (
     <RouteLoading
+      framed
       en="Loading administration configuration"
       ar="جارٍ تحميل تهيئة الإدارة"
       bodyEn="Verifying capabilities and loading governed configuration."

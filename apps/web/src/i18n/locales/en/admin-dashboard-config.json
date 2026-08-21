@@ -1,0 +1,119 @@
+{
+  "title": "Dashboard Configuration",
+  "context": "Governed KPI catalogue & policy · filtered to your access · maker-checker",
+  "loading": "Loading dashboard configuration…",
+  "migration": {
+    "title": "Foundation migration not yet applied",
+    "body": "The dashboard KPI/configuration tables are not readable. Apply migration {file} and reload. The catalogue below is shown from the code registry."
+  },
+  "catalogue": {
+    "heading": "KPI catalogue",
+    "intro": "Formula and metric id are system-seeded and immutable to ordinary admins; {implemented} of {total} metrics have a live formula today.",
+    "colMetric": "Metric",
+    "colCategory": "Category",
+    "colUnit": "Unit",
+    "colOwner": "Owner",
+    "colDelivery": "Delivery",
+    "colSeed": "Seed",
+    "seeded": "Seeded",
+    "notSeeded": "—",
+    "na": "n/a",
+    "pendingGovernance": "Pending governance approval.",
+    "openDecision": "Open decision: {ref}"
+  },
+  "domains": {
+    "heading": "Configuration domains",
+    "intro": "Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.",
+    "colDomain": "Domain",
+    "colActiveVersion": "Active version",
+    "colEffectiveFrom": "Effective from",
+    "colDraftInFlight": "Draft in flight",
+    "notConfigured": "Not configured"
+  },
+  "drafts": {
+    "heading": "Drafts",
+    "makerChecker": "maker-checker",
+    "noAuthority": "Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.",
+    "domain": "Domain",
+    "titleField": "Title",
+    "titlePlaceholder": "Draft title",
+    "create": "Create draft",
+    "empty": "No configuration drafts in flight.",
+    "colDraft": "Draft",
+    "colDomain": "Domain",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "returned": "Returned: {reason}",
+    "submit": "Submit",
+    "publish": "Publish",
+    "return": "Return",
+    "returnReason": "Return reason",
+    "awaitingReviewer": "Awaiting an independent reviewer (maker-checker).",
+    "footer": "Authoring requires Compliance/Ops/Security Admin; review/publish requires Compliance/Leadership/Security Admin — and never the same person (maker ≠ checker)."
+  },
+  "category": {
+    "inspector": "Inspector",
+    "operational": "Operational",
+    "strategic": "Strategic"
+  },
+  "unit": {
+    "count": "Count",
+    "none": "—",
+    "percent": "Percent",
+    "ratio": "Ratio"
+  },
+  "role": {
+    "admin": "Admin",
+    "supervisor": "Supervisor",
+    "ops": "Operations",
+    "planner": "Planner",
+    "inspector": "Inspector",
+    "reviewer": "Reviewer",
+    "compliance_admin": "Compliance admin",
+    "security_admin": "Security admin"
+  },
+  "metricTitle": {
+    "STR-KPI-001": "Compliance rate trend",
+    "STR-KPI-002": "Risk distribution",
+    "STR-KPI-003": "Violation trend by regulation and severity",
+    "STR-KPI-004": "Level-2 Approve / Return / Reject mix",
+    "STR-KPI-005": "Licence exposure",
+    "STR-KPI-006": "Cancellation rate",
+    "STR-KPI-007": "Inspection coverage",
+    "STR-KPI-008": "Uninspected factories by stage, sector and region",
+    "STR-KPI-009": "Checklist items by issuing authority",
+    "STR-KPI-010": "Risk-to-attention mismatch",
+    "STR-KPI-011": "Repeat violation rate",
+    "STR-KPI-012": "Evidence-grounded Strategic Summary",
+    "OPS-KPI-001": "Visit pipeline",
+    "OPS-KPI-002": "Expiring soon",
+    "OPS-KPI-003": "Active executions",
+    "OPS-KPI-004": "Pending approvals",
+    "OPS-KPI-005": "Pending publish (admin only)",
+    "OPS-KPI-006": "Today's schedule load by inspector",
+    "OPS-KPI-007": "GPS overrides today",
+    "OPS-KPI-008": "Live activity feed",
+    "OPS-KPI-009": "Evidence-grounded operational nudges",
+    "IPAD-KPI-001": "Today's visits",
+    "IPAD-KPI-002": "Remaining visits",
+    "IPAD-KPI-003": "Pending attention",
+    "IPAD-KPI-004": "Daily progress",
+    "IPAD-KPI-005": "Approval outcomes",
+    "IPAD-KPI-006": "Checklist compliance",
+    "IPAD-KPI-007": "Personal trends"
+  },
+  "implementation": {
+    "implemented": "Implemented",
+    "not_configured": "Not configured",
+    "decision_required": "Decision required",
+    "unavailable": "Unavailable",
+    "deferred": "Deferred"
+  },
+  "status": {
+    "draft": "Draft",
+    "pending_review": "Pending review",
+    "returned": "Returned",
+    "approved": "Approved",
+    "published": "Published"
+  }
+}
