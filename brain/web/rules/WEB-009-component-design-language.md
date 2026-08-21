@@ -160,16 +160,18 @@ The budget is now **zero**. The language forbids decorative gradients on
 buttons, cards and text outright, and the app has no hero band to spend the
 exception on.
 
-The active navigation indicator and the primary CTA are **flat acid lime with
-void ink** — measured 16.15:1 at rest, 13.07:1 hover, 10.31:1 pressed, so the
-control darkens under the pointer and contrast only ever stays within AA.
+The active navigation indicator and the primary CTA are **flat IRP aubergine**:
+the fill is `#7E61AC` (`--sqx-brand-400`) with **white** ink — measured 5.01:1 at
+rest, 6.44:1 hover, 9.05:1 pressed, so the control darkens under the pointer and
+contrast only ever improves.
 
 Selection is expressed flat, with `--sqx-surface-accent` and
 `--sqx-text-accent`.
 
-**The accent is a fill and never text.** Acid lime measures 1.23:1 on white; a
-lime label is invisible in light mode, and darkening it far enough to read turns
-it olive. A text accent is neutral plus an underline.
+**The brand may be text.** Unlike the retired acid lime (1.23:1 on white,
+fill-only), aubergine `#413259` is dark and readable: links and text accents are
+aubergine (`--sqx-text-link` / `--sqx-text-accent`), body copy is never
+chromatic. The fill lightens to `#7E61AC`; text keeps the darker `#413259`.
 
 ---
 

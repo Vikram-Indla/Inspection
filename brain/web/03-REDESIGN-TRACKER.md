@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-172.** Take T-173.
+implements the reservation. **Highest id in use: T-173.** Take T-174.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,21 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-173 · Adopt the IRP palette, retire the acid-lime scheme (manager-directed)
+`status: done` · `rules: WEB-002, WEB-003, WEB-007` · `est: 1h`
+`record:` [2026-08-21-T-173-irp-palette-adoption](sessions/2026-08/2026-08-21-T-173-irp-palette-adoption.md)
+
+Retargeted `saqeel.css` from acid-lime to the **IRP palette** (aubergine brand
+`#413259`/`#7E61AC`, IRP greys/status/tints/ai) — colour only; typography,
+spacing, radii and hairline elevation stay on `design/linear`. Restored the
+contrast-measured IRP→SAQEEL mapping from `626a92dc~1` (no colour invented). The
+brand may now be text (on-action → white; dark link/accent → `brand-200`); alpha
+base `138,143,152 → 145,158,171`. Zero lime hexes remain outside the base file;
+INSP-702 e2e greys updated in lockstep (AA floor held). typecheck 0, live-verified
+dark. **Amended the now-false "acid-lime fill never text" rule** across WEB-002,
+CLAUDE.md 7a + Design authority, README item 7, and a palette-superseded banner on
+`design/linear/design.md`.
 
 ### T-172 · `/admin/templates` — Template Registry rebuilt on SAQEEL, AdminConfigurationJourney retired
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`

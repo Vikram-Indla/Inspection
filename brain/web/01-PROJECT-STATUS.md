@@ -1,6 +1,23 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-21` · `Updated by: T-172 — the /admin/templates Template Registry rebuild`
+`Last updated: 2026-08-21` · `Updated by: T-173 — IRP palette adoption`
+
+## Palette swapped to IRP: acid-lime retired (2026-08-21)
+
+**T-173 retargeted `saqeel.css`** from the acid-lime "linear" scheme to the
+**IRP palette** — brand aubergine (`#413259` text / `#7E61AC` fill), IRP
+blue-greys, IRP status (`success #22C55E`, `warning #FFAB00`, `error #FF5630`,
+`info #46CFE7`), IRP tints and violet AI. **Colour only** — the nine-role
+typography, spacing, radii and **hairline elevation** stay on `design/linear`.
+The mapping was *restored* from `626a92dc~1` (where IRP lived before the
+2026-08-17 swap), already contrast-measured — no colour invented. One behavioural
+change: the brand may now be **text** (aubergine is readable where lime was not),
+so on-action ink is white and dark-mode links/accents are `brand-200`. Zero lime
+hexes remain outside the base file; INSP-702 e2e greys updated in lockstep (AA
+floor held). **Every migrated route re-skinned without being edited** — the
+token architecture's payoff, now proven a second time. The now-false "acid-lime
+fill never text" rule was amended across WEB-002, CLAUDE.md, README and the
+`design/linear` reference (palette-superseded banner). typecheck 0, live-verified.
 
 ## `/admin/templates` rebuilt: AdminConfigurationJourney retired, off AdminShell (2026-08-21)
 
