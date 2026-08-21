@@ -42,12 +42,12 @@ export default async function VisitStatement({ params }: { params: Promise<{ id:
   );
 
   const rows = [
-    [tr("field.statement.visitDate", "Visit date", "تاريخ الزيارة"), submittedAt ? submittedAt.slice(0, 10) : tr("common.notConfigured", "Not configured", "غير مهيأ")],
-    [tr("field.statement.visitor", "Visitor name", "اسم الزائر"), profile?.full_name ?? tr("common.notConfigured", "Not configured", "غير مهيأ")],
-    [tr("field.statement.reason", "Visit reason", "سبب الزيارة"), visit?.visit_type ? t(`enum.${visit.visit_type}`, visit.visit_type.replace(/_/g, " ")) : tr("common.notConfigured", "Not configured", "غير مهيأ")],
-    [tr("field.statement.notes", "Notes", "ملاحظات"), visit?.notes || tr("common.notConfigured", "Not configured", "غير مهيأ")],
-    [tr("field.statement.actions", "Actions", "الإجراءات"), tr("common.notConfigured", "Not configured", "غير مهيأ")],
-    [tr("field.statement.attachments", "Attachments", "المرفقات"), tr("common.notConfigured", "Not configured", "غير مهيأ")],
+    [tr("field.statement.visitDate", "Visit date", "تاريخ الزيارة"), submittedAt ? submittedAt.slice(0, 10) : tr("common.notConfigured", "N/A", "لا ينطبق")],
+    [tr("field.statement.visitor", "Visitor name", "اسم الزائر"), profile?.full_name ?? tr("common.notConfigured", "N/A", "لا ينطبق")],
+    [tr("field.statement.reason", "Visit reason", "سبب الزيارة"), visit?.visit_type ? t(`enum.${visit.visit_type}`, visit.visit_type.replace(/_/g, " ")) : tr("common.notConfigured", "N/A", "لا ينطبق")],
+    [tr("field.statement.notes", "Notes", "ملاحظات"), visit?.notes || tr("common.notConfigured", "N/A", "لا ينطبق")],
+    [tr("field.statement.actions", "Actions", "الإجراءات"), tr("common.notConfigured", "N/A", "لا ينطبق")],
+    [tr("field.statement.attachments", "Attachments", "المرفقات"), tr("common.notConfigured", "N/A", "لا ينطبق")],
   ];
 
   return (

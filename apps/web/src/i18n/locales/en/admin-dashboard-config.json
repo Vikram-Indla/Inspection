@@ -28,7 +28,7 @@
     "colActiveVersion": "Active version",
     "colEffectiveFrom": "Effective from",
     "colDraftInFlight": "Draft in flight",
-    "notConfigured": "Not configured"
+    "notConfigured": "N/A"
   },
   "drafts": {
     "heading": "Drafts",
@@ -104,7 +104,7 @@
   },
   "implementation": {
     "implemented": "Implemented",
-    "not_configured": "Not configured",
+    "not_configured": "N/A",
     "decision_required": "Decision required",
     "unavailable": "Unavailable",
     "deferred": "Deferred"

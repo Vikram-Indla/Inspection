@@ -96,6 +96,6 @@
     "pending": "Not approved",
     "note": "Deadlines are computed only from an approved working calendar. There is no scheduler: a breach is never triggered on its own, and no default duration is assumed."
   },
-  "notConfigured": "Not configured",
+  "notConfigured": "N/A",
   "loading": "Loading workflows"
 }

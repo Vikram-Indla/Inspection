@@ -126,6 +126,6 @@
     "roleCapsTitle": "Role capability changes are unavailable",
     "roleCapsBody": "The role catalogue remains visible, but an approved source could not be read."
   },
-  "notConfigured": "Not configured",
+  "notConfigured": "N/A",
   "unavailable": "Not available"
 }

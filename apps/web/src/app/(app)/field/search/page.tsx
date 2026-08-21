@@ -168,7 +168,7 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
         <SearchRecents
           query={query}
           recentLabel={tr("field.search.recent", "Recent searches", "عمليات بحث سابقة")}
-          emptyLabel={tr("field.search.recentEmpty", "Not configured", "غير مهيأ")}
+          emptyLabel={tr("field.search.recentEmpty", "N/A", "لا ينطبق")}
         />
 
         {/* ERROR — search could not run. Deliberately does NOT claim an empty

@@ -123,7 +123,7 @@ export default async function VisitResultsPage({ params }: { params: Promise<{ i
     saving: tr("common.saving", "Saving…", "جارٍ الحفظ…"),
     saved: tr("common.saved", "Saved", "تم الحفظ"),
     unsaved: tr("common.unsavedChanges", "Unsaved changes", "تغييرات غير محفوظة"),
-    notConfigured: tr("common.notConfigured", "Not configured", "غير مهيأ"),
+    notConfigured: tr("common.notConfigured", "N/A", "لا ينطبق"),
     selectPlaceholder: tr("common.select", "Select…", "اختر…"),
     successTitle: tr("figma.visitreports.vr057", "Request submitted for review and approval", "تم إرسال الطلب لغاية المراجعة والاعتماد"),
     successDesc: tr("figma.visitreports.vr058", "The request will be sent to the competent authority to complete review and approval.", "سيتم إرسال الطلب إلى الجهة المختصة لاستكمال المراجعة والاعتماد."),

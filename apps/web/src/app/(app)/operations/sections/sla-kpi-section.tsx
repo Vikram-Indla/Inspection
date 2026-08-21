@@ -48,7 +48,7 @@ export default async function SlaKpiSection({ data, model }: {
   const { t, locale } = await useT();
   const lab = makeLabelers(locale, t);
   const { common: commonText, operations: opsText } = getMessages(locale);
-  const missing = lab.local("Not configured", "غير مهيأ");
+  const missing = lab.local("N/A", "لا ينطبق");
   const kpiContract = data.kpiContract;
   return (
     <>
@@ -77,7 +77,7 @@ export default async function SlaKpiSection({ data, model }: {
           { label: t("ops.kpi.period", "Calculation period"), value: contractValue(kpiContract?.period, missing) },
           { label: t("ops.kpi.timezone", "Timezone"), value: contractValue(kpiContract?.timezone, missing) },
           { label: t("ops.kpi.policyVersion", "Policy version"), value: contractValue(kpiContract?.policy_version, missing) },
-          { label: t("ops.kpi.decision", "Decision authority"), value: kpiContract?.decision ?? t("common.notConfigured", "Not configured") },
+          { label: t("ops.kpi.decision", "Decision authority"), value: kpiContract?.decision ?? t("common.notConfigured", "N/A") },
         ]}
         rows={(kpiContract?.definitions ?? []).map(definition => ({
           key: definition.metric_key,

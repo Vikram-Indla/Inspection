@@ -46,7 +46,7 @@
     "capFollowUp": "returned for correction · this period",
     "capHighRisk": "risk band · high",
     "capCompletion": "submitted ÷ assigned · not approval",
-    "notConfigured": "Not configured"
+    "notConfigured": "N/A"
   },
   "brief": {
     "heading": "AI Daily Brief",
@@ -100,7 +100,7 @@
     "resume": "Resume",
     "sync": "Pending synchronization",
     "syncManaged": "Managed by secure offline sync",
-    "notConfigured": "Not configured"
+    "notConfigured": "N/A"
   },
   "insight": {
     "heading": "Operational insight",

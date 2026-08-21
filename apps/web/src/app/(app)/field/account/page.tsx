@@ -112,7 +112,7 @@ export default async function FieldAccountPage() {
 
           <div className={styles.fieldRow}>
             <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.taskNotifs", "Task & appointment notifications", "إشعارات المهام والمواعيد")}</span>
-            <span className="t-caption" aria-label={tr("field.account.preferenceUnknown", "Not configured", "غير مهيأ")}>—</span>
+            <span className="t-caption" aria-label={tr("field.account.preferenceUnknown", "N/A", "لا ينطبق")}>—</span>
           </div>
         </section>
 

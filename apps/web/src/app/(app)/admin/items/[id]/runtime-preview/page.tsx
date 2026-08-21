@@ -29,8 +29,8 @@ type Violation = {
 };
 
 const textValue = (value: unknown) => typeof value === "string" && value.trim() ? value : null;
-const boolLabel = (value: unknown) => value === true ? "Yes" : value === false ? "No" : "Not configured";
-const show = (value: unknown) => value === null || value === undefined || value === "" ? "Not configured" : String(value);
+const boolLabel = (value: unknown) => value === true ? "Yes" : value === false ? "No" : "N/A";
+const show = (value: unknown) => value === null || value === undefined || value === "" ? "N/A" : String(value);
 const objectValue = (value: unknown): Json => value && typeof value === "object" && !Array.isArray(value) ? value as Json : {};
 const arrayValue = (value: unknown): unknown[] => Array.isArray(value) ? value : [];
 
@@ -121,24 +121,24 @@ export default async function InspectorRuntimePreview({
       {uses.length > 0 ? <form className="panel cmp-runtime-selector" method="get"><label className="sq-field"><span className="sq-field__label">Published checklist/version context</span><select className="select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Checklist"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="btn btn-secondary btn-touch" type="submit">Preview exact version</button></form> : null}
 
       <section className="panel cmp-runtime-card" aria-labelledby="runtime-config-heading"><h3 id="runtime-config-heading">Published configuration</h3><dl className="cmp-runtime-facts">
-        <Fact label="Regulation">{item.regulation_clauses?.regulations ? `${item.regulation_clauses.regulations.code} — ${item.regulation_clauses.regulations.title}` : "Not configured"}</Fact>
+        <Fact label="Regulation">{item.regulation_clauses?.regulations ? `${item.regulation_clauses.regulations.code} — ${item.regulation_clauses.regulations.title}` : "N/A"}</Fact>
         <Fact label="Regulation version">{show(item.regulation_clauses?.regulations?.version_label)}</Fact>
         <Fact label="Inspection Section">{show(textValue(section?.name) ?? textValue(section?.title))}</Fact>
         <Fact label="Clause">{show(item.regulation_clauses?.clause_ref)}</Fact>
         <Fact label="Response Type">{show(responseModel.type)}</Fact>
-        <Fact label="Response Values and evaluation mapping"><span className="cmp-runtime-values">{responses.length ? responses.map(value => <span className="badge" key={value}>{value} → {show(objectValue(mapping[value.toLowerCase().replaceAll(" ", "_")]).result)}</span>) : "Not configured"}</span></Fact>
-        <Fact label="Mandatory status">{mandatory === null ? "Not configured" : boolLabel(mandatory)}</Fact>
+        <Fact label="Response Values and evaluation mapping"><span className="cmp-runtime-values">{responses.length ? responses.map(value => <span className="badge" key={value}>{value} → {show(objectValue(mapping[value.toLowerCase().replaceAll(" ", "_")]).result)}</span>) : "N/A"}</span></Fact>
+        <Fact label="Mandatory status">{mandatory === null ? "N/A" : boolLabel(mandatory)}</Fact>
         <Fact label="Evidence requirement">{boolLabel(evidenceRule.mandatory)}</Fact>
-        <Fact label="Acceptable Evidence Types">{evidenceTypes.length ? evidenceTypes.join(", ") : "Not configured"}</Fact>
+        <Fact label="Acceptable Evidence Types">{evidenceTypes.length ? evidenceTypes.join(", ") : "N/A"}</Fact>
         <Fact label="Self-Assessment visibility">{boolLabel(selfAssessment)}</Fact>
-        <Fact label="Checklist / report usage">{packageInfo ? `${packageInfo.code} — ${packageInfo.title}` : "Not configured"}{reportType ? ` · ${reportType}` : ""}</Fact>
+        <Fact label="Checklist / report usage">{packageInfo ? `${packageInfo.code} — ${packageInfo.title}` : "N/A"}{reportType ? ` · ${reportType}` : ""}</Fact>
         <Fact label="Exact effective version">{selectedUse ? `${selectedUse.package_versions?.version_label ?? "unknown"} · item configuration ${show(source.configuration_version)} · effective ${show(selectedUse.package_versions?.effective_from)}` : `Live item configuration ${item.configuration_version} (not a locked-in execution snapshot)`}</Fact>
       </dl></section>
 
       <section className="panel cmp-runtime-card" aria-labelledby="runtime-enforcement-heading"><h3 id="runtime-enforcement-heading">Downstream enforcement context</h3><dl className="cmp-runtime-facts">
-        <Fact label="Non-Compliant Trigger Response">{violationRef ? `Non-Compliant → ${violationRef}` : "Not configured"}</Fact>
+        <Fact label="Non-Compliant Trigger Response">{violationRef ? `Non-Compliant → ${violationRef}` : "N/A"}</Fact>
         <Fact label="Linked Violation">{violation ? `${violation.code} — ${violation.title} · ${violation.level}` : "Not resolved"}</Fact>
-        <Fact label="Linked Penalty configuration (read-only)">{violation?.penalty_mappings?.length ? violation.penalty_mappings.map(p => `${p.penalty_ref} · ${p.penalty_type ?? "type not configured"} · version ${p.mapping_version}`).join("; ") : "Not configured"}</Fact>
+        <Fact label="Linked Penalty configuration (read-only)">{violation?.penalty_mappings?.length ? violation.penalty_mappings.map(p => `${p.penalty_ref} · ${p.penalty_type ?? "type not configured"} · version ${p.mapping_version}`).join("; ") : "N/A"}</Fact>
         <Fact label="Application timing">Penalty is context only at response selection; final application follows Inspection Review and Enforcement.</Fact>
       </dl></section>
 

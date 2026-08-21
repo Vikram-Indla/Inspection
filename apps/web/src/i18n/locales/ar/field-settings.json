@@ -2,7 +2,7 @@
   "title": "الإعدادات",
   "back": "رجوع",
   "loading": "جارٍ تحميل الإعدادات",
-  "notConfigured": "غير مهيأ",
+  "notConfigured": "لا ينطبق",
   "sections": {
     "general": "عام",
     "notifications": "الإشعارات",

@@ -77,7 +77,7 @@ export default async function PortalPage({ searchParams }: {
         </nav>
 
         {state.tab === "establishments" && (
-          <div className="panel"><div className="panel-header"><h2 className="panel-title">{t("portal.establishments", "Establishments and eligible services")}</h2><span className="badge badge-onhold">{t("portal.notConfigured", "Not configured")}</span></div>
+          <div className="panel"><div className="panel-header"><h2 className="panel-title">{t("portal.establishments", "Establishments and eligible services")}</h2><span className="badge badge-onhold">{t("portal.notConfigured", "N/A")}</span></div>
             <div className="panel-body"><div className="alert alert-info"><div><div className="alert-title">{t("portal.decisionRequired", "Decision required")}</div>{t("portal.eligibilityHeld", "External representative identity, establishment links, and service eligibility rules are not configured. No eligibility is inferred.")}</div></div></div>
           </div>
         )}
@@ -103,7 +103,7 @@ export default async function PortalPage({ searchParams }: {
         {state.tab === "self-assessment" && (
           <>
             <div className="panel"><div className="panel-header"><h2 className="panel-title">{state.review ? t("portal.selfReview", "Self-assessment review") : t("portal.selfAssessment", "Self-assessment")}</h2><span className="badge badge-onhold">{state.review ? t("portal.decisionRequired", "Decision required") : t("portal.externalHeld", "External access held")}</span></div>
-              <div className="panel-body"><div className="alert alert-info"><div><div className="alert-title">{state.review ? t("portal.reviewScope", "Scoped internal review") : t("portal.notConfigured", "Not configured")}</div>{state.review ? t("portal.reviewScopeBody", "Only the submitted assessments you are allowed to review are shown.") : t("portal.selfHeld", "Assessment availability, required answers, scoring, and external evidence rules are not configured. No submission is fabricated.")}</div></div></div>
+              <div className="panel-body"><div className="alert alert-info"><div><div className="alert-title">{state.review ? t("portal.reviewScope", "Scoped internal review") : t("portal.notConfigured", "N/A")}</div>{state.review ? t("portal.reviewScopeBody", "Only the submitted assessments you are allowed to review are shown.") : t("portal.selfHeld", "Assessment availability, required answers, scoring, and external evidence rules are not configured. No submission is fabricated.")}</div></div></div>
             </div>
             {error && <div className="alert alert-critical" role="alert">{t("portal.errorSafe", "Nothing changed. Access or review scope is required.")}</div>}
             {!error && (assessments ?? []).length === 0 && <div className="empty"><div className="empty-title">{t("portal.selfEmpty", "No self-assessments in scope")}</div><p>{t("portal.empty.body", "No matching submission is available in your scope.")}</p></div>}

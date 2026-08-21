@@ -69,7 +69,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   if (frozenDefinition.package_kind) {
     return (
       <>
-        {header(t("field.ws.notConfiguredTitle", "Not configured"))}
+        {header(t("field.ws.notConfiguredTitle", "N/A"))}
         <div className={styles.page}>
           <div className="empty">
             <div className="empty-title">{t("field.ws.notConfigured", "Inspection checklist not set up")}</div>

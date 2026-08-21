@@ -108,7 +108,7 @@
     "outlook": {
       "title": "Risk outlook",
       "predictedRisk": "Predicted risk",
-      "predictedUnavailable": "Not configured",
+      "predictedUnavailable": "N/A",
       "whyHighRisk": "Why this risk",
       "driversUnavailable": "Not recorded",
       "modelVersion": "Model version",

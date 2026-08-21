@@ -85,7 +85,7 @@
     "summaryOne": "One metric has no governed source",
     "body": "Nothing is inferred for these. Each carries the reason its source reported.",
     "notApplicable": "Not applicable",
-    "notConfigured": "Not configured",
+    "notConfigured": "N/A",
     "decisionRequired": "Decision required",
     "unavailable": "Unavailable"
   },

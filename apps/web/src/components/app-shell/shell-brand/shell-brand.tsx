@@ -10,10 +10,10 @@ export default function ShellBrand() {
       </span>
       <span className={styles.brandName} data-brand-name>
         <span className={styles.brandAr} lang="ar">
-          <Overline as="span" tone="inherit">منصة التفتيش</Overline>
+          <Overline as="span" tone="inherit">التفتيش</Overline>
         </span>
         <span className={styles.brandEn} lang="en">
-          <Overline as="span" tone="inherit">Inspection Platform</Overline>
+          <Overline as="span" tone="inherit">Inspection</Overline>
         </span>
       </span>
     </p>

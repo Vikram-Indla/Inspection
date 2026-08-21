@@ -15,7 +15,7 @@
  *    inspector has not answered and must not be shown as "No".
  *  · competent_department and pending_document_type are governed lookups. When
  *    the registry holds no values the select is disabled and reads
- *    "Not configured" — never the design's illustrative option copy.
+ *    "N/A" — never the design's illustrative option copy.
  *  · The design's "Pending sync · 2" badge is not reproduced with a literal
  *    count. It reflects real unsaved local edits, or it does not render.
  */
@@ -83,7 +83,7 @@ function Gate({
   );
 }
 
-/** Governed select. Empty registry → disabled and "Not configured". */
+/** Governed select. Empty registry → disabled and "N/A". */
 function GovernedSelect({
   id, label, required, value, options, onChange, disabled, s,
 }: {

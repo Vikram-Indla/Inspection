@@ -59,7 +59,7 @@ export function isBlocked(status: MetricSourceStatus): boolean {
 /** Honest, localized status label for a non-live source status. */
 export function statusLabel(status: MetricSourceStatus, locale: Locale): string {
   switch (status) {
-    case "not_configured": return t(locale, "Not configured", "غير مهيأ");
+    case "not_configured": return t(locale, "N/A", "لا ينطبق");
     case "unavailable": return t(locale, "Unavailable", "غير متاح");
     case "decision_required": return t(locale, "Decision required", "قرار مطلوب");
     case "stale": return t(locale, "Stale", "قديم");
