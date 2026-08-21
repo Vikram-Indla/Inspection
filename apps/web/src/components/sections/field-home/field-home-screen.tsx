@@ -56,6 +56,7 @@ export default function FieldHomeScreen({ data, locale }: {
               returned={body.returnedCount}
               drafts={body.draftCount}
               copy={copy}
+              na={messages.common.state.na}
             />
 
             <FieldInsightStrip

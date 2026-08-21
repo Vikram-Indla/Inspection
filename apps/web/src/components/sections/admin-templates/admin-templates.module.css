@@ -1,0 +1,42 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-default);
+  min-inline-size: 0;
+}
+
+.journeySteps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.journeyStep {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  padding-block: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-4);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-control);
+  color: var(--sqx-text-secondary);
+  background: var(--sqx-surface-sunken);
+  text-decoration: none;
+}
+
+.journeyStep:hover {
+  color: var(--sqx-text-primary);
+  border-color: var(--sqx-border-strong);
+}
+
+.journeyStep[data-current] {
+  color: var(--sqx-text-accent);
+  background: var(--sqx-surface-accent);
+  border-color: var(--sqx-border-accent);
+}
+
+.journeyStep:focus-visible {
+  outline: var(--sqx-border-width-hair) solid var(--sqx-border-focus);
+  outline-offset: var(--sqx-focus-ring-offset);
+}

@@ -70,7 +70,8 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     {
       ...dashboard.national.coverage,
       value: null,
-      emptyLabel: common.state.notConfigured,
+      emptyLabel: common.state.na,
+      emptyMuted: true,
       example: fill(dashboard.national.coverage.example, { count: strategic.completedInspections }),
       href: localeHref(locale, "/planning"),
     },
@@ -117,7 +118,8 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
     {
       ...dashboard.intervention.annual,
       value: null,
-      emptyLabel: common.state.notConfigured,
+      emptyLabel: common.state.na,
+      emptyMuted: true,
       example: fill(dashboard.intervention.annual.example, { count: factories.length }),
       href: localeHref(locale, "/planning"),
     },

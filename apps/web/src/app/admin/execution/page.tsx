@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
+import { IconLock } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -136,7 +137,7 @@ export default async function ExecutionControlPlane() {
 
         {granted.size === 0 && (
           <EmptyState
-            glyph="🔒"
+            icon={<IconLock />}
             title={t("admin.execution.noAccess.title", "No execution configuration access")}
             body={t("admin.execution.noAccess.body", "None of the execution configuration capabilities are granted to your roles. The sections stay hidden; nothing here is readable or writable for you on this screen.")}
           />

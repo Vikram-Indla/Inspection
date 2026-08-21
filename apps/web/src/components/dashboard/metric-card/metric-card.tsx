@@ -12,6 +12,7 @@ export type MetricCardModel = {
   readonly valueKind?: "number" | "text";
   readonly emptyLabel: string;
   readonly emptyTone?: StatusTone;
+  readonly emptyMuted?: boolean;
   readonly definition: string;
   readonly example?: string;
   readonly interpretation?: string;
@@ -36,7 +37,9 @@ export default function MetricCard({ model, strings }: {
       <CardBody gap="tight">
         <CardValueSlot>
           {blocked
-            ? <StatusPill tone={model.emptyTone ?? "warning"} ping>{model.emptyLabel}</StatusPill>
+            ? model.emptyMuted
+              ? <Text as="span" tone="muted">{model.emptyLabel}</Text>
+              : <StatusPill tone={model.emptyTone ?? "warning"} ping>{model.emptyLabel}</StatusPill>
             : <CardValue kind={model.valueKind ?? "number"}>{model.value}</CardValue>}
         </CardValueSlot>
         <details className={styles.disclosure}>

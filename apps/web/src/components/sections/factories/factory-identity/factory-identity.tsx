@@ -12,7 +12,7 @@ export default function FactoryIdentity({ code, contextLine, facts, provenance, 
   code: string;
   contextLine: string;
   facts: readonly Definition[];
-  provenance: { readonly label: string; readonly tone: StatusTone };
+  provenance: { readonly label: string; readonly tone: StatusTone; readonly unavailable: boolean };
   synced: string;
   strings: FactoryIdentityStrings;
 }) {
@@ -33,7 +33,7 @@ export default function FactoryIdentity({ code, contextLine, facts, provenance, 
 
       <Card as="div">
         <CardBody gap="tight">
-          <StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>
+          {provenance.unavailable ? null : <StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>}
           <Text tone="muted">{strings.syncedLabel} <bdi>{synced}</bdi></Text>
         </CardBody>
       </Card>

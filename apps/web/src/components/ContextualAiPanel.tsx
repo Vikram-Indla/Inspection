@@ -2,7 +2,6 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
 import { generateContextualInsight, type ContextualResult, type ContextualSurface } from "@/lib/ai/contextual-actions";
 
@@ -39,7 +38,6 @@ export default function ContextualAiPanel({ surface, title, description, context
           <h2 id={`${surface}-heading`}>{title}</h2>
           <Text tone="muted">{description}</Text>
         </div>
-        <StatusPill tone="info">{advisoryLabel}</StatusPill>
       </div>
       <div className="panel-body stack">
         <Text tone="muted">{evidenceLabel}</Text>

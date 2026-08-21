@@ -1,0 +1,118 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.createForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-4);
+}
+
+.fieldWithHint {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-1);
+  min-inline-size: var(--sqx-grid-min-sm);
+}
+
+.switchField {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--sqx-control-height-md, 2.75rem);
+}
+
+.editDisclosure {
+  min-inline-size: 0;
+}
+
+.editSummary {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  min-block-size: 2.75rem;
+  padding-block: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-3);
+  border-radius: var(--sqx-radius-control);
+  color: var(--sqx-text-secondary);
+}
+
+.editSummary:hover {
+  background: var(--sqx-surface-raised);
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-3);
+  min-inline-size: var(--sqx-grid-min-sm);
+  margin-block-start: var(--sqx-space-3);
+}
+
+.toggleForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-2);
+}
+
+.rowActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-2);
+}
+
+.previewBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  padding: var(--sqx-space-5);
+  border-radius: var(--sqx-radius-md);
+  background: var(--sqx-surface-sunken);
+}
+
+.previewHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.previewGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+}
+
+.previewResponses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.auditList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-2);
+  margin: 0;
+  padding-inline-start: var(--sqx-space-5);
+}

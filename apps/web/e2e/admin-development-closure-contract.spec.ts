@@ -13,10 +13,10 @@ const migration = readFileSync(
 test.describe("TASK-ADMIN-DEVELOPMENT-CLOSURE-20260802", () => {
   test("admin compliance/config guards use the canonical RLS role keys", () => {
     const guard = readWeb("src/lib/admin-configuration.ts");
-    const regulations = readWeb("src/app/(app)/admin/regulations/page.tsx");
-    const items = readWeb("src/app/(app)/admin/items/page.tsx");
-    const packages = readWeb("src/app/(app)/admin/packages/page.tsx");
-    const violations = readWeb("src/app/(app)/admin/violations/page.tsx");
+    const regulations = readWeb("src/features/regulations/access.ts");
+    const items = readWeb("src/features/admin-items/queries.ts");
+    const packages = readWeb("src/features/admin-packages/queries.ts");
+    const violations = readWeb("src/features/enforcement/catalogue.ts");
     const localization = readWeb("src/features/admin-localization/queries.ts");
     for (const source of [guard, regulations, items, packages, violations]) {
       expect(source).toContain("compliance_admin");

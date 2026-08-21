@@ -1,0 +1,58 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--sqx-grid-min-lg)), 1fr));
+  gap: var(--sqx-gutter);
+  align-items: start;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+}
+
+.themeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sqx-space-2);
+  padding-block: var(--sqx-space-2);
+  padding-inline: var(--sqx-space-4);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-strong);
+  border-radius: var(--sqx-radius-control);
+  background: var(--sqx-surface-default);
+  color: var(--sqx-text-primary);
+  cursor: pointer;
+}
+
+.themeButton:hover {
+  background: var(--sqx-surface-raised);
+}
+
+.prefsForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.prefsActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sqx-space-3);
+}

@@ -44,8 +44,10 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
    `var(--token)`. This is what let the whole visual language be replaced on
    2026-08-17 by retargeting one file — 28 migrated routes re-skinned without
    being edited. A hardcoded value opts that route out of the next one.
-7a. **Elevation is a hairline, not a shadow**, and the acid-lime accent is a
-   **fill, never text** (1.23:1 on white). Full law: WEB-002 §1, §7, §8.
+7a. **Elevation is a hairline, not a shadow.** The brand is IRP **aubergine**
+   (`#413259` text / `#7E61AC` fill) — and unlike the retired acid lime it MAY be
+   text: links and accents are aubergine, body copy is never chromatic. Full law:
+   WEB-002 §1, §7, §8.
 7b. **No typography in feature code — ever.** `font-size`, `font-weight`,
    `font-family`, `font-style`, `line-height` and `letter-spacing` may not appear
    in any `.css` outside `src/components/saqeel/`, and `font: var(--sqx-text-*)`
@@ -118,7 +120,10 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
 ## Design authority
 
 The approved design is **`design/linear/design.md`** with its token files,
-adopted 2026-08-17. Read it before styling anything.
+adopted 2026-08-17, for **structure** — elevation, typography, spacing, radii.
+Read it before styling anything. **Its palette is superseded: colour is the IRP
+palette** (aubergine brand, IRP greys/status/tints), re-adopted on the manager's
+instruction and live in `saqeel.css`. See WEB-002 header + §1/§7.
 `design/final-cut/saqeel-revamp.html` is the superseded structural reference —
 its **markup structure** (element order, nesting, semantics) still governs per
 rule 4 below; its colour, type, radii and elevation do not.
@@ -127,9 +132,9 @@ rule 4 below; its colour, type, radii and elevation do not.
    and size values appear only in its primitives block. Everything else consumes
    `var(--sqx-*)`. The prefix is `--sqx-` / `.sqx-` — never `--sq-`, `.sq-`, or
    `.saqeel-`, all of which collide with the frozen legacy sheets. **SAQEEL is
-   the system; the visual language it renders is `design/linear/`**, approved
-   2026-08-17. The two are separate: the language has been replaced once already
-   without the system changing.
+   the system; its structure comes from `design/linear/` (2026-08-17) and its
+   palette from IRP.** System and language are separate: the palette has been
+   retargeted twice without the system, or any migrated route, changing.
 2. **`saqeel.css` is core tokens only.** No component classes. Adding a token is
    a change request, not a task step: if a component appears to need a new one,
    it almost always needs an existing one. A genuine gap **stops the work** and

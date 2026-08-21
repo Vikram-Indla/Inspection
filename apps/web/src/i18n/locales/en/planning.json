@@ -918,7 +918,7 @@
       "vRole": "Holds the Inspector role (in the eligible pool)",
       "vOverlap0": "No overlapping active visit in the window (overlap query ran)",
       "vPkg": "Inspection checklist is currently active or locked",
-      "neList": "Skills · work hours · capacity · territory · proximity · travel time — no Saqeel source, not evaluated",
+      "neList": "Skills · work hours · capacity · territory · proximity · travel time — no Inspection Platform source, not evaluated",
       "neAuto": "No preference — the Supervisor selects the final Inspector during approval.",
       "neWindow": "Overlap not evaluated — set a valid inspection window first",
       "bOverlap": "Already booked on {n} overlapping visit(s) — e.g. {label}, {window}",

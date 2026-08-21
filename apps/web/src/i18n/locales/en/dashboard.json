@@ -30,7 +30,6 @@
     "sla": "SLA configuration"
   },
   "yourWork": {
-    "eyebrow": "Your work",
     "scoped": "Scoped to your access"
   },
   "persona": {
@@ -254,11 +253,8 @@
   },
   "executive": {
     "title": "Executive AI brief",
-    "advisory": "Advisory only · human decides",
-    "evidence": "Generated from the recorded national figures in your access scope.",
-    "idle": "No brief has been generated for this scope yet.",
+    "fallback": "The recorded national figures in your scope moved over this period. Compare the counts above against the previous period of equal length — this brief describes recorded movement only and does not attribute a cause.",
     "generate": "Generate brief",
-    "generating": "Generating…",
-    "noCause": "The brief describes recorded movement only. It does not attribute a cause — these figures cannot establish one."
+    "generating": "Generating…"
   }
 }

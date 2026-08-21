@@ -1,6 +1,93 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-20` · `Updated by: T-168 — the /factories/cr/[id] Factory 360 rebuild`
+`Last updated: 2026-08-21` · `Updated by: T-174 — brand rename to Inspection Platform`
+
+## Brand renamed to "Inspection Platform"; dashboard "Your work" removed (2026-08-21)
+
+**T-174** removed the "Your work" eyebrow from the first dashboard card (EN + AR)
+and renamed every **user-visible** brand occurrence — "Saqeel صقيل" combined, or
+"Saqeel"/"SAQEEL"/"صقيل" alone — to the literal **"Inspection Platform"**, both
+languages. Covered the brand lockups (active shell, legacy `ShellClient`, field
+login, field drawer, report header, reset page, metadata/PWA title — each
+bilingual stack collapsed to a single wordmark) and in-sentence governed copy
+(`admin-senai-data`, `admin-factory-data`, `factories-cr` + `factory360` Arabic
+map, `field-settings`, field account footer, `planning`). The **internal SAQEEL
+design-system name is unchanged** (token prefixes, component imports, schemas,
+comments, the env-gated reference tool). Brand is **locale-appropriate and never
+mixed**: English UI "Inspection Platform", Arabic UI "منصة التفتيش" (feminine
+agreement); bilingual lockups stack both, each `lang`-tagged. typecheck 0, lint
+−371, gates green (typography ratchet −260); live-verified.
+
+## Palette swapped to IRP: acid-lime retired (2026-08-21)
+
+**T-173 retargeted `saqeel.css`** from the acid-lime "linear" scheme to the
+**IRP palette** — brand aubergine (`#413259` text / `#7E61AC` fill), IRP
+blue-greys, IRP status (`success #22C55E`, `warning #FFAB00`, `error #FF5630`,
+`info #46CFE7`), IRP tints and violet AI. **Colour only** — the nine-role
+typography, spacing, radii and **hairline elevation** stay on `design/linear`.
+The mapping was *restored* from `626a92dc~1` (where IRP lived before the
+2026-08-17 swap), already contrast-measured — no colour invented. One behavioural
+change: the brand may now be **text** (aubergine is readable where lime was not),
+so on-action ink is white and dark-mode links/accents are `brand-200`. Zero lime
+hexes remain outside the base file; INSP-702 e2e greys updated in lockstep (AA
+floor held). **Every migrated route re-skinned without being edited** — the
+token architecture's payoff, now proven a second time. The now-false "acid-lime
+fill never text" rule was amended across WEB-002, CLAUDE.md, README and the
+`design/linear` reference (palette-superseded banner). typecheck 0, live-verified.
+
+## `/admin/templates` rebuilt: AdminConfigurationJourney retired, off AdminShell (2026-08-21)
+
+**T-172 rebuilt the Template Registry** on `ShellPageFrame` +
+`features/admin-templates` + `sections/admin-templates/{templates-screen,
+configuration-journey}` + a bilingual `adminTemplates` namespace. `page.tsx`
+**131 → 11**. Kept the **shared `TemplateRegistry`** (also used by `admin/packages`)
+and fed its strings from the namespace instead of ~40 `t()` fallbacks. Moved off
+`AdminShell` because its breadcrumb rendered "Administration" untranslated in
+Arabic — `ShellPageFrame` now shows `الإدارة`. Rebuilt the journey nav as SAQEEL
+and **deleted `AdminConfigurationJourney`** (sole consumer) + the orphaned
+`form-builder.module.css`. Removed the banned `as unknown as`, the `▦` glyph, and
+raw badge/alert/panel classes. Verified EN + AR/RTL live. lint −371, typography
+−258, zero v5 violations in the new files.
+
+## `/admin/risk` rebuilt: the AdminDestinationFrame subsystem is retired (2026-08-21)
+
+## `/admin/risk` rebuilt: the AdminDestinationFrame subsystem is retired (2026-08-21)
+
+**T-171 rebuilt the Risk Studio** (SCR-ADM-060 / CD-014 — live factor weights +
+score bands over `engine_settings`) and deleted the `@retiring`
+`AdminDestinationFrame` + `AdminRecordDrawer` subsystem it was the last consumer
+of — **1,097 lines of legacy gone**. `page.tsx` **162 → 12** on `ShellPageFrame`
++ the shared `RiskSectionNav`, `features/admin-risk/{queries,types}` +
+`sections/admin-risk/{risk-studio-screen,risk-form}`, new bilingual `adminRisk`
+namespace. The controlled form keeps the governed logic verbatim
+(`validateWeights`/`validateBands`, Σ=1.00 gate, confirm-live, `saveRiskSettings`)
+but the server action now returns **typed error codes** instead of English copy.
+Band chips are labelled `StatusPill`s; last-updated is `formatDateTime` (Riyadh),
+not utc-slice. **Seeded the missing risk `engine_settings` row from the accepted
+`DECISIONS_ACCEPTED_2026-07-11` config** — restored, not invented (rule 9); absent
+data still renders the governed empty state. Verified live EN + AR/RTL, populated.
+lint −369, typography −248, zero v5 violations in the new files.
+
+## `/admin/items` rebuilt: the last legacy admin-console surface is on SAQEEL (2026-08-21)
+
+## `/admin/items` rebuilt: the last legacy admin-console surface is on SAQEEL (2026-08-21)
+
+**T-170 rebuilt the Inspection Item Catalogue** (CD-007 / SCR-ADM-020) — semantic
+catalogue + read-only runtime-preview strip — off the frozen `.sq-*` sheets and
+the `t()`/ui_strings copy path. `page.tsx` **360 → 32**, `Controls.tsx`
+**306 → deleted**, over the unchanged governed projection: `features/admin-items/
+{queries,types}` + `components/sections/admin-items/{items-screen,item-forms,
+item-preview}` + a bilingual **`adminItems`** namespace (EN 90 + AR 90). Catalogue
+is now a true `DataTable`, governance a named region, status a `StatusPill`, the
+preview a read-only projection. **Audit actors resolve to names via `display_names`
+— no raw uuid anywhere** ([[never-show-raw-ids]] is now binding). Verified live as
+Admin, EN + AR/RTL. Six contract specs re-pointed — three were already red at HEAD
+from concurrent committed migrations (regulations, packages, violations→enforcement)
+that never re-pointed their own specs; chased each guard/copy to its new `features/*`
+home. typecheck 0, lint −353, typography −220, static suite **408/0**. Committed
+`6d142b6d`. **Open, not this task:** `lib/analytics/query-state.ts:18` fails the v5
+gate (utc-slice) — pre-existing in the `bbc4a602` demo-dataset commit, flagged to
+the human before the demo.
 
 ## Factory 360 rebuilt: the largest legacy surface is on SAQEEL, T-020 closed (2026-08-20)
 

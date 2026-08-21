@@ -27,7 +27,7 @@ export default async function Reset() {
   const strings: ResetStrings = {
     dir: ar ? "rtl" : "ltr",
     lang: locale,
-    brandTitle: "صقيل | صناعي",
+    brandTitle: "منصة التفتيش",
     brandSub: ar ? "منصّة التفتيش الصناعي" : "Industrial Inspection Platform",
     checking: ar ? "جارٍ التحقق من جلسة الاسترداد…" : "Verifying your recovery session…",
     invalidTitle: ar ? "جلسة الاسترداد غير صالحة أو منتهية الصلاحية." : "This recovery session is invalid or has expired.",

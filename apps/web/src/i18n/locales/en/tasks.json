@@ -1,0 +1,45 @@
+{
+  "title": "Tasks",
+  "loading": "Loading tasks…",
+  "banner": {
+    "title": "Governed task management.",
+    "body": "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope."
+  },
+  "error": "Couldn’t load tasks. Nothing was changed. Try again.",
+  "empty": {
+    "title": "No tasks in your scope",
+    "body": "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope."
+  },
+  "board": { "label": "Task status board" },
+  "column": {
+    "assigned": "Assigned",
+    "inProgress": "In progress",
+    "completed": "Completed"
+  },
+  "status": {
+    "new": "New",
+    "assigned": "Assigned",
+    "in_progress": "In progress",
+    "suspended": "Suspended",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "unassigned": "—",
+  "activeYes": "Active",
+  "activeNo": "Inactive",
+  "reassignTo": "Reassign to",
+  "reason": "Reason",
+  "reassign": "Reassign",
+  "reassigning": "Reassigning…",
+  "reassigned": "Reassigned",
+  "changeStatus": "Change status",
+  "apply": "Apply",
+  "applying": "Applying…",
+  "statusChanged": "Status changed",
+  "deactivate": "Deactivate",
+  "reactivate": "Reactivate",
+  "activating": "Working…",
+  "done": "Done",
+  "terminal": "This task is terminal — no further transitions are possible.",
+  "readOnly": "You can see this task but it is not yours to manage."
+}

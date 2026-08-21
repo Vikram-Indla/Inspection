@@ -8,25 +8,29 @@ const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
 
 test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contract", () => {
-  const items = read("src/app/(app)/admin/items/page.tsx");
-  const regulations = read("src/app/(app)/admin/regulations/page.tsx");
+  const items = read("src/components/sections/admin-items/items-screen.tsx");
+  const itemsCopy = read("src/i18n/locales/en/admin-items.json");
+  const govNotice = read("src/components/sections/regulations/catalogue/regulation-governance-notice/regulation-governance-notice.tsx");
+  const regsCopy = read("src/i18n/locales/en/regulations.json");
   const layout = read("src/app/(app)/admin/items/layout.tsx");
   const preview = read("src/app/(app)/admin/items/[id]/runtime-preview/page.tsx");
   const requestCreate = read("src/app/(app)/admin/compliance-requests/new/page.tsx");
 
   test("unified library exposes regulations, items and governed request handoff", () => {
-    for (const page of [items, regulations]) {
-      expect(page).toContain('aria-label="Inspection Rules"');
-      expect(page).toContain('/admin/regulations');
-      expect(page).toContain('/admin/items');
-      expect(page).toContain('/admin/compliance-requests/new');
+    // The migrated items screen keeps the library nav (Regulations · Inspection
+    // Items · Create request) with an i18n accessible name and the maker-checker
+    // modify handoff. Regulations authoring is request-only: its governance
+    // notice routes any change to the Compliance Configuration Request.
+    expect(items).toContain("aria-label={strings.title}");
+    for (const href of ["/admin/regulations", "/admin/items", "/admin/compliance-requests/new"]) {
+      expect(items).toContain(href);
     }
-    // Regulations authoring is request-only (maker-checker CCR); the legacy
-    // compatibility path survives only on the items screen.
-    expect(items).toContain("Legacy compatibility authoring");
-    expect(regulations).toContain("This library is for viewing and searching. To create or change something, start a Compliance Configuration Request.");
+    expect(govNotice).toContain("/admin/compliance-requests/new");
+    expect(regsCopy).toContain("This library is for viewing and searching. To create or change a regulation, start a compliance configuration request.");
+    // The legacy compatibility authoring path survives only on the items screen,
+    // its copy governed through the bilingual namespace.
+    expect(itemsCopy).toContain("Legacy compatibility authoring");
     expect(items).not.toContain('sq-btn sq-btn--prominent sq-link');
-    expect(regulations).not.toContain('sq-btn sq-btn--prominent sq-link');
     expect(items).toContain("request_type=modify");
     expect(requestCreate).toContain("sp.title");
     expect(requestCreate).toContain("sp.description");

@@ -3,165 +3,148 @@
 @layer sqx.tokens {
   :root {
     /* ------------------------------------------------------------------
-       Palette source: the approved experimental reference at
-       design/linear/design.md. Adopted 2026-08-17 on the manager's
-       instruction, replacing the IRP palette adopted 2026-08. Three rules
-       govern it:
+       Palette source: IRP (ir-frontend), src/theme/theme-config.ts.
+       Adopted on the manager's instruction, replacing the acid-lime
+       reference palette. Two rules govern it:
 
-       1. Surfaces are NEUTRAL and told apart by a HAIRLINE, not a shadow.
-          Elevation is the surface ladder plus a 1px inset ring.
-       2. Acid lime is the single chromatic action and is a FILL ONLY.
-          Measured 1.23:1 as text on white — it can never carry a label.
-          Text accents are neutral plus an underline.
-       3. Status is the one place chroma carries meaning. The reference has
-          no status system, so the five families below are derived from its
-          accents and measured here (see the status block).
+       1. Surfaces are NEUTRAL. Pure white in light, near-black in dark.
+          No hue in any page, card, dropdown, header or sidebar fill.
+       2. Colour is reserved for meaning: the primary action, status, and
+          data. GREEN NOW MEANS SUCCESS AND NOTHING ELSE — it is not a
+          brand colour, an accent, a chart series or a nav state.
 
-       The reference ships dark only, so the light theme is derived: the
-       ladder inverts, and `fog` is muted text on dark where `ash` is muted
-       text on light.
+       IRP ships light only, so the dark theme is derived here: the grey
+       ramp is extended below IRP's 900 in the same blue-grey hue so the
+       page reads near-black while staying in one family with the light
+       theme, and every accent gets a light-on-dark counterpart.
        ------------------------------------------------------------------ */
 
-    /* Grey — the reference's neutral ladder mapped onto the 050..1000 scale.
-       Measured on #FFFFFF:  #23252A 15.33:1  #383B3F 11.26:1  #62666D 5.77:1
-       Measured on #08090A:  #FFFFFF 19.93:1  #D0D6E0 13.64:1  #8A8F98 6.13:1
-       Ladder deltas — light #FFFFFF->#FAFAFA 1.04, dark #08090A->#0F1011
-       1.05 and #0F1011->#161718 1.06, so nesting stays visible. */
-    --sqx-grey-050: #FCFCFC;
-    --sqx-grey-100: #FAFAFA;
-    --sqx-grey-200: #F4F4F5;
-    --sqx-grey-300: #E5E5E6;
-    --sqx-grey-400: #D0D6E0;
-    --sqx-grey-500: #8A8F98;
-    --sqx-grey-600: #62666D;
-    --sqx-grey-700: #383B3F;
-    --sqx-grey-800: #23252A;
-    --sqx-grey-900: #161718;
-    --sqx-grey-950: #0F1011;
-    --sqx-grey-1000: #08090A;
-    --sqx-grey-neutral-dark: #23252A;
+    /* Grey — IRP's ramp verbatim from 50 to 900, extended at 950/1000.
+       Measured on #FFFFFF:  #1C252E 15.52:1   #454F5B 8.33:1   #637381 4.88:1
+       Measured on #141A21:  #FFFFFF 17.51:1   #C4CDD5 10.87:1  #919EAB 6.41:1
+       Ladder deltas — light #FFFFFF->#F9FAFB 1.045, dark #080B10->#141A21
+       1.126 and #141A21->#1C252E 1.128, so nesting stays visible. */
+    --sqx-grey-050: #FCFDFD;
+    --sqx-grey-100: #F9FAFB;
+    --sqx-grey-200: #F4F6F8;
+    --sqx-grey-300: #DFE3E8;
+    --sqx-grey-400: #C4CDD5;
+    --sqx-grey-500: #919EAB;
+    --sqx-grey-600: #637381;
+    --sqx-grey-700: #454F5B;
+    --sqx-grey-800: #1C252E;
+    --sqx-grey-900: #141A21;
+    --sqx-grey-950: #0E131A;
+    --sqx-grey-1000: #080B10;
+    --sqx-grey-neutral-dark: #28323D;
 
-    /* Brand — acid lime. The single chromatic action in the system, and the
-       one place a saturated colour is allowed on chrome.
+    /* Brand — IRP primary, aubergine. The only non-status accent.
 
-       IT IS A FILL, NEVER TEXT. Measured: #E4F222 on #FFFFFF is 1.23:1 and
-       on #08090A is 16.15:1 — so a lime label is invisible in light mode and
-       no darkened lime stays lime (it turns olive). The ink on a lime fill is
-       always #08090A: 16.15:1 at rest, 13.07:1 hover, 10.31:1 pressed, so the
-       control darkens under the pointer and contrast only ever falls within
-       AA.
+       Filled controls use #7E61AC (IRP's own primary.light), NOT the #413259
+       main. At full strength the fill read as near-black, and a CTA that dark
+       is hard to tell from a disabled slab. #7E61AC carries #FFFFFF at
+       5.01:1, hover #6A5391 at 6.44:1, pressed #52406F at 9.05:1 — the
+       control darkens under the pointer and contrast only ever improves.
 
-       The 600..950 stops are therefore NEUTRAL, not lime. They exist because
-       `--sqx-text-link` and `--sqx-text-accent` point at brand-600, and a
-       text role must resolve to something readable in both themes. Chromatic
-       body text is forbidden by the reference; links are neutral plus an
-       underline. */
-    --sqx-brand-050: #FCFEE9;
-    --sqx-brand-100: #F6FBC2;
-    --sqx-brand-200: #EEF799;
-    --sqx-brand-300: #E9F55C;
-    --sqx-brand-400: #E4F222;
-    --sqx-brand-450: #CEDB20;
-    --sqx-brand-500: #B8C31D;
-    --sqx-brand-600: #23252A;
-    --sqx-brand-700: #161718;
-    --sqx-brand-800: #0F1011;
-    --sqx-brand-900: #08090A;
-    --sqx-brand-950: #08090A;
+       Text keeps the darker #413259. A fill needs to look light; a label on
+       a light surface needs to be readable, and #7E61AC on the brand tint is
+       only 4.19:1. Fills lighten, text does not.
 
-    /* The reference's pulse-green, coral-red, signal-teal, iris and lavender
-       are defined as status and chart roles below, never as brand. */
+       Dark theme flips to #B49AD8, which carries #0D0A12 at 8.00:1. */
+    --sqx-brand-050: #F2EDF9;
+    --sqx-brand-100: #E4DBF2;
+    --sqx-brand-200: #CDBAEA;
+    --sqx-brand-300: #B49AD8;
+    --sqx-brand-400: #7E61AC;
+    --sqx-brand-450: #6A5391;
+    --sqx-brand-500: #52406F;
+    --sqx-brand-600: #413259;
+    --sqx-brand-700: #342847;
+    --sqx-brand-800: #271E35;
+    --sqx-brand-900: #1A1423;
+    --sqx-brand-950: #0D0A12;
 
-    /* Status — derived from the reference's accents, because the reference
-       has none: it calls pulse-green and coral-red "supporting accents, not
-       status colours", which is guidance for a marketing site and cannot
-       govern a platform where severity is legally meaningful.
+    /* IRP's secondary (teal #18D8C6) is deliberately NOT adopted and not
+       defined here. At that saturation it reads as green to anyone
+       scanning the page, which would break rule 2 above. */
 
-       success = pulse-green, error = coral-red, info = signal-teal verbatim.
-       warning and major have no counterpart in the reference and are derived
-       in its saturation idiom — acid lime cannot serve as warning because it
-       IS the primary action, and a warning pill would be indistinguishable
-       from a CTA. This follows the precedent already set for `major`, which
-       has always been an interpolated severity tier.
+    /* Status — IRP's four, plus one interpolated orange for the severity
+       tier between warning and critical. Pill text uses the *darker* stop
+       in light mode: IRP's own .dark stops only reach 3.6:1 on a 16% tint,
+       which is a large-text pass at best.
+       Light pill, text on tint:  success 6.79  warning 7.32  error 9.27
+                                  info 6.78    major 8.05    neutral 7.23
+       Dark  pill, text on tint:  success 9.04  warning 9.21  error 7.88
+                                  info 8.56    major 8.20    neutral 8.40 */
+    --sqx-success-lighter: #D3FCD2;
+    --sqx-success-light: #77ED8B;
+    --sqx-success-main: #22C55E;
+    --sqx-success-dark: #118D57;
+    --sqx-success-darker: #065E49;
+    --sqx-warning-lighter: #FFF5CC;
+    --sqx-warning-light: #FFD666;
+    --sqx-warning-main: #FFAB00;
+    --sqx-warning-dark: #B76E00;
+    --sqx-warning-darker: #7A4100;
+    --sqx-error-lighter: #FFE9D5;
+    --sqx-error-light: #FFAC82;
+    --sqx-error-main: #FF5630;
+    --sqx-error-dark: #B71D18;
+    --sqx-error-darker: #7A0916;
+    --sqx-info-lighter: #C9F4FC;
+    --sqx-info-light: #7EE4F6;
+    --sqx-info-main: #46CFE7;
+    --sqx-info-dark: #49AABB;
+    --sqx-info-darker: #215C66;
+    --sqx-major-light: #FDBA74;
+    --sqx-major-main: #FF7A1A;
+    --sqx-major-dark: #B54708;
+    --sqx-major-darker: #7C2D12;
 
-       `main` is the graphic fill on DARK; `dark` is the graphic fill on
-       LIGHT, because warning and info at full strength measure 2.25:1 and
-       2.41:1 on white — under the 3:1 that WCAG 1.4.11 needs for a dot, bar
-       or border. Text on a tint always uses `darker` (light) / `light` (dark).
-
-       graphic on #FFFFFF:  success 3.17  warning 3.01  error 3.48  info 3.07  major 3.14
-       graphic on #0F1011:  success 5.88  warning 8.30  error 5.35  info 7.75  major 5.94
-       text on tint light:  success 4.51  warning 4.61  error 4.65  info 4.59  major 4.66
-       text on tint dark:   success 5.36  warning 7.13  error 5.05  info 6.82  major 5.58
-       No two mains are closer than deltaE 30. */
-    --sqx-success-lighter: #D4EDDA;
-    --sqx-success-light: #3DAF57;
-    --sqx-success-main: #27A644;
-    --sqx-success-dark: #27A644;
-    --sqx-success-darker: #1E7E34;
-    --sqx-warning-lighter: #F9ECD1;
-    --sqx-warning-light: #E4AF3B;
-    --sqx-warning-main: #E0A21B;
-    --sqx-warning-dark: #C18B17;
-    --sqx-warning-darker: #8F6811;
-    --sqx-error-lighter: #FBDDDD;
-    --sqx-error-light: #ED6868;
-    --sqx-error-main: #EB5757;
-    --sqx-error-dark: #EB5757;
-    --sqx-error-darker: #B74444;
-    --sqx-info-lighter: #CCF1F5;
-    --sqx-info-light: #2AC3D4;
-    --sqx-info-main: #02B8CC;
-    --sqx-info-dark: #02A2B4;
-    --sqx-info-darker: #017987;
-    --sqx-major-light: #EE7D3C;
-    --sqx-major-main: #EC6B21;
-    --sqx-major-dark: #EC6B21;
-    --sqx-major-darker: #AF4F18;
-
-    /* AI — the reference's lavender. Kept as the one accent outside the
-       status set because every product signals AI this way, and a lime AI
-       entry point would be indistinguishable from the primary action.
-       #6443AF carries #FFFFFF at 7.09:1; #8B5CF6 carries #08090A at 4.71:1. */
+    /* AI — violet. Kept as the one accent outside the palette because every
+       product signals AI this way, and an aubergine AI entry point would be
+       indistinguishable from a primary action. Saturated (70%) where the
+       brand is desaturated (17%), so the two never read as the same thing.
+       #6D28D9 carries #FFFFFF at 7.10:1; #A78BFA carries #0D0A12 at 7.22:1. */
     --sqx-ai-light: #C4B5FD;
-    --sqx-ai-main: #8B5CF6;
-    --sqx-ai-shade: #6443AF;
-    --sqx-ai-deep: #6443AF;
+    --sqx-ai-main: #A78BFA;
+    --sqx-ai-shade: #5B3FC7;
+    --sqx-ai-deep: #6D28D9;
 
     /* Flattened tints. Written as hex, not alpha, so a pill nested inside a
        card does not compound its own background against the one below it. */
-    --sqx-tint-brand-light: #FCFEE9;
-    --sqx-tint-brand-light-soft: #FDFEF4;
-    --sqx-tint-success-light: #E5F4E9;
-    --sqx-tint-warning-light: #FBF4E4;
-    --sqx-tint-error-light: #FDEBEB;
-    --sqx-tint-info-light: #E1F6F9;
-    --sqx-tint-major-light: #FDEDE4;
-    --sqx-tint-neutral-light: #F3F4F5;
-    --sqx-tint-ai-light: #F3EFFE;
-    --sqx-tint-brand-dark: #292B13;
-    --sqx-tint-success-dark: #122B21;
-    --sqx-tint-warning-dark: #302A1A;
-    --sqx-tint-error-dark: #311E24;
-    --sqx-tint-info-dark: #0C2D36;
-    --sqx-tint-major-dark: #32211B;
-    --sqx-tint-neutral-dark: #202224;
-    --sqx-tint-ai-dark: #201B31;
+    --sqx-tint-brand-light: #ECEAEE;
+    --sqx-tint-brand-light-soft: #F4F3F5;
+    --sqx-tint-success-light: #DCF6E5;
+    --sqx-tint-warning-light: #FFF2D6;
+    --sqx-tint-error-light: #FFE4DE;
+    --sqx-tint-info-light: #E1F7FB;
+    --sqx-tint-major-light: #FFEADA;
+    --sqx-tint-neutral-light: #EDEFF2;
+    --sqx-tint-ai-light: #EBE1FA;
+    --sqx-tint-brand-dark: #262A35;
+    --sqx-tint-success-dark: #16352B;
+    --sqx-tint-warning-dark: #3A311C;
+    --sqx-tint-error-dark: #3A2423;
+    --sqx-tint-info-dark: #1C3741;
+    --sqx-tint-major-dark: #3A2920;
+    --sqx-tint-neutral-dark: #282F37;
+    --sqx-tint-ai-dark: #262238;
 
-    /* Alphas. Every divider, hover and disabled fill is built from the
-       grey-500 channel (#8A8F98), which is why chrome stays neutral over any
-       surface in either theme. */
-    --sqx-grey-a08: rgba(138, 143, 152, 0.08);
-    --sqx-grey-a12: rgba(138, 143, 152, 0.12);
-    --sqx-grey-a16: rgba(138, 143, 152, 0.16);
-    --sqx-grey-a20: rgba(138, 143, 152, 0.2);
-    --sqx-grey-a24: rgba(138, 143, 152, 0.24);
-    --sqx-grey-a32: rgba(138, 143, 152, 0.32);
-    --sqx-grey-a48: rgba(138, 143, 152, 0.48);
-    --sqx-shade-050: rgba(138, 143, 152, 0.08);
-    --sqx-shade-100: rgba(138, 143, 152, 0.12);
-    --sqx-shade-150: rgba(138, 143, 152, 0.16);
-    --sqx-shade-200: rgba(138, 143, 152, 0.24);
+    /* Alphas. IRP builds every divider, hover and disabled fill from the
+       grey-500 channel (#919EAB), which is why its chrome stays neutral over
+       any surface in either theme. Same here. */
+    --sqx-grey-a08: rgba(145, 158, 171, 0.08);
+    --sqx-grey-a12: rgba(145, 158, 171, 0.12);
+    --sqx-grey-a16: rgba(145, 158, 171, 0.16);
+    --sqx-grey-a20: rgba(145, 158, 171, 0.2);
+    --sqx-grey-a24: rgba(145, 158, 171, 0.24);
+    --sqx-grey-a32: rgba(145, 158, 171, 0.32);
+    --sqx-grey-a48: rgba(145, 158, 171, 0.48);
+    --sqx-shade-050: rgba(145, 158, 171, 0.08);
+    --sqx-shade-100: rgba(145, 158, 171, 0.12);
+    --sqx-shade-150: rgba(145, 158, 171, 0.16);
+    --sqx-shade-200: rgba(145, 158, 171, 0.24);
     --sqx-void-200: rgba(0, 0, 0, 0.32);
     --sqx-void-300: rgba(0, 0, 0, 0.44);
     --sqx-void-400: rgba(0, 0, 0, 0.6);
@@ -263,10 +246,10 @@
     --sqx-neon-ai-light: var(--sqx-ai-light);
     --sqx-neon-ai-shade: var(--sqx-ai-shade);
 
-    --sqx-green-veil-soft: rgba(138, 143, 152, 0.06);
-    --sqx-green-veil-strong: rgba(138, 143, 152, 0.1);
-    --sqx-neon-veil-soft: rgba(255, 255, 255, 0.03);
-    --sqx-neon-veil-strong: rgba(255, 255, 255, 0.06);
+    --sqx-green-veil-soft: rgba(65, 50, 89, 0.06);
+    --sqx-green-veil-strong: rgba(65, 50, 89, 0.1);
+    --sqx-neon-veil-soft: rgba(205, 186, 234, 0.08);
+    --sqx-neon-veil-strong: rgba(205, 186, 234, 0.14);
     --sqx-halo-green: var(--sqx-grey-900);
     --sqx-halo-cyan: var(--sqx-grey-900);
     --sqx-halo-light: var(--sqx-grey-100);
@@ -301,7 +284,7 @@
     --sqx-text-muted: var(--sqx-grey-600);
     --sqx-text-disabled: var(--sqx-grey-600);
     --sqx-text-inverse: #FFFFFF;
-    --sqx-text-on-action: var(--sqx-grey-1000);
+    --sqx-text-on-action: #FFFFFF;
     --sqx-text-link: var(--sqx-brand-600);
     --sqx-text-link-hover: var(--sqx-brand-800);
     --sqx-text-accent: var(--sqx-brand-600);
@@ -321,7 +304,7 @@
     --sqx-action-primary-bg: var(--sqx-brand-400);
     --sqx-action-primary-hover: var(--sqx-brand-450);
     --sqx-action-primary-active: var(--sqx-brand-500);
-    --sqx-action-primary-text: var(--sqx-grey-1000);
+    --sqx-action-primary-text: #FFFFFF;
     --sqx-action-primary-border: var(--sqx-action-primary-bg);
     --sqx-segment-track: var(--sqx-grey-200);
     --sqx-segment-label: var(--sqx-brand-600);
@@ -432,9 +415,9 @@
     --sqx-text-disabled: var(--sqx-grey-500);
     --sqx-text-inverse: var(--sqx-grey-900);
     --sqx-text-on-action: var(--sqx-brand-950);
-    --sqx-text-link: var(--sqx-grey-300);
-    --sqx-text-link-hover: var(--sqx-grey-200);
-    --sqx-text-accent: var(--sqx-grey-300);
+    --sqx-text-link: var(--sqx-brand-200);
+    --sqx-text-link-hover: var(--sqx-brand-100);
+    --sqx-text-accent: var(--sqx-brand-200);
     --sqx-text-success: var(--sqx-success-light);
     --sqx-text-warning: var(--sqx-warning-light);
     --sqx-text-danger: var(--sqx-error-light);
@@ -454,11 +437,11 @@
     --sqx-action-primary-text: var(--sqx-brand-950);
     --sqx-action-primary-border: var(--sqx-action-primary-bg);
     --sqx-segment-track: var(--sqx-grey-800);
-    --sqx-segment-label: var(--sqx-grey-300);
+    --sqx-segment-label: var(--sqx-brand-200);
     --sqx-action-secondary-border: var(--sqx-grey-a32);
     --sqx-action-secondary-text: #FFFFFF;
     --sqx-action-secondary-hover: var(--sqx-grey-a12);
-    --sqx-action-tertiary-text: var(--sqx-grey-300);
+    --sqx-action-tertiary-text: var(--sqx-brand-200);
     --sqx-action-tertiary-hover: var(--sqx-tint-brand-dark);
     --sqx-action-danger-bg: var(--sqx-error-light);
     --sqx-action-danger-hover: #FFC7A8;
@@ -587,7 +570,7 @@
     --sqx-text-overline-line: 1.2;
     --sqx-text-overline-weight: var(--sqx-weight-medium);
     --sqx-text-overline-tracking: 0.06em;
-    --sqx-text-metric-size: 2rem;
+    --sqx-text-metric-size: 1.1rem;
     --sqx-text-metric-line: 1.13;
     --sqx-text-metric-weight: var(--sqx-weight-medium);
     --sqx-text-metric-tracking: -0.022em;

@@ -7,12 +7,9 @@ const HEADING_ID = "factory-ai-title";
 
 export type FactoryAiAdvisoryStrings = {
   readonly title: string;
-  readonly advisory: string;
-  readonly evidence: string;
-  readonly idle: string;
+  readonly fallback: string;
   readonly generate: string;
   readonly generating: string;
-  readonly confidenceUnavailable: string;
 };
 
 export default function FactoryAiAdvisory({ factoryId, locale, strings }: {
@@ -24,7 +21,6 @@ export default function FactoryAiAdvisory({ factoryId, locale, strings }: {
     <AdvisoryStrip
       headingId={HEADING_ID}
       strings={strings}
-      notesShownWithAdvisory={[strings.evidence, strings.confidenceUnavailable]}
       surfaceFields={
         <>
           <input type="hidden" name="surface" value="factory_risk_explanation" />
@@ -32,6 +28,7 @@ export default function FactoryAiAdvisory({ factoryId, locale, strings }: {
           <input type="hidden" name="context" value={JSON.stringify({ scope: "factory-risk" })} />
           <input type="hidden" name="evidence_refs" value={EVIDENCE_REFS} />
           <input type="hidden" name="locale" value={locale} />
+          <input type="hidden" name="fallback" value={strings.fallback} />
         </>
       }
     />

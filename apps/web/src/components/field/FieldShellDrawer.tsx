@@ -129,7 +129,7 @@ export default function FieldShellDrawer({
                   strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" />
                 </svg>
-                <span className="pwa-shell-drawer__brand">SAQEEL</span>
+                <span className="pwa-shell-drawer__brand">Inspection Platform</span>
                 <span className="pwa-shell-drawer__brand-ar" lang="ar">{strings.brandAr}</span>
               </span>
               <button type="button" className="pwa-shell-close" aria-label={strings.close}

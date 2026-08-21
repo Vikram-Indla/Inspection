@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import PlanningReadFailureState from "@/components/PlanningReadFailure";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getPlanningReadContract } from "@/lib/planning/read-contract";
@@ -49,7 +50,7 @@ export default async function PlanningVisitDetail({ params, searchParams }: {
     return (
       <Shell current="/planning" title={title}>
         <EmptyState
-          glyph="⛔"
+          icon={<IconBlocked />}
           title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr(
             "visit.detail.unauthorized.body",

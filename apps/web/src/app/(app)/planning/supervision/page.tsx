@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getPlanningAccess } from "@/lib/planning/access";
 import SupervisionQueue, { type PendingSupervision } from "./SupervisionQueue";
@@ -15,7 +16,7 @@ export default async function SupervisionPage({ searchParams }: { searchParams: 
   const access = await getPlanningAccess(sb, ["planning.approve", "planning.return", "planning.reject"]);
   const title = t("plan.supervision.title", "Supervision queue");
   if (access.error) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;
-  if (!access.can("planning.approve")) return <Shell current="/planning" title={title}><EmptyState glyph="⛔" title={t("plan.supervision.denied.title", "Supervisor access required")} body={t("plan.supervision.denied.body", "Only Supervisors can approve, return, or reject submitted visits.")} /></Shell>;
+  if (!access.can("planning.approve")) return <Shell current="/planning" title={title}><EmptyState icon={<IconBlocked />} title={t("plan.supervision.denied.title", "Supervisor access required")} body={t("plan.supervision.denied.body", "Only Supervisors can approve, return, or reject submitted visits.")} /></Shell>;
 
   const submitted = (await searchParams).submitted?.trim() ?? "";
   if (submitted && !UUID.test(submitted)) return <Shell current="/planning" title={title}><EmptyState glyph="⚠" title={t("plan.supervision.unavailable.title", "Supervision data not available")} body={t("plan.supervision.unavailable.body", "We couldn't load the queue. Nothing was changed.")} /></Shell>;

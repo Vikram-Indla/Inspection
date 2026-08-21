@@ -1,0 +1,55 @@
+{
+  "title": "Control Panel",
+  "context": "What is waiting on you, and what changed recently. Move between areas using the side menu. You only see the areas your role allows.",
+  "loading": "Loading control panel…",
+  "roleError": {
+    "title": "We could not check your access.",
+    "body": "No approval or audit work is shown."
+  },
+  "noPanels": {
+    "title": "No admin panels are assigned to this role",
+    "body": "Use the pages listed in the side menu."
+  },
+  "waiting": {
+    "title": "Waiting on you",
+    "desc": "Submitted requests you are allowed to approve. Your own requests never appear here. Maker-checker rules protect every decision.",
+    "cta": "Open Awaiting Approval",
+    "loadErrorTitle": "Some approval work could not load.",
+    "loadErrorList": "The request list could not be loaded. Requests may exist that are not shown.",
+    "loadErrorDetail": "We could not read some request details, but the requests below are still shown.",
+    "empty": "No requests are waiting on your approval",
+    "colRequest": "Request",
+    "colArea": "Area",
+    "colRequestedBy": "Requested by",
+    "colWaiting": "Waiting",
+    "colNextAction": "Next action",
+    "review": "Review"
+  },
+  "audit": {
+    "title": "Recent configuration changes",
+    "desc": "Approved changes you're allowed to see, taken directly from the Activity Log. Nothing here is summarized or guessed.",
+    "cta": "Open Activity Log",
+    "loadErrorTitle": "Recent changes are not available.",
+    "loadErrorBody": "The Activity Log could not be loaded. Changes may exist that are not shown.",
+    "empty": "No changes returned for this scope",
+    "colChange": "Change",
+    "colArea": "Area",
+    "colActor": "Actor",
+    "colWhen": "When",
+    "published": "Configuration published",
+    "areaValue": "Compliance configuration",
+    "system": "System"
+  },
+  "notConfigured": "Not configured",
+  "unavailable": "Unavailable",
+  "unknownUser": "Unknown user",
+  "area": {
+    "regulation": "Regulations",
+    "inspection_item": "Inspection items",
+    "violation": "Violations",
+    "penalty": "Penalties"
+  },
+  "listSeparator": ", ",
+  "hours": "{n}h",
+  "days": "{n}d"
+}

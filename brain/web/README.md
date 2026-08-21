@@ -69,9 +69,10 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
    `apps/web/src/saqeel.css`. Only `var(--sqx-*)`. `saqeel.css` is core tokens
    only — component styles are colocated CSS Modules, and **a missing token
    stops the work** rather than being added inline. This discipline is what let
-   the entire visual language be swapped on 2026-08-17 by retargeting one file,
-   re-skinning 28 migrated routes without editing any of them. **Elevation is a
-   hairline, not a shadow; the acid-lime accent is a fill, never text.**
+   the entire palette be retargeted twice (reference ↔ IRP) by editing one file,
+   re-skinning every migrated route without touching any of them. **Elevation is a
+   hairline, not a shadow; the brand is IRP aubergine and — unlike the retired
+   acid lime — it may be text (links and accents), body copy never.**
 8. **No `<svg>` in application code.** Icons come from `lucide-react` through
    the icon registry, by semantic name.
 9. **No `alt=""`.** Every image carries alt text that conveys purpose. A

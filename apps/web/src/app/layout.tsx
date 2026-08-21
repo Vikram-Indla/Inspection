@@ -65,13 +65,13 @@ export const metadata = {
     icon: [{ url: "/saqeel-favicon.svg", type: "image/svg+xml" }, { url: "/saqeel-favicon-32.png", sizes: "32x32" }],
     apple: "/saqeel-favicon-180.png",
   },
-  title: "Saqeel صقيل — Industrial Inspection Platform",
-  description: "Saqeel (صقيل | صناعي) — the national industrial inspection platform. One platform. Every factory. Every inspection. Every decision.",
+  title: "Inspection Platform",
+  description: "Inspection Platform — the national industrial inspection platform. One platform. Every factory. Every inspection. Every decision.",
   // Installed-to-home-screen presentation on iPadOS/Safari and Android/Chromium.
   // appleWebApp.capable + mobile-web-app-capable make the launched app run
   // standalone (no browser chrome); black-translucent lets content extend under
   // the status bar, paired with viewportFit:"cover" above.
-  appleWebApp: { capable: true, title: "Saqeel", statusBarStyle: "black-translucent" as const },
+  appleWebApp: { capable: true, title: "Inspection Platform", statusBarStyle: "black-translucent" as const },
   formatDetection: { telephone: false },
   other: { "mobile-web-app-capable": "yes" },
 };

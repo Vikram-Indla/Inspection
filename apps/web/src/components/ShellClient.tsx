@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
+import { stripLocale } from "@/lib/locale-path";
 import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell from "@/components/notifications/notification-bell";
 import type { NotificationStrings } from "@/features/shell/notification-strings";
@@ -153,7 +154,8 @@ export default function ShellClient({
     setHydratedPathname(current);
   }, [current]);
   const fieldOnly = isFieldOnlyPersona(roles);
-  const adminWorkspace = current === "/admin" || current.startsWith("/admin/");
+  const routePath = stripLocale(current);
+  const adminWorkspace = routePath === "/admin" || routePath.startsWith("/admin/");
   // The canonical Claude Design topbar always exposes the assistant entry.
   // Provider and route-level availability are enforced by the destination.
   const aiVisible = true;
@@ -621,8 +623,8 @@ export default function ShellClient({
             <SaqeelBrandMark />
           </span>
           <span className="sq-shell__brand-name">
-            <span className="sq-shell__brand-ar" lang="ar">صقيل</span>
-            <span className="sq-shell__brand-en" lang="en">SAQEEL</span>
+            <span className="sq-shell__brand-ar" lang="ar">منصة التفتيش</span>
+            <span className="sq-shell__brand-en" lang="en">Inspection Platform</span>
           </span>
           <button className="sq-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>

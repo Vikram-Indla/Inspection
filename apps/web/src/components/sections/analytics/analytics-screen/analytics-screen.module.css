@@ -13,12 +13,6 @@
   gap: var(--sqx-space-3);
 }
 
-.journey {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sqx-space-2);
-}
-
 .split {
   display: grid;
   grid-template-columns: 1fr;

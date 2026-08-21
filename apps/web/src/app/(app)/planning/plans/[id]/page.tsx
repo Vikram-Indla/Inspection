@@ -3,7 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
-import { IconCalendar } from "@/app/icons";
+import { IconBlocked, IconCalendar } from "@/app/icons";
 import { getPlanningAccess } from "@/lib/planning/access";
 
 // FIX WAVE F4 — M02-017: plan drill-down listing every child visit with its
@@ -43,7 +43,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan details")}>
-        <EmptyState glyph="⛔"
+        <EmptyState icon={<IconBlocked />}
           title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr("plan.drill.unauthorized.body", "You need planning access to view plan details.", "يلزم صلاحية تخطيط لعرض تفاصيل الخطة.")} />
       </Shell>

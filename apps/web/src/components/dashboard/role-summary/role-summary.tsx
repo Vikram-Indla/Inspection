@@ -1,5 +1,4 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import { Text } from "@/components/saqeel/type";
 import MetricStrip from "@/components/dashboard/metric-strip/metric-strip";
 import { buildMetricStrip, metricStripStrings } from "@/features/dashboard/strip";
 import { getMessages } from "@/i18n/messages";
@@ -23,7 +22,6 @@ export default function RoleSummary({ locale, persona, projection, partialSource
         titleId="dashboard-role-summary"
         title={dashboard.persona[persona]}
         description={dashboard.yourWork.scoped}
-        trailing={<Text role="label" tone="muted">{dashboard.yourWork.eyebrow}</Text>}
       />
       <CardBody>
         <MetricStrip

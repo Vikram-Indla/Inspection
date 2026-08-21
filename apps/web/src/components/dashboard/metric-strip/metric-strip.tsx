@@ -41,7 +41,9 @@ export default function MetricStrip({ metrics, methodology, strings, min = "sm" 
               </div>
               <CardValueSlot>
                 {metric.kind === "status"
-                  ? <StatusPill tone={TONE[metric.tone]} ping>{metric.text}</StatusPill>
+                  ? metric.naMuted
+                    ? <Text tone="muted">{metric.text}</Text>
+                    : <StatusPill tone={TONE[metric.tone]} ping>{metric.text}</StatusPill>
                   : <CardValue size="md">{metric.text}</CardValue>}
               </CardValueSlot>
               <span className={styles.foot}>

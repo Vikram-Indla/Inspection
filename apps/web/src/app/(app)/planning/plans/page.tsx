@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import { getPlanningAccess } from "@/lib/planning/access";
 
 // FIX WAVE F4 — M02-035: plan register. Every visit plan (bulk/single) with
@@ -37,7 +38,7 @@ export default async function PlanRegister() {
   if (!["business_staff", "admin"].includes(access.accessClass) || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
-        <EmptyState glyph="⛔"
+        <EmptyState icon={<IconBlocked />}
           title={tr("plan.home.unauthorized.title", "You don't have permission", "ليست لديك الصلاحية اللازمة")}
           body={tr("plan.register.unauthorized.body", "You need planning access to view visit plans.", "يلزم صلاحية تخطيط لعرض خطط الزيارات.")} />
       </Shell>

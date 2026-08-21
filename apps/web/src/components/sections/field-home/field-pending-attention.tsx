@@ -7,10 +7,11 @@ import { Heading, Metric, Text } from "@/components/saqeel/type";
 import type { FieldHomeCopy } from "@/features/field-home/labels";
 import styles from "./field-home.module.css";
 
-function AttentionCard({ icon, pill, pillTone, value, label, action }: {
+type AttentionHead = { pill: string; pillTone: StatusTone } | { na: string };
+
+function AttentionCard({ icon, head, value, label, action }: {
   icon: IconName;
-  pill: string;
-  pillTone: StatusTone;
+  head: AttentionHead;
   value: string;
   label: string;
   action: { href: string; label: string } | { note: string };
@@ -20,7 +21,9 @@ function AttentionCard({ icon, pill, pillTone, value, label, action }: {
       <CardBody gap="tight">
         <div className={styles.attentionHead}>
           <Icon name={icon} size="md" />
-          <StatusPill tone={pillTone} ping={false}>{pill}</StatusPill>
+          {"na" in head
+            ? <Text tone="muted">{head.na}</Text>
+            : <StatusPill tone={head.pillTone} ping={false}>{head.pill}</StatusPill>}
         </div>
         <Metric>{value}</Metric>
         <Text role="label" tone="secondary">{label}</Text>
@@ -34,10 +37,11 @@ function AttentionCard({ icon, pill, pillTone, value, label, action }: {
   );
 }
 
-export default function FieldPendingAttention({ returned, drafts, copy }: {
+export default function FieldPendingAttention({ returned, drafts, copy, na }: {
   returned: number;
   drafts: number;
   copy: FieldHomeCopy;
+  na: string;
 }) {
   return (
     <section aria-labelledby="field-pending-heading">
@@ -48,24 +52,21 @@ export default function FieldPendingAttention({ returned, drafts, copy }: {
       <div className={styles.attentionGrid}>
         <AttentionCard
           icon="refresh"
-          pill={copy.pending.priorityHigh}
-          pillTone="danger"
+          head={{ pill: copy.pending.priorityHigh, pillTone: "danger" }}
           value={String(returned)}
           label={copy.pending.returned}
           action={{ href: "/field/my-tasks", label: copy.pending.reviewNow }}
         />
         <AttentionCard
           icon="forms"
-          pill={copy.pending.priorityMedium}
-          pillTone="warning"
+          head={{ pill: copy.pending.priorityMedium, pillTone: "warning" }}
           value={String(drafts)}
           label={copy.pending.drafts}
           action={{ href: "/field/drafts", label: copy.pending.resume }}
         />
         <AttentionCard
           icon="refresh"
-          pill={copy.pending.notConfigured}
-          pillTone="neutral"
+          head={{ na }}
           value={copy.noValue}
           label={copy.pending.sync}
           action={{ note: copy.pending.syncManaged }}

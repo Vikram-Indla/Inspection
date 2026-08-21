@@ -4,6 +4,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/saqeel/card
 import BarCell from "@/components/saqeel/charts/bar-cell/bar-cell";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
 import {
   buildCoverage,
   buildMetricStrip,
@@ -63,7 +64,7 @@ export default function OperationalView({ locale, metrics, projection, partialSo
     },
     {
       key: "capacity", header: copy.capacity.dailyCapacity, align: "end", width: "min",
-      cell: () => <StatusPill tone="warning">{common.state.notConfigured}</StatusPill>,
+      cell: () => <Text as="span" tone="muted">{common.state.na}</Text>,
     },
   ];
 

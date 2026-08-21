@@ -119,7 +119,7 @@ export default function OperationsCenter({
               lastUpdate: operations.table.lastUpdate,
               actions: operations.table.actions,
               openRecord: operations.table.openRecord,
-              notConfigured: common.state.notConfigured,
+              na: common.state.na,
               emptyTitle: operations.table.emptyTitle,
             }}
           />

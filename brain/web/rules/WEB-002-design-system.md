@@ -2,8 +2,14 @@
 
 > Status: **BINDING**.
 > The design system is **SAQEEL** — that is the name, the `--sqx-` prefix, and
-> the component layer. Its **visual language**, adopted 2026-08-17 on the
-> manager's approval, is the reference at `design/linear/design.md`.
+> the component layer. Its **structural language** — elevation, typography,
+> spacing, radii, motion — is the reference at `design/linear/design.md`, adopted
+> 2026-08-17 on the manager's approval.
+> **Its PALETTE is the IRP palette** (ir-frontend, `src/theme/theme-config.ts`),
+> re-adopted on the manager's instruction, replacing the reference's acid-lime.
+> The brand is IRP primary **aubergine** (`#413259` text / `#7E61AC` fill); greys,
+> status and tints are IRP's. Structure and palette are now sourced separately and
+> the distinction is deliberate — see §1.
 > Astryx is banned — no `ax-` class, no `ax-` token, no `astryx.css` import, zero
 > references. This carries forward the existing repository law and is not
 > negotiable at task level.
@@ -13,24 +19,29 @@
 ## 1. One system, one language
 
 SAQEEL is the **system**: the prefix, the primitives, the ledger, the gates.
-The **language** it renders is the approved reference. Those are separate
-things and the distinction matters, because the language has now been replaced
-once (IRP → the reference, 2026-08-17) without the system changing at all.
+The **language** it renders is the approved reference for structure and the IRP
+palette for colour. Those are separate things and the distinction matters,
+because the palette has now been retargeted twice (IRP → reference 2026-08-17 →
+IRP again) with the system, and every migrated route, untouched both times.
 
-That replacement is the proof the architecture works. Because every component
-consumes `var(--sqx-*)` and never a literal, retargeting the token sheet
-re-skinned **28 already-migrated routes without editing one of them**. A
-component that hardcodes a value opts out of that and is a defect, not a
-shortcut.
+That is the proof the architecture works. Because every component consumes
+`var(--sqx-*)` and never a literal, retargeting the token sheet re-skinned the
+**already-migrated routes without editing one of them**. A component that
+hardcodes a value opts out of that and is a defect, not a shortcut.
 
 Three things the language fixes, which are law and not taste:
 
 1. **Surfaces separate by a HAIRLINE, not a shadow.** Elevation is the surface
    ladder plus a 1px inset ring. Only genuinely floating layers — menu, modal —
-   earn a drop shadow.
-2. **The accent is a FILL, never text.** Acid lime measures 1.23:1 on white. No
-   label, link or body copy is ever chromatic; text accents are neutral plus an
-   underline.
+   earn a drop shadow. (Structure; unchanged by the palette swap.)
+2. **The brand is aubergine, and it MAY be text.** Unlike the retired acid lime
+   (1.23:1 on white, fill-only), IRP primary aubergine is dark and readable:
+   `#413259` carries white and reads on a light surface. The **fill** uses the
+   lighter `#7E61AC` (`--sqx-brand-400`) with white ink; **links and text
+   accents are aubergine** (`--sqx-text-link` / `--sqx-text-accent` → `brand-600`
+   light, `brand-200` dark). Body copy is still never chromatic — only links and
+   deliberate accents are. IRP's teal secondary is **not** adopted: at that
+   saturation it reads as green and would collide with success (§7).
 3. **Status is the one place chroma carries meaning**, and it is derived and
    measured (§7).
 
@@ -291,14 +302,12 @@ roles are fixed by the token sheet: `critical`, `major`, `warning`, `compliant`,
 `info`, `pending`, `draft`, `onhold`, `completed`, `disabled`. New roles require
 a token change request, not a new colour in a component.
 
-**The five status families are derived, not taken from the reference.** The
-reference calls its green and red *"supporting accents, not status colours"* —
-guidance written for a marketing site, which cannot govern a platform where
-severity is legally meaningful. `success`, `error` and `info` are its
-pulse-green, coral-red and signal-teal verbatim; `warning` and `major` have no
-counterpart and were derived in its saturation idiom, because acid lime cannot
-serve as warning — it **is** the primary action, and a warning pill would be
-indistinguishable from a CTA.
+**The five status families come from the IRP palette.** `success`, `warning`,
+`error` and `info` are IRP's four status colours verbatim (`#22C55E`, `#FFAB00`,
+`#FF5630`, `#46CFE7`); `major` has no counterpart in IRP and is one interpolated
+orange for the severity tier between warning and critical. Green means success
+and nothing else — it is never a brand colour, an accent, a chart series or a
+nav state, so a success pill is never mistaken for anything else on the page.
 
 Two asymmetries in the token sheet exist for measured reasons and must not be
 "tidied up":

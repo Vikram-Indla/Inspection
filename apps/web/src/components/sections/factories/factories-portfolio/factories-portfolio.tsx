@@ -100,7 +100,7 @@ export default function FactoriesPortfolio({
   selectedId: string;
   onSelect: (id: string) => void;
   stats: readonly PortfolioStat[];
-  provenanceNotice: { readonly label: string; readonly tone: StatusTone } | null;
+  provenanceNotice: { readonly label: string; readonly tone: StatusTone; readonly unavailable: boolean } | null;
   formatDate: (iso: string) => string;
   strings: PortfolioStrings;
 }) {
@@ -121,7 +121,7 @@ export default function FactoriesPortfolio({
               </div>
             ))}
           </dl>
-          {provenanceNotice
+          {provenanceNotice && !provenanceNotice.unavailable
             ? <StatusPill tone={provenanceNotice.tone}>{provenanceNotice.label}</StatusPill>
             : null}
         </CardBody>

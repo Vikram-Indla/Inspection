@@ -253,7 +253,7 @@
   .quickActions { grid-template-columns: minmax(0, 1fr); }
   .detailRow { flex-direction: column; gap: 3px; }
   .detailRow > :last-child { text-align: start; }
-  .stickyActions { border-radius: 12px; }
+  .stickyActions { border-radius: var(--sqx-radius-lg); }
 }
 
 @media (max-width: 420px) {

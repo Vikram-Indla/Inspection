@@ -42,7 +42,7 @@
 .panel {
   background: var(--surface-secondary);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
 }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
@@ -66,7 +66,7 @@
    the design's 12px row radius rather than the 14px outer-card radius. */
 .question {
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
   padding: var(--space-4);
   display: flex; flex-direction: column; gap: var(--space-2);
   scroll-margin-block-start: var(--space-8);
@@ -323,13 +323,13 @@
   object-fit: contain;
   background: var(--surface-sunken);
   border: 1.5px dashed var(--border-strong);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
 }
 .ocrDisabled,
 .ocrError,
 .ocrNotice {
   padding: var(--space-3);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
 }
 .ocrDisabled { color: var(--status-disabled-text); background: var(--status-disabled-soft); }
 .ocrError { color: var(--status-critical-text); background: var(--status-critical-soft); }
@@ -346,7 +346,7 @@
   color: var(--text-primary);
   background: var(--surface-primary);
   border: var(--border-w) solid var(--border-input);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
   font: inherit;
   line-height: 1.8;
   resize: vertical;
@@ -360,7 +360,7 @@
   padding: var(--space-3);
   background: var(--surface-sunken);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
 }
 .ocrCheck input { inline-size: 20px; block-size: 20px; }
 .ocrActions {
@@ -501,7 +501,7 @@
   color: var(--text-secondary);
   background: var(--surface-primary);
   border: 1px solid var(--border-strong);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
   box-shadow: var(--shadow-card);
   text-align: center;
 }

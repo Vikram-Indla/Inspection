@@ -11,13 +11,18 @@ import arAdminEnforcementRecommendations from "./locales/ar/admin-enforcement-re
 import arAdminWorkflows from "./locales/ar/admin-workflows.json";
 import arAdminFactoryData from "./locales/ar/admin-factory-data.json";
 import arAdminGis from "./locales/ar/admin-gis.json";
+import arAdminHome from "./locales/ar/admin-home.json";
+import arAdminDashboardConfig from "./locales/ar/admin-dashboard-config.json";
+import arAdminItems from "./locales/ar/admin-items.json";
 import arAdminNotifications from "./locales/ar/admin-notifications.json";
 import arAdminOperations from "./locales/ar/admin-operations.json";
 import arAdminIntegrations from "./locales/ar/admin-integrations.json";
 import arAdminSenaiData from "./locales/ar/admin-senai-data.json";
+import arAdminTemplates from "./locales/ar/admin-templates.json";
 import arAdminPlanningExpiry from "./locales/ar/admin-planning-expiry.json";
 import arAdminPlanningLookups from "./locales/ar/admin-planning-lookups.json";
 import arAdminPlanningStatus from "./locales/ar/admin-planning-status.json";
+import arAdminRisk from "./locales/ar/admin-risk.json";
 import arAdminRiskModels from "./locales/ar/admin-risk-models.json";
 import arAnalytics from "./locales/ar/analytics.json";
 import arApprovals from "./locales/ar/approvals.json";
@@ -40,9 +45,11 @@ import arFieldMyTasks from "./locales/ar/field-my-tasks.json";
 import arNotifications from "./locales/ar/notifications.json";
 import arOperations from "./locales/ar/operations.json";
 import arPlanning from "./locales/ar/planning.json";
+import arProfile from "./locales/ar/profile.json";
 import arReviews from "./locales/ar/reviews.json";
 import arRegulations from "./locales/ar/regulations.json";
 import arShell from "./locales/ar/shell.json";
+import arTasks from "./locales/ar/tasks.json";
 import arVisits from "./locales/ar/visits.json";
 import enAdminAccess from "./locales/en/admin-access.json";
 import enAdminLocalization from "./locales/en/admin-localization.json";
@@ -56,13 +63,18 @@ import enAdminEnforcementRecommendations from "./locales/en/admin-enforcement-re
 import enAdminWorkflows from "./locales/en/admin-workflows.json";
 import enAdminFactoryData from "./locales/en/admin-factory-data.json";
 import enAdminGis from "./locales/en/admin-gis.json";
+import enAdminHome from "./locales/en/admin-home.json";
+import enAdminDashboardConfig from "./locales/en/admin-dashboard-config.json";
+import enAdminItems from "./locales/en/admin-items.json";
 import enAdminNotifications from "./locales/en/admin-notifications.json";
 import enAdminOperations from "./locales/en/admin-operations.json";
 import enAdminIntegrations from "./locales/en/admin-integrations.json";
 import enAdminSenaiData from "./locales/en/admin-senai-data.json";
+import enAdminTemplates from "./locales/en/admin-templates.json";
 import enAdminPlanningExpiry from "./locales/en/admin-planning-expiry.json";
 import enAdminPlanningLookups from "./locales/en/admin-planning-lookups.json";
 import enAdminPlanningStatus from "./locales/en/admin-planning-status.json";
+import enAdminRisk from "./locales/en/admin-risk.json";
 import enAdminRiskModels from "./locales/en/admin-risk-models.json";
 import enAnalytics from "./locales/en/analytics.json";
 import enApprovals from "./locales/en/approvals.json";
@@ -85,9 +97,11 @@ import enFieldMyTasks from "./locales/en/field-my-tasks.json";
 import enNotifications from "./locales/en/notifications.json";
 import enOperations from "./locales/en/operations.json";
 import enPlanning from "./locales/en/planning.json";
+import enProfile from "./locales/en/profile.json";
 import enReviews from "./locales/en/reviews.json";
 import enRegulations from "./locales/en/regulations.json";
 import enShell from "./locales/en/shell.json";
+import enTasks from "./locales/en/tasks.json";
 import enVisits from "./locales/en/visits.json";
 
 export type Messages = {
@@ -104,12 +118,17 @@ export type Messages = {
   readonly adminIntegrations: typeof enAdminIntegrations;
   readonly adminFactoryData: typeof enAdminFactoryData;
   readonly adminGis: typeof enAdminGis;
+  readonly adminHome: typeof enAdminHome;
+  readonly adminDashboardConfig: typeof enAdminDashboardConfig;
+  readonly adminItems: typeof enAdminItems;
   readonly adminNotifications: typeof enAdminNotifications;
   readonly adminOperations: typeof enAdminOperations;
   readonly adminSenaiData: typeof enAdminSenaiData;
+  readonly adminTemplates: typeof enAdminTemplates;
   readonly adminPlanningExpiry: typeof enAdminPlanningExpiry;
   readonly adminPlanningLookups: typeof enAdminPlanningLookups;
   readonly adminPlanningStatus: typeof enAdminPlanningStatus;
+  readonly adminRisk: typeof enAdminRisk;
   readonly adminRiskModels: typeof enAdminRiskModels;
   readonly analytics: typeof enAnalytics;
   readonly approvals: typeof enApprovals;
@@ -132,15 +151,17 @@ export type Messages = {
   readonly notifications: typeof enNotifications;
   readonly operations: typeof enOperations;
   readonly planning: typeof enPlanning;
+  readonly profile: typeof enProfile;
   readonly regulations: typeof enRegulations;
   readonly reviews: typeof enReviews;
   readonly shell: typeof enShell;
+  readonly tasks: typeof enTasks;
   readonly visits: typeof enVisits;
 };
 
 const MESSAGES: Readonly<Record<Locale, Messages>> = {
-  en: { adminAudit: enAdminAudit, adminSecurityAccess: enAdminSecurityAccess, adminDevices: enAdminDevices, adminComplianceRequests: enAdminComplianceRequests, adminDelegation: enAdminDelegation, adminEnforcementRecommendations: enAdminEnforcementRecommendations, adminWorkflows: enAdminWorkflows, adminIntegrations: enAdminIntegrations, adminFactoryData: enAdminFactoryData, adminGis: enAdminGis, adminNotifications: enAdminNotifications, adminOperations: enAdminOperations, adminSenaiData: enAdminSenaiData, adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, adminPlanningLookups: enAdminPlanningLookups, adminPlanningStatus: enAdminPlanningStatus, adminRiskModels: enAdminRiskModels, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, factoriesCr: enFactoriesCr, fieldCompleted: enFieldCompleted, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, fieldNotifications: enFieldNotifications, fieldReports: enFieldReports, fieldSettings: enFieldSettings, fieldUnregistered: enFieldUnregistered, fieldVisits: enFieldVisits, notifications: enNotifications, operations: enOperations, planning: enPlanning, regulations: enRegulations, reviews: enReviews, shell: enShell, visits: enVisits },
-  ar: { adminAudit: arAdminAudit, adminSecurityAccess: arAdminSecurityAccess, adminDevices: arAdminDevices, adminComplianceRequests: arAdminComplianceRequests, adminDelegation: arAdminDelegation, adminEnforcementRecommendations: arAdminEnforcementRecommendations, adminWorkflows: arAdminWorkflows, adminIntegrations: arAdminIntegrations, adminFactoryData: arAdminFactoryData, adminGis: arAdminGis, adminNotifications: arAdminNotifications, adminOperations: arAdminOperations, adminSenaiData: arAdminSenaiData, adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, adminPlanningLookups: arAdminPlanningLookups, adminPlanningStatus: arAdminPlanningStatus, adminRiskModels: arAdminRiskModels, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, factoriesCr: arFactoriesCr, fieldCompleted: arFieldCompleted, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, fieldNotifications: arFieldNotifications, fieldReports: arFieldReports, fieldSettings: arFieldSettings, fieldUnregistered: arFieldUnregistered, fieldVisits: arFieldVisits, notifications: arNotifications, operations: arOperations, planning: arPlanning, regulations: arRegulations, reviews: arReviews, shell: arShell, visits: arVisits },
+  en: { adminAudit: enAdminAudit, adminSecurityAccess: enAdminSecurityAccess, adminDevices: enAdminDevices, adminComplianceRequests: enAdminComplianceRequests, adminDelegation: enAdminDelegation, adminEnforcementRecommendations: enAdminEnforcementRecommendations, adminWorkflows: enAdminWorkflows, adminIntegrations: enAdminIntegrations, adminFactoryData: enAdminFactoryData, adminGis: enAdminGis, adminHome: enAdminHome, adminDashboardConfig: enAdminDashboardConfig, adminItems: enAdminItems, adminNotifications: enAdminNotifications, adminOperations: enAdminOperations, adminSenaiData: enAdminSenaiData, adminTemplates: enAdminTemplates, adminAccess: enAdminAccess, adminLocalization: enAdminLocalization, adminPackages: enAdminPackages, adminPlanningExpiry: enAdminPlanningExpiry, adminPlanningLookups: enAdminPlanningLookups, adminPlanningStatus: enAdminPlanningStatus, adminRisk: enAdminRisk, adminRiskModels: enAdminRiskModels, analytics: enAnalytics, approvals: enApprovals, common: enCommon, dashboard: enDashboard, enforcement: enEnforcement, execution: enExecution, factories: enFactories, factoriesCr: enFactoriesCr, fieldCompleted: enFieldCompleted, fieldDrafts: enFieldDrafts, fieldEstablishments: enFieldEstablishments, fieldHome: enFieldHome, fieldMyTasks: enFieldMyTasks, fieldNotifications: enFieldNotifications, fieldReports: enFieldReports, fieldSettings: enFieldSettings, fieldUnregistered: enFieldUnregistered, fieldVisits: enFieldVisits, notifications: enNotifications, operations: enOperations, planning: enPlanning, profile: enProfile, regulations: enRegulations, reviews: enReviews, shell: enShell, tasks: enTasks, visits: enVisits },
+  ar: { adminAudit: arAdminAudit, adminSecurityAccess: arAdminSecurityAccess, adminDevices: arAdminDevices, adminComplianceRequests: arAdminComplianceRequests, adminDelegation: arAdminDelegation, adminEnforcementRecommendations: arAdminEnforcementRecommendations, adminWorkflows: arAdminWorkflows, adminIntegrations: arAdminIntegrations, adminFactoryData: arAdminFactoryData, adminGis: arAdminGis, adminHome: arAdminHome, adminDashboardConfig: arAdminDashboardConfig, adminItems: arAdminItems, adminNotifications: arAdminNotifications, adminOperations: arAdminOperations, adminSenaiData: arAdminSenaiData, adminTemplates: arAdminTemplates, adminAccess: arAdminAccess, adminLocalization: arAdminLocalization, adminPackages: arAdminPackages, adminPlanningExpiry: arAdminPlanningExpiry, adminPlanningLookups: arAdminPlanningLookups, adminPlanningStatus: arAdminPlanningStatus, adminRisk: arAdminRisk, adminRiskModels: arAdminRiskModels, analytics: arAnalytics, approvals: arApprovals, common: arCommon, dashboard: arDashboard, enforcement: arEnforcement, execution: arExecution, factories: arFactories, factoriesCr: arFactoriesCr, fieldCompleted: arFieldCompleted, fieldDrafts: arFieldDrafts, fieldEstablishments: arFieldEstablishments, fieldHome: arFieldHome, fieldMyTasks: arFieldMyTasks, fieldNotifications: arFieldNotifications, fieldReports: arFieldReports, fieldSettings: arFieldSettings, fieldUnregistered: arFieldUnregistered, fieldVisits: arFieldVisits, notifications: arNotifications, operations: arOperations, planning: arPlanning, profile: arProfile, regulations: arRegulations, reviews: arReviews, shell: arShell, tasks: arTasks, visits: arVisits },
 };
 
 export function getMessages(locale: Locale): Messages {
