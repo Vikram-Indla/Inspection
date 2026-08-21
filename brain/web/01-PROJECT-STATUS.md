@@ -1,6 +1,22 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-21` · `Updated by: T-171 — the /admin/risk Risk Studio rebuild`
+`Last updated: 2026-08-21` · `Updated by: T-172 — the /admin/templates Template Registry rebuild`
+
+## `/admin/templates` rebuilt: AdminConfigurationJourney retired, off AdminShell (2026-08-21)
+
+**T-172 rebuilt the Template Registry** on `ShellPageFrame` +
+`features/admin-templates` + `sections/admin-templates/{templates-screen,
+configuration-journey}` + a bilingual `adminTemplates` namespace. `page.tsx`
+**131 → 11**. Kept the **shared `TemplateRegistry`** (also used by `admin/packages`)
+and fed its strings from the namespace instead of ~40 `t()` fallbacks. Moved off
+`AdminShell` because its breadcrumb rendered "Administration" untranslated in
+Arabic — `ShellPageFrame` now shows `الإدارة`. Rebuilt the journey nav as SAQEEL
+and **deleted `AdminConfigurationJourney`** (sole consumer) + the orphaned
+`form-builder.module.css`. Removed the banned `as unknown as`, the `▦` glyph, and
+raw badge/alert/panel classes. Verified EN + AR/RTL live. lint −371, typography
+−258, zero v5 violations in the new files.
+
+## `/admin/risk` rebuilt: the AdminDestinationFrame subsystem is retired (2026-08-21)
 
 ## `/admin/risk` rebuilt: the AdminDestinationFrame subsystem is retired (2026-08-21)
 

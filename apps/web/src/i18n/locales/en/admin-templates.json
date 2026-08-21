@@ -1,0 +1,69 @@
+{
+  "title": "Template registry",
+  "context": "Template configuration",
+  "loading": "Loading templates…",
+  "breadcrumb": { "label": "Breadcrumb", "administration": "Administration" },
+  "journey": {
+    "ariaLabel": "Configuration journey",
+    "eyebrow": "Governed configuration",
+    "title": "Regulation to inspection package",
+    "description": "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them.",
+    "regulations": "Regulations",
+    "templates": "Templates",
+    "packages": "Packages",
+    "current": "Current step"
+  },
+  "error": {
+    "title": "Couldn’t load the template registry.",
+    "body": "Something went wrong on our side. Nothing changed.",
+    "retry": "Reload to try again"
+  },
+  "readonly": {
+    "title": "Read-only template access",
+    "body": "Creating or changing templates requires the admin role."
+  },
+  "empty": {
+    "title": "No templates configured",
+    "body": "Templates are versioned, bilingual objects used by packages and action forms."
+  },
+  "registry": {
+    "heading": "Governed template registry",
+    "intro": "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings.",
+    "key": "Template key",
+    "type": "Type",
+    "version": "Version",
+    "effectiveFrom": "Effective from",
+    "titleEn": "English title",
+    "titleAr": "Arabic title",
+    "schema": "Schema (JSON object)",
+    "create": "Create draft template version",
+    "creating": "Creating…",
+    "save": "Save draft",
+    "saving": "Saving…",
+    "publish": "Approve & publish",
+    "publishing": "Publishing…",
+    "effectiveTo": "Effective to",
+    "reason": "Reason",
+    "deactivate": "Deactivate",
+    "deactivating": "Deactivating…",
+    "historical": "Locked historical template version.",
+    "saved": "Saved",
+    "typeForm": "Form",
+    "typeReport": "Report",
+    "typeActionForm": "Action form",
+    "typePenalty": "Penalty",
+    "keyPlaceholder": "Example: chem-storage-checklist",
+    "versionPlaceholder": "v1",
+    "titleEnPlaceholder": "Example: Chemical storage inspection",
+    "titleArPlaceholder": "Enter the Arabic title",
+    "reasonPlaceholder": "Why this version is being deactivated",
+    "schemaPlaceholder": "{\"fields\":[]}"
+  },
+  "datePicker": {
+    "placeholder": "Select a date",
+    "clear": "Clear",
+    "today": "Today",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
+  }
+}

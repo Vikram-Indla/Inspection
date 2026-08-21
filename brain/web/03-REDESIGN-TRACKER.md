@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-171.** Take T-172.
+implements the reservation. **Highest id in use: T-172.** Take T-173.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,23 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-172 · `/admin/templates` — Template Registry rebuilt on SAQEEL, AdminConfigurationJourney retired
+`status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 2h`
+`record:` [2026-08-21-T-172-admin-templates-migration](sessions/2026-08/2026-08-21-T-172-admin-templates-migration.md)
+
+The governed configuration-template registry. Rebuilt thin (131 → 11) on
+`ShellPageFrame` (off `AdminShell`, whose breadcrumb left "Administration"
+untranslated in Arabic) + `features/admin-templates/queries` +
+`sections/admin-templates/{templates-screen,configuration-journey}`, new bilingual
+`adminTemplates` namespace. Kept the shared `TemplateRegistry` (also used by
+`admin/packages`, already 0 `.sq-*`) and fed its strings from the namespace
+instead of ~40 `t()` fallbacks. Rebuilt the journey nav as SAQEEL and **deleted
+`AdminConfigurationJourney`** (sole consumer) + the orphaned `form-builder.module.css`.
+Removed the banned `as unknown as`, the `▦` glyph, and raw badge/alert/panel
+classes. Verified EN + AR/RTL live (breadcrumb now `الإدارة`, active journey step
+in lime, registry + 2 published templates), zero overflow. typecheck 0, lint −371,
+typography −258, no v5 violations in the new files.
 
 ### T-171 · `/admin/risk` — Risk Studio rebuilt on SAQEEL, AdminDestinationFrame retired (SCR-ADM-060 / CD-014)
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-009, WEB-013, WEB-014, WEB-015` · `est: 3h`
