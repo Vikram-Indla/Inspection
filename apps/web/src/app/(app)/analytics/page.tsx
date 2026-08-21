@@ -45,6 +45,5 @@ async function resolveAnalytics(query: AnalyticsQuery, locale: Locale) {
   }
 
   return <AnalyticsScreen rows={result.rows} query={query} locale={locale}
-    degraded={result.kind === "degraded"} stale={result.stale}
- refreshedAt={result.refreshedAt} />;
+    stale={result.stale} refreshedAt={result.refreshedAt} />;
 }

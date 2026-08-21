@@ -1,21 +1,12 @@
 {
   "title": "Analytics",
-  "subtitle": "Governed aggregates for {from} to {to}. Values reflect only records visible to your role and scope.",
   "loading": "Loading analytics",
   "source": {
     "available": "Source available",
     "stale": "Source stale",
     "degraded": "Source degraded",
     "refreshed": "Refreshed {at}",
-    "degradedTitle": "Some governed sources could not be read",
-    "degradedBody": "Every figure below is still governed. Metrics with no source are listed as blocked, never as zero.",
     "staleBody": "Last successful refresh: {at}."
-  },
-  "journey": {
-    "label": "Related destinations",
-    "operations": "Operations",
-    "execution": "Execution",
-    "reviews": "Review queue"
   },
   "filters": {
     "legend": "Analytics filters",

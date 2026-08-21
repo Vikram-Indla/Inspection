@@ -1,6 +1,5 @@
-import Button from "@/components/saqeel/button/button";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
-import { Heading, Text } from "@/components/saqeel/type";
+import { Heading } from "@/components/saqeel/type";
 import AnalyticsFilters from "@/components/sections/analytics/analytics-filters/analytics-filters";
 import AnalyticsBlocked from "@/components/sections/analytics/analytics-blocked/analytics-blocked";
 import AnalyticsBreakdowns from "@/components/sections/analytics/analytics-breakdowns/analytics-breakdowns";
@@ -10,15 +9,14 @@ import { analyticsMessages } from "@/features/analytics/strings";
 import { buildAnalyticsView } from "@/features/analytics/view";
 import { fill } from "@/i18n/messages";
 import type { AnalyticsQuery, AnalyticsRpcRow } from "@/lib/analytics/contract";
-import { formatDate, formatDateTime } from "@/lib/dates";
+import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-screen.module.css";
 
-export default function AnalyticsScreen({ rows, query, locale, degraded, stale, refreshedAt }: {
+export default function AnalyticsScreen({ rows, query, locale, stale, refreshedAt }: {
   rows: readonly AnalyticsRpcRow[];
   query: AnalyticsQuery;
   locale: Locale;
-  degraded: boolean;
   stale: boolean;
   refreshedAt: string;
 }) {
@@ -28,23 +26,7 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
   return (
     <div className={styles.screen}>
       <div className={styles.head}>
-        <span>
-          <Heading level={1}>{strings.title}</Heading>
-          <Text tone="secondary">
-            {fill(strings.subtitle, { from: formatDate(query.periodFrom, locale), to: formatDate(query.periodTo, locale) })}
-          </Text>
-        </span>
-        <nav className={styles.journey} aria-label={strings.journey.label}>
-          <Button variant="secondary" size="sm" href="/operations" label={strings.journey.operations}>
-            {strings.journey.operations}
-          </Button>
-          <Button variant="secondary" size="sm" href="/execution" label={strings.journey.execution}>
-            {strings.journey.execution}
-          </Button>
-          <Button variant="secondary" size="sm" href="/reviews" label={strings.journey.reviews}>
-            {strings.journey.reviews}
-          </Button>
-        </nav>
+        <Heading level={1}>{strings.title}</Heading>
       </div>
 
       <AnalyticsFilters query={query} strings={strings} locale={locale} />
@@ -52,12 +34,6 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
       {query.compareFrom && query.compareTo ? (
         <EmptyState variant="inline" tone="info" icon="radar"
           title={fill(strings.compare.notice, { from: query.compareFrom, to: query.compareTo })} />
-      ) : null}
-
-      {degraded ? (
-        <EmptyState variant="inline" tone="warning" icon="risk"
-          title={strings.source.degradedTitle}
-          description={strings.source.degradedBody} />
       ) : null}
 
       {stale ? (
