@@ -570,7 +570,7 @@
     --sqx-text-overline-line: 1.2;
     --sqx-text-overline-weight: var(--sqx-weight-medium);
     --sqx-text-overline-tracking: 0.06em;
-    --sqx-text-metric-size: 2rem;
+    --sqx-text-metric-size: 1.1rem;
     --sqx-text-metric-line: 1.13;
     --sqx-text-metric-weight: var(--sqx-weight-medium);
     --sqx-text-metric-tracking: -0.022em;

@@ -45,7 +45,7 @@ the application has.
 | `body-strong` | 15px | 1.60 | 590 | -0.011em | Emphasis inside body; the value in a key–value row. |
 | `label` | 13px | 1.20 | 510 | 0 | Form labels, table column headers, the key in a key–value row. |
 | `overline` | 13px | 1.20 | 510 | 0.06em | The uppercase eyebrow above a card title. |
-| `metric` | 32px | 1.13 | 510 | -0.022em | KPI numerals. Every number in the app is this one size. |
+| `metric` | 17.6px (1.1rem) | 1.13 | 510 | -0.022em | KPI numerals. Every number in the app is this one size — now the same size as `heading`. |
 | `mono` | 13px | 1.50 | 400 | -0.013em | CRs, plant numbers, notice numbers, model versions, IDs. |
 
 **The scale caps at weight 590.** The language forbids 700+ outright, so
@@ -244,8 +244,8 @@ no call site passes it.
 
 A tile whose subject is a number — `Visit pipeline` / **217** — is
 **label → value**, not title → subtitle. The label is `label` (12px,
-`--sqx-text-muted`); the value is `metric` (28px, primary) and stays the largest
-thing in the tile. Do not "correct" a KPI tile by making its label the title:
+`--sqx-text-muted`); the value is `metric` (17.6px, primary) and stays the
+prominent thing in the tile. Do not "correct" a KPI tile by making its label the title:
 that demotes the number the tile exists to show. `MetricStrip` is the reference
 implementation.
 
@@ -379,7 +379,7 @@ measurements — several of them counter-intuitive, and all of them recorded:
   tried and it put the same factory name at three sizes on one screen (T-064).
 - `label` (12px), not `overline` (11px), for table headers and key-value keys —
   `overline` is *only* the eyebrow above a card title (T-059, T-064).
-- `metric` (28px) for **every** number, including ones that look like they want
+- `metric` (17.6px) for **every** number, including ones that look like they want
   to be bigger. Two hero figures at two sizes was the owner's original complaint
   and it survived four tasks (T-067).
 - `font: inherit` on `<button>`, `<input>`, `<select>`, `<textarea>` — these do
