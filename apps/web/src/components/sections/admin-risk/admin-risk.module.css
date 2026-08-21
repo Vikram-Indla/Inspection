@@ -25,8 +25,7 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--sqx-space-5);
-  max-inline-size: var(--sqx-grid-min-lg);
+  gap: var(--sqx-space-6);
   padding: var(--sqx-space-6);
   border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
   border-radius: var(--sqx-radius-md);
@@ -34,9 +33,9 @@
 }
 
 .factors {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sqx-space-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-sm), 1fr));
+  gap: var(--sqx-space-5) var(--sqx-space-6);
 }
 
 .factor {
