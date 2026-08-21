@@ -9,15 +9,21 @@ const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.describe("neutral provider-error boundary", () => {
   test("admin read surfaces use neutral copy and server diagnostics", () => {
-    for (const p of [
-      "src/app/(app)/admin/items/page.tsx",
-      "src/app/(app)/admin/violations/page.tsx",
-    ]) {
-      const src = SRC(p);
-      expect(src, `${p} must log provider diagnostics`).toContain("logProviderError");
-      expect(src, `${p} must not render provider message`).not.toMatch(/\{(?:error|clauseError|err)\??\.message\}/);
-      expect(src).toContain("NEUTRAL_LOAD_ERROR");
-    }
+    // Both admin read surfaces named by this contract migrated to the
+    // feature/section split. Items logs provider diagnostics and renders neutral
+    // copy; the enforcement (violation) catalogue reduces provider failure to a
+    // governed boolean and never surfaces a provider message.
+    const itemsQueries = SRC("src/features/admin-items/queries.ts");
+    const itemsScreen = SRC("src/components/sections/admin-items/items-screen.tsx");
+    expect(itemsQueries, "items load must log provider diagnostics").toContain("logProviderError");
+    expect(itemsQueries, "items load must not render provider message").not.toMatch(/\{(?:error|clauseError|err)\??\.message\}/);
+    expect(itemsScreen, "items error surface must use governed neutral copy").toContain("strings.error.body");
+
+    const enforcement = SRC("src/features/enforcement/catalogue.ts");
+    const enforcementScreen = SRC("src/components/sections/enforcement/catalogue/catalogue-screen/catalogue-screen.tsx");
+    expect(enforcement, "violation catalogue must not render provider message").not.toMatch(/\{(?:error|codeError|err)\??\.message\}/);
+    expect(enforcement, "violation catalogue reduces provider failure to a governed boolean").toContain("catalogueReadable");
+    expect(enforcementScreen, "violation catalogue degraded surface uses governed neutral copy").toContain("strings.degradedBody");
 
     const gisQueries = SRC("src/features/admin-gis/queries.ts");
     const gisScreen = SRC("src/components/sections/admin-gis/gis-screen.tsx");

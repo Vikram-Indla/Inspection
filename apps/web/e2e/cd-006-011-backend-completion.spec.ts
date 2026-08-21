@@ -189,7 +189,6 @@ test.describe("CD-006..011 backend completion", () => {
   test("every CD-006..011 admin localization key has a guarded ui_strings source", () => {
     const adminFiles = [
       "src/app/(app)/admin/regulations/page.tsx", "src/app/(app)/admin/regulations/Controls.tsx",
-      "src/app/(app)/admin/items/page.tsx", "src/app/(app)/admin/items/Controls.tsx",
       "src/app/(app)/admin/packages/page.tsx", "src/app/(app)/admin/packages/DraftEditor.tsx",
       "src/app/(app)/admin/packages/PackagePreview.tsx", "src/app/(app)/admin/packages/PublishControls.tsx",
       "src/app/(app)/admin/packages/ImpactPanel.tsx", "src/app/(app)/admin/violations/page.tsx",
