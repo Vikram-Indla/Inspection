@@ -43,12 +43,14 @@
 .railMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sqx-space-1) var(--sqx-space-3);
+  align-items: baseline;
+  gap: var(--sqx-space-2) var(--sqx-space-6);
 }
 
 .railFact {
   display: inline-flex;
-  gap: var(--sqx-space-1);
+  align-items: baseline;
+  gap: var(--sqx-space-2);
 }
 
 .gallery {

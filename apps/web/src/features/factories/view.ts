@@ -246,12 +246,9 @@ export function buildFactoryView({ factory, locale, counts, movement, compliance
       },
       advisory: {
         title: copy.context.advisory.title,
-        advisory: copy.context.advisory.advisory,
-        evidence: copy.context.advisory.evidence,
-        idle: copy.context.advisory.idle,
+        fallback: copy.context.advisory.fallback,
         generate: copy.context.advisory.generate,
         generating: copy.context.advisory.generating,
-        confidenceUnavailable: copy.context.advisory.confidenceUnavailable,
       },
       portfolio: {
         portfolio: copy.portfolio.portfolio,

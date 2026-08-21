@@ -8,12 +8,9 @@ const HEADING_ID = "dashboard-executive-brief";
 
 export type ExecutiveBriefStrings = {
   readonly title: string;
-  readonly advisory: string;
-  readonly evidence: string;
-  readonly idle: string;
+  readonly fallback: string;
   readonly generate: string;
   readonly generating: string;
-  readonly noCause: string;
 };
 
 export default function ExecutiveBrief({ locale, context, period, region, strings }: {
@@ -27,7 +24,6 @@ export default function ExecutiveBrief({ locale, context, period, region, string
     <AdvisoryStrip
       headingId={HEADING_ID}
       strings={strings}
-      notesShownWithAdvisory={[strings.evidence, strings.noCause]}
       surfaceFields={
         <>
           <input type="hidden" name="surface" value="executive_brief" />
@@ -37,6 +33,7 @@ export default function ExecutiveBrief({ locale, context, period, region, string
           <input type="hidden" name="region" value={region} />
           <input type="hidden" name="evidence_refs" value={EVIDENCE_REFS} />
           <input type="hidden" name="locale" value={locale} />
+          <input type="hidden" name="fallback" value={strings.fallback} />
         </>
       }
     />

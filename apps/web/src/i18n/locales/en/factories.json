@@ -101,12 +101,9 @@
     },
     "advisory": {
       "title": "AI assistant",
-      "advisory": "Advisory only · human decides",
-      "evidence": "Generated from this factory’s recorded risk score, band, model version and stored drivers.",
-      "idle": "No advisory has been generated for this factory yet.",
+      "fallback": "This explanation reads the factory’s recorded risk score, band, model version and stored drivers. Review the drivers and the latest snapshots below; the score is not recalculated here and a human decides any action.",
       "generate": "Explain this risk",
-      "generating": "Generating…",
-      "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown."
+      "generating": "Generating…"
     },
     "outlook": {
       "title": "Risk outlook",
