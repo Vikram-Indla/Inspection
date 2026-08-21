@@ -171,6 +171,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
     ? `${enumLabel(f.risk_band)}${f.risk_score != null ? ` · ${f.risk_score}` : ""}`
     : t("f360.risk.noScore", "No risk score");
   const provenanceTone: StatusTone = isTestSource ? "warning" : f.source === "senaei" ? "success" : "danger";
+  const provenanceUnavailable = !isTestSource && f.source !== "senaei";
   const identityFacts = [
     { label: t("f360.id.cr", "CR"), value: <bdi>{identity(f.cr_number)}</bdi> },
     { label: t("f360.id.license", "license"), value: <bdi>{identity(f.license_number)}</bdi> },
@@ -311,7 +312,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             code={identity(f.factory_code)}
             contextLine={contextLine}
             facts={identityFacts}
-            provenance={{ label: sourceLabel, tone: provenanceTone }}
+            provenance={{ label: sourceLabel, tone: provenanceTone, unavailable: provenanceUnavailable }}
             synced={syncedText}
             strings={{
               heading: t("f360.id.heading", "Identity — read-only from source"),

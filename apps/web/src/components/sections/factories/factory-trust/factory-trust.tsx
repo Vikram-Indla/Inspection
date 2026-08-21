@@ -13,6 +13,7 @@ export type FactorySourceState = {
 export type FactoryProvenance = {
   readonly label: string;
   readonly tone: StatusTone;
+  readonly unavailable: boolean;
   readonly body: string;
   readonly recorded: string;
 };
@@ -33,7 +34,7 @@ export default function FactoryTrust({ lastSynchronised, sources, provenance, st
         level="h2"
         titleId="factory-trust-title"
         title={strings.title}
-        trailing={<StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>}
+        trailing={provenance.unavailable ? undefined : <StatusPill tone={provenance.tone}>{provenance.label}</StatusPill>}
       />
       <CardBody gap="tight">
         {provenance.body ? <Text tone="secondary" dir="auto">{provenance.body}</Text> : null}

@@ -113,7 +113,8 @@ export default async function DashboardSections({ locale, scope }: {
     return (
       <DashboardNotice
         tone="warning"
-        pill={common.state.notConfigured}
+        pill={common.state.na}
+        pillVariant="muted"
         title={dashboard.unsupported.title}
         actions={
           <div className={styles.actions}>

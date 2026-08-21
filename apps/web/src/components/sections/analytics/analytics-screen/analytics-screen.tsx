@@ -1,6 +1,5 @@
 import Button from "@/components/saqeel/button/button";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
-import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Heading, Text } from "@/components/saqeel/type";
 import AnalyticsFilters from "@/components/sections/analytics/analytics-filters/analytics-filters";
 import AnalyticsBlocked from "@/components/sections/analytics/analytics-blocked/analytics-blocked";
@@ -25,10 +24,6 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
 }) {
   const strings = analyticsMessages(locale);
   const view = buildAnalyticsView(rows, locale);
-  const sourceTone = degraded ? "warning" : stale ? "neutral" : "success";
-  const sourceLabel = degraded
-    ? strings.source.degraded
-    : stale ? strings.source.stale : strings.source.available;
 
   return (
     <div className={styles.screen}>
@@ -40,7 +35,6 @@ export default function AnalyticsScreen({ rows, query, locale, degraded, stale, 
           </Text>
         </span>
         <nav className={styles.journey} aria-label={strings.journey.label}>
-          <StatusPill tone={sourceTone}>{sourceLabel}</StatusPill>
           <Button variant="secondary" size="sm" href="/operations" label={strings.journey.operations}>
             {strings.journey.operations}
           </Button>

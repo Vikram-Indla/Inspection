@@ -51,6 +51,7 @@
   "state": {
     "empty": "لا يوجد شيء بعد",
     "loading": "جارٍ التحميل…",
+    "na": "لا ينطبق",
     "notApplicable": "غير منطبق على هذه الصفحة",
     "notConfigured": "غير مُهيأ",
     "unavailable": "غير متاح"

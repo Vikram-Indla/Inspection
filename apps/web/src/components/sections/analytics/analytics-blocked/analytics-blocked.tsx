@@ -8,7 +8,7 @@ import { ANALYTICS_BOTTLENECKS } from "@/features/analytics/bottlenecks";
 import { blockedLabel } from "@/features/analytics/strings";
 import type { AnalyticsMessages } from "@/features/analytics/strings";
 import type { BlockedMetric } from "@/features/analytics/view";
-import { fill } from "@/i18n/messages";
+import { fill, getMessages } from "@/i18n/messages";
 import { formatCount, formatPercent } from "@/i18n/numbers";
 import type { Locale } from "@/lib/i18n";
 import styles from "./analytics-blocked.module.css";
@@ -23,6 +23,7 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
   locale: Locale;
 }) {
   const bottlenecks = strings.bottlenecks;
+  const na = getMessages(locale).common.state.na;
   const total = resolved + blocked.length;
   const percent = total > 0 ? (resolved / total) * PERCENT : 0;
   const display = formatPercent(percent, locale, 1);
@@ -99,7 +100,9 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
                     <Text as="span" role="label">{metric.title}</Text>
                     {uniformStatus
                       ? <Text as="span" role="label" tone="muted">{metric.trace}</Text>
-                      : <StatusPill tone="neutral" ping={false}>{blockedLabel(metric.status, locale)}</StatusPill>}
+                      : metric.status === "not_configured"
+                        ? <Text as="span" tone="muted">{na}</Text>
+                        : <StatusPill tone="neutral" ping={false}>{blockedLabel(metric.status, locale)}</StatusPill>}
                   </li>
                 ))}
               </ul>
@@ -120,7 +123,9 @@ export default function AnalyticsBlocked({ blocked, resolved, strings, locale }:
                     <Text as="span" role="label">{bottlenecks[item.key]}</Text>
                     {item.note ? <Text as="span" role="label" tone="muted">{bottlenecks[item.note]}</Text> : null}
                   </span>
-                  <StatusPill tone="neutral" ping={false}>{blockedLabel(item.status, locale)}</StatusPill>
+                  {item.status === "not_configured"
+                    ? <Text as="span" tone="muted">{na}</Text>
+                    : <StatusPill tone="neutral" ping={false}>{blockedLabel(item.status, locale)}</StatusPill>}
                 </li>
               ))}
             </ul>

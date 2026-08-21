@@ -20,10 +20,11 @@ const STATUS_TONE: Record<string, StatusTone> = {
   draft: "neutral", pending_review: "info", returned: "warning", approved: "success", published: "success",
 };
 
-export default function DashboardConfigScreen({ data, locale, strings }: {
+export default function DashboardConfigScreen({ data, locale, strings, na }: {
   data: DashboardConfigRead;
   locale: Locale;
   strings: Messages["adminDashboardConfig"];
+  na: string;
 }) {
   const implLabel = (value: string) => strings.implementation[value as keyof typeof strings.implementation] ?? value;
   const statusLabel = (value: string) => strings.status[value as keyof typeof strings.status] ?? value;
@@ -48,9 +49,10 @@ export default function DashboardConfigScreen({ data, locale, strings }: {
     { key: "category", header: strings.catalogue.colCategory, cell: def => categoryLabel(def.category) },
     { key: "unit", header: strings.catalogue.colUnit, cell: def => unitLabel(def.unit) },
     { key: "owner", header: strings.catalogue.colOwner, cell: def => <Text as="span" tone="muted">{roleLabel(def.ownerRole)}</Text> },
-    { key: "delivery", header: strings.catalogue.colDelivery, cell: def => (
-      <StatusPill tone={IMPL_TONE[def.implementation] ?? "neutral"}>{implLabel(def.implementation)}</StatusPill>
-    ) },
+    { key: "delivery", header: strings.catalogue.colDelivery, cell: def =>
+      def.implementation === "not_configured"
+        ? <Text tone="muted">{na}</Text>
+        : <StatusPill tone={IMPL_TONE[def.implementation] ?? "neutral"}>{implLabel(def.implementation)}</StatusPill> },
     { key: "seed", header: strings.catalogue.colSeed, cell: def =>
       data.seededMetricKeys.includes(def.metricKey) ? strings.catalogue.seeded : data.migrationApplied ? strings.catalogue.notSeeded : strings.catalogue.na },
   ];
@@ -61,7 +63,7 @@ export default function DashboardConfigScreen({ data, locale, strings }: {
       const active = data.activeByDomain[domain];
       return active
         ? <StatusPill tone="success">v{active.versionNumber}</StatusPill>
-        : <StatusPill tone="warning">{strings.domains.notConfigured}</StatusPill>;
+        : <Text tone="muted">{na}</Text>;
     } },
     { key: "effective", header: strings.domains.colEffectiveFrom, cell: domain => {
       const active = data.activeByDomain[domain];

@@ -10,5 +10,6 @@ export default async function DashboardConfigPage() {
   const [locale, sb] = await Promise.all([getLocale(), supabaseServer()]);
   const data = await loadDashboardConfig(sb);
 
-  return <DashboardConfigScreen data={data} locale={locale} strings={getMessages(locale).adminDashboardConfig} />;
+  const messages = getMessages(locale);
+  return <DashboardConfigScreen data={data} locale={locale} strings={messages.adminDashboardConfig} na={messages.common.state.na} />;
 }

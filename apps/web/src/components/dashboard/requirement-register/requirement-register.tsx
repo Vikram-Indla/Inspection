@@ -41,7 +41,9 @@ export default function RequirementRegister({ metrics, methodology, strings }: {
     {
       key: "state", header: strings.state, align: "end", numeric: true,
       cell: metric => metric.kind === "status"
-        ? <StatusPill tone={TONE[metric.tone]} ping>{metric.text}</StatusPill>
+        ? metric.naMuted
+          ? <Text as="span" tone="muted">{metric.text}</Text>
+          : <StatusPill tone={TONE[metric.tone]} ping>{metric.text}</StatusPill>
         : <Text as="span" role="bodyStrong" numeric>{metric.text}</Text>,
     },
     {

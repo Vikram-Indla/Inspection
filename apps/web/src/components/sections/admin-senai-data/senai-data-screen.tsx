@@ -4,6 +4,7 @@ import SegmentedControl, { type SegmentedItem } from "@/components/saqeel/segmen
 import { Text } from "@/components/saqeel/type";
 import { adminSenaiDataMessages, SENAI_TABS, type SenaiTab } from "@/features/admin-senai-data/strings";
 import type { SenaiDataView } from "@/features/admin-senai-data/types";
+import { getMessages } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
 import SenaiEndpoints from "./senai-endpoints";
 import SenaiMapping from "./senai-mapping";
@@ -17,6 +18,7 @@ export default function SenaiDataScreen({ tab, data, locale }: {
   locale: Locale;
 }) {
   const strings = adminSenaiDataMessages(locale);
+  const na = getMessages(locale).common.state.na;
   const tabItems: readonly SegmentedItem<SenaiTab>[] = SENAI_TABS.map(key => ({
     value: key,
     label: strings.tabs[key],
@@ -52,7 +54,7 @@ export default function SenaiDataScreen({ tab, data, locale }: {
 
         {tab === "sources" ? <SenaiSources data={data} strings={strings} locale={locale} /> : null}
         {tab === "endpoints" ? <SenaiEndpoints data={data} strings={strings} locale={locale} /> : null}
-        {tab === "mapping" ? <SenaiMapping strings={strings} /> : null}
+        {tab === "mapping" ? <SenaiMapping strings={strings} na={na} /> : null}
         {tab === "reconcile" ? <SenaiReconcile data={data} strings={strings} locale={locale} /> : null}
       </div>
     </ShellPageFrame>

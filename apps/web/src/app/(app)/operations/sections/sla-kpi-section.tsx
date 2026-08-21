@@ -9,7 +9,7 @@ import { kpiMetricLabel, makeLabelers, slaKindLabel, type Labelers } from "./lab
 export function buildSlaAlertRows(
   model: OperationsModel,
   lab: Labelers,
-  strings: { resubmissionOverdue: string; resubmissionPending: string; notConfigured: string },
+  strings: { resubmissionOverdue: string; resubmissionPending: string; na: string },
 ): SlaAlertRow[] {
   return [
     ...model.slaFlags.map(flag => ({
@@ -20,7 +20,7 @@ export function buildSlaAlertRows(
       deadline: lab.fmtTs(flag.deadlineMs),
       status: slaKindLabel(lab, flag),
       overdue: flag.kind !== "reminder",
-      escalation: flag.escalation,
+      escalation: flag.escalation ? { label: flag.escalation, configured: true } : null,
     })),
     ...model.resubFlags.map(flag => ({
       id: `resubmission:${flag.inspection_id}`,
@@ -30,7 +30,7 @@ export function buildSlaAlertRows(
       deadline: lab.fmtTs(flag.deadlineMs),
       status: flag.overdue ? strings.resubmissionOverdue : strings.resubmissionPending,
       overdue: flag.overdue,
-      escalation: model.resubSlaAvailable ? null : strings.notConfigured,
+      escalation: model.resubSlaAvailable ? null : { label: strings.na, configured: false },
     })),
   ];
 }
@@ -56,7 +56,7 @@ export default async function SlaKpiSection({ data, model }: {
         rows={buildSlaAlertRows(model, lab, {
           resubmissionOverdue: opsText.sla.resubmissionOverdue,
           resubmissionPending: opsText.sla.resubmissionPending,
-          notConfigured: commonText.state.notConfigured,
+          na: commonText.state.na,
         })}
         strings={{
           title: opsText.sla.title,

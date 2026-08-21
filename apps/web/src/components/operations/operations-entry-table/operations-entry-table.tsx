@@ -2,7 +2,6 @@ import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
-import styles from "./operations-entry-table.module.css";
 import { Mono, Text } from "@/components/saqeel/type";
 
 export type EntryRow = {
@@ -30,7 +29,7 @@ export type EntryTableStrings = {
   readonly lastUpdate: string;
   readonly actions: string;
   readonly openRecord: string;
-  readonly notConfigured: string;
+  readonly na: string;
   readonly emptyTitle: string;
 };
 
@@ -62,7 +61,7 @@ export default function OperationsEntryTable({ rows, strings }: {
     {
       key: "risk", header: strings.risk, align: "end", numeric: true,
       cell: row => row.riskScore === null
-        ? <StatusPill tone="warning" ping>{strings.notConfigured}</StatusPill>
+        ? <Text as="span" tone="muted">{strings.na}</Text>
         : row.riskScore,
     },
     {

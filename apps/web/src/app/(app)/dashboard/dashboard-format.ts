@@ -102,6 +102,7 @@ export type MetricDisplay = {
   kind: "value" | "status";
   text: string;
   tone: DisplayTone;
+  naMuted?: boolean;
   /** Small secondary line (delta / context), already localized. */
   sub: string | null;
 };
@@ -110,12 +111,14 @@ export type MetricDisplay = {
 export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDisplay {
   const title = metricTitle(metric, locale);
   if (isBlocked(metric.sourceStatus)) {
+    const notConfigured = metric.sourceStatus === "not_configured";
     return {
       metricId: metric.metricId,
       title,
       kind: "status",
-      text: statusLabel(metric.sourceStatus, locale),
+      text: notConfigured ? t(locale, "N/A", "لا ينطبق") : statusLabel(metric.sourceStatus, locale),
       tone: statusTone(metric.sourceStatus),
+      naMuted: notConfigured,
       // The status chip above (statusLabel) already names the precise reason
       // (Not configured / Decision required / Unavailable / Stale / Offline).
       // A blanket "Governance blocked" sub-line restated that under one word

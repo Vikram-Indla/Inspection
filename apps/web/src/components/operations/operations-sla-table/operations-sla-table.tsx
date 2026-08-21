@@ -1,6 +1,12 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { CellLink, CellMuted, type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
+import { Text } from "@/components/saqeel/type";
+
+export type SlaEscalation = {
+  readonly label: string;
+  readonly configured: boolean;
+};
 
 export type SlaAlertRow = {
   readonly id: string;
@@ -10,7 +16,7 @@ export type SlaAlertRow = {
   readonly deadline: string;
   readonly status: string;
   readonly overdue: boolean;
-  readonly escalation: string | null;
+  readonly escalation: SlaEscalation | null;
 };
 
 export type SlaTableStrings = {
@@ -49,7 +55,9 @@ export default function OperationsSlaTable({ rows, strings }: {
     {
       key: "escalation", header: strings.escalation, align: "end", width: "min",
       cell: row => row.escalation
-        ? <StatusPill tone="neutral">{row.escalation}</StatusPill>
+        ? row.escalation.configured
+          ? <StatusPill tone="neutral">{row.escalation.label}</StatusPill>
+          : <Text as="span" tone="muted">{row.escalation.label}</Text>
         : MISSING,
     },
   ];

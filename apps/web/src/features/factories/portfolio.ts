@@ -95,22 +95,24 @@ export function isTestSourceFactory(factory: { source: string | null }): boolean
 export function provenanceOf(factory: FactoryRow, strings: ProvenanceStrings): {
   label: string;
   tone: StatusTone;
+  unavailable: boolean;
 } {
   if (factory.is_temporary && factory.source === "immediate_manual") {
-    return { label: strings.manual, tone: "warning" };
+    return { label: strings.manual, tone: "warning", unavailable: false };
   }
   if (factory.source === "saqeel_test_data" || (factory.source?.includes("test") ?? false)) {
-    return { label: strings.test, tone: "warning" };
+    return { label: strings.test, tone: "warning", unavailable: false };
   }
   if (!factory.is_temporary && factory.source === "senaei") {
-    return { label: strings.registered, tone: "success" };
+    return { label: strings.registered, tone: "success", unavailable: false };
   }
-  return { label: strings.unavailable, tone: "danger" };
+  return { label: strings.unavailable, tone: "danger", unavailable: true };
 }
 
 export function provenanceDetail(factory: FactoryRow, strings: ProvenanceStrings, locale: "en" | "ar"): {
   label: string;
   tone: StatusTone;
+  unavailable: boolean;
   body: string;
   recorded: string;
 } {
