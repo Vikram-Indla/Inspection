@@ -1,12 +1,9 @@
-import Link from "next/link";
 import { type ReactNode } from "react";
 import NotificationBell from "@/components/notifications/notification-bell";
-import Icon from "@/components/saqeel/icon/icon";
 import { getNotificationStrings } from "@/features/shell/notification-strings";
 import type { ShellView } from "@/features/shell/types";
 import { getMessages } from "@/i18n/messages";
 import { getLocale } from "@/lib/i18n";
-import { localeHref } from "@/lib/locale-path";
 import ShellAdminPalette from "./shell-admin-palette";
 import ShellLocaleToggle from "./shell-locale-toggle";
 import ShellScopeControls from "./shell-scope-controls";
@@ -23,7 +20,6 @@ export default async function ShellTopbar({ view, mobileNav }: {
   const { common, shell } = getMessages(locale);
   const administrationItems = view.groups.find(group => group.isAdministration)?.items ?? [];
   const navigationItems = view.groups.flatMap(group => group.items);
-  const aiLabel = shell.aiInsights;
 
   return (
     <header className={styles.topbar}>
@@ -91,9 +87,6 @@ export default async function ShellTopbar({ view, mobileNav }: {
           }}
         />
         <NotificationBell strings={getNotificationStrings(locale)} locale={locale} fieldOnly={view.isFieldOnly} />
-        <Link className={styles.aiButton} href={localeHref(locale, "/ai/suggestions")} aria-label={aiLabel} title={aiLabel} prefetch={false}>
-          <Icon name="ai" />
-        </Link>
         <ShellUserMenu
           identity={view.identity}
           locale={locale}
