@@ -1,6 +1,7 @@
 /* @retiring 2026-08-09 · replaced-by components/sections/visits/visit-board/visit-board · pending none · delete-when 0-imports */
 "use client";
 import EmptyState from "@/components/EmptyState";
+import { IconSearch } from "@/app/icons";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -645,7 +646,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       )}
 
       {filtered.length === 0 ? (
-        <EmptyState glyph="🔍" title={strings.noMatch} />
+        <EmptyState icon={<IconSearch />} title={strings.noMatch} />
       ) : (
         <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>

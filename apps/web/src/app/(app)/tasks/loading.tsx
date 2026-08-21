@@ -1,13 +1,15 @@
 import Shell from "@/components/Shell";
-import EmptyState from "@/components/EmptyState";
-import { useT } from "@/lib/i18n";
+import { Heading, Text } from "@/components/saqeel/type";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
 export default async function Loading() {
-  const { t } = await useT();
+  const { tasks } = getMessages(await getLocale());
+
   return (
-    <Shell current="/tasks" title={t("tasks.title", "Tasks")}>
-      <EmptyState glyph="…" title={t("tasks.loading", "Loading tasks")}
-        body={t("tasks.loadingDesc", "Loading the tasks you can see.")} />
+    <Shell current="/tasks" title="">
+      <Heading level={1}>{tasks.title}</Heading>
+      <Text tone="muted" live="status">{tasks.loading}</Text>
     </Shell>
   );
 }

@@ -1,0 +1,61 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-stack-section);
+  min-inline-size: 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--sqx-grid-min-md)), 1fr));
+  gap: var(--sqx-gutter);
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+  min-inline-size: 0;
+}
+
+.columnHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sqx-space-3);
+  padding-block-end: var(--sqx-space-2);
+  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-4);
+}
+
+.cardTitle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sqx-space-2);
+  min-inline-size: 0;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-2);
+}
+
+.forms {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sqx-space-5);
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sqx-space-3);
+}

@@ -61,7 +61,7 @@
 
 .previewCard {
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
   padding: 14px;
   background: var(--surface-canvas);
 }

@@ -2,6 +2,7 @@ import Shell from "@/app/(app)/admin/_components/AdminShell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
+import { IconClipboardCheck } from "@/app/icons";
 import {
   NewItemForm,
   EditItemForm,
@@ -263,7 +264,7 @@ export default async function Items({
       {/* S03 empty — read succeeded and the catalogue is genuinely empty (never
           confused with unavailable, which is the error banner above). */}
       {!error && rows.length === 0 && (
-        <EmptyState glyph="🧾" title={t("admin.items.r2.empty.title", "No inspection items set up yet")}
+        <EmptyState icon={<IconClipboardCheck />} title={t("admin.items.r2.empty.title", "No inspection items set up yet")}
           body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across checklists. Add the first item above.")} />
       )}
 

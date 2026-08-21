@@ -2,6 +2,7 @@
 import { useActionState, useId, useState } from "react";
 import { createItem, toggleItemActive, updateItem, type ItemResult } from "./actions";
 import EmptyState from "@/components/EmptyState";
+import { IconEye } from "@/app/icons";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -232,7 +233,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
   const [selected, setSelected] = useState(items[0]?.id ?? "");
   if (items.length === 0) {
     return (
-      <EmptyState glyph="👁" title={s.empty} inline />
+      <EmptyState icon={<IconEye />} title={s.empty} inline />
     );
   }
   const item = items.find(i => i.id === selected) ?? items[0];

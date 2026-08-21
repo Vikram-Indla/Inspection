@@ -131,7 +131,7 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 .switch input { appearance: none; width: 32px; height: 18px; border-radius: var(--radius-full); background: var(--border-strong); transition: background var(--motion-base) var(--ease-standard); cursor: pointer; flex: none; margin: 0; }
 .switch input::after { content: ""; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #fff; margin: 2px; inset-inline-start: 0; transition: translate var(--motion-base) var(--ease-standard); box-shadow: var(--shadow-xs); }
 .switch input:checked { background: var(--action-primary); }
-.switch input:checked::after { translate: 14px 0; }
+.switch input:checked::after { translate: 14px 0; background: var(--text-on-action); }
 [dir="rtl"] .switch input:checked::after { translate: -14px 0; }
 
 /* Segmented control */

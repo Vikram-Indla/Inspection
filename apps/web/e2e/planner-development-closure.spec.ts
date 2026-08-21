@@ -17,12 +17,13 @@ test.describe("Planner development closure contracts", () => {
 
   test("Planning exposes the governed three-column task workspace", () => {
     const planningScreen = source("src/components/planning/planning-screen/planning-screen.tsx");
-    const tasks = source("src/app/(app)/tasks/page.tsx");
+    const tasksQuery = source("src/features/tasks/queries.ts");
+    const tasksScreen = source("src/components/sections/tasks/tasks-screen.tsx");
     expect(planningScreen).toContain('{ href: "/tasks", label: messages.related.tasks }');
-    expect(tasks).toContain('sb.from("workflow_task_assignments")');
-    expect(tasks).toContain('{ key: "assigned"');
-    expect(tasks).toContain('{ key: "in-progress"');
-    expect(tasks).toContain('{ key: "completed"');
+    expect(tasksQuery).toContain('sb.from("workflow_task_assignments")');
+    expect(tasksScreen).toContain('key: "assigned"');
+    expect(tasksScreen).toContain('key: "in_progress"');
+    expect(tasksScreen).toContain('key: "completed"');
     expect(isTaskStatusTransitionAllowed("assigned", "in_progress")).toBe(true);
     expect(isTaskStatusTransitionAllowed("completed", "assigned")).toBe(false);
   });

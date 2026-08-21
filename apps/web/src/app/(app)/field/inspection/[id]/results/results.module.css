@@ -135,7 +135,7 @@
 .row {
   padding: 14px 16px;
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: var(--sqx-radius-lg);
   background: var(--surface-sunken);
 }
 .rowHead {
