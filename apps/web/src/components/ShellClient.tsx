@@ -623,8 +623,8 @@ export default function ShellClient({
             <SaqeelBrandMark />
           </span>
           <span className="sq-shell__brand-name">
-            <span className="sq-shell__brand-ar" lang="ar">صقيل</span>
-            <span className="sq-shell__brand-en" lang="en">SAQEEL</span>
+            <span className="sq-shell__brand-ar" lang="ar">منصة التفتيش</span>
+            <span className="sq-shell__brand-en" lang="en">Inspection Platform</span>
           </span>
           <button className="sq-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>

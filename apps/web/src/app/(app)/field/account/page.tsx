@@ -121,7 +121,7 @@ export default async function FieldAccountPage() {
         </a>
 
         <div className="t-caption" style={{ textAlign: "center" }}>
-          {tr("field.account.footer", "SAQEEL — Ministry of Industry and Mineral Resources © 2026", "صقيل — وزارة الصناعة والثروة المعدنية © 2026")}
+          {tr("field.account.footer", "Inspection Platform — Ministry of Industry and Mineral Resources © 2026", "منصة التفتيش — وزارة الصناعة والثروة المعدنية © 2026")}
         </div>
       </div>
     </>

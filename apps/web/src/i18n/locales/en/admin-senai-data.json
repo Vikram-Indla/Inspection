@@ -20,13 +20,13 @@
     "reconcile": "Sync & reconcile"
   },
   "fnd007": {
-    "lead": "SENAI is the source of truth for factory identity, licences and industrial data. SAQEEL reads and reconciles — it never writes back.",
+    "lead": "SENAI is the source of truth for factory identity, licences and industrial data. Inspection Platform reads and reconciles — it never writes back.",
     "holds": "holds: the endpoint contract has no establishment master-data write-back.",
     "breach": "breach: the endpoint contract now has a master-data write endpoint. Stop and escalate.",
     "snapshot": "Observed-on-inspection snapshots are captured separately and never overwrite the source."
   },
   "sources": {
-    "help": "Source data is read-only; this registry records which connections SAQEEL uses. Setting it up is not the same as being connected.",
+    "help": "Source data is read-only; this registry records which connections Inspection Platform uses. Setting it up is not the same as being connected.",
     "error": "Source connections could not be read. Endpoint contract and recorded calls remain independently available.",
     "runsError": "Recorded runs could not be read. Available connection settings are kept without a guessed freshness or counts.",
     "caption": "Registered upstream source connections",
@@ -44,7 +44,7 @@
     "footerUnavailable": "Run freshness and counts are not available because the run source failed. Connection facts above remain readable."
   },
   "endpoints": {
-    "help": "The documented read contract SAQEEL is permitted to call. This is the same allow-list the runtime client enforces.",
+    "help": "The documented read contract Inspection Platform is permitted to call. This is the same allow-list the runtime client enforces.",
     "verified": "{verified}/{total} with a recorded live call",
     "verificationUnavailableShort": "Live-call verification not available",
     "callsError": "Recorded live calls could not be read. The endpoint allow-list stays visible, but live-call verification is not available — not unverified.",
@@ -91,7 +91,7 @@
     "noReason": "No reason code recorded",
     "emptyTitle": "No unresolved divergence",
     "emptyBody": "No unresolved divergence is recorded. This is a checked, empty result.",
-    "footer": "Resolution is an approved reconciliation action, not an edit on this screen. SAQEEL never silently overwrites a divergence in either direction, and never writes the resolution back to SENAI.",
+    "footer": "Resolution is an approved reconciliation action, not an edit on this screen. Inspection Platform never silently overwrites a divergence in either direction, and never writes the resolution back to SENAI.",
     "openHistory": "Open sync, staging and reconciliation history"
   }
 }

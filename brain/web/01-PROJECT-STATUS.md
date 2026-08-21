@@ -1,6 +1,22 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-21` · `Updated by: T-173 — IRP palette adoption`
+`Last updated: 2026-08-21` · `Updated by: T-174 — brand rename to Inspection Platform`
+
+## Brand renamed to "Inspection Platform"; dashboard "Your work" removed (2026-08-21)
+
+**T-174** removed the "Your work" eyebrow from the first dashboard card (EN + AR)
+and renamed every **user-visible** brand occurrence — "Saqeel صقيل" combined, or
+"Saqeel"/"SAQEEL"/"صقيل" alone — to the literal **"Inspection Platform"**, both
+languages. Covered the brand lockups (active shell, legacy `ShellClient`, field
+login, field drawer, report header, reset page, metadata/PWA title — each
+bilingual stack collapsed to a single wordmark) and in-sentence governed copy
+(`admin-senai-data`, `admin-factory-data`, `factories-cr` + `factory360` Arabic
+map, `field-settings`, field account footer, `planning`). The **internal SAQEEL
+design-system name is unchanged** (token prefixes, component imports, schemas,
+comments, the env-gated reference tool). Brand is **locale-appropriate and never
+mixed**: English UI "Inspection Platform", Arabic UI "منصة التفتيش" (feminine
+agreement); bilingual lockups stack both, each `lang`-tagged. typecheck 0, lint
+−371, gates green (typography ratchet −260); live-verified.
 
 ## Palette swapped to IRP: acid-lime retired (2026-08-21)
 

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-173.** Take T-174.
+implements the reservation. **Highest id in use: T-174.** Take T-175.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,20 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-174 · Rename product brand to "Inspection Platform", drop dashboard "Your work" eyebrow (manager-directed)
+`status: done` · `rules: WEB-002, WEB-013, WEB-014` · `est: 1h`
+`record:` [2026-08-21-T-174-brand-rename-inspection-platform](sessions/2026-08/2026-08-21-T-174-brand-rename-inspection-platform.md)
+
+Two copy changes. Removed the "Your work" eyebrow from the first dashboard card
+(role-summary `trailing` + `yourWork.eyebrow`, EN + AR). Renamed every
+user-visible "Saqeel صقيل"/"SAQEEL"/"صقيل" → literal **"Inspection Platform"** in
+both languages — brand lockups (each bilingual stack collapsed to one wordmark)
+and in-sentence governed copy. Left the internal **SAQEEL design-system** name
+(prefixes, imports, schemas, `tokens.css` comment, env-gated reference tool).
+Brand is **locale-appropriate, never mixed**: English UI "Inspection Platform",
+Arabic UI "منصة التفتيش" (feminine agreement); bilingual lockups stack both, each
+`lang`-tagged. typecheck 0, lint −371, gates green; live-verified.
 
 ### T-173 · Adopt the IRP palette, retire the acid-lime scheme (manager-directed)
 `status: done` · `rules: WEB-002, WEB-003, WEB-007` · `est: 1h`

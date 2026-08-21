@@ -421,7 +421,7 @@ export default function FieldLoginClient({
               {s.brand1}
             </span>
             <span className="fl-brand-ar" lang="ar">
-              صقيل
+              منصة التفتيش
             </span>
           </div>
           <div className="t-caption fl-tagline">{s.tagline}</div>

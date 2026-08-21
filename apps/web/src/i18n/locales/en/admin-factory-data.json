@@ -42,7 +42,7 @@
     "title": "Factory master-data controls",
     "help": "These operations are always recorded in the Activity Log. They do not edit external CR, license, or plant identifiers.",
     "noWriteback": "Read-only — no write-back.",
-    "noWritebackHelp": "Everything saved here is recorded in SAQEEL only. No establishment or factory master-data change is sent to SENAI: the endpoint contract has no master-data write endpoint, so there is no path for one.",
+    "noWritebackHelp": "Everything saved here is recorded in Inspection Platform only. No establishment or factory master-data change is sent to SENAI: the endpoint contract has no master-data write endpoint, so there is no path for one.",
     "factory": "Factory",
     "selectFactory": "Select a factory",
     "selected": "{name} · CR {cr} · License {license}",

@@ -23,7 +23,7 @@
     "available": "Available",
     "heading": "Source status and freshness",
     "record": "Record used here",
-    "localCopy": "SAQEEL canonical copy",
+    "localCopy": "Inspection Platform canonical copy",
     "system": "Source system",
     "timestamp": "Recorded sync timestamp",
     "noSla": "Freshness is shown as a recorded source fact; no unapproved staleness threshold is inferred."
@@ -240,7 +240,7 @@
     "heading": "Saved risk",
     "advisory": "Advisory",
     "restricted": "Risk detail requires Factory Risk permission.",
-    "source": "SAQEEL-calculated advisory. It does not change the master record.",
+    "source": "Inspection Platform-calculated advisory. It does not change the master record.",
     "version": "Model",
     "calculated": "Calculated",
     "snapshots": "{count} saved snapshots",
