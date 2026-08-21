@@ -459,35 +459,49 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 
 /* Shared Mapbox popup chrome. Mapbox owns this DOM, so its existing classes are
    the stable contract across Operations, Operations Live and every GeoMap
-   consumer. Keep the surface and text on SAQEEL semantic tokens so both themes
-   retain readable contrast. */
-.mapboxgl-popup-content {
+   consumer. The `.mapboxgl-map` prefix raises specificity over Mapbox's own
+   bundled `mapbox-gl.css` (same-specificity, later load order) so the SAQEEL
+   surface and text tokens win in both themes — without it the popup fell back to
+   Mapbox's white content box with SAQEEL's light text, invisibly. */
+.mapboxgl-map .mapboxgl-popup-content {
   min-inline-size: 220px;
-  padding: var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  background: var(--surface-primary);
-  box-shadow: var(--shadow-overlay);
-  color: var(--text-primary);
+  padding: var(--sqx-space-3);
+  border: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
+  border-radius: var(--sqx-radius-card);
+  background: var(--sqx-surface-menu);
+  box-shadow: var(--sqx-shadow-menu);
+  color: var(--sqx-text-primary);
   font: var(--type-caption-font);
   line-height: 1.5;
   white-space: pre-line;
 }
-.mapboxgl-popup-close-button {
-  color: var(--text-secondary);
+.mapboxgl-map .mapboxgl-popup-close-button {
+  color: var(--sqx-text-secondary);
   font-size: 1.125rem;
 }
-.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-  border-bottom-color: var(--surface-primary);
+.mapboxgl-map .mapboxgl-popup-close-button:hover {
+  color: var(--sqx-text-primary);
+  background: transparent;
 }
-.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-  border-top-color: var(--surface-primary);
+.mapboxgl-map .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: var(--sqx-surface-menu);
 }
-.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-  border-right-color: var(--surface-primary);
+.mapboxgl-map .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: var(--sqx-surface-menu);
 }
-.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-  border-left-color: var(--surface-primary);
+.mapboxgl-map .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: var(--sqx-surface-menu);
+}
+.mapboxgl-map .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: var(--sqx-surface-menu);
+}
+.mapboxgl-map .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-map .mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+  border-bottom-color: var(--sqx-surface-menu);
+}
+.mapboxgl-map .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-map .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+  border-top-color: var(--sqx-surface-menu);
 }
 
 .sq-state {

@@ -1,17 +1,14 @@
 import Shell from "@/components/Shell";
-import { useT } from "@/lib/i18n";
-import styles from "./factory360.module.css";
+import CrSkeleton from "@/components/sections/factories/factory360-cr/cr-skeleton";
+import { getMessages } from "@/i18n/messages";
+import { getLocale } from "@/lib/i18n";
 
-export default async function LoadingFactory360() {
-  const { t } = await useT();
+export default async function LoadingFactory360Cr() {
+  const locale = await getLocale();
+  const { factoriesCr: t } = getMessages(locale);
   return (
-    <Shell current="/factories" title="">
-      <section aria-busy="true" aria-label={t("f360.loading", "Loading Factory 360 profile")}>
-        <p className="sq-caption" role="status">{t("f360.loading", "Loading Factory 360 profile")} — {t("f360.loading.detail", "loading the selected registration, license and recorded source metadata.")}</p>
-        <div className={styles.loadingWorkspace} aria-hidden="true">
-          <div className={`sq-surface ${styles.loadingPanel}`}><span className="sq-skeleton" /><span className="sq-skeleton" /><span className="sq-skeleton" /></div>
-        </div>
-      </section>
+    <Shell current="/factories" title={t.title}>
+      <CrSkeleton label={t.loading} railLabel={t.licenses.heading} contextLabel={t.context.heading} />
     </Shell>
   );
 }

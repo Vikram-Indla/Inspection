@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { type ReactNode } from "react";
+import Button from "@/components/saqeel/button/button";
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
 import { Metric, Overline, Text } from "@/components/saqeel/type";
 import type { AdminIntegrationsMessages } from "@/features/admin-integrations/strings";
@@ -45,21 +45,18 @@ export default function IntegrationsFrame({ strings, metrics, tabs, children }: 
         ))}
       </div>
 
-      <nav aria-label={strings.tabs.label}>
-        <ul className={styles.tabs}>
-          {tabs.map(tab => (
-            <li key={tab.key}>
-              <Link
-                aria-current={tab.current ? "page" : undefined}
-                className={styles.tab}
-                href={tab.href}
-                prefetch={false}
-              >
-                <Text as="span" role="bodyStrong" tone="inherit">{tab.label}</Text>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <nav className={styles.tabs} aria-label={strings.tabs.label}>
+        {tabs.map(tab => (
+          <Button
+            key={tab.key}
+            href={tab.href}
+            variant="link"
+            size="sm"
+            iconEnd={tab.current ? undefined : "externalLink"}
+          >
+            {tab.label}
+          </Button>
+        ))}
       </nav>
 
       {children}

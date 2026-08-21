@@ -24,34 +24,14 @@
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sqx-space-5);
-  margin: 0;
-  padding: 0;
-  border-block-end: var(--sqx-border-width-hair) solid var(--sqx-border-subtle);
-  list-style: none;
+  gap: var(--sqx-space-4);
 }
 
-.tab {
-  display: block;
-  padding-block: var(--sqx-space-2);
-  border-block-end: var(--sqx-border-width-thick) solid transparent;
-  color: var(--sqx-text-secondary);
-  text-decoration: none;
-}
-
-.tab:hover {
-  color: var(--sqx-text-accent);
-}
-
-.tab[aria-current="page"] {
-  border-block-end-color: var(--sqx-border-accent);
-  color: var(--sqx-text-accent);
-}
-
-.tab:focus-visible {
-  border-radius: var(--sqx-radius-xs);
-  outline: var(--sqx-border-width-thick) solid var(--sqx-border-focus);
-  outline-offset: var(--sqx-space-1);
+.tabs a[data-variant="link"],
+.tabs a[data-variant="link"]:hover {
+  color: var(--sqx-text-info);
+  text-decoration: underline;
+  text-underline-offset: var(--sqx-space-1);
 }
 
 .split {
@@ -91,8 +71,3 @@
   list-style: none;
 }
 
-@media (max-width: 48rem) {
-  .tabs {
-    gap: var(--sqx-space-4);
-  }
-}

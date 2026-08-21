@@ -135,12 +135,15 @@ export default function ReviewPanels({ tab, data, strings, locale }: {
   }
 
   if (tab === "timeline") {
+    const eventLabels: Record<string, string> = ws.timelineEvent;
+    const objectLabels: Record<string, string> = ws.timelineObject;
     const columns: readonly DataColumn<TimelineEvent>[] = [
       { key: "at", header: ws.version, isRowHeader: true, numeric: true,
         cell: row => <Text as="span" numeric>{formatDateTime(row.occurred_at, locale)}</Text> },
-      { key: "object", header: ws.colItem, cell: row => <Text as="span">{row.object_type.replace(/_/g, " ")}</Text> },
+      { key: "object", header: ws.colItem,
+        cell: row => <Text as="span">{objectLabels[row.object_type] ?? row.object_type.replace(/_/g, " ")}</Text> },
       { key: "event", header: ws.colResponse,
-        cell: row => <Text as="span" tone="secondary">{row.event_key.replace(/_/g, " ").toLowerCase()}</Text> },
+        cell: row => <Text as="span" tone="secondary">{eventLabels[row.event_key] ?? row.event_key.replace(/_/g, " ")}</Text> },
     ];
     return (
       <Panel title={ws.timelineHeading}>
@@ -155,13 +158,14 @@ export default function ReviewPanels({ tab, data, strings, locale }: {
   }
 
   if (tab === "prior") {
+    const decisionLabels: Record<string, string> = ws.decisionLabel;
     return (
       <Panel title={ws.priorDecision}>
         {data.decidedReviews.length === 0
           ? <EmptyState variant="inline" icon="review" title={ws.trace.unavailable} />
           : data.decidedReviews.map(review => (
             <span className={styles.stack} key={review.id}>
-              <StatusPill tone="warning">{review.decision ?? "—"}</StatusPill>
+              <StatusPill tone="warning">{review.decision ? decisionLabels[review.decision] ?? review.decision : "—"}</StatusPill>
               <Text tone="secondary" dir="auto">{review.decision_reason ?? "—"}</Text>
               {review.returned_sections
                 ? <Text role="label" tone="muted" as="span">{ws.sections}: {review.returned_sections.join(", ")}</Text>
@@ -172,12 +176,13 @@ export default function ReviewPanels({ tab, data, strings, locale }: {
     );
   }
 
+  const resultLabels: Record<string, string> = ws.resultLabel;
   const answerColumns: readonly DataColumn<[string, string]>[] = [
     { key: "item", header: ws.colItem, isRowHeader: true, cell: ([key]) => <Mono>{key}</Mono> },
     { key: "response", header: ws.colResponse,
       cell: ([, value]) => (
         <StatusPill tone={value === "non_compliant" ? "danger" : "success"}>
-          {String(value).replace(/_/g, " ")}
+          {resultLabels[value] ?? String(value).replace(/_/g, " ")}
         </StatusPill>
       ) },
   ];

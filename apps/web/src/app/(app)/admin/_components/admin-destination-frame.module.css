@@ -1,0 +1,12 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sqx-space-4);
+}
+
+.tabs a[data-variant="link"],
+.tabs a[data-variant="link"]:hover {
+  color: var(--sqx-text-info);
+  text-decoration: underline;
+  text-underline-offset: var(--sqx-space-1);
+}

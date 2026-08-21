@@ -3,6 +3,7 @@ import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
@@ -40,7 +41,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   if (!permissions["view_factory_360"]) {
     return (
       <Shell current="/factories" title={t("f360.title", "Factory 360")}>
-        <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
+        <EmptyState title={t("f360.permission.title", "Factory 360 access required")}
           body={t("f360.permission.body", "You do not have access to this factory profile.")} />
       </Shell>
     );
@@ -97,7 +98,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   logFactoryError("materials-read", mErr);
   if (!f) return (
     <Shell current="/factories" title={t("f360.notFound.title", "Factory not found")}>
-      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Factory registration not found or not available to you.")}
+      <EmptyState title={t("f360.notFound.desc", "Factory registration not found or not available to you.")}
         body={fErr ? mapFactoryError(fErr, "load") : undefined} />
     </Shell>
   );
@@ -164,7 +165,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
     { id: "workforce", label: t("f360.tab.workforce", "Workforce & Indicators") },
   ];
 
-  const syncedText = f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—";
+  const syncedText = f.source_synced_at ? formatDateTime(f.source_synced_at, locale) : "—";
   const riskPillTone: StatusTone = f.risk_band === "high" ? "danger" : f.risk_band === "medium" ? "warning" : f.risk_band === "low" ? "success" : "neutral";
   const riskPillLabel = f.risk_band
     ? `${enumLabel(f.risk_band)}${f.risk_score != null ? ` · ${f.risk_score}` : ""}`
@@ -184,7 +185,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   const riskBand = f.risk_band ? { label: enumLabel(f.risk_band), tone: riskPillTone } : null;
   const riskFacts = [
     { label: t("f360.risk.versionLabel", "version"), value: identity(f.risk_version) },
-    { label: t("f360.risk.recalculated", "last recalculated"), value: f.risk_calculated_at ? new Date(f.risk_calculated_at).toISOString().slice(0, 16).replace("T", " ") : "—" },
+    { label: t("f360.risk.recalculated", "last recalculated"), value: f.risk_calculated_at ? formatDateTime(f.risk_calculated_at, locale) : "—" },
   ];
   const driverLines = driverEntries.map(([key, raw]) => {
     const d = typeof raw === "object" ? raw : null;
@@ -195,8 +196,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   const geofenceValue = f.geofence_radius_m != null
     ? `${f.geofence_radius_m} ${t("f360.geo.unitM", "m")} — ${t("f360.geo.override", "per-factory override")}`
     : t("f360.geo.engineDefault", "engine default");
-  const stamp = (value: string) => new Date(value).toISOString().slice(0, 16).replace("T", " ");
-  const day = (value: string) => new Date(value).toISOString().slice(0, 10);
+  const stamp = (value: string) => formatDateTime(value, locale);
+  const day = (value: string) => formatDate(value, locale);
   const actionsLine = (forms: readonly { status: string; owner_name: string; due_at: string | null }[]) =>
     forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? day(a.due_at) : "—"}`).join("; ");
   const reviewTone = (decision: string): StatusTone => decision === "approve" ? "success" : "warning";

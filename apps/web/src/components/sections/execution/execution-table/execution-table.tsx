@@ -93,6 +93,7 @@ export default function ExecutionTable({
       columns={columns}
       getRowId={row => row.id}
       caption={strings.caption}
+      bleed={false}
       empty={{ title: empty.title, description: empty.description, icon: "search" }}
     />
   );

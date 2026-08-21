@@ -25,17 +25,17 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr);
   }
 
-  .start {
+  .root[data-columns="three"] .start {
     grid-row: span 2;
   }
 }
 
 @media (min-width: 100rem) {
-  .root {
+  .root[data-columns="three"] {
     grid-template-columns: minmax(0, 1fr) minmax(0, 2.6fr) minmax(0, 1fr);
   }
 
-  .start {
+  .root[data-columns="three"] .start {
     grid-row: auto;
   }
 }

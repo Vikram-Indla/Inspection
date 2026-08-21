@@ -3,12 +3,13 @@ import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
 import { titleCase } from "@/features/factories/portfolio";
-import { PAST_DATE_RANGE_PRESETS } from "@/components/saqeel/date-range-picker/date-range-presets";
+import { pastDateRangePresets } from "@/components/saqeel/date-range-picker/date-range-presets";
 import { enforcementExportHref, enforcementHref, type EnforcementScope } from "@/features/enforcement/params";
 import { queryEnforcementLibrary } from "@/features/enforcement/queries";
 import {
-  filterEnforcement, regionsOf, statusesOf, toEnforcementRow, type PenaltyState,
+  filterEnforcement, RECORD_STATUSES, toEnforcementRow, type PenaltyState,
 } from "@/features/enforcement/rows";
+import { KSA_REGION_LABELS } from "@/lib/ksa-regions";
 import { fill, getMessages } from "@/i18n/messages";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
@@ -18,12 +19,12 @@ import EnforcementFilterBar from "../enforcement-filter-bar/enforcement-filter-b
 import EnforcementRecord from "../enforcement-record/enforcement-record";
 import EnforcementTable from "../enforcement-table/enforcement-table";
 
-export default async function EnforcementScreen({ locale, scope, nowMs }: {
+export default async function EnforcementScreen({ locale, scope }: {
   locale: Locale;
   scope: EnforcementScope;
-  nowMs: number;
 }) {
   const { common, enforcement } = getMessages(locale);
+  const ui: "ar" | "en" = locale === "ar" ? "ar" : "en";
   const library = await queryEnforcementLibrary();
   const label = (value: string) => enforcement.enum[value as keyof typeof enforcement.enum] ?? titleCase(value);
 
@@ -35,8 +36,8 @@ export default async function EnforcementScreen({ locale, scope, nowMs }: {
   }
 
   const all = library.violations.map(row => toEnforcementRow(row, library.penalties, library.penaltiesReadable));
-  const rows = filterEnforcement(all, scope, nowMs);
-  const filtered = Boolean(scope.search || scope.status || scope.range || scope.region);
+  const rows = filterEnforcement(all, scope);
+  const filtered = Boolean(scope.search || scope.status || scope.from || scope.to || scope.region);
   const href = (overrides: Parameters<typeof enforcementHref>[1]) => localeHref(locale, enforcementHref(scope, overrides));
   const day = (iso: string) => formatDate(iso, locale);
   const amount = (value: number) => new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-GB").format(value);
@@ -79,26 +80,22 @@ export default async function EnforcementScreen({ locale, scope, nowMs }: {
         />
         <CardBody>
           <EnforcementFilterBar
-            action={localeHref(locale, scope.routeBase)}
+            locale={locale}
             search={scope.search}
             status={scope.status}
-            range={scope.range}
+            from={scope.from}
+            to={scope.to}
             region={scope.region}
             statusOptions={[
               { value: "", label: enforcement.filters.anyStatus },
-              ...statusesOf(all).map(value => ({ value, label: label(value) })),
-            ]}
-            rangeOptions={[
-              { value: "", label: enforcement.filters.anyDate },
-              ...PAST_DATE_RANGE_PRESETS.map(preset => ({
-                value: String(preset.days),
-                label: common.scope[preset.labelKey],
-              })),
+              ...RECORD_STATUSES.map(value => ({ value, label: label(value) })),
             ]}
             regionOptions={[
               { value: "", label: common.scope.allRegions },
-              ...regionsOf(all).map(value => ({ value, label: value })),
+              ...Object.entries(KSA_REGION_LABELS).map(([id, names]) => ({ value: id, label: names[ui] })),
             ]}
+            presets={pastDateRangePresets(common.scope)}
+            monthLabels={{ previous: common.scope.previousMonth, next: common.scope.nextMonth }}
             filtered={filtered}
             clearHref={localeHref(locale, scope.routeBase)}
             exportHref={localeHref(locale, enforcementExportHref(scope))}

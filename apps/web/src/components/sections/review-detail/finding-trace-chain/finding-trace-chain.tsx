@@ -31,7 +31,7 @@ function Node({ node, unavailableLabel }: { node: TraceNode; unavailableLabel: s
         {node.unavailable
           ? <span className="badge badge-warning">○ {unavailableLabel}</span>
           : node.value}
-        <Text as="span" tone="muted">{node.source}</Text>
+        <span className="sq-trace__source"><Text as="span" tone="muted">{node.source}</Text></span>
       </dd>
     </div>
   );

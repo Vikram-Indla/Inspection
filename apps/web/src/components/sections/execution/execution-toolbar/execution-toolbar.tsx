@@ -47,12 +47,11 @@ export default function ExecutionToolbar({
             key={key}
             label={filterStrings[key]}
             value={filters[key] ?? ""}
-            placeholder={filterStrings.any}
+            placeholder={filterStrings[key]}
             emptyLabel={filterStrings.any}
-            compact
             onChange={value => onFilterChange(key, value)}
             options={[
-              { value: "", label: filterStrings.any },
+              { value: "", label: filterStrings[key] },
               ...options[key].map(value => ({ value, label: labels.enumLabel(value) })),
             ]}
           />

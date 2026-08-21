@@ -58,7 +58,6 @@ export default function OperationalView({ locale, metrics, projection, partialSo
           value={row.active}
           display={formatCount(row.active, locale)}
           peak={capacityPeak}
-          muted={!row.nameResolved}
         />
       ),
     },

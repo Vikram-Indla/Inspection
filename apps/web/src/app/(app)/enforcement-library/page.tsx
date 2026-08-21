@@ -18,7 +18,7 @@ export default async function EnforcementLibraryPage({ searchParams }: {
   return (
     <Shell current={scope.routeBase} title={enforcement.title}>
       <Suspense fallback={<EnforcementSkeleton label={enforcement.loading} />}>
-        <EnforcementScreen locale={locale} scope={scope} nowMs={Date.now()} />
+        <EnforcementScreen locale={locale} scope={scope} />
       </Suspense>
     </Shell>
   );

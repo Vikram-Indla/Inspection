@@ -1,4 +1,5 @@
 import type { StatusTone } from "@/components/saqeel/status-pill/status-pill";
+import { resolveRegionId } from "@/lib/ksa-regions";
 import type {
   EnforcementActionForm, EnforcementFactory, EnforcementPenaltyRow, EnforcementViolationRow,
 } from "./queries";
@@ -6,6 +7,11 @@ import type { EnforcementScope } from "./params";
 
 export const INVALIDATED = "invalidated";
 export const UNAVAILABLE = "unavailable";
+
+export const RECORD_STATUSES = [
+  "draft", "in_progress", "executing", "submitted", "under_review",
+  "approved", "rejected", "returned", "completed", INVALIDATED,
+] as const;
 
 const RECORD_TONES: Readonly<Record<string, StatusTone>> = {
   approved: "success",
@@ -150,14 +156,19 @@ export function toEnforcementRow(
 export function filterEnforcement(
   rows: readonly EnforcementRow[],
   scope: EnforcementScope,
-  nowMs: number,
 ): readonly EnforcementRow[] {
   const needle = scope.search.toLowerCase();
-  const cutoff = scope.range ? nowMs - scope.range * 86_400_000 : 0;
+  const fromMs = scope.from ? new Date(`${scope.from}T00:00:00`).getTime() : null;
+  const toMs = scope.to ? new Date(`${scope.to}T23:59:59.999`).getTime() : null;
   return rows.filter(row => {
     if (scope.status && row.recordStatus !== scope.status) return false;
-    if (scope.region && row.factory?.region !== scope.region) return false;
-    if (cutoff && (!row.recordedAt || new Date(row.recordedAt).getTime() < cutoff)) return false;
+    if (scope.region && resolveRegionId(row.factory?.region) !== scope.region) return false;
+    if (fromMs !== null || toMs !== null) {
+      if (!row.recordedAt) return false;
+      const at = new Date(row.recordedAt).getTime();
+      if (fromMs !== null && at < fromMs) return false;
+      if (toMs !== null && at > toMs) return false;
+    }
     if (!needle) return true;
     const haystack = [
       row.factory?.name, row.factory?.license_number, row.inspectionReference,
@@ -167,8 +178,3 @@ export function filterEnforcement(
   });
 }
 
-export const regionsOf = (rows: readonly EnforcementRow[]): readonly string[] =>
-  [...new Set(rows.map(row => row.factory?.region).filter((value): value is string => Boolean(value)))].sort();
-
-export const statusesOf = (rows: readonly EnforcementRow[]): readonly string[] =>
-  [...new Set(rows.map(row => row.recordStatus))].sort();

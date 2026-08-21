@@ -19,7 +19,7 @@ import type {
   CalendarMode, ExecutionFilters, ExecutionRow, ExecutionView, FilterKey, RescheduleRequest,
 } from "@/features/execution/types";
 import {
-  filterOptions, filterRows, hasActiveFilters, markersOf, missingCoordinateCount, scopeRows, startOfWeek,
+  dayKey, filterOptions, filterRows, hasActiveFilters, markersOf, missingCoordinateCount, scopeRows, startOfWeek,
 } from "@/features/execution/view";
 import { fill } from "@/i18n/messages";
 import type { Locale } from "@/lib/i18n";
@@ -40,6 +40,7 @@ export default function ExecutionWorkspace({
   const messages = executionMessages(locale);
   const labels = useMemo(() => buildLabels(locale), [locale]);
   const weekStart = useMemo(() => startOfWeek(nowMs), [nowMs]);
+  const todayKey = useMemo(() => dayKey(nowMs), [nowMs]);
 
   const [view, setView] = useState<ExecutionView>("mine");
   const [mode, setMode] = useState<CalendarMode>("week");
@@ -106,7 +107,7 @@ export default function ExecutionWorkspace({
             : fill(messages.notice.degradedBody, { count: labels.count(omittedRows) })} />
       ) : null}
 
-      <ExecutionCalendar rows={visible} weekStart={weekStart} mode={mode} onModeChange={setMode}
+      <ExecutionCalendar rows={visible} weekStart={weekStart} todayKey={todayKey} mode={mode} onModeChange={setMode}
         onOpen={openVisit} onReschedule={(row, date) => setReschedule({ row, date })}
         strings={messages.calendar} labels={labels} />
 
@@ -127,12 +128,14 @@ export default function ExecutionWorkspace({
           ) : null}
           <Text tone="muted">{messages.map.note}</Text>
           {markersOf(visible).length ? (
-            <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markersOf(visible)}
-              selectedId={selected?.id} fitMarkers height="100%" ariaLabel={messages.map.label}
-              onMarkerClick={id => {
-                const row = visible.find(candidate => candidate.id === id);
-                if (row) openVisit(row);
-              }} />
+            <div className={styles.mapCanvas}>
+              <GeoMap center={[23.8859, 45.0792]} zoom={5} markers={markersOf(visible)}
+                selectedId={selected?.id} fitMarkers height="100%" ariaLabel={messages.map.label}
+                onMarkerClick={id => {
+                  const row = visible.find(candidate => candidate.id === id);
+                  if (row) openVisit(row);
+                }} />
+            </div>
           ) : (
             <EmptyState icon="map" title={messages.empty.mapTitle} description={messages.empty.mapBody} />
           )}

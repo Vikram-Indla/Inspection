@@ -10,6 +10,8 @@ import type {
   AttachmentSourceRow, AuditRow, LifecycleRow, LocationRow, PackageLinkRow, VisitRow,
 } from "./types";
 
+const ROSTER_DENIED = "PLANNING-REASSIGN-ROSTER-DENIED";
+
 const VISIT_COLUMNS = `id, visit_type, execution_mode, planning_status, planning_version, operational_state, window_start, window_end, cancellation_reason, notes,
       immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
       planner_lat, planner_lng, original_lat, original_lng, visit_location_source, created_at,
@@ -49,10 +51,15 @@ export type VisitDetailResult =
 export async function loadVisitDetail(id: string): Promise<VisitDetailResult> {
   const sb = await supabaseServer();
   const planningAccess = await getPlanningAccess(sb, ["planning.reassign"]);
-  const rosterRpc = await sb.rpc("list_available_reassignment_inspectors", { p_visit_ids: [id] });
-  if (rosterRpc.error) console.error(`[visit.detail] reassignment roster: ${rosterRpc.error.message}`);
+  const canReassignByRole = !planningAccess.error && planningAccess.can("planning.reassign");
+  const rosterRpc = canReassignByRole
+    ? await sb.rpc("list_available_reassignment_inspectors", { p_visit_ids: [id] })
+    : null;
+  if (rosterRpc?.error && !rosterRpc.error.message.includes(ROSTER_DENIED)) {
+    console.error(`[visit.detail] reassignment roster: ${rosterRpc.error.message}`);
+  }
   const roster = readRows(
-    { data: rosterRpc.data ?? [], error: null },
+    { data: rosterRpc?.data ?? [], error: null },
     f => ({ inspector_id: f.text("inspector_id"), full_name: f.text("full_name") }),
     "visits.detail.roster",
   );
@@ -130,7 +137,7 @@ export async function loadVisitDetail(id: string): Promise<VisitDetailResult> {
       expiryRuleReason,
       actorNames,
       siblingCount,
-      canReassignByRole: !planningAccess.error && planningAccess.can("planning.reassign"),
+      canReassignByRole,
     },
   };
 }

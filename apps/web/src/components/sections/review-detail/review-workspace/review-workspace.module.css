@@ -24,13 +24,22 @@
   margin-inline-start: auto;
 }
 
-/* The record and the decision sit side by side only when both fit; below that
-   the decision follows the record rather than being squeezed beside it. */
 .body {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--sqx-grid-min-lg), 1fr));
-  gap: var(--sqx-gutter);
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--sqx-stack-default);
+  column-gap: var(--sqx-gutter);
   align-items: start;
+}
+
+.tabsRow {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 75rem) {
+  .body {
+    grid-template-columns: minmax(0, 1fr) var(--sqx-grid-min-lg);
+  }
 }
 
 .record,

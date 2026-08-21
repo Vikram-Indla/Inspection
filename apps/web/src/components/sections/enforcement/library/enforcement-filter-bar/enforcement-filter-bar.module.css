@@ -1,8 +1,8 @@
 .bar {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--sqx-space-4) var(--sqx-space-3);
+  align-items: center;
+  gap: var(--sqx-space-3);
 }
 
 .input {

@@ -1,13 +1,18 @@
-import Button from "@/components/saqeel/button/button";
+"use client";
+
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import TextInput from "@/components/saqeel/text-input/text-input";
 import { Text } from "@/components/saqeel/type";
 import type { AdminPackagesMessages } from "@/features/admin-packages/strings";
-import type { PackagesQuery } from "@/features/admin-packages/view";
+import { packagesHref, type PackagesQuery } from "@/features/admin-packages/view";
 import { fill } from "@/i18n/messages";
 import { formatCount } from "@/i18n/numbers";
 import type { Locale } from "@/lib/i18n";
 import styles from "./packages-toolbar.module.css";
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 export default function PackagesToolbar({ query, matched, total, canWrite, strings, locale }: {
   query: PackagesQuery;
@@ -17,19 +22,36 @@ export default function PackagesToolbar({ query, matched, total, canWrite, strin
   strings: AdminPackagesMessages;
   locale: Locale;
 }) {
+  const router = useRouter();
+  const [searchPending, startSearchTransition] = useTransition();
+  const [queryInput, setQueryInput] = useState(query.search);
+  const isFirstSearchEffect = useRef(true);
+
+  useEffect(() => {
+    if (isFirstSearchEffect.current) {
+      isFirstSearchEffect.current = false;
+      return;
+    }
+    if (queryInput.trim() === query.search) return;
+    const handle = setTimeout(() => {
+      startSearchTransition(() => {
+        router.replace(packagesHref({ filter: query.filter, search: queryInput.trim() }));
+      });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  }, [queryInput, query.search, query.filter, router]);
+
   return (
-    <div className={styles.toolbar}>
-      <form action="/admin/packages" className={styles.search} method="get">
-        {query.filter === "all" ? null : <input name="filter" type="hidden" value={query.filter} />}
+    <div className={styles.toolbar} aria-busy={searchPending}>
+      <div className={styles.search}>
         <TextInput
-          defaultValue={query.search}
+          value={queryInput}
           label={strings.toolbar.search}
-          name="q"
           placeholder={strings.toolbar.search}
           type="search"
+          onChange={setQueryInput}
         />
-        <Button type="submit" variant="secondary">{strings.toolbar.searchAction}</Button>
-      </form>
+      </div>
 
       <Text role="label" tone="secondary">
         {fill(strings.toolbar.showing, {

@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-167.** Take T-168.
+implements the reservation. **Highest id in use: T-169.** Take T-170.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,19 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-168 · `/factories/cr/[id]` — Factory 360 rebuilt on SAQEEL (the T-020 rebuild)
+`status: done` · `rules: WEB-000..015` · `est: 6h`
+`record:` [2026-08-20-T-168-factory360-cr-rebuild](sessions/2026-08/2026-08-20-T-168-factory360-cr-rebuild.md)
+
+The canonical Factory 360 (`/factories/[id]` redirects here) and the largest
+wholly-legacy surface left: a 410-line `page.tsx`, 14 sections + two rails on the
+frozen `.sq-*` sheets. Full SAQEEL rebuild — thin 40-line route, `factoriesCr`
+namespace (English from the legacy `t()` fallbacks, Arabic from the approved
+`FACTORY360_AR_FALLBACK`), `cr-dossier` feature module over the unchanged governed
+projection, `FactoryWorkspace` + Card/DataTable/DefinitionList/StatusPill panels,
+and the approved-compliance trend as a real `BarSeries`. Verified EN + AR/RTL.
+Lint −279, typography −144. **This closes T-020.**
 
 ### T-167 · `/admin/security-access` + `/admin/devices` rebuilt on SAQEEL (MVP3 control-plane closed)
 `status: done` · `rules: WEB-002, WEB-003, WEB-004, WEB-013, WEB-014, WEB-015` · `est: 3h`
@@ -5351,6 +5364,38 @@ Acceptance: one page, every primitive, every state, zero axe violations.
 ---
 
 ## NEXT
+
+### T-169 · `finding-trace-chain` migrated to SAQEEL (last legacy piece of `/reviews/[id]`)
+`status: todo` · `rules: WEB-002, WEB-003, WEB-004, WEB-008, WEB-014` · `est: 2h`
+
+The Finding trace chain is the one component on the otherwise-SAQEEL review
+workspace still on the frozen sheets. `finding-trace-chain.tsx` (~85 lines) renders
+global legacy classes — `panel`/`panel-body`, `sq-trace*`, `badge badge-warning`,
+`sq-banner` — a raw `<h2>`, and carries `//` + `{/* */}` comments (rule 1). Its
+styles live in `saqeel-runtime.css` (the `.sq-trace*` block, ~lines 1647–1661) on
+legacy `--type-*`/`--space-*`/`--border-*`/`--radius-*` tokens. A 2026-08-21 fix
+already **(a)** routed every label through i18n (`resultLabel`/`decisionLabel`/
+`timelineEvent`/`timelineObject`/`inspectionStatus` in the `reviews` namespace) and
+**(b)** restored the dropped `sq-trace__source` spacing class as a stopgap — so the
+copy is done and correct in EN + AR; only the **structure/styling** is legacy.
+
+Scope (structure only — no label or data changes):
+- Colocated `finding-trace-chain.module.css` consuming `var(--sqx-*)` only; delete
+  the `.sq-trace*` rules it exclusively owns from `saqeel-runtime.css` (WEB-006 §4).
+- `panel`/`panel-body` → `Card`/`CardHeader`/`CardBody`; raw `<h2>` → the CardHeader
+  title; `badge badge-warning` (the "○ Not available" node) → `StatusPill`.
+- Keep the native `details`/`summary` disclosure and the `dt`/`dd` node grid; RTL via
+  logical properties only (the source line is already `margin-block-start`).
+- Remove all comments. Typography is already correct — carry it across unchanged, no
+  new font declaration (WEB-014 §11); the rendered-size count must not rise.
+- `review-workspace.tsx` renders it and `decision-panel.tsx` also references `sq-trace`
+  — check both before deleting any shared rule.
+
+Acceptance: no `sq-`/`panel`/`badge` class or comment left in the component; the
+`.sq-trace*` block removed from the frozen sheet with zero remaining consumers;
+verified EN + AR/RTL with spacing intact; typography/lint/typecheck green.
+
+---
 
 ### T-010 · Application shell
 `status: todo` · `rules: WEB-001, WEB-004, WEB-005` · `est: 6h`

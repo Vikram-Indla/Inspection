@@ -169,6 +169,41 @@
         "prior": "Prior decisions",
         "timeline": "Timeline"
       },
+      "inspectionStatus": {
+        "under_review": "Under review",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "returned": "Returned",
+        "rejected": "Rejected"
+      },
+      "resultLabel": {
+        "compliant": "Compliant",
+        "non_compliant": "Non-compliant",
+        "not_applicable": "Not applicable",
+        "na": "Not applicable",
+        "partial": "Partially compliant"
+      },
+      "decisionLabel": {
+        "approve": "Approved",
+        "return": "Returned",
+        "reject": "Rejected"
+      },
+      "timelineEvent": {
+        "submitted": "Submitted",
+        "resubmitted": "Resubmitted",
+        "review_opened": "Review opened",
+        "approved": "Approved",
+        "returned": "Returned",
+        "rejected": "Rejected",
+        "reviewer_comment": "Reviewer comment",
+        "compliance_handoff": "Compliance handoff"
+      },
+      "timelineObject": {
+        "submission_versions": "Submission version",
+        "reviews": "Review",
+        "review_comments": "Reviewer comment",
+        "compliance_inspection_handoffs": "Compliance handoff"
+      },
       "timelineHeading": "Official review timeline",
       "timelineNote": "Submission, resubmission, review, comment, and Compliance handoff events from review_timeline().",
       "timelineUnavailable": "Review timeline not available.",
