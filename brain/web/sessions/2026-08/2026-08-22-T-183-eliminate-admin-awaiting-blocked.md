@@ -44,10 +44,11 @@ tells the reader what happened and that nothing was lost.
 strings rewritten          72 EN + 72 AR
 banned list               50 → 74 words
 gate baseline            206 → 592   (gate got sharper, copy did not get worse)
-i18n corpus, L2 audit:
-  P0                     1,183 → 640
-  P1                     2,365 → 1,538
-  passing                        3,355 of 5,533
+i18n corpus, L2 audit (i18n only — the earlier 1,183/2,365 figures were the
+whole corpus INCLUDING the 2,370 hardcoded literals, and are not comparable):
+  P0                       747 → 640
+  P1                     1,600 → 1,538
+  passing                3,143 → 3,355   of 5,533
 ```
 
 Remaining top offenders: `CR` 26 · `operational` 25 · `requests` 22 · `mode` 19.

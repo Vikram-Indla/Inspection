@@ -38,7 +38,9 @@ back in. Banned list extended **50 → 74 words**.
 blind to. Pre-existing debt, not new damage. **A baseline that rises because the
 gate got sharper is not the same as one that rises because the copy got worse.**
 
-i18n corpus on the audit instrument: **P0 1,183 → 640, P1 2,365 → 1,538.**
+i18n corpus on the audit instrument: **P0 747 → 640, P1 1,600 → 1,538, passing
+3,143 → 3,355.** (Earlier waves quoted whole-corpus figures that included the
+2,370 hardcoded literals; those are not comparable to i18n-only counts.)
 
 ### T-182 · Eliminate "visible" and "read-only"
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
