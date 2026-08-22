@@ -10,7 +10,33 @@ import csv, json, hashlib
 from collections import Counter, defaultdict
 from datetime import date, timedelta
 
-ANCHOR = date(2026, 8, 22)
+# A Sunday: the first working day of the Saudi week. The loader shifts the whole
+# cohort by whole weeks, so whatever date it is loaded on, every window still
+# lands Sunday to Thursday.
+ANCHOR = date(2026, 8, 23)
+
+# Friday and Saturday are the Saudi weekend. Nobody inspects a factory then, so
+# a window that falls on one moves back to the Thursday before it.
+WEEKEND = {4, 5}
+
+def workday(d, salt=0):
+    """Move a weekend date onto a working day in the same week.
+
+    Snapping every weekend date to the nearest Thursday piled a third of the
+    whole cohort onto one weekday. Spreading them across Sunday-to-Thursday by
+    the journey's own hash keeps the week evenly loaded and stays deterministic.
+    The target is always earlier than the Friday or Saturday it replaces, so a
+    historical window can never be dragged into the future.
+    """
+    if d.weekday() not in WEEKEND:
+        return d
+    sunday = d - timedelta(days=(d.weekday() + 1) % 7)
+    return sunday + timedelta(days=h("wd", d.isoformat(), salt) % 5)
+
+def workday_forward(d):
+    while d.weekday() in WEEKEND:
+        d += timedelta(days=1)
+    return d
 # A visit carries the package for its type, not one 142-item catalogue. Item counts
 # come from build_compliance_library.py: the authorities each visit type actually
 # inspects. A follow-up re-checks only what failed last time.
@@ -99,7 +125,7 @@ for stop, count, pstat, ostat, istat, decision in STOPS:
             offset = -(h("d", stop, k) % 30) if k % 5 < 2 else -(30 + h("d2", stop, k) % 335)
         else:
             offset = -(h("d", stop, k) % 120)
-        wstart = ANCHOR + timedelta(days=offset)
+        wstart = workday(ANCHOR + timedelta(days=offset), n)
         journeys.append({
             "journey_ref": f"JRN-{ANCHOR.year}-{n:04d}",
             "terminal_stop": stop,
@@ -156,7 +182,7 @@ for j in journeys:
         # Slots exhausted for that inspector on that date: push to the next free day.
         day = date.fromisoformat(d); idx = 0
         while True:
-            day += timedelta(days=1); d = day.isoformat()
+            day = workday_forward(day + timedelta(days=1)); d = day.isoformat()
             used = booked.setdefault((who, d), [])
             if len(used) < len(SLOTS): idx = len(used); break
         j["window_start"] = d

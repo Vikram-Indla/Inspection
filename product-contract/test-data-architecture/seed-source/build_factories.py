@@ -8,6 +8,33 @@ renaming a factory never detaches its licence, geofence or journeys.
 Run:  python3 build_factories.py
 """
 import csv
+from datetime import date, timedelta
+
+# Licence dates are written as offsets from this epoch, never as fixed calendar
+# dates, because the loader shifts every date by the distance from the epoch to
+# the run. Fixed dates produced a register whose nearest expiry was 132 days out
+# at any load date, so "licences expiring soon" was permanently empty.
+EPOCH = date(2026, 8, 23)
+
+# A real register is not uniformly distant. Twelve establishments in every twelve
+# sit somewhere on the horizon: one already lapsed, three inside the quarter that
+# the renewal desk actually works, the rest further out.
+EXPIRY_BANDS = [
+ (-95, -20),   # lapsed — renewal overdue
+ (4, 27),      # this month
+ (31, 59),     # next month
+ (62, 89),     # this quarter
+ (94, 178), (94, 178),
+ (183, 361), (183, 361),
+ (368, 900), (368, 900), (368, 900), (368, 900),
+]
+
+def licence_window(i):
+    """Deterministic expiry and issue dates for establishment i, as ISO strings."""
+    lo, hi = EXPIRY_BANDS[i % len(EXPIRY_BANDS)]
+    expiry = EPOCH + timedelta(days=lo + (i * 37) % (hi - lo + 1))
+    term_years = 3 if i % 3 else 5
+    return (expiry - timedelta(days=365 * term_years)).isoformat(), expiry.isoformat()
 
 # (site_key): city_en, city_ar, locality, lat, lng, coord_confidence
 SITES = {
@@ -165,6 +192,9 @@ for i, (en, ar, site, act, isic, band, emp, stage, status) in enumerate(F, start
     # Legacy registration: Riyadh only (verified prefix), every third establishment.
     legacy = region == "Riyadh" and i % 3 != 0
     uni = unified_cr(i)
+    lic_issue, lic_expiry = licence_window(i)
+    # A licence past its expiry is expired, whatever the site table declares.
+    lic_status = "expired" if lic_expiry < EPOCH.isoformat() else status
     rows.append({
         "factory_code": f"F-{site}-{i:03d}",
         "name_en": en, "name_ar": ar,
@@ -173,10 +203,9 @@ for i, (en, ar, site, act, isic, band, emp, stage, status) in enumerate(F, start
         "unified_number": uni,
         "cr_regime": "legacy_city_coded" if legacy else "unified_m83",
         "license_number": licence(i), "plant_number": f"PLT-{site}-{i:04d}",
-        "license_stage": stage, "license_status": status,
-        "license_issue_date": f"20{20 + (i % 5)}-{1 + (i % 9):02d}-{1 + (i % 27):02d}",
-        "license_expiry_date": ("2025-11-30" if status == "expired"
-                                else f"20{27 + (i % 2)}-{1 + (i % 9):02d}-{1 + (i % 27):02d}"),
+        "license_stage": stage, "license_status": lic_status,
+        "license_issue_date": lic_issue,
+        "license_expiry_date": lic_expiry,
         "activity_class": act, "isic4": isic,
         "official_lat": round(lat + ((i % 7) - 3) * 0.0045, 7),
         "official_lng": round(lng + ((i % 5) - 2) * 0.0052, 7),

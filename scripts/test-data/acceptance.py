@@ -16,6 +16,15 @@ from load import q
 # different shape (F-1101). Counting all of them was an early false failure.
 COHORT = r"^F-[A-Z]{1,2}[0-9]?-[0-9]{3}$"
 
+# The cohort's "today" is read out of the database, never from the clock. A load
+# can be dated with --as-of, and acceptance may run days later, so deriving it
+# from date.today() checked the data against a date it was never loaded at.
+# Visits in motion are generated at offset zero, so their date is that anchor.
+TODAY = q("select mode() within group (order by window_start::date) from visits"
+          " where operational_state in ('on_the_way','arrived','executing')")
+if not TODAY or TODAY.startswith("ERR "):
+    sys.exit(f"cannot read the cohort anchor from the database — is it loaded? {TODAY}")
+
 CHECKS = [
  ("Total visits",        "select count(*) from visits", 300),
  ("Establishments",      f"select count(*) from factories where factory_code ~ '{COHORT}'", 73),
@@ -39,6 +48,19 @@ CHECKS = [
  ("Returned reviews",    "select count(*) from reviews where decision='return'", 12),
  ("Rejected",            "select count(*) from reviews where decision='reject'", 10),
  ("Policies published",  "select count(*) from dashboard_config_heads", 3),
+ # Friday and Saturday are the Saudi weekend. The loader shifts by whole weeks
+ # precisely so this stays zero at every load date; an arbitrary day-shift would
+ # drag roughly a fifth of the cohort onto it.
+ ("Weekend visits",      "select count(*) from visits"
+                         " where extract(dow from window_start) in (5,6)", 0),
+ # A register whose nearest expiry is months away leaves every "expiring soon"
+ # view empty for ever. These are counted from the cohort's own today.
+ ("Licences lapsed",     f"select count(*) from industrial_licenses"
+                         f" where expiry_date < date '{TODAY}'", 6),
+ ("Expiring in 30 days", f"select count(*) from industrial_licenses where expiry_date"
+                         f" between date '{TODAY}' and date '{TODAY}' + 30", 7),
+ ("Expiring in 90 days", f"select count(*) from industrial_licenses where expiry_date"
+                         f" between date '{TODAY}' and date '{TODAY}' + 90", 19),
 ]
 
 def main():

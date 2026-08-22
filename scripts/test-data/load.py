@@ -27,21 +27,30 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "product-contract" / "test-data-architecture" / "seed-source"
 
 # The generators carry no clock, so the CSVs are reproducible: every date in them
-# is measured against this one. The load is what makes them current — each date
-# moves by the distance from the epoch to the run, which leaves every interval
-# the cohort encodes ("expires in 45 days", "approved 3 weeks ago") intact while
-# "today" really is today. Without it a cohort built in August reads as ancient
-# history by November: today's visits empty, every SLA breached, coverage frozen.
-COHORT_EPOCH = date(2026, 8, 22)
+# is measured against this one, a Sunday. The load is what makes them current —
+# each date moves forward by the distance from the epoch to the run, which leaves
+# every interval the cohort encodes ("expires in 45 days", "approved 3 weeks ago")
+# intact. Without it a cohort built in August reads as ancient history by
+# November: today's visits empty, every SLA breached, coverage frozen.
+COHORT_EPOCH = date(2026, 8, 23)
 
+# The shift is whole weeks, and that is not an accident. Every window is generated
+# onto a Sunday-to-Thursday working week; a shift of an arbitrary number of days
+# would drag a fifth of them onto the Saudi weekend. Snapping them back afterwards
+# would merge two source days onto one and double-book inspectors, which the
+# assignment-overlap guard rejects. Whole weeks preserve the working-week pattern
+# and the slot allocation exactly. The cost is that the cohort's "today" is the
+# Sunday of the current week rather than the run date itself — at most six days,
+# and every relative distance is untouched.
 def _as_of():
     if "--as-of" in sys.argv:
         return date.fromisoformat(sys.argv[sys.argv.index("--as-of") + 1])
     return date.today()
 
 AS_OF = _as_of()
-SHIFT = timedelta(days=(AS_OF - COHORT_EPOCH).days)
-ANCHOR = datetime.combine(AS_OF, time(8, 0))
+SHIFT = timedelta(days=((AS_OF - COHORT_EPOCH).days // 7) * 7)
+COHORT_TODAY = COHORT_EPOCH + SHIFT
+ANCHOR = datetime.combine(COHORT_TODAY, time(8, 0))
 
 def sdate(v):
     return (date.fromisoformat(v) + SHIFT).isoformat() if v else None
@@ -174,7 +183,9 @@ def preflight():
                if q(f"select to_regclass('public.{t}') is not null") != "t"]
     if missing: raise SystemExit(f"REFUSED: missing tables {missing}")
     print(f"  tables              {q(TABLE_COUNT_SQL)}")
-    print(f"  as of               {AS_OF}  (cohort epoch {COHORT_EPOCH}, shift {SHIFT.days:+d} days)")
+    print(f"  as of               {AS_OF}  ({AS_OF.strftime('%A')})")
+    print(f"  cohort today        {COHORT_TODAY} ({COHORT_TODAY.strftime('%A')})  "
+          f"shift {SHIFT.days:+d} days = {SHIFT.days // 7:+d} weeks")
     print("  writes nothing      ok")
     return True
 
