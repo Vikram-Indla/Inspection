@@ -10,9 +10,15 @@
 
 Identity: every row's primary key is uuid5(BATCH, "<table>:<logical key>"), so a
 re-run upserts instead of duplicating and unload deletes by exact id — never by a
-heuristic. Connection comes from PGHOST/PGPORT/PGUSER/PGDATABASE or DATABASE_URL.
+heuristic.
+
+Connection: PGHOST/PGPORT/PGUSER/PGDATABASE or DATABASE_URL drive psql. Setting
+SUPABASE_PROJECT_ID and SUPABASE_MGMT_TOKEN instead sends the same SQL to the
+hosted platform endpoint over HTTPS, which is the only route into a project
+whose database port is unreachable.
 """
-import csv, os, subprocess, sys, tempfile, uuid
+import csv, json, os, subprocess, sys, tempfile, urllib.error, urllib.request, uuid
+from collections import namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -52,7 +58,45 @@ KEY_COLUMN = {"profiles": "user_id", "dashboard_config_heads": "config_key"}
 # goes through a file rather than -c.
 ARGV_SAFE = 60000
 
+Result = namedtuple("Result", "returncode stdout stderr")
+
+# A hosted project reachable only over HTTPS has no psql route: port 5432 is raw
+# TCP and the database password is not part of the credential set. The platform
+# SQL endpoint accepts the same statements over 443 using the management token.
+def _transport():
+    return "mgmt" if os.environ.get("SUPABASE_MGMT_TOKEN") and \
+        os.environ.get("SUPABASE_PROJECT_ID") else "psql"
+
+# psql -tA renders one row per line, columns joined by a pipe, null as empty and
+# boolean as t/f. Callers parse that shape, so JSON rows are rendered into it
+# rather than teaching five hundred lines of caller a second format.
+def _render(rows):
+    cell = lambda v: "" if v is None else ("t" if v is True else
+                                           "f" if v is False else
+                                           json.dumps(v, ensure_ascii=False)
+                                           if isinstance(v, (dict, list)) else str(v))
+    return "\n".join("|".join(cell(v) for v in row.values()) for row in rows)
+
+def _mgmt(sql):
+    url = (f"https://api.supabase.com/v1/projects/"
+           f"{os.environ['SUPABASE_PROJECT_ID']}/database/query")
+    req = urllib.request.Request(
+        url, data=json.dumps({"query": sql}).encode("utf-8"), method="POST",
+        headers={"Authorization": f"Bearer {os.environ['SUPABASE_MGMT_TOKEN']}",
+                 "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            payload = resp.read().decode("utf-8").strip()
+    except urllib.error.HTTPError as exc:
+        return Result(1, "", exc.read().decode("utf-8", "replace").strip()[:500])
+    except Exception as exc:
+        return Result(1, "", f"{type(exc).__name__}: {exc}")
+    rows = json.loads(payload) if payload else []
+    return Result(0, _render(rows) if isinstance(rows, list) else str(rows), "")
+
 def _run(sql, flags):
+    if _transport() == "mgmt":
+        return _mgmt(sql)
     env = dict(os.environ)
     base = ["psql"] + ([env["DATABASE_URL"]] if env.get("DATABASE_URL") else []) + flags
     if len(sql) < ARGV_SAFE:
