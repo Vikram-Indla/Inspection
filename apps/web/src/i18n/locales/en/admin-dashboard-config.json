@@ -23,7 +23,7 @@
   },
   "domains": {
     "heading": "Configuration domains",
-    "intro": "Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.",
+    "intro": "Each area publishes a version with a start date, and that version never changes. Admin settings can show less, never more.",
     "colDomain": "Domain",
     "colActiveVersion": "Active version",
     "colEffectiveFrom": "Effective from",

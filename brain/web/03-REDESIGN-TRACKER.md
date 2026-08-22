@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-179.** Take T-180.
+implements the reservation. **Highest id in use: T-180.** Take T-181.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,24 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-180 · First copy rewrite wave — 26 worst strings, both languages
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-180-first-copy-rewrite-wave](sessions/2026-08/2026-08-22-T-180-first-copy-rewrite-wave.md)
+
+The audit's 26 worst strings applied to the product in **English and Arabic**,
+across 16 namespaces. The old Arabic was a faithful translation of the jargon
+(`الحمولة المحكومة` = "the governed payload"), so translating accurately had
+produced equally hard Arabic — both languages were authored from the new English.
+
+Content baseline ratcheted **352 → 313**. Mean L2 load on these strings fell from
+8–24 to **0.32**; 20/26 clean, the rest flagged only for passive voice, which
+WEB-016 §3 treats as judgement.
+
+**The gate caught its author.** First run failed on my own replacement text —
+"Not set up yet" contains the phrasal verb `set up`. First real use, real catch.
+
+**Arabic sign-off still outstanding** for these 26 and for T-177's `login.json`.
 
 ### T-179 · Retire "Saqeel" everywhere a user can see it (manager-directed)
 `status: partial — slice A done, B/C/D parked` · `rules: WEB-003, WEB-006, WEB-008, WEB-016` · `est: 1h`

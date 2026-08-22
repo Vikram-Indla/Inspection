@@ -76,7 +76,7 @@
     "emptyTitle": "No values in this kind",
     "emptyBody": "Add the first value for this lookup kind."
   },
-  "deleteNote": "Lookup values are never deleted — history and existing records keep referring to them. Deactivation retires a value: governed selects only read active rows.",
+  "deleteNote": "We never delete a value. Old records still point to it. Turn it off instead. New lists then show only the values that are on.",
   "actions": {
     "sessionEnded": "Your session has ended. Sign in again.",
     "noPermission": "You do not have permission to configure planning lookups.",

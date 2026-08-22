@@ -101,7 +101,7 @@
     },
     "advisory": {
       "title": "AI assistant",
-      "fallback": "This explanation reads the factory’s recorded risk score, band, model version and stored drivers. Review the drivers and the latest snapshots below; the score is not recalculated here and a human decides any action.",
+      "fallback": "This reads the risk score, band, model version and reasons saved for this factory. Read the reasons and the latest records below. We do not score it again here. A person decides what to do.",
       "generate": "Explain this risk",
       "generating": "Generating…"
     },

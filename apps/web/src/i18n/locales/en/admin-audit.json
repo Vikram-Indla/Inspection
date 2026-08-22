@@ -45,7 +45,7 @@
   },
   "banners": {
     "partial": "Results reflect only what you can currently read.",
-    "degraded": "Semantic replay contracts aren't applied in this environment. Generic events that can't be changed stay visible, and they aren't promoted to official facts.",
+    "degraded": "This system does not have the full event rules yet. Simple events stay on screen and cannot be changed. We do not treat them as official facts.",
     "partialHistory": "PARTIAL HISTORY. The limited server read reached its safety cap. Reconstruction and completeness aren't confirmed for this result."
   },
   "states": {

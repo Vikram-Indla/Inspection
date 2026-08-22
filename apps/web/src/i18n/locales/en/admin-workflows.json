@@ -8,7 +8,7 @@
   "subtitle": "States, transitions, guards and SLA · workflow_admin only · versioned.",
   "banner": {
     "title": "Only approved changes.",
-    "body": "Transitions are checked against the published version only — there is no status bypass. Changes go from draft to publish, and the approver must be a different person, enforced by a database rule. Published versions cannot be changed. Risk and SLA values live in the engine settings and cannot be edited here."
+    "body": "We check every change against the published version only. Nobody can skip a status. A change starts as a draft. A different person must approve it. Once published, a version cannot change. Risk and deadline values live in the engine settings."
   },
   "loadError": "The workflow settings could not be loaded. Nothing was changed. Try again.",
   "empty": {
@@ -55,7 +55,7 @@
     "selectHint": "Select a state to filter its outgoing transitions; select a transition row to inspect it.",
     "selectTransition": "Select a transition from the table below to inspect its role, trigger, guards and side effects.",
     "noTransitions": "No outgoing transitions from this state.",
-    "authoredElsewhere": "Read-only view of the governed payload. Change it by proposing a draft and editing the state-machine payload below — publishing needs a distinct approver.",
+    "authoredElsewhere": "You can read this, but not change it here. To change it, start a draft and edit the steps below. A different person must publish it.",
     "none": "—"
   },
   "propose": {
@@ -86,7 +86,7 @@
   "sla": {
     "title": "SLA model",
     "loadError": "The SLA calendars could not be loaded. Nothing was changed.",
-    "none": "No SLA calendar is set up. Deadlines, working days and escalation are governed inputs — until one is approved, timers stay pending and no deadline is shown.",
+    "none": "No working calendar is approved yet. Deadlines and working days must be approved first. Until then, timers wait and we show no deadline.",
     "calendar": "Calendar",
     "workingDays": "Working days",
     "hours": "Working hours",
@@ -94,7 +94,7 @@
     "activation": "Activation",
     "authorized": "Approved",
     "pending": "Not approved",
-    "note": "Deadlines are computed only from an approved working calendar. There is no scheduler: a breach is never triggered on its own, and no default duration is assumed."
+    "note": "We use an approved working calendar to find deadlines. Nothing runs on a timer yet. We never guess how long a step should take."
   },
   "notConfigured": "N/A",
   "loading": "Loading workflows"

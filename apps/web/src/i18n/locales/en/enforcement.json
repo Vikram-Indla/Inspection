@@ -120,7 +120,7 @@
     "emptyTitle": "No violation codes configured",
     "emptyBody": "The read succeeded and returned none. Violations are configured through a compliance configuration request.",
     "count": "{count} violation codes",
-    "catalogueFootnote": "Violations are raised automatically from configured item responses; an inspector can never type or override one. Legal basis belongs to the penalty mapping, not the code. Catalogue codes are separate from issued violations, and every change is audit-tracked.",
+    "catalogueFootnote": "Answers in the form raise violations. An inspector cannot type one or change one. The legal basis comes from the penalty list, not from the code. List codes are separate from real violations. We keep a record of every change.",
     "penaltyFootnote": "One violation, one penalty — the database rejects a second mapping. Range and repeat presets are fixed choices, never money amounts or legal wording."
   },
   "code": {

@@ -10,7 +10,7 @@
   "subtitle": "Official coordinates and per-factory geofence radii, stamped on every geo event",
   "banner": {
     "title": "GIS studio.",
-    "body": "These values are stamped on every geo event, and the settings version is recorded with each check-in. Official coordinates stay owned by the GIS administrator; field observations never overwrite them. Per-factory geofence radii are edited on the map below."
+    "body": "We save these values with every map event. We save the settings version with every arrival. The GIS admin owns the official points. What an inspector sees never changes them. You can change the map circle for each factory below."
   },
   "error": {
     "title": "GIS data not available.",

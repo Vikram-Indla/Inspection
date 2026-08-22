@@ -29,7 +29,7 @@
     "save": "Save preferences",
     "saving": "Saving…",
     "saved": "Saved",
-    "pushOptInNote": "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.",
+    "pushOptInNote": "To get alerts on a phone, you must allow them on that phone first. The switch above only decides if we send alerts to the phones you allowed.",
     "pushEnable": "Enable push on this device",
     "pushEnabling": "Requesting permission…",
     "pushEnabled": "Push enabled on this device",

@@ -82,7 +82,7 @@
   },
   "roleCaps": {
     "title": "Role capabilities",
-    "intro": "Grant or revoke a capability for an entire role. A capability you do not hold cannot be granted to a role you hold, and access management can never be granted to or revoked from your own role.",
+    "intro": "Give or take away a permission for a whole role. You can only give a permission you already have. You can never change access for your own role.",
     "selectRole": "Select a role",
     "selectRolePlaceholder": "Choose a role",
     "noRoles": "No role is available to manage",

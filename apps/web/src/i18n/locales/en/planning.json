@@ -564,7 +564,7 @@
     },
     "notice": {
       "unreadableTitle": "Criteria could not be read",
-      "unreadableBody": "The criteria link was invalid or corrupted and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below."
+      "unreadableBody": "The link with your filters was broken, so we could not use it. Nothing is shown until the filters work. Please set them again below."
     },
     "ledger": {
       "heading": "Eligibility ledger",
@@ -985,7 +985,7 @@
     "access": {
       "unavailableBody": "Planning data is not available right now. Nothing was changed. Try again once access is fixed.",
       "unauthorizedTitle": "You don’t have access to review this plan",
-      "unauthorizedBody": "This view requires the bulk-planning capability and matching scope. Navigation visibility is not authorization; your permissions remain the boundary.",
+      "unauthorizedBody": "You need the bulk planning permission and the right area. Seeing a menu item does not mean you can open it.",
       "unauthorizedBack": "Back to planning",
       "unavailableTag": "Unavailable"
     },

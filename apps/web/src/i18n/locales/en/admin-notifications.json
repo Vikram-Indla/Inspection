@@ -22,7 +22,7 @@
     "chip": "register not available"
   },
   "rolesUnavailable": "Recipient roles are not available. Rule creation is turned off; existing rules remain readable.",
-  "escalationNote": "SLA timers and escalation roles are stored as settings. Automatic breach-firing (a scheduled process that escalates when a timer runs out) is separate, and this screen does not build it.",
+  "escalationNote": "We save the timers and the roles to warn as settings. Nothing warns anyone on its own yet. This screen does not build that.",
   "form": {
     "createTitle": "Create a draft rule",
     "eventKey": "Event",

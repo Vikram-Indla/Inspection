@@ -10,6 +10,7 @@ by agents with no memory between sessions. This file is the memory.
 
 | Date | Task | Record | Outcome |
 | --- | --- | --- | --- |
+| 2026-08-22 | T-180 · First copy rewrite wave (26 strings, en + ar) | [record](sessions/2026-08/2026-08-22-T-180-first-copy-rewrite-wave.md) | baseline 352→313; mean L2 load 8-24 → 0.32; gate caught its own author; Arabic needs sign-off |
 | 2026-08-22 | T-179 · Retire "Saqeel" from every user-visible surface | [record](sessions/2026-08/2026-08-22-T-179-saqeel-user-visible-retirement.md) | PWA install name + home-screen label were still "Saqeel"; favicon aria-label fixed; 4 dead wordmarks deleted; 3rd stale T-174 spec re-pointed; slices B/C/D parked, D needs a decision |
 | 2026-08-22 | T-178 · WEB-016 Content & Voice + `gates:content` | [record](sessions/2026-08/2026-08-22-T-178-content-standard-and-gate.md) | baseline 352, gate proven both ways; found WEB-015 number collision and that NO gate ran in CI — added `web-gates` job |
 | 2026-08-22 | T-177 · `/login` say the name once + first L2-standard i18n namespace | [record](sessions/2026-08/2026-08-22-T-177-login-namespace-and-redundancy.md) | name 6×→1; page.tsx 159→37; Arabic 0%→100% on the route; Arabic needs sign-off |

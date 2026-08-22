@@ -62,6 +62,6 @@
       "Providers that aren't available are blocked safely, and features that depend on them show this limit."
     ],
     "noteTitle": "Reconstruction note",
-    "note": "Prototype provider names, sync times and health labels are not copied. The register, event stream and export jobs are backend reads limited to what you're allowed to see; missing tables or rows show as not available or as a checked, empty state."
+    "note": "We do not copy names, update times or health labels from the test system. This page only shows what you may see. If a record is missing, you see 'Not available' or an empty list."
   }
 }

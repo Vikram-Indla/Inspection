@@ -12,7 +12,7 @@
   "subtitle": "Staging, master-data controls and import history — read-only Factory 360 profiles",
   "banner": {
     "title": "Settings only.",
-    "body": "Factory 360 profiles are read-only. Setting up a provider does not prove it's connected. CSV rows stay staged until a separate, approved reconciliation, and source identifiers can't be silently replaced."
+    "body": "Factory 360 pages are read only. Adding a provider does not mean it is connected. Rows from a file wait until someone approves them. Source numbers cannot be changed quietly."
   },
   "provider": {
     "title": "Senaei provider",

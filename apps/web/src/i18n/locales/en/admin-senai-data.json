@@ -66,7 +66,7 @@
   "mapping": {
     "help": "How SENAI fields map to internal fields, with transform and status.",
     "heading": "Field mapping registry",
-    "body": "No field-mapping registry exists in the applied schema, so no mapping rule can be shown. You must not invent SENAI-to-internal field mappings, transforms or enum maps here: they change how source data is understood later. Until a mapping registry is approved and applied, the adapters in lib/integrations/senaei/adapters stay the only source for mapping, and unmapped fields show up later as not configured."
+    "body": "No field mapping is approved yet. There is nothing to show here. Do not add a mapping on this screen. It would change how we read the source data. Until a mapping is approved, the app uses its own rules. Fields with no rule show as a dash."
   },
   "reconcile": {
     "lastSync": "Last recorded sync",

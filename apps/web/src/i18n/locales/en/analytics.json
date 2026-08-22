@@ -112,7 +112,7 @@
   "bottlenecks": {
     "heading": "Blocked on a governed value",
     "summary": "{count} capabilities are blocked",
-    "body": "Each is waiting on a value the platform may not invent — a cohort rule, a lookback, a weighting, a threshold, a target or a denominator.",
+    "body": "Each one is waiting for a setting we cannot guess. Who to count. Over what period. What to compare against.",
     "planningToSubmissionCohort": "Planning-to-submission cohort",
     "repeatViolationLineage": "Repeat violation lineage and lookback",
     "riskToAttentionRules": "Risk-to-attention snapshot rules",
