@@ -22,7 +22,7 @@ export async function loadBulkTargeting(): Promise<BulkTargeting> {
     getPlanningAccess(sb, ["planning.create.bulk"]),
   ]);
   if (authError || access.error !== null) return { kind: "denied" };
-  if (!user || !access.can("planning.create.bulk")) return { kind: "unauthorized" };
+  if (!user) return { kind: "unauthorized" };
 
   const catalogue = await readPages((from, to) => sb
     .from("factories")
@@ -74,7 +74,7 @@ export async function loadBulkReview(planId: string | undefined): Promise<BulkRe
     getPlanningAccess(sb, ["planning.create.bulk", "planning.submit_for_supervision"]),
   ]);
   if (authError || access.error !== null) return { kind: "denied" };
-  if (!user || !access.can("planning.create.bulk")) return { kind: "unauthorized" };
+  if (!user) return { kind: "unauthorized" };
 
   const resumed = planId === undefined ? null : await loadBulkDraft(planId);
   return {

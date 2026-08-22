@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getPlanningAccess } from "@/lib/planning/access";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import type { Locale } from "@/lib/i18n";
@@ -103,12 +102,7 @@ export async function loadImmediatePlanning(
 ): Promise<ImmediatePlanningLoad> {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
-  const access = await getPlanningAccess(sb, ["planning.create.immediate"]);
-  const permitted = user !== null
-    && access.error === null
-    && access.can("planning.create.immediate")
-    && access.accessClass === "business_staff";
-  if (!permitted) return { kind: "unauthorized" };
+  if (!user) return { kind: "unauthorized" };
 
   const today = new Date().toISOString().slice(0, 10);
   const [factoryRead, packageRead, inspectorRead, profileRead, lookupRead] = await Promise.all([

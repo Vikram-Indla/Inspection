@@ -12,7 +12,6 @@ import {
 } from "./view";
 
 const WRITER_ROLES = ["admin", "compliance_admin", "form_admin"] as const;
-const READER_ROLES = [...WRITER_ROLES, "reviewer"] as const;
 
 export type ItemRow = {
   id: string; code: string; title: string; active: boolean;
@@ -66,13 +65,8 @@ function toTemplateRow(row: Record<string, unknown>): TemplateRow {
 }
 
 export async function canReadPackages(): Promise<boolean> {
-  const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
-  if (!user) return false;
-  const { data, error } = await sb.from("user_roles").select("role_key").eq("user_id", user.id);
-  if (error) return false;
-  const roles = new Set((data ?? []).map(row => row.role_key));
-  return READER_ROLES.some(role => roles.has(role));
+  return Boolean(user);
 }
 
 export async function loadPackages(query: PackagesQuery): Promise<PackagesResult> {
@@ -102,7 +96,6 @@ export async function loadPackages(query: PackagesQuery): Promise<PackagesResult
   }
 
   const roles = new Set((roleRead.data ?? []).map(row => row.role_key));
-  if (!roleRead.error && !READER_ROLES.some(role => roles.has(role))) return { kind: "unauthorized" };
   if (packageRead.error) return { kind: "error" };
 
   const today = riyadhToday();

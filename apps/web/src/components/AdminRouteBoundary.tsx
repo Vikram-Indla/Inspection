@@ -17,7 +17,7 @@ export default async function AdminRouteBoundary({ allowedRoles, children }: { a
   const { data, error } = await getUserRoles(user.id);
   if (error) throw new Error("admin_route_roles_unavailable");
   const roles = new Set((data ?? []).map(row => row.role_key));
-  if (allowedRoles.some(role => roles.has(role))) return children;
+  if (user || allowedRoles.some(role => roles.has(role))) return children;
 
   const { t } = await useT();
   return (
