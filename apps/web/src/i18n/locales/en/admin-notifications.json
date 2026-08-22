@@ -94,7 +94,7 @@
     "maker_checker": "A different settings writer must approve this draft.",
     "missing_recipient": "Missing recipient — recipient role is not set.",
     "missing_reason": "A deactivation reason is required.",
-    "not_found": "Rule not found, or outside your scope.",
+    "not_found": "Rule not found, or outside your area.",
     "notice_not_configured": "No provider is available. We recorded this as a test row only. No live provider is set for this channel.",
     "notice_delivered": "Test notification delivered."
   }

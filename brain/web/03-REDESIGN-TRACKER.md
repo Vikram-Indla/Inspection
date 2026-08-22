@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-186.** Take T-187.
+implements the reservation. **Highest id in use: T-187.** Take T-188.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,26 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-187 · "scope" removed from English copy
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-187-scope](sessions/2026-08/2026-08-22-T-187-scope.md)
+
+84 English strings → 0 uses. Baseline **266 → 182**.
+
+**English-only, and that is the finding.** `scope` renders in Arabic as **نطاق**
+— ordinary everyday Arabic for "range" or "area". `نطاق التاريخ` is simply "date
+range". **The English was harder than its own translation.** For five waves the
+assumption was that Arabic inherits English's problems; here it did not, because
+the translator reached for a common word where the English author reached for a
+system word. Sampled five, left them alone.
+
+54 of 84 resolved by rule (`your access scope` → `your area`); 30 carried real
+meaning and were written by hand — `"Exact return scope"` → `"Exactly what to
+fix"`, `"Scope classification"` → `"Change type"`.
+
+Remaining is one rule and 182 violations, half of it the engineering-leak group
+(`json`, `metadata`, `endpoint`, `payload`, `uuid`, `schema`).
 
 ### T-186 · Every idiom and phrasal verb removed
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 20m`

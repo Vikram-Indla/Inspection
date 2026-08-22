@@ -112,7 +112,7 @@
     },
     "error": "Couldn't load spatial data. Nothing changed.",
     "emptyTitle": "No layers or working locations in your area",
-    "emptyBody": "GIS layers and working factory locations appear here. Empty may also mean none are in your scope.",
+    "emptyBody": "GIS layers and working factory locations appear here. Empty may also mean none are in your area.",
     "create": {
       "title": "Create a layer",
       "key": "Layer key",

@@ -19,7 +19,7 @@
   "error": "Couldn't load risk models. Nothing changed.",
   "empty": {
     "title": "No risk model drafts",
-    "body": "No risk models exist in your allowed scope. Create a draft to begin the maker-checker lifecycle."
+    "body": "No risk models exist in your area. Create a draft to begin the maker-checker lifecycle."
   },
   "off": {
     "consequence": "The risk-model draft layer is off here. Live risk settings are still edited in the Risk Studio.",
@@ -68,7 +68,7 @@
     "sessionExpired": "Your session has ended. Sign in again.",
     "versionLabelRequired": "A version label is required.",
     "payloadInvalid": "The model payload was not valid JSON.",
-    "writeError": "The change could not be saved (risk_owner scope required). Nothing changed.",
+    "writeError": "We could not save the change. It needs the risk owner role. Nothing changed.",
     "illegalTransition": "Illegal transition {from} → {to}.",
     "transitionRejected": "Transition rejected: {message}"
   }

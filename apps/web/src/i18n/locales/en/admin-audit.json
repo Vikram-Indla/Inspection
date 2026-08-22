@@ -7,7 +7,7 @@
   "title": "Inspection Flight Recorder",
   "code": "MVP2·M2-05",
   "skip": "Skip to event chronology",
-  "portfolio": "All cases in current scope",
+  "portfolio": "All cases in your area",
   "modes": {
     "label": "Audit replay modes",
     "recorder": "Flight recorder",
@@ -38,7 +38,7 @@
   "policy": "Day-to-day view only. Export, reveal, hiding, keeping, watermark, purge and legal-evidence claims are set by policy.",
   "tags": {
     "policyHeld": "POLICY_HELD",
-    "partialScope": "PARTIAL SCOPE.",
+    "partialScope": "PART ONLY.",
     "degraded": "DEGRADED.",
     "conflict": "CONFLICT",
     "zeroDisclosure": "zero disclosure"

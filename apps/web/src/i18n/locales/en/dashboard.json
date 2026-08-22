@@ -83,7 +83,7 @@
       "question": "Which regulations generate the most violations?",
       "title": "Top violated regulation",
       "definition": "Count of violations grouped by regulation",
-      "example": "{count} linked violations in the current scope.",
+      "example": "{count} linked violations in your area.",
       "exampleEmpty": "No violations linked to a regulation in your area.",
       "interpretation": "We count only violations linked to a regulation.",
       "action": "Open the regulation"

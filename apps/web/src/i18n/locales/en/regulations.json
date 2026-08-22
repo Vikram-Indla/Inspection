@@ -84,7 +84,7 @@
     "openRecord": "Open the full record",
     "unavailable": "{records} could not be read — this is not a claim that there are none",
     "notFoundTitle": "Regulation not found",
-    "notFoundBody": "No regulation in your access scope has this identifier. It may have been superseded or deactivated."
+    "notFoundBody": "No regulation in your area has this identifier. It may have been superseded or deactivated."
   },
   "overview": {
     "authority": "Issuing authority",
@@ -236,7 +236,7 @@
     "missingReference": "Missing regulation reference.",
     "reasonRequired": "A lifecycle reason is required.",
     "denied": "You are not authorised to change regulation lifecycle state.",
-    "notFound": "The regulation no longer exists or is outside your scope.",
+    "notFound": "The regulation no longer exists or is outside your area.",
     "providerError": "The lifecycle change could not be completed. Retry safely."
   }
 }

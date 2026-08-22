@@ -4,11 +4,11 @@
   "loading": "Loading review queue",
   "empty": {
     "title": "No inspections waiting for review",
-    "body": "No reviews in your scope are waiting for a decision."
+    "body": "No reviews in your area are waiting for a decision."
   },
   "unauthorized": {
     "title": "You don’t have access to the review queue",
-    "body": "This queue needs an allowed role — Admin, Planner, Supervisor, or assigned Inspector — with matching scope."
+    "body": "This queue needs an allowed role. Admin, Planner, Supervisor, or the assigned Inspector. You also need the right area."
   },
   "error": {
     "title": "Review queue not available",
@@ -26,7 +26,7 @@
   },
   "submissionBlocked": {
     "title": "New submissions unavailable",
-    "body": "New inspection submissions cannot be sent right now. Existing review records in your scope are still available."
+    "body": "New inspection submissions cannot be sent right now. Existing review records in your area are still available."
   },
   "filters": {
     "search": "Factory, code or inspector",
@@ -131,12 +131,12 @@
       "mediaPreviewUnavailable": "We cannot show media files here. There is no safe link for them on this page. The details stay view only, and the app never guesses a public link.",
       "noOpenDecision": "No open decision — status {status}.",
       "notFound": "Not found",
-      "notFoundDesc": "No record matches this ID or it is outside your permitted scope.",
+      "notFoundDesc": "No record matches this ID or it is outside your area.",
       "openAnalytics": "Open Analytics",
       "openFactory360": "Open Factory 360",
       "panelHeading": "Decision — irreversible once confirmed",
       "priorDecision": "Prior decision:",
-      "readOnlyBody": "You cannot edit this content — the database blocks it (proven B3). To fix something, use Return with the exact scope.",
+      "readOnlyBody": "You cannot edit this content. The database blocks it. To fix something, use Return and say exactly what to fix.",
       "readOnlyNote": "View only for this role. Only a Level 2 Reviewer or Operations can make the decision.",
       "readOnlyRole": "{role} · view only",
       "readOnlyTitle": "Final submitted version.",
@@ -149,7 +149,7 @@
       "reportLink": "Inspection report PDF",
       "returnImpact": "Return preserves this submitted version and unlocks only the selected sections for the assigned inspector.",
       "returnScopeHint": "Only selected sections unlock; the rest stays locked.",
-      "returnScopeTitle": "Exact return scope",
+      "returnScopeTitle": "Exactly what to fix",
       "reviewConfirmation": "Review decision before recording",
       "sections": "sections",
       "sigAlt": "Representative signature",
@@ -230,14 +230,14 @@
     "cmp": {
       "actionCollection": "Action forms",
       "added": "added",
-      "catExpected": "Expected (in returned scope)",
+      "catExpected": "Expected (was asked for)",
       "catUnavailable": "Not available",
       "catUnchanged": "Unchanged",
       "catUnexpected": "Unexpected — locked-section change",
       "changed": "changed",
       "cleanBody": "Every changed answer falls inside the returned sections. Non-answer comparisons remain unavailable below.",
-      "cleanTitle": "Changes within returned scope.",
-      "colClass": "Scope classification",
+      "cleanTitle": "Changes are inside what was asked for.",
+      "colClass": "Change type",
       "colItem": "Item",
       "colSection": "Section",
       "collectionHeading": "Fixed collection comparison",
@@ -245,8 +245,8 @@
       "emptyDiff": "No answer changed between these two versions (computed from stored snapshots — not a failure).",
       "evidenceCollection": "Evidence manifest (ID + SHA metadata)",
       "from": "Compare from",
-      "heading": "Version comparison — Tamper-evident Scope Rail",
-      "navHint": "Comparison is navigation-only — there is no accept/merge action. When a diff is shown, selecting a scope-rail row scrolls to its answer.",
+      "heading": "Version comparison — tamper-evident change rail",
+      "navHint": "Comparison is for looking only. There is no accept or merge action. When a difference is shown, choosing a row scrolls to its answer.",
       "noPrior": "No prior version to compare — this is the first submitted version.",
       "noScope": "We do not have a record of what was sent back. So we cannot say which changes were expected. Each change shows as 'We do not know'.",
       "removed": "removed",

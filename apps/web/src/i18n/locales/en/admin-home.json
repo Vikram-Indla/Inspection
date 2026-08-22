@@ -31,7 +31,7 @@
     "cta": "Open Activity Log",
     "loadErrorTitle": "Recent changes are not available.",
     "loadErrorBody": "The Activity Log could not be loaded. Changes may exist that are not shown.",
-    "empty": "No changes returned for this scope",
+    "empty": "No changes returned for this area",
     "colChange": "Change",
     "colArea": "Area",
     "colActor": "Actor",

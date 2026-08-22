@@ -7,8 +7,8 @@
   },
   "error": "Couldn’t load tasks. Nothing was changed. Try again.",
   "empty": {
-    "title": "No tasks in your scope",
-    "body": "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope."
+    "title": "No tasks in your area",
+    "body": "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your area."
   },
   "board": {
     "label": "Task status board"

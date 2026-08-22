@@ -64,7 +64,7 @@
   "workspace": {
     "backList": "Request list",
     "backQueue": "Waiting for approval",
-    "notFoundTitle": "Request not found or outside your scope",
+    "notFoundTitle": "Request not found or outside your area",
     "notFoundBody": "The read returned no request. No configuration content was loaded.",
     "notFoundBack": "Return to list",
     "returnReason": "Return or rejection reason",
