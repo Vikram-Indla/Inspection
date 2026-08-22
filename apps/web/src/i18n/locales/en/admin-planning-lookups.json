@@ -13,7 +13,7 @@
   },
   "readOnly": {
     "heading": "View only",
-    "pill": "Read-only",
+    "pill": "View only",
     "body": "You can view these but not change them. A security administrator can give your role permission to edit them, under Users and roles."
   },
   "error": {

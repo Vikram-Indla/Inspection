@@ -44,15 +44,15 @@
     "title": "API and rule events",
     "help": "Append-only outcomes linked by correlation ID.",
     "error": "API events could not be read. This is data that's not available, not an empty event history.",
-    "emptyTitle": "No events visible",
-    "emptyBody": "No events visible to you. This is a checked, empty result."
+    "emptyTitle": "No events",
+    "emptyBody": "You cannot see any events. We checked — there are none."
   },
   "exports": {
     "title": "Data-sharing exports",
     "help": "Prepared is not delivered. Delivery requires an artifact hash and receipt.",
     "error": "Export jobs could not be read. This is data that's not available, not an empty export history.",
-    "emptyTitle": "No export jobs visible",
-    "emptyBody": "No export jobs visible to you. This is a checked, empty result."
+    "emptyTitle": "No export jobs",
+    "emptyBody": "You cannot see any export jobs. We checked — there are none."
   },
   "governance": {
     "title": "Governance on this surface",

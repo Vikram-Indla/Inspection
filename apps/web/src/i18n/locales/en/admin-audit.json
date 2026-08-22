@@ -50,7 +50,7 @@
   },
   "states": {
     "unauthorized": "You are not authorized to read audit events.",
-    "zero": "No audit facts are visible in your current scope."
+    "zero": "There are no audit records in your area."
   },
   "recorder": {
     "detail": "Open provenance",

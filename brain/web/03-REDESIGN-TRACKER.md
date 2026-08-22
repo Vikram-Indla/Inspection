@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-181.** Take T-182.
+implements the reservation. **Highest id in use: T-182.** Take T-183.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,20 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-182 · Eliminate "visible" and "read-only"
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-182-eliminate-visible-readonly](sessions/2026-08/2026-08-22-T-182-eliminate-visible-readonly.md)
+
+45 + 30 uses → **0**. 78 strings rewritten in each language.
+`read-only` became **"view only"** for labels — the vocabulary file's suggested
+"you can read this, not change it" is right for prose and far too long for a
+pill; the word list should carry both. `visible to you` became **"you can see"**:
+the old phrasing described the permission model, the new one describes the
+reader.
+
+Baseline **246 → 206**. Cumulative T-180→T-182: **352 → 206, 146 cleared.**
+Two of the three gate failures were my own replacement text.
 
 ### T-181 · Eliminate "governed" — the app's most-used banned word
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`

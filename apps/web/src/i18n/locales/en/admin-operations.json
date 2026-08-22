@@ -23,7 +23,7 @@
   },
   "chart": {
     "title": "Error records by source",
-    "caption": "The most recent 50 records visible to you — not a system-health claim.",
+    "caption": "The 50 most recent records you can see. This does not say the system is healthy.",
     "aria": "Error records by source, counted from the 50 most recent records"
   },
   "errorQueue": {
@@ -34,7 +34,7 @@
     "attempts": "Attempts",
     "action": "Action",
     "retry": "Request idempotent retry",
-    "empty": "No error records visible to you. This isn't a claim about system health."
+    "empty": "You cannot see any error records. This does not say the system is healthy."
   },
   "flags": {
     "title": "Feature flag versions",

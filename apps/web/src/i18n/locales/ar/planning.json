@@ -236,7 +236,7 @@
       "colOperational": "حالة الزيارة",
       "colInspector": "المفتش",
       "colWindow": "النافذة",
-      "selectAll": "تحديد كل الزيارات المعروضة",
+      "selectAll": "اختيار كل زيارة في هذه الصفحة",
       "selectRow": "تحديد الزيارة {id}",
       "selected": "{n} محدَّدة",
       "clearSelection": "إلغاء التحديد",
@@ -257,7 +257,7 @@
       "allowedEditable": "قابلة للتعديل — منشورة ولم تبدأ",
       "allowedLocked": "مقفلة — بدأ التفتيش",
       "allowedFinal": "نهائية — لا تغييرات إضافية",
-      "allowedExpired": "منتهية — للاطلاع فقط"
+      "allowedExpired": "منتهية — للعرض فقط"
     },
     "bulk": {
       "heading": "إجراءات جماعية — تُفحص لكل زيارة",
@@ -687,7 +687,7 @@
       "summaryByBand": "حسب نطاق الخطورة",
       "summaryByRegion": "حسب المنطقة",
       "selectAllConfirmTitle": "تأكيد تحديد كل النتائج",
-      "selectAllConfirmBody": "سيؤدي هذا إلى تحديد كل النتائج البالغة {n} والمطابقة للمعايير الحالية، عبر كل الصفحات — وليس ما هو ظاهر فقط. اكتب {n} للتأكيد.",
+      "selectAllConfirmBody": "هذا يختار كل النتائج البالغ عددها {n} في كل الصفحات، وليس هذه الصفحة فقط. اكتب {n} للتأكيد.",
       "selectAllConfirmInputLabel": "اكتب العدد للتأكيد",
       "selectAllConfirmButton": "تحديد كل الـ {n}",
       "selectAllConfirmCancel": "إلغاء",

@@ -19,7 +19,7 @@
     "active": "Active",
     "upcoming": "Upcoming",
     "alerts": "Needs attention",
-    "alertsUnavailable": "Assignment alerts are temporarily unavailable. Other assignment data remains visible.",
+    "alertsUnavailable": "Visit alerts are not available right now. The rest of your visit details still show.",
     "returned": "Returned",
     "expired": "Expired",
     "earliest": "Earliest first",

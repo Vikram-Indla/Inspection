@@ -47,7 +47,7 @@
     "saving": "جارٍ الحفظ…",
     "saved": "تم الحفظ",
     "viewOnly": "للعرض فقط — يلزم دور gis_admin لتحرير أنصاف أقطار السياج.",
-    "defaultsTitle": "افتراضيات المحرك (للقراءة فقط)",
+    "defaultsTitle": "الإعدادات الافتراضية للمحرك (للعرض فقط)",
     "defaultsCheckin": "دقة تسجيل الحضور",
     "defaultsArrival": "كشف الوصول",
     "defaultsFence": "السياج الافتراضي",

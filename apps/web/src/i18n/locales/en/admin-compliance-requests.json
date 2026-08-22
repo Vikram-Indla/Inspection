@@ -1,5 +1,9 @@
 {
-  "breadcrumb": { "administration": "Administration", "list": "Compliance requests", "create": "Create request" },
+  "breadcrumb": {
+    "administration": "Administration",
+    "list": "Compliance requests",
+    "create": "Create request"
+  },
   "loading": "Loading configuration requests",
   "status": {
     "draft": "Draft",
@@ -64,7 +68,7 @@
     "notFoundBody": "The read returned no request. No configuration content was loaded.",
     "notFoundBack": "Return to list",
     "returnReason": "Return or rejection reason",
-    "readOnlyTitle": "Read-only",
+    "readOnlyTitle": "View only",
     "readOnlyBody": "Your role can view this request but cannot change or decide it.",
     "summaryHeading": "Request",
     "noDescription": "No description supplied.",

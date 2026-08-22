@@ -14,7 +14,7 @@
     "body": "Your configuration permissions could not be verified. Writes are disabled; retry the page."
   },
   "readonly": {
-    "title": "Read-only catalogue",
+    "title": "View-only list",
     "body": "Your role can view item details, usage and runtime previews. Creating or changing active state needs a Compliance or Form Admin role, enforced by the server and the database.",
     "action": "Read only"
   },
@@ -104,9 +104,9 @@
     "requirementRequired": "Required",
     "requirementOptional": "Optional",
     "requirementConditional": "Conditional",
-    "visibleWhen": "Visible when",
+    "visibleWhen": "Show when",
     "visibleWhenHint": "Use the fixed key=value format.",
-    "mandatoryWhenVisible": "Mandatory when visible",
+    "mandatoryWhenVisible": "Required when shown",
     "scoringEnabled": "Scoring enabled",
     "scoringDisabled": "Scoring disabled",
     "guidance": "Guidance (EN)",
@@ -142,7 +142,7 @@
     "conditional": "Conditional",
     "required": "Required",
     "optional": "Optional",
-    "mandatoryVisible": "mandatory when visible",
+    "mandatoryVisible": "required when shown",
     "scoringOff": "scoring disabled; all responses excluded",
     "readonly": "This shows the saved configuration only — nothing here can be edited.",
     "deactivated": "This item is deactivated. It’s hidden from new checklist versions; existing history is kept.",

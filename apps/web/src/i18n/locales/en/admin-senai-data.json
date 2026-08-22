@@ -10,7 +10,7 @@
     "senai": "SENAI data"
   },
   "title": "SENAI data management",
-  "subtitle": "Upstream source registry, endpoint contract, mapping, sync and reconciliation — read-only source of truth",
+  "subtitle": "Where SENAI data comes from, how it is matched and refreshed — view only",
   "back": "System connections",
   "tabs": {
     "label": "SENAI data sections",
@@ -26,7 +26,7 @@
     "snapshot": "Observed-on-inspection snapshots are captured separately and never overwrite the source."
   },
   "sources": {
-    "help": "Source data is read-only; this registry records which connections Inspection Platform uses. Setting it up is not the same as being connected.",
+    "help": "Source data is view only. This list records which connections the app uses. Adding one does not mean it is connected.",
     "error": "Source connections could not be read. Endpoint contract and recorded calls remain independently available.",
     "runsError": "Recorded runs could not be read. Available connection settings are kept without a guessed freshness or counts.",
     "caption": "Registered upstream source connections",
@@ -47,7 +47,7 @@
     "help": "The documented read contract Inspection Platform is permitted to call. This is the same allow-list the runtime client enforces.",
     "verified": "{verified}/{total} with a recorded live call",
     "verificationUnavailableShort": "Live-call verification not available",
-    "callsError": "Recorded live calls could not be read. The endpoint allow-list stays visible, but live-call verification is not available — not unverified.",
+    "callsError": "We could not read the recorded live calls. The allowed list still shows, but we cannot confirm the calls. That is not the same as failing them.",
     "caption": "SENAI endpoint contract and recorded call verification",
     "colMethod": "Method",
     "colEndpoint": "Endpoint",
@@ -91,7 +91,7 @@
     "noReason": "No reason code recorded",
     "emptyTitle": "No unresolved divergence",
     "emptyBody": "No unresolved divergence is recorded. This is a checked, empty result.",
-    "footer": "Resolution is an approved reconciliation action, not an edit on this screen. Inspection Platform never silently overwrites a divergence in either direction, and never writes the resolution back to SENAI.",
+    "footer": "Differences are resolved by an approved action, not edited here. The app never overwrites a difference on its own. It never sends the result back to SENAI.",
     "openHistory": "Open sync, staging and reconciliation history"
   }
 }

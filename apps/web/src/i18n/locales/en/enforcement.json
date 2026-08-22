@@ -16,10 +16,10 @@
   },
   "missing": {
     "title": "Record not in your scope",
-    "body": "The requested enforcement record is not visible under your access. Whether it exists is not disclosed."
+    "body": "You cannot see this enforcement record. We do not say whether it exists."
   },
   "empty": {
-    "title": "No enforcement records visible to you",
+    "title": "You cannot see any enforcement records",
     "body": "The read succeeded and returned none within your access scope.",
     "filteredTitle": "No records match",
     "filteredBody": "The library itself is not empty. Clear the search, status, date or region filter."

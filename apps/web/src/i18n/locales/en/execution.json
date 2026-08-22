@@ -11,7 +11,7 @@
   },
   "denied": {
     "title": "You do not have access to this destination",
-    "body": "The destination stays visible so the platform remains legible. Access is refused here, at the boundary.",
+    "body": "The page stays in the menu so you know it exists. You cannot open it.",
     "request": "Request access",
     "back": "Back to the dashboard"
   },

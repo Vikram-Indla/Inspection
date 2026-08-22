@@ -158,7 +158,7 @@
     },
     "scheduled_load_count": {
       "title": "Scheduled load count",
-      "definition": "Visible assignments; never utilization."
+      "definition": "Visits you can see. Not a measure of how busy someone is."
     },
     "gps_override_count": {
       "title": "GPS override count",
@@ -198,7 +198,7 @@
     },
     "inspector_coverage": {
       "title": "Inspector coverage",
-      "definition": "Distinct inspectors holding a visible assignment; never utilization."
+      "definition": "How many different inspectors hold a visit you can see. Not a measure of how busy they are."
     },
     "high_risk_factory_share": {
       "title": "High-risk factory share",

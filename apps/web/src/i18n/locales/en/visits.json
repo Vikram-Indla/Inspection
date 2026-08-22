@@ -220,10 +220,10 @@
       "locked": "Return only — execution has started; you can't reassign this visit",
       "manage": "Return · reschedule · change type · cancel",
       "none": "None — final state, view only",
-      "opRead": "Read-only here — owned by the field app",
-      "read": "Read-only here",
+      "opRead": "View only here — the field app owns it",
+      "read": "View only here",
       "reassign": "Reassign inspector (pre-start only)",
-      "reassignLocked": "Read-only — reassignment locked",
+      "reassignLocked": "View only — cannot be reassigned",
       "returned": "Republish · correct · cancel"
     },
     "boundaryWord": "Allowed from here",

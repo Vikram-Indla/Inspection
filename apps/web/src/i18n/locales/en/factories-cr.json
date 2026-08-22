@@ -133,7 +133,7 @@
   },
   "compliance": {
     "heading": "Approved inspection compliance",
-    "rule": "Calculated only from the latest final submitted version of approved inspections and the checklist version used for the inspection. Returned or rejected inspections stay visible below, but they never affect this rate.",
+    "rule": "We use only the last sent version of approved inspections, with the checklist used at the time. Returned or rejected inspections still show below, but they never change this rate.",
     "notAvailable": "Not available",
     "na": "No eligible approved scored answers",
     "trend": "Approved compliance trend",
@@ -156,7 +156,7 @@
     "grace": "Grace period",
     "graceDays": "{count} days",
     "origin": "Originating approved report",
-    "empty": "No violations from approved inspection reports are visible in your scope."
+    "empty": "There are no violations from approved reports in your area."
   },
   "industrial": {
     "heading": "Industrial information",
@@ -201,7 +201,7 @@
     "origin": "Origin report",
     "originContext": "Origin context",
     "ocr": "Contextual OCR",
-    "evidenceEmpty": "No linked inspection, arrival or violation evidence is visible in your scope."
+    "evidenceEmpty": "There is no linked inspection, arrival or violation evidence in your area."
   },
   "timeline": {
     "heading": "Business-event timeline",
@@ -255,7 +255,7 @@
   "enforcement": {
     "heading": "Penalty history",
     "origin": "Origin report",
-    "empty": "No penalty notices are visible in your scope."
+    "empty": "There are no penalty notices in your area."
   },
   "actions": {
     "heading": "Actions",

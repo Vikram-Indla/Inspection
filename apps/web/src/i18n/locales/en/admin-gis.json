@@ -47,7 +47,7 @@
     "saving": "Saving…",
     "saved": "Saved",
     "viewOnly": "View only — the gis_admin role is required to edit geofence radii.",
-    "defaultsTitle": "Engine defaults (read-only)",
+    "defaultsTitle": "Engine defaults (view only)",
     "defaultsCheckin": "Check-in accuracy",
     "defaultsArrival": "Arrival detection",
     "defaultsFence": "Default geofence",

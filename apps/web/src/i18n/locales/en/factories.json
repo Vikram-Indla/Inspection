@@ -145,7 +145,7 @@
     "reportsEmpty": "No inspection has been recorded for this factory",
     "violationsEmpty": "No violation is recorded against this factory",
     "penaltiesEmpty": "No penalty notice has been issued to this factory",
-    "penaltiesRestricted": "Penalty notices are not visible to your role",
+    "penaltiesRestricted": "Your role cannot see penalty notices",
     "noDecision": "Not reviewed",
     "trends": "Trends"
   },

@@ -22,7 +22,7 @@
     "retry": "Reload to try again"
   },
   "readonly": {
-    "title": "Read-only template access",
+    "title": "View-only template access",
     "body": "Creating or changing templates requires the admin role."
   },
   "empty": {

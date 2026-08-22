@@ -100,7 +100,7 @@
       "question": "Which factories still require inspection this year?",
       "title": "Factories pending annual inspection",
       "definition": "Active factories with no completed inspection this inspection year",
-      "example": "{count} factories are visible, but the annual-cycle policy is not configured.",
+      "example": "You can see {count} factories, but the yearly cycle has no rule yet.",
       "interpretation": "The screen withholds a count until the inspection-year policy is published.",
       "action": "Open Planning"
     }
@@ -238,7 +238,7 @@
       "dailyCapacity": "Daily capacity",
       "unresolved": "Unresolved identity",
       "emptyTitle": "No inspectors in scope",
-      "empty": "No inspector assignments are visible in this scope.",
+      "empty": "There are no inspector visits in your area.",
       "action": "Open Execution"
     }
   },
@@ -246,7 +246,7 @@
     "title": "Enforcement action trend",
     "comparison": "{sign}{n}% vs previous period",
     "noBaseline": "No baseline in the previous period",
-    "restricted": "Penalty notices are not visible to your role",
+    "restricted": "Your role cannot see penalty notices",
     "seriesLabel": "Penalty notices issued, previous period then current",
     "footnote": "Count of penalty notices issued in the scoped period against the preceding period of equal length.",
     "action": "Open Enforcement Library"

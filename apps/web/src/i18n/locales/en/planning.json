@@ -236,7 +236,7 @@
       "colOperational": "Visit status",
       "colInspector": "Inspector",
       "colWindow": "Window",
-      "selectAll": "Select all visible visits",
+      "selectAll": "Select every visit on this page",
       "selectRow": "Select visit {id}",
       "selected": "{n} selected",
       "clearSelection": "Clear selection",
@@ -257,7 +257,7 @@
       "allowedEditable": "Editable — published and not started",
       "allowedLocked": "Locked — inspection started",
       "allowedFinal": "Final — no further changes",
-      "allowedExpired": "Expired — read-only"
+      "allowedExpired": "Expired — view only"
     },
     "bulk": {
       "heading": "Bulk actions — checked for each visit",
@@ -687,7 +687,7 @@
       "summaryByBand": "By risk band",
       "summaryByRegion": "By region",
       "selectAllConfirmTitle": "Confirm select all results",
-      "selectAllConfirmBody": "This selects all {n} results matching the current criteria, across every page — not just what's visible. Type {n} to confirm.",
+      "selectAllConfirmBody": "This selects all {n} results on every page, not only this one. Type {n} to confirm.",
       "selectAllConfirmInputLabel": "Type the count to confirm",
       "selectAllConfirmButton": "Select all {n}",
       "selectAllConfirmCancel": "Cancel",

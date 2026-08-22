@@ -10,7 +10,7 @@
   "empty": "No notifications in this view.",
   "offlineCached": "Offline — showing the cached attention state from {time}. It may be out of date.",
   "offlineEmpty": "Offline — no notification snapshot is cached on this device.",
-  "refreshFailed": "Could not refresh notifications. The last cached state remains visible.",
+  "refreshFailed": "We could not update your alerts. You are seeing the last saved copy.",
   "reconnecting": "Connection restored — refreshing notifications.",
   "markRead": "Mark read",
   "ackOffline": "Reconnect before marking this notification read. No acknowledgement was recorded.",

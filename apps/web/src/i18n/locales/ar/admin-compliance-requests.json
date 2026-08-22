@@ -1,5 +1,9 @@
 {
-  "breadcrumb": { "administration": "الإدارة", "list": "طلبات الامتثال", "create": "إنشاء طلب" },
+  "breadcrumb": {
+    "administration": "الإدارة",
+    "list": "طلبات الامتثال",
+    "create": "إنشاء طلب"
+  },
   "loading": "جارٍ تحميل طلبات التهيئة",
   "status": {
     "draft": "مسودة",
@@ -64,7 +68,7 @@
     "notFoundBody": "لم تُعِد القراءة أي طلب. لم يُحمَّل أي محتوى تهيئة.",
     "notFoundBack": "العودة إلى القائمة",
     "returnReason": "سبب الإعادة أو الرفض",
-    "readOnlyTitle": "للقراءة فقط",
+    "readOnlyTitle": "للعرض فقط",
     "readOnlyBody": "يمكن لدورك عرض هذا الطلب دون تغييره أو البت فيه.",
     "summaryHeading": "الطلب",
     "noDescription": "لم يُقدَّم وصف.",

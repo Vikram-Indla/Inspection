@@ -11,7 +11,7 @@
   "syncPending": "Pending sync",
   "syncLocal": "Saved locally",
   "loading": "Loading local drafts…",
-  "localUnavailable": "Local drafts are temporarily unavailable. Server drafts remain visible.",
+  "localUnavailable": "Drafts on this phone are not available right now. Drafts on the server still show.",
   "storeKey": "Key",
   "itemsQueued": "{count} items queued",
   "offlineNote": "Drafts are stored on your device and stay available offline until final submission.",

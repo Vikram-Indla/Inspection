@@ -1,6 +1,6 @@
 {
   "title": "Inspection review queue",
-  "context": "Read-only queue",
+  "context": "View-only queue",
   "loading": "Loading review queue",
   "empty": {
     "title": "No inspections waiting for review",
@@ -51,7 +51,7 @@
     "open": "Review"
   },
   "open": "Open review",
-  "openHint": "Opens the review as read-only.",
+  "openHint": "Opens the review so you can read it, not change it.",
   "readiness": {
     "sla": "Deadline",
     "slaOverdue": "Overdue",
@@ -104,7 +104,7 @@
       "due": "due",
       "evidence": "Evidence records",
       "evidenceEmpty": "No evidence records are attached to this submitted inspection.",
-      "evidenceHeading": "Violations · actions · evidence (read-only)",
+      "evidenceHeading": "Violations · actions · evidence (view only)",
       "evidenceReference": "Fixed reference",
       "evidenceSource": "Source",
       "evidenceType": "Type",
@@ -128,7 +128,7 @@
       "loadError": "Could not load",
       "loadErrorDesc": "We could not load the record. Something may be wrong with the data source. Try again.",
       "mapping": "mapping",
-      "mediaPreviewUnavailable": "We cannot show media files here because there is no allowed, safe link for them on this page. The details stay read-only, and the app does not show or guess a public link.",
+      "mediaPreviewUnavailable": "We cannot show media files here because there is no safe link for them on this page. The details stay view only, and the app never guesses a public link.",
       "noOpenDecision": "No open decision — status {status}.",
       "notFound": "Not found",
       "notFoundDesc": "No record matches this ID or it is outside your permitted scope.",
@@ -137,13 +137,13 @@
       "panelHeading": "Decision — irreversible once confirmed",
       "priorDecision": "Prior decision:",
       "readOnlyBody": "You cannot edit this content — the database blocks it (proven B3). To fix something, use Return with the exact scope.",
-      "readOnlyNote": "Read-only for this role — only Level 2 Reviewer / Operations can use the decision controls.",
-      "readOnlyRole": "{role} · read-only",
+      "readOnlyNote": "View only for this role. Only a Level 2 Reviewer or Operations can make the decision.",
+      "readOnlyRole": "{role} · view only",
       "readOnlyTitle": "Final submitted version.",
       "reason": "Reason",
       "reasonPlaceholder": "mandatory for return/reject — recorded immutably",
       "recording": "Recording…",
-      "rejectImpact": "Reject is final, keeps the inspection read-only, and does not start Compliance Management. A new inspection requires a new visit.",
+      "rejectImpact": "Reject is final. The inspection stays view only, and Compliance Management does not start. A new inspection needs a new visit.",
       "rejectWarnBody": "no compliance trigger; new inspection needs a new visit.",
       "rejectWarnTitle": "Final:",
       "reportLink": "Inspection report PDF",
@@ -222,7 +222,7 @@
         "unavailable": "Not available",
         "violation": "Violation"
       },
-      "unauthBody": "You need an allowed role — review, planning, operations, audit, leadership, or the assigned inspector — with matching scope, to open this review. Being visible in navigation does not mean you have access.",
+      "unauthBody": "You need an allowed role — review, planning, operations, audit, leadership, or the assigned inspector — with the right area. Seeing it in the menu does not mean you can open it.",
       "unauthTitle": "You don’t have access to this review",
       "version": "Version",
       "violations": "Violations"

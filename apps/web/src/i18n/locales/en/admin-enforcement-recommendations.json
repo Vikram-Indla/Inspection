@@ -19,10 +19,10 @@
   },
   "scope": {
     "title": "Decision scope",
-    "body": "Decisions are read-only for now, until the database supports a safe decision step. A future approval will only record the recommendation decision — it will not apply a penalty, close a factory, send a legal notice, or skip the enforcement rules."
+    "body": "You can read decisions but not change them yet. When approval is switched on, it will record the decision only. It will not issue a penalty, close a factory, send a legal notice, or skip any enforcement step."
   },
   "readonly": {
-    "title": "Read-only for your role",
+    "title": "View only for your role",
     "body": "You can view this list. To decide, you need an Operations or Compliance Admin role — the database enforces this."
   },
   "pending": "Pending recommendations",
