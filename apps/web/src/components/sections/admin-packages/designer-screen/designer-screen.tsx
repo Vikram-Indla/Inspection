@@ -132,7 +132,6 @@ export default function DesignerScreen({
                   query={query}
                   selectedId={version?.id ?? null}
                   strings={strings}
-                  today={data.today}
                 />
               </>
             ) : null}

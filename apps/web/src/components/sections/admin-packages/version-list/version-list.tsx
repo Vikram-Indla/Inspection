@@ -4,8 +4,6 @@ import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/sta
 import { Heading, Mono, Text } from "@/components/saqeel/type";
 import type { AdminPackagesMessages } from "@/features/admin-packages/strings";
 import {
-  currentPublished,
-  isSuperseded,
   orderedVersions,
   packagesHref,
   type PackageRow,
@@ -33,11 +31,10 @@ function effectiveWindow(version: VersionRow, strings: AdminPackagesMessages, lo
 }
 
 export default function VersionList({
-  pkg, selectedId, today, query, strings, locale, canWrite, deactivateFor, newDraftForm,
+  pkg, selectedId, query, strings, locale, canWrite, deactivateFor, newDraftForm,
 }: {
   pkg: PackageRow;
   selectedId: string | null;
-  today: string;
   query: PackagesQuery;
   strings: AdminPackagesMessages;
   locale: Locale;
@@ -46,7 +43,6 @@ export default function VersionList({
   newDraftForm: ReactNode;
 }) {
   const versions = orderedVersions(pkg);
-  const latest = currentPublished(pkg, today);
 
   return (
     <div className={styles.panel}>

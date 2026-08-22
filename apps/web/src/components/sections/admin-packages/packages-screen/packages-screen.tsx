@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
-import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import GovernanceNote from "@/components/saqeel/governance-note/governance-note";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import { Text } from "@/components/saqeel/type";
 import type { PackagesData } from "@/features/admin-packages/queries";
@@ -14,7 +14,6 @@ import PackagesFilters from "../packages-filters/packages-filters";
 import PackagesNotices from "../packages-notices/packages-notices";
 import PackagesRegister from "../packages-register/packages-register";
 import PackagesToolbar from "../packages-toolbar/packages-toolbar";
-import styles from "./packages-screen.module.css";
 
 export default function PackagesScreen({
   data, query, locale, readAt, notFound, newPackageForm, templateRegistry,
@@ -31,6 +30,7 @@ export default function PackagesScreen({
 
   return (
     <ShellPageFrame
+      actions={<GovernanceNote label={strings.governance.heading} lines={[strings.governance.immutable, strings.governance.validate, strings.governance.maker, strings.governance.runtime]} />}
       breadcrumbLabel={strings.breadcrumb.label}
       breadcrumbs={[
         { label: strings.breadcrumb.administration, href: "/admin" },
@@ -72,21 +72,9 @@ export default function PackagesScreen({
           {templateRegistry}
         </PackagesDisclosure>
       ) : null}
-
-      <Card>
-        <CardHeader level="h2" title={strings.governance.heading} />
-        <CardBody>
-          <ul className={styles.governance}>
-            <li><Text as="span" tone="secondary">{strings.governance.immutable}</Text></li>
-            <li><Text as="span" tone="secondary">{strings.governance.validate}</Text></li>
-            <li><Text as="span" tone="secondary">{strings.governance.maker}</Text></li>
-            <li><Text as="span" tone="secondary">{strings.governance.runtime}</Text></li>
-          </ul>
-          <Text role="label" tone="muted">
-            {fill(strings.toolbar.readAt, { time: formatDateTime(readAt, locale) })}
-          </Text>
-        </CardBody>
-      </Card>
+      <Text role="label" tone="muted">
+        {fill(strings.toolbar.readAt, { time: formatDateTime(readAt, locale) })}
+      </Text>
     </ShellPageFrame>
   );
 }

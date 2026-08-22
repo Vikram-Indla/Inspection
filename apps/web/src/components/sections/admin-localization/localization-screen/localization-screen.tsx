@@ -1,7 +1,6 @@
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
 import Button from "@/components/saqeel/button/button";
-import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
-import { Text } from "@/components/saqeel/type";
+import GovernanceNote from "@/components/saqeel/governance-note/governance-note";
 import type { LocalizationData } from "@/features/admin-localization/queries";
 import { adminLocalizationMessages } from "@/features/admin-localization/strings";
 import { localizationHref, type LocalizationQuery } from "@/features/admin-localization/view";
@@ -12,7 +11,6 @@ import LocalizationFilters from "../localization-filters/localization-filters";
 import LocalizationRegistry from "../localization-registry/localization-registry";
 import LocalizationSync from "../localization-sync/localization-sync";
 import LocalizationToolbar from "../localization-toolbar/localization-toolbar";
-import styles from "./localization-screen.module.css";
 
 export default function LocalizationScreen({ data, query, locale }: {
   data: LocalizationData;
@@ -23,6 +21,7 @@ export default function LocalizationScreen({ data, query, locale }: {
 
   return (
     <ShellPageFrame
+      actions={<GovernanceNote label={strings.governance.heading} lines={[strings.governance.pair, strings.governance.retire, strings.governance.audit]} />}
       breadcrumbLabel={strings.breadcrumb.label}
       breadcrumbs={[
         { label: strings.breadcrumb.administration, href: "/admin" },
@@ -52,17 +51,6 @@ export default function LocalizationScreen({ data, query, locale }: {
       />
 
       <LocalizationRegistry data={data} locale={locale} query={query} strings={strings} />
-
-      <Card>
-        <CardHeader level="h2" title={strings.governance.heading} />
-        <CardBody>
-          <ul className={styles.governance}>
-            <li><Text as="span" tone="secondary">{strings.governance.pair}</Text></li>
-            <li><Text as="span" tone="secondary">{strings.governance.retire}</Text></li>
-            <li><Text as="span" tone="secondary">{strings.governance.audit}</Text></li>
-          </ul>
-        </CardBody>
-      </Card>
     </ShellPageFrame>
   );
 }
