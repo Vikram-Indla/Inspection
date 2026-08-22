@@ -19,13 +19,35 @@ whose database port is unreachable.
 """
 import csv, json, os, subprocess, sys, tempfile, urllib.error, urllib.request, uuid
 from collections import namedtuple
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 BATCH = uuid.UUID("5eed0000-0000-4000-8000-000000000001")
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "product-contract" / "test-data-architecture" / "seed-source"
-ANCHOR = datetime(2026, 8, 22, 8, 0)
+
+# The generators carry no clock, so the CSVs are reproducible: every date in them
+# is measured against this one. The load is what makes them current — each date
+# moves by the distance from the epoch to the run, which leaves every interval
+# the cohort encodes ("expires in 45 days", "approved 3 weeks ago") intact while
+# "today" really is today. Without it a cohort built in August reads as ancient
+# history by November: today's visits empty, every SLA breached, coverage frozen.
+COHORT_EPOCH = date(2026, 8, 22)
+
+def _as_of():
+    if "--as-of" in sys.argv:
+        return date.fromisoformat(sys.argv[sys.argv.index("--as-of") + 1])
+    return date.today()
+
+AS_OF = _as_of()
+SHIFT = timedelta(days=(AS_OF - COHORT_EPOCH).days)
+ANCHOR = datetime.combine(AS_OF, time(8, 0))
+
+def sdate(v):
+    return (date.fromisoformat(v) + SHIFT).isoformat() if v else None
+
+def sts(v):
+    return (datetime.fromisoformat(v) + SHIFT).isoformat() if v else None
 uid = lambda table, key: str(uuid.uuid5(BATCH, f"{table}:{key}"))
 read = lambda name: list(csv.DictReader((SRC / name).open(encoding="utf-8")))
 
@@ -152,6 +174,7 @@ def preflight():
                if q(f"select to_regclass('public.{t}') is not null") != "t"]
     if missing: raise SystemExit(f"REFUSED: missing tables {missing}")
     print(f"  tables              {q(TABLE_COUNT_SQL)}")
+    print(f"  as of               {AS_OF}  (cohort epoch {COHORT_EPOCH}, shift {SHIFT.days:+d} days)")
     print("  writes nothing      ok")
     return True
 
@@ -189,7 +212,7 @@ def load():
                   f"{lit(f['cr_number'])},{lit(f['license_number'])},{lit(f['region'])},{lit(f['city_en'])},"
                   f"{lit(f['activity_class'])},{f['official_lat']},{f['official_lng']},{f['geofence_radius_m']},"
                   f"{f['employees']},{lit(f['license_status'])},{lit(f['license_stage'])},"
-                  f"{lit(f['license_issue_date'])},{lit(f['license_expiry_date'])},'senaei_stub')" for f in F) +
+                  f"{lit(sdate(f['license_issue_date']))},{lit(sdate(f['license_expiry_date']))},'senaei_stub')" for f in F) +
          " on conflict (id) do update set name=excluded.name, region=excluded.region;")
     print(f"  factories           {len(F)}")
     # guard_bulk_visit_registered_source: a bulk-planned visit requires its factory
@@ -200,7 +223,7 @@ def load():
          ",".join(f"({lit(uid('lic',f['factory_code']))},{lit(uid('cr',f['factory_code']))},"
                   f"{lit(uid('factory',f['factory_code']))},{lit(f['license_number'])},"
                   f"{lit(f['plant_number'])},{lit(f['license_status'])},{lit(f['license_stage'])},"
-                  f"{lit(f['license_issue_date'])},{lit(f['license_expiry_date'])},"
+                  f"{lit(sdate(f['license_issue_date']))},{lit(sdate(f['license_expiry_date']))},"
                   f"{lit(f['name_en'])},'senaei_stub')" for f in F) +
          " on conflict (id) do update set status=excluded.status;")
     print(f"  industrial_licenses {len(F)}")
@@ -234,7 +257,7 @@ def load():
                   for i in IT) + " on conflict (id) do update set title=excluded.title;")
     psql("insert into violation_codes (id, code, title, level, clause_id, active_from) values " +
          ",".join(f"({lit(uid('vcode',v['violation_code']))},{lit(v['violation_code'])},{lit(v['title_en'])},"
-                  f"{lit(v['level'])},{lit(uid('clause',v['clause_id']))},{lit(v['active_from'])})" for v in VC) +
+                  f"{lit(v['level'])},{lit(uid('clause',v['clause_id']))},{lit(sdate(v['active_from']))})" for v in VC) +
          # A published violation code is immutable by design (guard_governed_violation_code).
          # The seed re-inserts, never updates — changing one needs a governed successor.
          " on conflict (id) do nothing;")
@@ -275,7 +298,7 @@ def load():
         jr, fid = j["journey_ref"], uid("factory", j["factory_code"])
         pid, vid = uid("plan", jr), uid("visit", jr)
         hh, mm = j.get("window_start_time", "07:00").split(":")
-        ws = datetime.fromisoformat(j["window_start"]).replace(hour=int(hh), minute=int(mm))
+        ws = datetime.fromisoformat(j["window_start"]).replace(hour=int(hh), minute=int(mm)) + SHIFT
         we = ws + timedelta(hours=2)
         plans.append(f"({lit(pid)},{lit(j['method'])}::planning_method,'published'::planning_status,"
                      f"{lit(uid('profiles', j['planner']))},{lit('PLAN-'+jr[4:])})")
@@ -371,7 +394,7 @@ def load():
     gv = [f"({lit(uid('geo', g['journey_ref']+':'+g['seq']))},{lit(uid('visit',g['journey_ref']))},"
           f"{lit(g['kind'])},{g['observed_lat']},{g['observed_lng']},{g['accuracy_m']},"
           f"{(lit(g['geofence_result'])+'::geofence_result') if g['geofence_result'] else 'null'},"
-          f"{lit(g['override_reason'] or None)},{lit(g['gis_version'])},{lit(g['occurred_at'])})" for g in G]
+          f"{lit(g['override_reason'] or None)},{lit(g['gis_version'])},{lit(sts(g['occurred_at']))})" for g in G]
     for k in range(0, len(gv), 400):
         psql("insert into geo_events (id, visit_id, kind, observed_lat, observed_lng, accuracy_m,"
              " geofence_result, override_reason, gis_version, occurred_at) values " +

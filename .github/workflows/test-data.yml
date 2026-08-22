@@ -31,6 +31,10 @@ on:
         description: 'Destructive commands only (unload, reset): type the project ref to confirm'
         required: false
         type: string
+      as_of:
+        description: 'Optional YYYY-MM-DD to date the cohort against. Defaults to the day of the run.'
+        required: false
+        type: string
 
 concurrency:
   group: test-data
@@ -78,6 +82,7 @@ jobs:
         env:
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
           SUPABASE_MGMT_TOKEN: ${{ secrets.SUPABASE_MGMT_TOKEN }}
+          AS_OF: ${{ inputs.as_of }}
         run: |
           case "${{ inputs.command }}" in
             unload-dry-run) set -- unload --dry-run ;;
@@ -85,6 +90,8 @@ jobs:
             reset)          set -- reset  --confirm ;;
             *)              set -- "${{ inputs.command }}" ;;
           esac
+          # Left empty, the loader dates the cohort against the day of the run.
+          if [ -n "$AS_OF" ]; then set -- "$@" --as-of "$AS_OF"; fi
           python3 scripts/test-data/load.py "$@"
 
       - name: acceptance
