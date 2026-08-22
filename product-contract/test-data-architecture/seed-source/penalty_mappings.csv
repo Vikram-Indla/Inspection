@@ -1,0 +1,24 @@
+violation_code,penalty_ref,penalty_schedule,repeat_rule,legal_basis,mapping_version
+V-SBC-01,P-352,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SBC-801 §1.8,v3
+V-SBC-02,P-164,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SBC-801 §3.4,v3
+V-SBC-05,P-186,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SBC-201 §4.7,v3
+V-HCIS-08,P-592,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,HCIS-SEC-01 §5.8,v3
+V-HCIS-09,P-583,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,HCIS-PRO-04 §2.2,v3
+V-CD-13,P-515,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,CD-EMR-11 §5.7,v3
+V-CD-14,P-349,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,CD-HAZ-06 §2.6,v3
+V-CD-15,P-883,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,CD-HAZ-06 §4.4,v3
+V-SFDA-16,P-920,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SFDA-GMP-02 §1.8,v3
+V-SFDA-18,P-604,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SFDA-GMP-02 §5.5,v3
+V-SASO-21,P-485,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SASO-QMS-03 §1.1,v3
+V-SASO-22,P-864,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SASO-QMS-03 §3.7,v3
+V-SASO-23,P-926,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SASO-MET-07 §1.2,v3
+V-SASO-24,P-780,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,SASO-MET-07 §3.5,v3
+V-NCEC-25,P-587,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,NCEC-EMS-01 §1.1,v3
+V-NCEC-26,P-943,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,NCEC-EMS-01 §3.3,v3
+V-NCEC-27,P-784,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,NCEC-WST-04 §1.5,v3
+V-NCEC-28,P-880,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,NCEC-WST-04 §3.3,v3
+V-MHRSD-29,P-877,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,MHRSD-OSH-09 §1.8,v3
+V-MHRSD-31,P-527,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,MHRSD-OSH-09 §5.1,v3
+V-MIM-34,P-555,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,MIM-LIC-01 §1.7,v3
+V-MIM-36,P-360,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,MIM-PRD-03 §1.5,v3
+V-MOMRAH-38,P-293,approved schedule — amount not reproduced here,repeat within 12 months escalates one level,MOMRAH-MUN-05 §1.3,v3

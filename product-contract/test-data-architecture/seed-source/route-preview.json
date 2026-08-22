@@ -4,9 +4,9 @@
   "personas": 45,
   "journeys": 300,
   "regions": 13,
-  "checklist_responses": 19990,
+  "checklist_responses": 5371,
   "evidence": 665,
-  "findings": 280,
+  "findings": 265,
   "violations": 87,
   "penalties": 34
  },
@@ -36,7 +36,13 @@
  "execution": {
   "active": 18,
   "assigned_today": 8,
-  "responses_in_progress": 1530
+  "responses_in_progress": 415,
+  "package_sizes": {
+   "routine": 80,
+   "licensing": 26,
+   "complaint": 34,
+   "follow_up": 12
+  }
  },
  "reviews": {
   "queue_pending": 48,
@@ -51,9 +57,9 @@
   "factories_with_violations": 38
  },
  "dashboard": {
-  "STR-KPI-001_compliance_rate": 83.7,
-  "STR-KPI-001_numerator": 6426,
-  "STR-KPI-001_denominator": 7680,
+  "STR-KPI-001_compliance_rate": 82.9,
+  "STR-KPI-001_numerator": 1715,
+  "STR-KPI-001_denominator": 2070,
   "STR-KPI-004_approval_rate": 73.2,
   "STR-KPI-006_cancellation_rate": 4.7,
   "STR-KPI-009_checklist_items": 142,

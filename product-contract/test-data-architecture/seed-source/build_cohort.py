@@ -11,7 +11,15 @@ from collections import Counter, defaultdict
 from datetime import date, timedelta
 
 ANCHOR = date(2026, 8, 22)
-PACKAGE_ITEMS = 142
+# A visit carries the package for its type, not one 142-item catalogue. Item counts
+# come from build_compliance_library.py: the authorities each visit type actually
+# inspects. A follow-up re-checks only what failed last time.
+PACKAGES = {
+ "routine":   {"authorities": ["SBC","CD","MHRSD","HCIS"], "items": 80},
+ "licensing": {"authorities": ["MIM","MOMRAH","SASO"],     "items": 26},
+ "complaint": {"authorities": ["CD","NCEC","SFDA"],        "items": 34},
+ "follow_up": {"authorities": ["prior non-compliant"],     "items": 12},
+}
 
 def h(*parts):
     return int(hashlib.sha256("|".join(map(str, parts)).encode()).hexdigest()[:8], 16)
@@ -115,14 +123,18 @@ for j in journeys:
         j.update(responses="0", compliant="0", non_compliant="0", na="0",
                  evidence="0", findings="0", violations="0", penalties="0")
         continue
-    answered = int(PACKAGE_ITEMS * 0.6) if j["inspection_status"] == "in_progress" else PACKAGE_ITEMS
+    size = PACKAGES[j["visit_type"]]["items"]
+    answered = int(size * 0.6) if j["inspection_status"] == "in_progress" else size
     na = answered // 10
     eligible = answered - na
     nc_rate = 0.30 if j["region"] in ("Riyadh", "Eastern") and h("nc", j["journey_ref"]) % 5 == 0 else 0.16
     nc = round(eligible * nc_rate)
     approved = j["review_decision"] == "approve"
     findings = min(nc, 1 + h("fd", j["journey_ref"]) % 3) if nc else 0
-    violations = (1 + h("vi", j["journey_ref"]) % 2) if (approved and nc >= 6) else 0
+    # Scale to the package: a fixed count made small packages unable to reach it,
+    # so follow-up visits could never carry a violation.
+    threshold = max(2, round(answered * 0.15))
+    violations = (1 + h("vi", j["journey_ref"]) % 2) if (approved and nc >= threshold) else 0
     penalties = 1 if (violations and h("pe", j["journey_ref"]) % 2 == 0) else 0
     j.update(responses=str(answered), compliant=str(eligible - nc), non_compliant=str(nc), na=str(na),
              evidence=str(3 + h("ev", j["journey_ref"]) % 4), findings=str(findings),
@@ -167,6 +179,7 @@ P = {
    "active": states["executing"],
    "assigned_today": sum(1 for j in journeys if j["operational_state"]=="assigned" and j["window_start"]==today),
    "responses_in_progress": sum(I(j,"responses") for j in journeys if j["inspection_status"]=="in_progress"),
+   "package_sizes": {k: v["items"] for k, v in PACKAGES.items()},
  },
  "reviews": {
    "queue_pending": sum(1 for j in journeys if j["review_decision"]=="pending"),
@@ -185,7 +198,7 @@ P = {
    "STR-KPI-001_numerator": comp, "STR-KPI-001_denominator": comp + ncomp,
    "STR-KPI-004_approval_rate": round(len(approved) / len(decided) * 100, 1) if decided else None,
    "STR-KPI-006_cancellation_rate": round(tabs["cancelled"] / len(journeys) * 100, 1),
-   "STR-KPI-009_checklist_items": PACKAGE_ITEMS,
+   "STR-KPI-009_checklist_items": 142,
    "OPS-KPI-001_visit_pipeline": len(journeys),
    "OPS-KPI-003_active_executions": states["executing"],
    "OPS-KPI-004_pending_approvals": sum(1 for j in journeys if j["review_decision"]=="pending"),
