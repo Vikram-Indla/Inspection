@@ -103,7 +103,8 @@
 }
 .fl-brand {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 .fl-brand-latin {
