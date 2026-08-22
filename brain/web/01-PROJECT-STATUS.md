@@ -1,6 +1,90 @@
 # 01 — Project Status
 
-`Last updated: 2026-08-21` · `Updated by: T-174 — brand rename to Inspection Platform`
+`Last updated: 2026-08-22` · `Updated by: T-179 — Saqeel user-visible retirement`
+
+## "Saqeel" is gone from every user-visible surface (2026-08-22, T-179)
+
+**The PWA was still installing as "Saqeel".** `public/manifest.json` read
+`"name": "Saqeel Industrial Inspection Platform"` / `"short_name": "Saqeel"` —
+the install prompt and the home-screen label on every inspector's phone. T-174
+renamed `layout.tsx` metadata and stopped there. Also fixed: the favicon's
+`aria-label` announced "SAQEEL" to screen readers. Four dead wordmark SVGs that
+rendered a literal `SAQEEL` / `صقيل` were deleted (WEB-006 §4 gate cleared).
+
+**Zero user-visible Saqeel now remains** — the only occurrence in any shipped
+asset is inside an SVG comment.
+
+**A third stale spec from T-174** was found and re-pointed. A rename task must
+sweep `e2e/` by source path, not by route.
+
+**The internal rename is NOT started and slice D needs a decision.** 995 files
+mention Saqeel; 5,425 `--sqx-` occurrences; 603 files import
+`components/saqeel`. The token-prefix rename must be atomic or the app loses all
+styling mid-migration, and it **contradicts CLAUDE.md's Design authority section
+and WEB-002 §2**, which mandate `--sqx-` because `--sq-`/`.saqeel-` collide with
+the frozen legacy sheets. Amend those first, as T-173 did for the palette.
+
+## Content has a standard and a gate (2026-08-22, T-178)
+
+**WEB-016 Content & Voice** is binding: top-5,000 vocabulary or the job
+glossary, 15-word sentences, no phrasal verbs, idioms or formal connectors,
+errors name the next action, an em dash instead of `N/A`. It records that
+**Flesch-Kincaid must not be used to score this application** — it is calibrated
+on native readers and understated the problem roughly fourfold.
+
+`npm run gates:content` ratchets against a **352-violation baseline** and names
+the replacement in every failure. The word list is data
+(`apps/web/scripts/content-vocabulary.json`), owned by the content lead.
+
+**Two governance findings.** `WEB-015` was already taken by form-controls — rule
+numbers have no reservation, and this task hit the collision live (renamed to
+WEB-016). And **no gate ran in CI at all**: the pull-request workflow ran
+`typecheck` and nothing else, so every ratchet was local-only. A `web-gates` job
+now runs typography, content and date-inputs on every PR.
+`check:design-system-v5` stays out until its pre-existing debt clears. **The job
+is new and has not been observed running — do not read it as CI-green yet.**
+
+## `/login` rebuilt for the reader (2026-08-22, T-175 → T-177)
+
+Three tasks on the sign-in surface, all live-verified in English and Arabic.
+
+**T-175** unbroke the brand lockup that **T-174 silently regressed**: renaming
+`SAQEEL`+`صقيل` → `Inspection Platform`+`منصة التفتيش` inside a fixed 400px
+container needed **447.6px**, so both wordmarks wrapped into a four-line block.
+Fixed by stacking (`flex-direction: column`), not by shrinking type — WEB-014 §7b
+forbids font properties in feature CSS, and stacking needs only 299px. Two spec
+assertions T-174 left red were re-pointed.
+
+**T-176** made **Zones the resting scene**. The atlas opened on Zones then handed
+itself to the 30s five-scene loop after 12s, moving the view out from under the
+reader. The loop is unwired; a tablist pick holds 12s and returns to Zones.
+`StoryPanel` 172 → 104 lines, 29 comments → 0, two effects → one.
+**`saudi-atlas-motion.ts` now has zero importers and was deliberately not
+retired** — `@retiring` needs a `replaced-by` that does not exist, two specs pin
+its source text, and the loop is accepted behaviour SLR-AC-002. Needs a manager
+decision.
+
+**T-177** cut the product name from **six on-screen instances to one** and moved
+`/login` off hardcoded literals into a bilingual `login` namespace (48/48 key
+parity). `page.tsx` 159 → 37 lines; Arabic coverage for the route 0% → 100%. The
+network pill and the four-line offline note now render **only when offline**.
+Copy is written to a new **L2 standard** — word-frequency ceiling, job and UI
+glossaries, 15-word sentences, no phrasal verbs or idioms — because the audience
+reads English as a second language. **The Arabic is authored, not reviewed, and
+must not ship without a native reviewer's sign-off.**
+
+Open across all three: axe-core not run, e2e not run, and
+`check:design-system-v5` still fails on pre-existing emoji-as-icon and UTC-date
+debt elsewhere in the app (zero hits on any file these tasks touched).
+
+### Application-wide content audit (2026-08-22)
+
+7,884 user-visible strings measured. **2,370 (30%) are hardcoded English with no
+Arabic at all.** On a US-grade readability instrument 909 strings fail; on an
+instrument calibrated for second-language Arabic-speaking readers **4,052 fail**.
+Workbook: `Inspection Documentation/05_UI_UX_AND_STORYBOARDS/Inspection-Platform-Content-Audit-2026-08-22.xlsx`
+(v1 — carries the superseded US-grade target and must be rebuilt on the L2
+instrument).
 
 ## Brand renamed to "Inspection Platform"; dashboard "Your work" removed (2026-08-21)
 

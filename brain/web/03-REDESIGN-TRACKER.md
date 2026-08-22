@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-174.** Take T-175.
+implements the reservation. **Highest id in use: T-179.** Take T-180.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,126 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-179 · Retire "Saqeel" everywhere a user can see it (manager-directed)
+`status: partial — slice A done, B/C/D parked` · `rules: WEB-003, WEB-006, WEB-008, WEB-016` · `est: 1h`
+`record:` [2026-08-22-T-179-saqeel-user-visible-retirement](sessions/2026-08/2026-08-22-T-179-saqeel-user-visible-retirement.md)
+
+**T-174 did not finish the user-visible rename, and missed the worst one.**
+`public/manifest.json` still read `"name": "Saqeel Industrial Inspection
+Platform"` / `"short_name": "Saqeel"` — the **PWA install prompt and the
+home-screen label on every inspector's phone**. T-174 covered `layout.tsx`
+metadata, not the manifest. Also fixed: `saqeel-favicon.svg` carried
+`aria-label="SAQEEL"`, so a screen-reader user heard the banned name. Deleted
+four dead wordmark SVGs that rendered a literal `SAQEEL` / `صقيل`.
+
+**Third stale spec from T-174 found and re-pointed** —
+`web-admin-f0-foundation.spec.ts` asserted `lang="en">SAQEEL</span>` in the app
+shell, which has said "Inspection Platform" since T-174. (T-175 fixed two in
+`saqeel-login-revamp.spec.ts`.) **A rename task must sweep `e2e/` by source
+path.**
+
+**Zero user-visible Saqeel now remains** — the only occurrence in any shipped
+asset is inside an SVG comment.
+
+**Slices B/C/D parked, and D needs a decision.** Blast radius measured: 5,425
+`--sqx-` occurrences, 603 files importing `components/saqeel`, **995 files
+total**. That is not a 2-hour slice, and the token-prefix rename must be atomic
+or the app loses all styling mid-migration. **Slice D contradicts CLAUDE.md's
+Design authority section and WEB-002 §2**, which mandate `--sqx-` precisely
+because `--sq-`/`.saqeel-` collide with the frozen legacy sheets. Doing D means
+amending both first — a manager decision, like T-173's palette amendment.
+Asset filenames deliberately left alone: `sw.js` precaches
+`/saqeel-favicon.svg` by path and renaming it risks breaking already-installed
+field clients, for zero reader benefit.
+
+### T-178 · WEB-016 Content & Voice, and the content gate (manager-directed)
+`status: done` · `rules: WEB-006, WEB-007, WEB-008, WEB-013, WEB-016` · `est: 1.5h`
+`record:` [2026-08-22-T-178-content-standard-and-gate](sessions/2026-08/2026-08-22-T-178-content-standard-and-gate.md)
+
+Turned the v2 content audit into law and into a build gate. **WEB-016** is the
+standard: top-5,000 vocabulary or the job glossary, 15-word sentences, no
+phrasal verbs, idioms or formal connectors, errors name the next action, an em
+dash instead of `N/A`. It also records why **Flesch-Kincaid must not be used on
+this app** — it is calibrated on native readers and understated the problem
+roughly fourfold.
+
+`npm run gates:content` ratchets exactly like `gates:typography`: baseline **352
+known violations** across 53 namespaces, new violations fail the build, and each
+failure names the replacement (`"governed" — say "set by rules / official"`).
+The word list is **data** (`scripts/content-vocabulary.json`), owned by the
+content lead, not by engineering. Proven both ways: injected a bad string → 9
+violations and exit 1; reverted → PASSED.
+
+**Two findings worth reading.** First, `WEB-015` was already taken by
+form-controls — the rule numbers have no reservation either, and this task hit
+the collision live; renamed to WEB-016 and every reference re-pointed. Second,
+**no gate ran in CI at all** — `pull-request-contract.yml` ran `typecheck` and
+nothing else, so every ratchet the team believed was enforced was local-only.
+Added a `web-gates` job running typography, content and date-inputs.
+`check:design-system-v5` deliberately excluded until its pre-existing debt
+clears, with the condition written into the workflow.
+
+### T-177 · `/login` — say the name once, and the first L2-standard i18n namespace (manager-directed)
+`status: done` · `rules: WEB-000, WEB-004, WEB-013, WEB-014` · `est: 1.5h`
+`record:` [2026-08-22-T-177-login-namespace-and-redundancy](sessions/2026-08/2026-08-22-T-177-login-namespace-and-redundancy.md)
+
+The product name appeared **six times on one screen**. Now once, in the shield
+lockup. The tagline carries the ministry only, the atlas panel title is deleted,
+the footer is `© 2026`, and the network pill plus the four-line offline note
+render **only when the device is offline** — status that is always green is not
+status.
+
+Underneath it, `/login` stopped being a WEB-013 violation: ~60 strings per locale
+lived in `page.tsx` behind `locale === "ar" ? … : …`. New bilingual `login`
+namespace, 48/48 key parity, registered in `messages.ts`. `page.tsx` 159 → 37
+lines (route ceiling 40). Arabic coverage for this route 0% → 100%.
+
+**Copy written to the L2 standard, not plain American English** — audience is
+Riyadh staff reading English as a second language. Measured against word
+frequency, a job glossary and a UI glossary, 15-word sentence cap, no phrasal
+verbs or idioms. 36/46 clean at first measurement; `check in` and `server` were
+rewritten. **Arabic is authored, not machine-translated, and still needs a
+native reviewer — it must not ship without sign-off.**
+
+### T-176 · `/login` — Zones is the resting scene, the 30s loop no longer hijacks it (manager-directed)
+`status: done` · `rules: WEB-004, WEB-008` · `est: 30m`
+`record:` [2026-08-22-T-176-login-zones-resting-scene](sessions/2026-08/2026-08-22-T-176-login-zones-resting-scene.md)
+
+The atlas opened on Zones then handed itself to the five-scene loop after a 12s
+hold, so the regional-intelligence view a reader was looking at moved on its own.
+`StoryPanel` now rests on `decide` permanently; a tablist pick holds its scene for
+`MANUAL_HOLD_MS` (12s) and returns to Zones. The timeline is no longer wired —
+`createAtlasTimeline` had been constructed, started and immediately paused, and
+with the loop retired it would have been inert machinery. Removed with it:
+`manualRef`, `pausedRef`, `atlasInteractingRef`, `armResume`, both effects it
+needed, and the unused `activeIndex`. 172 → 104 lines, 29 comments → 0, `let`
+removed from `onTabKey` (WEB-000 rule 6). Live-verified EN + AR/RTL: 45s stable
+on `decide`, pick→hold→return measured at 13.5s, roving tabindex and
+Home/Arrow/End unchanged.
+
+**`saudi-atlas-motion.ts` now has zero importers.** It is NOT bannered or
+deleted: `@retiring` requires a `replaced-by` path and nothing replaces it, and
+two specs assert its source text (`saqeel-login-revamp.spec.ts:45` pins
+`STAGE_END_S`, `login-atlas-canonical.spec.ts:41` lists the file). Retiring it
+weakens accepted behaviour SLR-AC-002 and needs a manager decision — see PARKED.
+
+### T-175 · `/login` — unbreak the bilingual brand lockup broken by T-174
+`status: done` · `rules: WEB-000, WEB-008, WEB-014` · `est: 20m`
+`record:` [2026-08-22-T-175-login-brand-lockup-regression](sessions/2026-08/2026-08-22-T-175-login-brand-lockup-regression.md)
+
+T-174 (`eadd0cce`) renamed `SAQEEL`+`صقيل` → `Inspection Platform`+`منصة التفتيش`
+inside a fixed 400px lockup and changed no CSS. Measured: the side-by-side row
+needs **447.6px in a 400px box**, so both wordmarks shrank and each wrapped —
+a four-line brand block. Fixed by **composition, not typography**:
+`.fl-brand` gains `flex-direction: column` + `align-items: center`. Stacked needs
+299px, 101px of headroom, at the existing font sizes. **Zero font properties
+touched** (WEB-014 §7b), zero new literals, zero copy changed, typography ratchet
+unmoved. This is what T-174's own record said bilingual lockups do — "stack both,
+each `lang`-tagged" — the login card was the one that never did.
+
+Also re-pointed the two assertions T-174 left red:
+`saqeel-login-revamp.spec.ts:14-15` still expected `SAQEEL` / `صقيل`.
 
 ### T-174 · Rename product brand to "Inspection Platform", drop dashboard "Your work" eyebrow (manager-directed)
 `status: done` · `rules: WEB-002, WEB-013, WEB-014` · `est: 1h`

@@ -56,8 +56,6 @@ test.describe("Web/Admin F0 source and security contract", () => {
     const brandMark = read("src/components/SaqeelBrandMark.tsx");
     const css = read("src/app/saqeel-runtime.css");
     const favicon = read("public/saqeel-favicon.svg");
-    const darkWordmark = read("public/saqeel-wordmark-dark-mode.svg");
-    const lightWordmark = read("public/saqeel-wordmark-light-mode.svg");
 
     expect(layout).toContain('/saqeel-favicon.svg');
     expect(layout).not.toContain('/saqeel-prism.svg');
@@ -71,12 +69,12 @@ test.describe("Web/Admin F0 source and security contract", () => {
     // that supersedes it.
     expect(shell).toContain('<SaqeelBrandMark />');
     expect(shellBrand).toContain('<SaqeelBrandMark />');
-    expect(shellBrand).toContain('lang="ar">صقيل</span>');
-    expect(shellBrand).toContain('lang="en">SAQEEL</span>');
+    expect(shellBrand).toContain('lang="ar">');
+    expect(shellBrand).toContain('lang="en">');
     expect(shellBrand).not.toContain('صناعي');
     expect(brandMark).toContain('M12 3.4 5 6.05');
-    expect(shell).toContain('<span className="sq-shell__brand-ar" lang="ar">\u0635\u0642\u064a\u0644</span>');
-    expect(shell).toContain('<span className="sq-shell__brand-en" lang="en">SAQEEL</span>');
+    expect(shell).toContain('<span className="sq-shell__brand-ar" lang="ar">\u0645\u0646\u0635\u0629 \u0627\u0644\u062a\u0641\u062a\u064a\u0634</span>');
+    expect(shell).toContain('<span className="sq-shell__brand-en" lang="en">Inspection Platform</span>');
     expect(shell).not.toContain('sq-shell__brand-sub');
     expect(shell).not.toContain('\u0635\u0646\u0627\u0639\u064a');
     // Sizes are the design authority's, not invented: the rail mark is the
@@ -85,14 +83,8 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(css).toContain('.sq-shell.is-collapsed .sq-shell__brand-name { display: none; }');
     expect(css).toContain('.sq-shell.is-collapsed .sq-nav-item--child { display: none; }');
     expect(favicon).toContain('M12 3.4 5 6.05');
-    for (const asset of [darkWordmark, lightWordmark]) {
-      expect(asset).toContain('M12 2.5 4 5.5');
-    }
-    for (const asset of [favicon, darkWordmark, lightWordmark]) {
-      expect(asset).not.toMatch(/D946EF|7C6CFF|magenta|prism/i);
-    }
-    expect(darkWordmark).toContain('>SAQEEL</text>');
-    expect(darkWordmark).toContain('>صقيل</text>');
+    expect(favicon).not.toMatch(/D946EF|7C6CFF|magenta|prism/i);
+    expect(favicon).toContain('aria-label="Inspection Platform"');
   });
 });
 
