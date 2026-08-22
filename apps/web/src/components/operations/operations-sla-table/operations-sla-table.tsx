@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { CellLink, CellMuted, type DataColumn } from "@/components/saqeel/data-table/data-table";
+import InfoNote from "@/components/saqeel/info-note/info-note";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
 
@@ -64,7 +65,8 @@ export default function OperationsSlaTable({ rows, strings }: {
 
   return (
     <Card as="section" labelledBy="operations-sla">
-      <CardHeader level="h2" titleId="operations-sla" title={strings.title} description={strings.description} />
+      <CardHeader level="h2" titleId="operations-sla" title={strings.title}
+        trailing={<InfoNote label={strings.title}>{strings.description}</InfoNote>} />
       <CardBody>
         <DataTable
           rows={rows}

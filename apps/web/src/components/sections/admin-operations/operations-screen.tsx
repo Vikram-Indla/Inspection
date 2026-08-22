@@ -1,5 +1,6 @@
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
+import InfoNote from "@/components/saqeel/info-note/info-note";
 import BarSeries, { type BarPoint } from "@/components/saqeel/charts/bar-series/bar-series";
 import StatCard from "@/components/saqeel/stat-card/stat-card";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
@@ -74,7 +75,8 @@ export default function OperationsScreen({ data, locale }: { data: OperationsVie
 
         {showChart ? (
           <Card as="section">
-            <CardHeader level="h2" title={strings.chart.title} description={strings.chart.caption} />
+            <CardHeader level="h2" title={strings.chart.title}
+              trailing={<InfoNote label={strings.chart.title}>{strings.chart.caption}</InfoNote>} />
             <CardBody>
               <BarSeries points={chartPoints} domainMax={chartMax} ariaLabel={strings.chart.aria} rtl={locale === "ar"} />
             </CardBody>

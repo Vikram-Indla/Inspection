@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import InfoNote from "@/components/saqeel/info-note/info-note";
 import {
   grantRoleCapability,
   revokeRoleCapability,
@@ -102,7 +103,8 @@ export default function AccessRoleCaps({ roles, permissions, grants, strings }: 
 
   return (
     <Card>
-      <CardHeader level="h2" title={strings.roleCaps.title} description={strings.roleCaps.intro} />
+      <CardHeader level="h2" title={strings.roleCaps.title}
+        trailing={<InfoNote label={strings.roleCaps.title}>{strings.roleCaps.intro}</InfoNote>} />
       <CardBody>
         <div className={styles.picker}>
           <SaqeelSelect

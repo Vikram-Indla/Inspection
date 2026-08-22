@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
+import InfoNote from "@/components/saqeel/info-note/info-note";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { Mono, Text } from "@/components/saqeel/type";
@@ -104,7 +105,7 @@ export default function DashboardConfigScreen({ data, locale, strings, na }: {
 
       <Card as="section">
         <CardHeader level="h2" title={strings.catalogue.heading}
-          description={fill(strings.catalogue.intro, { implemented: implementedCount, total: KPI_DEFINITIONS.length })} />
+          trailing={<InfoNote label={strings.catalogue.heading}>{fill(strings.catalogue.intro, { implemented: implementedCount, total: KPI_DEFINITIONS.length })}</InfoNote>} />
         <CardBody>
           <DataTable rows={KPI_DEFINITIONS} columns={kpiColumns} getRowId={def => def.metricId}
             empty={{ icon: "workflow", title: strings.catalogue.heading }} />
@@ -112,7 +113,8 @@ export default function DashboardConfigScreen({ data, locale, strings, na }: {
       </Card>
 
       <Card as="section">
-        <CardHeader level="h2" title={strings.domains.heading} description={strings.domains.intro} />
+        <CardHeader level="h2" title={strings.domains.heading}
+          trailing={<InfoNote label={strings.domains.heading}>{strings.domains.intro}</InfoNote>} />
         <CardBody>
           <DataTable rows={CONFIG_DOMAINS} columns={domainColumns} getRowId={domain => domain}
             empty={{ icon: "workflow", title: strings.domains.heading }} />
