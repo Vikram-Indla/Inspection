@@ -1,0 +1,132 @@
+{
+ "map": {
+  "live_journeys": 44,
+  "geo_events": 308,
+  "telemetry_points": 276,
+  "arrivals": 26,
+  "overrides": 6,
+  "regions_with_movement": 7,
+  "geofences": 73,
+  "by_state": {
+   "on_the_way": 12,
+   "arrived": 14,
+   "executing": 18
+  },
+  "sample_tracks": [
+   {
+    "journey_ref": "JRN-2026-0127",
+    "inspector": "inspector2",
+    "factory_code": "F-R2-003",
+    "factory_name": "Al Yamamah Steel Fabrication",
+    "region": "Riyadh",
+    "state": "on_the_way",
+    "current_lat": 24.59516,
+    "current_lng": 46.8349,
+    "site_lat": 24.5444,
+    "site_lng": 46.9033,
+    "geofence_radius_m": 250,
+    "distance_to_site_m": 8928,
+    "override": false,
+    "points": 7
+   },
+   {
+    "journey_ref": "JRN-2026-0128",
+    "inspector": "inspector24",
+    "factory_code": "F-J1-032",
+    "factory_name": "Obhur Plastic Packaging Co.",
+    "region": "Makkah",
+    "state": "on_the_way",
+    "current_lat": 21.4488028,
+    "current_lng": 39.2391431,
+    "site_lat": 21.4275,
+    "site_lng": 39.266,
+    "geofence_radius_m": 150,
+    "distance_to_site_m": 3652,
+    "override": false,
+    "points": 7
+   },
+   {
+    "journey_ref": "JRN-2026-0129",
+    "inspector": "inspector9",
+    "factory_code": "F-JB-044",
+    "factory_name": "Jubail Industrial Coatings Plant",
+    "region": "Eastern",
+    "state": "on_the_way",
+    "current_lat": 26.817589,
+    "current_lng": 49.7926745,
+    "site_lat": 27.0001,
+    "site_lng": 49.6565,
+    "geofence_radius_m": 250,
+    "distance_to_site_m": 24376,
+    "override": false,
+    "points": 7
+   },
+   {
+    "journey_ref": "JRN-2026-0130",
+    "inspector": "inspector11",
+    "factory_code": "F-J1-032",
+    "factory_name": "Obhur Plastic Packaging Co.",
+    "region": "Makkah",
+    "state": "on_the_way",
+    "current_lat": 21.4517178,
+    "current_lng": 39.2354681,
+    "site_lat": 21.4275,
+    "site_lng": 39.266,
+    "geofence_radius_m": 150,
+    "distance_to_site_m": 4152,
+    "override": false,
+    "points": 7
+   },
+   {
+    "journey_ref": "JRN-2026-0131",
+    "inspector": "inspector22",
+    "factory_code": "F-AH-046",
+    "factory_name": "Al Ahsa Poultry Feed Mills",
+    "region": "Eastern",
+    "state": "on_the_way",
+    "current_lat": 25.9000151,
+    "current_lng": 49.8313561,
+    "site_lat": 25.3878,
+    "site_lng": 49.5781,
+    "geofence_radius_m": 150,
+    "distance_to_site_m": 62357,
+    "override": false,
+    "points": 7
+   },
+   {
+    "journey_ref": "JRN-2026-0132",
+    "inspector": "inspector21",
+    "factory_code": "F-SD-008",
+    "factory_name": "Sudair Building Materials Co.",
+    "region": "Riyadh",
+    "state": "on_the_way",
+    "current_lat": 25.19291,
+    "current_lng": 46.135735,
+    "site_lat": 25.451,
+    "site_lng": 45.8452,
+    "geofence_radius_m": 250,
+    "distance_to_site_m": 40943,
+    "override": false,
+    "points": 7
+   }
+  ],
+  "sample_override": {
+   "journey_ref": "JRN-2026-0147",
+   "factory_name": "Red Sea Desalination Components Co.",
+   "inspector": "inspector21",
+   "observed_lat": 24.0927,
+   "observed_lng": 38.0646,
+   "distance_to_site_m": 455,
+   "geofence_radius_m": 250,
+   "override_reason": "Establishment boundary extends beyond the recorded geofence"
+  }
+ },
+ "unlocked_by_policy": {
+  "STR-KPI-007_coverage_pct": 52.1,
+  "STR-KPI-007_numerator": 38,
+  "STR-KPI-007_denominator": 73,
+  "STR-KPI-007_target_pct": 80,
+  "STR-KPI-008_uninspected": 35,
+  "OPS-KPI-002_expiring_soon": 21
+ }
+}

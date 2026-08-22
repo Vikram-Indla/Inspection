@@ -1,0 +1,6 @@
+config_key,version,parameter,value,unlocks,meaning,status
+inspection_cycle_policy,test-v1,cycle_months,12,STR-KPI-007 Inspection coverage · STR-KPI-008 Uninspected factories,Every establishment is due an inspection once every 12 months.,TEST VALUE — needs business sign-off
+inspection_cycle_policy,test-v1,annual_target_pct,80,STR-KPI-007 Inspection coverage,80% of due establishments should be inspected within the cycle.,TEST VALUE — needs business sign-off
+sla_urgency_policy,test-v1,warn_at_fraction,0.75,OPS-KPI-002 Expiring soon,A visit is flagged once 75% of its window has elapsed.,TEST VALUE — needs business sign-off
+kpi_parameters,test-v1,compliance_rate_trend.target,85,STR-KPI-001 target line,Target national compliance rate of 85%.,TEST VALUE — needs business sign-off
+kpi_parameters,test-v1,level2_decision_mix.target,80,STR-KPI-004 target line,Target approval rate of 80%.,TEST VALUE — needs business sign-off
