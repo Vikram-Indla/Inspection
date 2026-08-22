@@ -12,7 +12,7 @@
   },
   "empty": {
     "title": "No requests waiting for your decision",
-    "body": "Maker-checker excludes your own requests. Nothing else is open in your area.",
+    "body": "Your own requests never appear here. Nothing else is open in your area.",
     "stepTitle": "Nothing of this kind in the package",
     "stepBody": "The read succeeded and returned none. This request changes no object of this kind."
   },

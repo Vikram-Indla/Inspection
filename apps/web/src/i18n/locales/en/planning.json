@@ -1107,7 +1107,7 @@
       "visit": "Create an urgent visit plan that waits for a supervisor to release it",
       "assign": "Allow a preferred Inspector, but require a Supervisor to confirm or replace them",
       "notify": "Notify Supervisors to decide within four business hours",
-      "audit": "Record every step in the append-only audit log",
+      "audit": "Record every step in the audit log, which is only added to",
       "reviewConfirm": "I reviewed the required information and duplicate-active-visit rule"
     },
     "submit": {

@@ -32,7 +32,7 @@
   },
   "drafts": {
     "heading": "Drafts",
-    "makerChecker": "maker-checker",
+    "makerChecker": "one writes, another approves",
     "noAuthority": "You need Compliance, Ops or Security Admin rights to write a dashboard. Review and publish need Compliance, Leadership or Security Admin.",
     "domain": "Domain",
     "titleField": "Title",

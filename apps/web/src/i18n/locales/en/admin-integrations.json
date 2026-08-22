@@ -38,7 +38,7 @@
   },
   "events": {
     "title": "API and rule events",
-    "help": "Append-only outcomes linked by correlation ID.",
+    "help": "Outcomes are only added, never changed. Each one is linked by its reference.",
     "error": "API events could not be read. This is data that's not available, not an empty event history.",
     "emptyTitle": "No events",
     "emptyBody": "You cannot see any events. We checked — there are none."

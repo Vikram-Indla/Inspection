@@ -242,7 +242,7 @@
     "sourceWord": "Source of truth",
     "src": {
       "assign": "Assignment record",
-      "audit": "Append-only audit trail",
+      "audit": "Audit trail — only added to",
       "field": "Field app / journey engine",
       "insp": "Inspection engine — submissions are final",
       "review": "Review engine"

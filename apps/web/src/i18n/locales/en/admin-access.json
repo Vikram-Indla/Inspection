@@ -18,7 +18,7 @@
   },
   "governance": {
     "heading": "Governance on this surface",
-    "rls": "Row Level Security limits the roster before it reaches this page.",
+    "rls": "You only see the accounts your access allows.",
     "audit": "Every write is re-checked on the server and appends audit evidence.",
     "effect": "Changes take effect on the user's next authorized request.",
     "readOnly": "This session can read the roster but cannot change access."
@@ -32,14 +32,14 @@
     "adminRole": "Administrator role",
     "standardRole": "Standard role",
     "emptyTitle": "You cannot see any accounts",
-    "emptyBody": "Row Level Security filters this roster. Accounts outside your visibility are absent, not hidden."
+    "emptyBody": "Your access decides which accounts you see. Accounts outside it are absent, not hidden."
   },
   "catalogue": {
     "title": "Role list",
     "body": "We list only the roles you are allowed to see.",
     "roleKey": "Role key",
     "emptyTitle": "You cannot see any roles",
-    "emptyBody": "The role list is filtered by Row Level Security."
+    "emptyBody": "You only see the roles your access allows."
   },
   "manage": {
     "title": "Access management",

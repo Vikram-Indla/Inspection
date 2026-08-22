@@ -78,7 +78,7 @@
   "governance": {
     "heading": "Governance on this surface",
     "validate": "Publishing revalidates sections, items, response mappings, evidence and action-form dependencies.",
-    "maker": "Maker-checker approval is enforced by the publish actions and database guards.",
+    "maker": "One person publishes and a different person approves. The publish actions and the database both check this.",
     "runtime": "Execution consumes only the locked package version pinned to the visit.",
     "immutable": "A package used by a published visit cannot have its structure edited. Changes create a new draft, and past inspections stay pinned to their original version."
   },

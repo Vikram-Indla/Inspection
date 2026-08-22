@@ -51,7 +51,7 @@
   },
   "governance": {
     "label": "Governance on this surface",
-    "sum": "The stored factor total must equal the engine’s accepted invariant before a save.",
+    "sum": "The stored factor total must match the engine's accepted total before you can save.",
     "rls": "Risk-owner authorization is rechecked on every write.",
     "trace": "Scores can always be reproduced from the stored inputs and the settings version."
   },

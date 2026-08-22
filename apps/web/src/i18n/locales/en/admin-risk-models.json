@@ -10,7 +10,7 @@
     "studio": "Risk Studio",
     "studioHint": "Immediate-live settings",
     "models": "Model versions",
-    "modelsHint": "Draft and maker-checker lifecycle"
+    "modelsHint": "Draft, then a second person approves"
   },
   "banner": {
     "title": "Draft layer",
@@ -19,7 +19,7 @@
   "error": "Couldn't load risk models. Nothing changed.",
   "empty": {
     "title": "No risk model drafts",
-    "body": "No risk models exist in your area. Create a draft to begin the maker-checker lifecycle."
+    "body": "No risk models exist in your area. Create a draft to start."
   },
   "off": {
     "consequence": "The risk-model draft layer is off here. Live risk settings are still edited in the Risk Studio.",

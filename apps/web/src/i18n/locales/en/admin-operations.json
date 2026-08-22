@@ -19,7 +19,7 @@
     "openErrors": "Open error records",
     "noThroughput": "No throughput claim is derived from this count.",
     "publishedFlags": "Published flag versions",
-    "sod": "Maker-checker enforced."
+    "sod": "One writes, another approves."
   },
   "chart": {
     "title": "Error records by source",

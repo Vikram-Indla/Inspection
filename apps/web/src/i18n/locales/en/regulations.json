@@ -11,7 +11,7 @@
   "access": {
     "reviewerTitle": "Reviewer — read only",
     "title": "Read only for your role",
-    "body": "You can view the library here. Creating, amending and publishing need a compliance or form admin role, enforced by row-level security.",
+    "body": "You can view the library here. Creating, changing and publishing need a compliance or form admin role. The database checks that.",
     "unverifiedTitle": "Permissions unavailable",
     "unverifiedBody": "Your configuration permissions could not be verified. Writes are disabled — reload the page to retry."
   },

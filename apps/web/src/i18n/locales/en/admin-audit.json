@@ -25,7 +25,7 @@
     "apply": "Apply"
   },
   "terms": {
-    "appendOnly": "Append-only",
+    "appendOnly": "Add only",
     "semantic": "Recorded semantic",
     "generic": "Generic only",
     "partial": "Partial",

@@ -12,7 +12,7 @@
   },
   "waiting": {
     "title": "Waiting on you",
-    "desc": "Submitted requests you are allowed to approve. Your own requests never appear here. Maker-checker rules protect every decision.",
+    "desc": "Submitted requests you are allowed to approve. Your own requests never appear here. One person writes and a different person approves.",
     "cta": "Open Waiting for approval",
     "loadErrorTitle": "Some approval work could not load.",
     "loadErrorList": "The request list could not be loaded. Requests may exist that are not shown.",
