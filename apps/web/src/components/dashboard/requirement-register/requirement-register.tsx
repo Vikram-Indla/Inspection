@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/saqeel/button/button";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
 import DataTable, { type DataColumn } from "@/components/saqeel/data-table/data-table";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
@@ -53,14 +53,13 @@ export default function RequirementRegister({ metrics, methodology, strings }: {
         if (!entry) return null;
         const label = metric.kind === "status" ? strings.why : strings.methodology;
         return (
-          <Button
-            variant="tertiary" size="sm" hasPopup="dialog" compactLabel
-            expanded={activeId === metric.metricId}
+          <IconButton
+            icon="info" size="sm"
+            aria-haspopup="dialog"
+            aria-expanded={activeId === metric.metricId}
             label={`${label} — ${metric.title}`}
             onClick={() => openEntry(entry)}
-          >
-            {label}
-          </Button>
+          />
         );
       },
     },

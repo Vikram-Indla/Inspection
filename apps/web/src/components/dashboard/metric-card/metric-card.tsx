@@ -38,7 +38,7 @@ export default function MetricCard({ model, strings }: {
           {blocked
             ? model.emptyMuted
               ? <Text as="span" tone="muted">{model.emptyLabel}</Text>
-              : <StatusPill tone={model.emptyTone ?? "warning"} ping>{model.emptyLabel}</StatusPill>
+              : <StatusPill tone={model.emptyTone ?? "neutral"}>{model.emptyLabel}</StatusPill>
             : <CardValue kind={model.valueKind ?? "number"}>{model.value}</CardValue>}
         </CardValueSlot>
         <details className={styles.disclosure}>

@@ -21,7 +21,6 @@ export default function RoleSummary({ locale, persona, projection, partialSource
         level="h2"
         titleId="dashboard-role-summary"
         title={dashboard.persona[persona]}
-        description={dashboard.yourWork.scoped}
       />
       <CardBody>
         <MetricStrip

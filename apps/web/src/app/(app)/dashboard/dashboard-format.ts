@@ -139,7 +139,7 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
   if (metric.comparison && metric.comparison.direction !== "unknown" && metric.comparison.previousValue != null) {
     const arrow = metric.comparison.direction === "up" ? "▲" : metric.comparison.direction === "down" ? "▼" : "—";
     sub = t(locale, `${arrow} vs previous window`, `${arrow} مقارنة بالفترة السابقة`);
-  } else if (metric.numerator != null && metric.denominator != null) {
+  } else if (metric.numerator != null && metric.denominator != null && metric.denominator > 0) {
     const numerator = formatCount(metric.numerator, locale);
     const denominator = formatCount(metric.denominator, locale);
     sub = t(locale, `${numerator} of ${denominator}`, `${numerator} من ${denominator}`);

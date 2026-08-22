@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody, CardGrid, CardValue, CardValueSlot } from "@/components/saqeel/card/card";
-import Button from "@/components/saqeel/button/button";
+import IconButton from "@/components/saqeel/icon-button/icon-button";
 import StatusPill, { type StatusTone } from "@/components/saqeel/status-pill/status-pill";
 import type { MetricStripStrings } from "@/features/dashboard/strip";
 import type { DisplayTone, MetricDisplay, MethodologyEntry } from "@/app/(app)/dashboard/dashboard-format";
@@ -43,21 +43,20 @@ export default function MetricStrip({ metrics, methodology, strings, min = "sm" 
                 {metric.kind === "status"
                   ? metric.naMuted
                     ? <Text tone="muted">{metric.text}</Text>
-                    : <StatusPill tone={TONE[metric.tone]} ping>{metric.text}</StatusPill>
+                    : <StatusPill tone={TONE[metric.tone]}>{metric.text}</StatusPill>
                   : <CardValue size="md">{metric.text}</CardValue>}
               </CardValueSlot>
               <span className={styles.foot}>
                 {metric.sub ? <Text as="span" tone="muted">{metric.sub}</Text> : null}
                 {entry ? (
                   <span className={styles.disclosure}>
-                    <Button
-                      variant="tertiary" size="sm" hasPopup="dialog"
-                      expanded={activeId === metric.metricId}
+                    <IconButton
+                      icon="info" size="sm"
+                      aria-haspopup="dialog"
+                      aria-expanded={activeId === metric.metricId}
                       label={`${label} — ${metric.title}`}
                       onClick={() => openEntry(entry)}
-                    >
-                      {label}
-                    </Button>
+                    />
                   </span>
                 ) : null}
               </span>

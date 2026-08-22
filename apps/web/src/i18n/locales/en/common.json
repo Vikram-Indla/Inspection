@@ -51,7 +51,7 @@
   "state": {
     "empty": "Nothing yet",
     "loading": "Loading…",
-    "na": "N/A",
+    "na": "—",
     "notApplicable": "Not applicable on this page",
     "notConfigured": "N/A",
     "unavailable": "Unavailable"
