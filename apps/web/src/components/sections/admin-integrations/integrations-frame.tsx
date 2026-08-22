@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import Button from "@/components/saqeel/button/button";
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
-import { Metric, Overline, Text } from "@/components/saqeel/type";
+import { Metric, Overline } from "@/components/saqeel/type";
 import type { AdminIntegrationsMessages } from "@/features/admin-integrations/strings";
 import styles from "./integrations.module.css";
 
@@ -9,7 +9,6 @@ export type FrameMetric = {
   readonly key: string;
   readonly label: string;
   readonly value: string;
-  readonly note: string;
 };
 
 export type FrameTab = {
@@ -39,7 +38,6 @@ export default function IntegrationsFrame({ strings, metrics, tabs, children }: 
           <div className={styles.metric} key={metric.key}>
             <Overline tone="secondary">{metric.label}</Overline>
             <Metric>{metric.value}</Metric>
-            <Text role="label" tone="muted">{metric.note}</Text>
           </div>
         ))}
       </div>

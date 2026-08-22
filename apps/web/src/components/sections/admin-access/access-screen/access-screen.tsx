@@ -25,13 +25,11 @@ export default function AccessScreen({ data, view, targetUserId, locale }: {
       key: "accounts",
       label: strings.metrics.accounts,
       value: data.rosterUnavailable ? strings.notConfigured : count(data.profiles.length),
-      note: strings.metrics.accountsNote,
     },
     {
       key: "roles",
       label: strings.metrics.roles,
       value: data.rolesUnavailable ? strings.notConfigured : count(data.roles.length),
-      note: strings.metrics.rolesNote,
     },
     {
       key: "overrides",
@@ -39,7 +37,6 @@ export default function AccessScreen({ data, view, targetUserId, locale }: {
       value: data.canManage && !data.manageSourcesUnavailable
         ? count(countDirectOverrides(data.access))
         : strings.notConfigured,
-      note: strings.metrics.overridesNote,
     },
   ];
 
@@ -49,7 +46,8 @@ export default function AccessScreen({ data, view, targetUserId, locale }: {
   ];
 
   return (
-    <AccessFrame metrics={metrics} strings={strings} tabs={tabs}>
+    <AccessFrame
+      actions={<AccessGovernance readOnly={!data.canManage} strings={adminAccessMessages(locale)} />} metrics={metrics} strings={strings} tabs={tabs}>
       {data.permissionCheckUnavailable ? (
         <EmptyState
           description={strings.error.permissionsBody}
@@ -62,8 +60,6 @@ export default function AccessScreen({ data, view, targetUserId, locale }: {
 
       {view === "users" ? <UsersView data={data} locale={locale} targetUserId={targetUserId} /> : null}
       {view === "roles" ? <RolesView data={data} locale={locale} /> : null}
-
-      <AccessGovernance readOnly={!data.canManage} strings={adminAccessMessages(locale)} />
     </AccessFrame>
   );
 }

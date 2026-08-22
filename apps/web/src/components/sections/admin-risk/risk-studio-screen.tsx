@@ -20,9 +20,9 @@ export default function RiskStudioScreen({ data, locale }: {
   const breadcrumbs = [{ label: copy.breadcrumb.administration, href: "/admin" }, { label: copy.title }];
 
   const metrics = [
-    { label: copy.metric.total, value: ready ? ready.weightTotalPct : copy.notConfigured, note: copy.metric.totalNote },
-    { label: copy.metric.factors, value: ready ? String(ready.factorCount) : copy.notConfigured, note: copy.metric.factorsNote },
-    { label: copy.metric.version, value: ready ? ready.versionLabel : copy.notConfigured, note: copy.metric.versionNote },
+    { label: copy.metric.total, value: ready ? ready.weightTotalPct : copy.notConfigured },
+    { label: copy.metric.factors, value: ready ? String(ready.factorCount) : copy.notConfigured },
+    { label: copy.metric.version, value: ready ? ready.versionLabel : copy.notConfigured },
   ];
 
   return (
@@ -35,7 +35,6 @@ export default function RiskStudioScreen({ data, locale }: {
             <div key={metric.label} className={styles.metricCard}>
               <Overline>{metric.label}</Overline>
               <Metric>{metric.value}</Metric>
-              <Text role="label" tone="muted" as="p">{metric.note}</Text>
             </div>
           ))}
         </div>

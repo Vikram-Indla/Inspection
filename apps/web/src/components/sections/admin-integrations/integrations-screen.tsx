@@ -16,9 +16,9 @@ export default function IntegrationsScreen({ data, locale }: { data: Integration
   const na = strings.notConfigured;
 
   const metrics: readonly FrameMetric[] = [
-    { key: "registered", label: strings.metrics.registered, value: data.endpointsFailed ? na : String(data.endpoints.length), note: strings.metrics.registeredNote },
-    { key: "configured", label: strings.metrics.configured, value: data.endpointsFailed ? na : String(data.configuredCount), note: strings.metrics.configuredNote },
-    { key: "events", label: strings.metrics.events, value: data.eventsFailed ? na : String(data.events.length), note: strings.metrics.eventsNote },
+    { key: "registered", label: strings.metrics.registered, value: data.endpointsFailed ? na : String(data.endpoints.length) },
+    { key: "configured", label: strings.metrics.configured, value: data.endpointsFailed ? na : String(data.configuredCount) },
+    { key: "events", label: strings.metrics.events, value: data.eventsFailed ? na : String(data.events.length) },
   ];
 
   const tabs: readonly FrameTab[] = [

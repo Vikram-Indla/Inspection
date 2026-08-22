@@ -6,7 +6,7 @@
   },
   "title": "System operations and resilience",
   "badge": "blocks safely when something fails",
-  "subtitle": "Live control-plane health. Sources that aren't available are never shown as zero.",
+  "subtitle": "Live system health. A source that is not available is never shown as zero.",
   "sourcesUnavailable": {
     "title": "Some data sources aren't available.",
     "body": "Sources that aren't available are listed below. They're never shown as zero or empty."

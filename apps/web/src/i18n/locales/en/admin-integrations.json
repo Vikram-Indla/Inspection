@@ -17,11 +17,8 @@
   },
   "metrics": {
     "registered": "Registered endpoints",
-    "registeredNote": "Read from the connection list",
     "configured": "Configured endpoints",
-    "configuredNote": "Contract and runtime address recorded",
-    "events": "Recent API events",
-    "eventsNote": "Bounded append-only read"
+    "events": "Recent API events"
   },
   "banner": {
     "title": "Configuration is not connectivity.",

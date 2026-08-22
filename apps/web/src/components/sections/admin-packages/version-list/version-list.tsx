@@ -63,9 +63,6 @@ export default function VersionList({
                   <StatusPill ping={false} tone={TONE[version.status] ?? "neutral"}>
                     {strings.states[version.status as keyof typeof strings.states] ?? version.status}
                   </StatusPill>
-                  {isSuperseded(version, latest) ? (
-                    <Text as="span" role="label" tone="muted">{strings.register.supersededNote}</Text>
-                  ) : null}
                 </span>
               }
               description={effectiveWindow(version, strings, locale) ?? undefined}

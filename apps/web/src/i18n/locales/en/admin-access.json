@@ -8,11 +8,8 @@
   "loading": "Loading users and roles",
   "metrics": {
     "accounts": "Accounts in your area",
-    "accountsNote": "Only profiles you can see",
     "roles": "Role keys",
-    "rolesNote": "Read from the role list",
-    "overrides": "Direct overrides",
-    "overridesNote": "Verified grants, or not configured"
+    "overrides": "Direct overrides"
   },
   "tabs": {
     "label": "Access views",

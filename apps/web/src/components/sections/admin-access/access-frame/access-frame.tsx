@@ -9,7 +9,6 @@ export type FrameMetric = {
   readonly key: string;
   readonly label: string;
   readonly value: string;
-  readonly note: string;
 };
 
 export type FrameTab = {
@@ -19,10 +18,11 @@ export type FrameTab = {
   readonly current?: boolean;
 };
 
-export default function AccessFrame({ strings, metrics, tabs, children }: {
+export default function AccessFrame({ strings, metrics, tabs, actions, children }: {
   strings: AdminAccessMessages;
   metrics?: readonly FrameMetric[];
   tabs?: readonly FrameTab[];
+  actions?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -33,6 +33,7 @@ export default function AccessFrame({ strings, metrics, tabs, children }: {
         { label: strings.breadcrumb.hub },
       ]}
       title={strings.title}
+      actions={actions}
     >
       {metrics?.length ? (
         <div className={styles.metrics}>
@@ -40,7 +41,6 @@ export default function AccessFrame({ strings, metrics, tabs, children }: {
             <div className={styles.metric} key={metric.key}>
               <Overline tone="secondary">{metric.label}</Overline>
               <Metric>{metric.value}</Metric>
-              <Text role="label" tone="muted">{metric.note}</Text>
             </div>
           ))}
         </div>

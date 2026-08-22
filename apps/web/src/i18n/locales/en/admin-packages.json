@@ -30,7 +30,6 @@
     "actionForms": "{count} action forms",
     "effective": "Effective {from} to {to}",
     "openEnded": "open-ended",
-    "supersededNote": "Older than the current publish",
     "publishedOn": "Published {date}",
     "impact": "Publish impact",
     "preview": "Field preview",

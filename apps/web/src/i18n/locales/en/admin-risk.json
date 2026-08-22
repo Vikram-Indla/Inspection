@@ -12,11 +12,8 @@
   },
   "metric": {
     "total": "Configured weight total",
-    "totalNote": "Derived from the stored factor weights",
     "factors": "Factors in current settings",
-    "factorsNote": "No prototype factors are added",
-    "version": "Settings version",
-    "versionNote": "Read from the engine settings"
+    "version": "Settings version"
   },
   "error": {
     "title": "Couldn’t load risk settings.",
