@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-189.** Take T-190.
+implements the reservation. **Highest id in use: T-190.** Take T-191.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,41 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-190 · `/login` reports every backend failure as a wrong password
+`status: todo` · `rules: WEB-004, WEB-016` · `est: 1h`
+
+**Found during a live Supabase incident on 2026-08-22**, when a sign-in with
+valid credentials returned "Those details did not work. Check them, or reset
+your password." The credentials were fine; the database was at 94-100% CPU.
+
+`apps/web/src/app/login/field/FieldLoginClient.tsx` ~line 324:
+
+```ts
+if (error) {
+  setMessage(/fetch|network/i.test(error.message) ? s.errors.network : s.errors.invalid);
+```
+
+Any Supabase error whose message does not contain "fetch" or "network" is
+reported to the user as invalid credentials. A timeout, a 5xx, a saturated
+connection pool and an actual typo are indistinguishable on screen.
+
+**Two consequences.** Users reset passwords that were never wrong, during the
+exact window when the system is least able to serve a reset. And auth failures
+never surface as failures, so an outage loses that signal entirely.
+
+**Second defect on the same surface.** The identifier field is labelled
+"National ID / Staff number". Neither authenticates. `errors.directoryBlocked`
+("National ID and staff number do not work yet. Use your work email.") already
+admits this. The only values that work are a work email or a
+`docs/TEST_ACCOUNTS.md` alias (`planner1`, `admin1`, …) which the client rewrites
+to `<alias>@mim.gov.sa`. The label promises a capability the product does not
+have — WEB-016 §3 says an error must name the fix, and this label misdirects
+before an error is even reached.
+
+**Not started deliberately.** The login path was adjacent to an active incident
+worktree on 2026-08-22 and the incident owner asked for this to be raised
+separately rather than folded into their fix.
 
 ### T-189 · Last banned words cleared, favicon made visible
 `status: done` · `rules: WEB-003, WEB-011, WEB-016` · `est: 45m`
