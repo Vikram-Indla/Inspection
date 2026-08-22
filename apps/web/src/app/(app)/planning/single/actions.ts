@@ -4,13 +4,16 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { getPlanningAccess } from "@/lib/planning/access";
 import { findDuplicateActiveVisits } from "@/features/planning-single/duplicates";
+import { readSubmissionToken, runOncePerSubmission, submissionKey } from "@/features/planning-single/submission-guard";
 import { containsPlannerLocationOverride, PLANNER_LOCATION_OVERRIDE_ERROR } from "./location-authority";
 import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 import { createHash, randomUUID } from "node:crypto";
 
 export type StepStatus = "pending" | "done" | "failed";
 export type PublishSteps = { plan: StepStatus; visit: StepStatus; assignment: StepStatus; status: StepStatus; notification: StepStatus };
-export type PublishResult = { error?: string; steps?: PublishSteps; resumeId?: string };
+export type PublishResult = { error?: string; steps?: PublishSteps; resumeId?: string; attempt?: number };
+
+type PlanningClient = Awaited<ReturnType<typeof supabaseServer>>;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -27,14 +30,27 @@ const NEUTRAL_WRITE_ERROR =
   "Submitting for supervision could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
 const NEUTRAL_READ_ERROR =
   "Planning data could not be verified through the authorized read path. Your entries are preserved — retry after access configuration is restored.";
-export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
+const RESUMED_TARGET_REJECTIONS = ["PLANNING-DRAFT-STALE", "PLANNING-DRAFT-TARGET-RESELECT-REQUIRED"];
+const isResumedTargetRejection = (code: string | undefined, message: string | undefined) =>
+  RESUMED_TARGET_REJECTIONS.some(marker => (message ?? "").includes(marker)) || code === "40001";
+
+export async function publishSingleVisit(previous: PublishResult, formData: FormData): Promise<PublishResult> {
+  const attempt = (previous.attempt ?? 0) + 1;
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[ publishSingleVisit] auth read failed:", authError.message);
-    return { error: NEUTRAL_READ_ERROR };
+    return { error: NEUTRAL_READ_ERROR, attempt };
   }
-  if (!user) return { error: "Session expired — sign in again." };
+  if (!user) return { error: "Session expired — sign in again.", attempt };
+  const token = readSubmissionToken(formData.get("submission_token"));
+  const submitted = token
+    ? await runOncePerSubmission(submissionKey(user.id, token), () => submitVerifiedSingleVisit(sb, formData))
+    : await submitVerifiedSingleVisit(sb, formData);
+  return { ...submitted, attempt };
+}
+
+async function submitVerifiedSingleVisit(sb: PlanningClient, formData: FormData): Promise<PublishResult> {
 
   // Targeting identifiers: the Wizard posts the resolved target through
   // dedicated hidden fields (canonical CR → licence → plant, or the legacy
@@ -179,7 +195,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     });
     if (targetError) {
       console.error("[ publishSingleVisit] resumed target validation failed:", targetError.code, targetError.message);
-      if (targetError.code === "40001") {
+      if (isResumedTargetRejection(targetError.code, targetError.message)) {
         return { error: "The saved establishment identity changed. Select the current CR, licence and plant again; the historical draft remains unchanged." };
       }
       return { error: NEUTRAL_READ_ERROR };

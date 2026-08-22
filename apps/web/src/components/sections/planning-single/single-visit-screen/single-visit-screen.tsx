@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { publishSingleVisit, saveSingleDraft } from "@/app/(app)/planning/single/actions";
 import Button from "@/components/saqeel/button/button";
@@ -35,6 +35,7 @@ export default function SingleVisitScreen({ data, strings, locale }: {
 }) {
   const { query, portfolios, results } = data;
   const [state, formAction, pending] = useActionState(publishSingleVisit, {});
+  const submissionToken = `${useId().replace(/[^A-Za-z0-9]/g, "")}-${state.attempt ?? 0}`;
   const router = useRouter();
   const [searchPending, startSearchTransition] = useTransition();
   const [queryInput, setQueryInput] = useState(query);
@@ -199,6 +200,7 @@ export default function SingleVisitScreen({ data, strings, locale }: {
           sourceChannel={data.sourceChannel}
           resumeId={state.resumeId ?? draftState?.id ?? ""}
           reselected={targetReselected}
+          submissionToken={submissionToken}
         />
 
         {target ? (

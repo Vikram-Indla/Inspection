@@ -1,11 +1,12 @@
 "use client";
 import type { PublishTarget } from "@/features/planning-single/target";
 
-export default function TargetFields({ target, sourceChannel, resumeId, reselected }: {
+export default function TargetFields({ target, sourceChannel, resumeId, reselected, submissionToken }: {
   target: PublishTarget | null;
   sourceChannel: string;
   resumeId: string;
   reselected: boolean;
+  submissionToken: string;
 }) {
   return (
     <>
@@ -22,6 +23,7 @@ export default function TargetFields({ target, sourceChannel, resumeId, reselect
       <input type="hidden" name="source_channel" value={sourceChannel} />
       <input type="hidden" name="resume_visit_plan_id" value={resumeId} />
       <input type="hidden" name="target_reselected" value={reselected ? "1" : "0"} />
+      <input type="hidden" name="submission_token" value={submissionToken} />
     </>
   );
 }
