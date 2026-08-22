@@ -14,7 +14,7 @@
   "tabs": {
     "records": "Visit records",
     "visits": "Prior establishment visits",
-    "recordsHint": "Submitted records available to this inspector — open a document to view its immutable version.",
+    "recordsHint": "Sent records this inspector can see. Open a document to view its locked version.",
     "visitsHint": "Prior visit reports for the selected establishment."
   },
   "version": "Version",

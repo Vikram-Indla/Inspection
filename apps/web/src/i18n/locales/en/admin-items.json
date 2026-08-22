@@ -1,14 +1,14 @@
 {
-  "title": "Inspection Item Catalogue",
-  "loading": "Loading the inspection item catalogue…",
-  "readAt": "catalogue read {time} — a source fact, not a freshness verdict",
+  "title": "Inspection Item List",
+  "loading": "Loading the inspection item list…",
+  "readAt": "list read {time} — a source fact, not a freshness verdict",
   "degradedClause": "clause list unavailable",
   "error": {
-    "title": "Couldn’t load the item catalogue.",
+    "title": "Couldn’t load the item list.",
     "body": "Something went wrong while loading. Nothing was changed.",
     "retry": "Reload the page to try again."
   },
-  "degradedBody": "The clause list couldn’t be read. The catalogue below still rendered; only the clause control is unavailable.",
+  "degradedBody": "The clause list couldn’t be read. The list below still rendered; only the clause control is unavailable.",
   "permissionsUnavailable": {
     "title": "Permissions unavailable",
     "body": "Your configuration permissions could not be verified. Writes are disabled; retry the page."
@@ -36,7 +36,7 @@
     "body": "Items belong to regulation clauses and are reused across checklists. Add the first item above."
   },
   "previewHeading": "Runtime preview — what the inspector sees",
-  "catalogueHeading": "Catalogue",
+  "catalogueHeading": "List",
   "col": {
     "code": "Code",
     "title": "Title",
@@ -72,7 +72,7 @@
     "heading": "Item history",
     "body": "Open Audit on one item to see its change history. We do not give broad access to the full audit table.",
     "select": "No item selected.",
-    "notFound": "The selected item is no longer in the readable catalogue.",
+    "notFound": "The selected item is no longer in the readable list.",
     "unavailable": "History couldn’t load — reload to retry. This does not mean the history is empty.",
     "empty": "No activity found for this item.",
     "system": "System"
@@ -95,10 +95,10 @@
     "responseModel": "Response model",
     "evidenceRule": "Evidence rule",
     "evidenceNone": "No base evidence rule",
-    "evidencePhotoNc": "Photo mandatory on non-compliant",
-    "evidenceVideoNc": "Video mandatory on non-compliant",
-    "evidenceDocumentNc": "Document mandatory on non-compliant",
-    "evidenceCommentNc": "Comment mandatory on non-compliant",
+    "evidencePhotoNc": "Photo required on non-compliant",
+    "evidenceVideoNc": "Video required on non-compliant",
+    "evidenceDocumentNc": "Document required on non-compliant",
+    "evidenceCommentNc": "Comment required on non-compliant",
     "evidenceSource": "Configured policy — a fixed preset, not free text.",
     "requirementMode": "Requirement mode",
     "requirementRequired": "Required",

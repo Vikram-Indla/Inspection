@@ -132,10 +132,10 @@
     "factDraft": "draft plans have not been published.",
     "factExpired": "planning windows lapsed without use.",
     "unavailable": "Unavailable",
-    "advisory": "Advisory only · human decides",
+    "advisory": "A suggestion only · a person decides",
     "evidence": "Generated from the visit and factory records in your area.",
-    "advisoryIdle": "No advisory has been generated for this list yet.",
-    "generate": "Generate advisory",
+    "advisoryIdle": "No suggestion has been made for this list yet.",
+    "generate": "Make a suggestion",
     "generating": "Generating…",
     "confidenceUnavailable": "The provider returns no calibrated confidence score, so none is shown.",
     "recommendationsTitle": "AI Recommendations",
@@ -341,8 +341,8 @@
       "generate": "Generate summary",
       "unavailable": "AI summary not available — nothing was generated or changed.",
       "evidence": "Source references",
-      "advisory": "Advisory only · human decides",
-      "review": "Review or reject this advisory"
+      "advisory": "A suggestion only · a person decides",
+      "review": "Review or reject this suggestion"
     }
   },
   "filter": {
@@ -661,7 +661,7 @@
       "selectFactory": "select {name}",
       "eligible": "Eligible",
       "duplicate": "Duplicate — active visit",
-      "riskAdvisory": "Risk band is recorded and advisory — nothing is auto-selected.",
+      "riskAdvisory": "The risk band is recorded and is a suggestion. Nothing is chosen for you.",
       "filterLabel": "Filter within results",
       "filterPlaceholder": "Name, code, CR, city or region…",
       "resultsCount": "{n} results",
@@ -748,11 +748,11 @@
     "boundaryReference": "Detail"
   },
   "bulkReview": {
-    "title": "Plan review & supervision",
-    "context": "Review · supervision",
+    "title": "Plan review and supervisor check",
+    "context": "Review · supervisor check",
     "loading": "Loading your selection…",
     "loadingNote": "Validating factories, inspection checklist, Inspectors and duplicates…",
-    "stagedBanner": "Staged review. No plan record exists yet — nothing is saved until you submit it for supervision.",
+    "stagedBanner": "Draft review. No plan record exists yet. Nothing is saved until you send it to a supervisor.",
     "stagedSub": "Selected factories carried from targeting · verifying sources",
     "unavailable": "Planning data is not available right now. Go back to targeting and try again once access is fixed.",
     "emptyTitle": "No factories selected",
@@ -793,7 +793,7 @@
     "blockedTag": "Stopped",
     "readyTag": "Ready",
     "blockersN": "{n} items must be resolved before submission",
-    "clearAll": "All checks pass — the plan is ready for supervision",
+    "clearAll": "All checks pass. The plan is ready for a supervisor.",
     "targetsH": "Targets & proposed visits",
     "selectedLabel": "selected",
     "retainedLabel": "retained",
@@ -814,7 +814,7 @@
     "autoChosen": "No preference — Supervisor assigns",
     "manualEvidenceNote": "Named Inspectors are proposals only. The Supervisor confirms or replaces them during approval.",
     "splitLine": "{manual} proposed · {auto} no preference",
-    "ledgerH": "Supervision submission ledger",
+    "ledgerH": "Record of what was sent to the supervisor",
     "ledgerLead": "Exactly what submitting will and will not do, for the records you kept.",
     "gCreate": "Will be created on successful commit",
     "gRef": "Will be referenced for those visits",
@@ -845,14 +845,14 @@
     "notPartial": "No partial result is called success",
     "notPartialD": "All-or-nothing: any guard or write failure rolls the whole transaction back.",
     "notFinal": "The kept records are not final yet. Fix the problems to lock the counts.",
-    "correctH": "Corrections & supervision submission",
+    "correctH": "Corrections and sending to the supervisor",
     "backConfig": "Back to targeting & assignment",
     "backConfigD": "Return to targeting with this selection preserved.",
     "willRecheck": "On submission the server re-checks role, checklist status, target identity and duplicates in one transaction. Supervisors then confirm each final Inspector before release.",
     "disabledPrefix": "Disabled: ",
     "allClear": "All checks pass — the server will commit all-or-nothing.",
     "removeExcluded": "Remove excluded factories",
-    "publishReady": "Submit plan and create {n} supervision requests",
+    "publishReady": "Send the plan and create {n} supervisor requests",
     "publishBlocked": "Cannot submit — fix {n} items",
     "publishing": "Submitting…",
     "checking": "Checking readiness…",
@@ -861,14 +861,14 @@
     "review": "Review",
     "remove": "Remove",
     "skipToPublish": "Skip to publish action",
-    "publishingTitle": "Submitting for supervision…",
-    "publishingBody": "The server is validating and committing the plan and pending supervision requests in one transaction. Do not close this page.",
+    "publishingTitle": "Sending to the supervisor…",
+    "publishingBody": "The server is checking and saving the plan and its supervisor requests together. Do not close this page.",
     "publishingSub": "‘Published’ is not shown until a Supervisor approves and assigns each visit.",
     "failTitle": "Submission failed — nothing was submitted",
-    "failBody": "No plan or pending supervision request was created.",
+    "failBody": "No plan and no supervisor request was created.",
     "failSub": "Technical details are logged server-side only.",
     "tryAgain": "Try again",
-    "successTitle": "Plan submitted for supervision",
+    "successTitle": "Plan sent to the supervisor",
     "successBody": "The authoritative transaction committed in full.",
     "successSub": "Notifications are queued for sending only — no delivery, acceptance or inspection start. Zero completed visits and zero drafts at this moment.",
     "sPlan": "Plan",
@@ -884,7 +884,7 @@
     "eligToCreate": "To create",
     "eligMissingLoc": "Missing location",
     "eligConflicts": "Active conflicts",
-    "eligManualOverride": "Manual override required",
+    "eligManualOverride": "Must be set by hand",
     "reasonDup": "duplicate — active visit",
     "reasonScope": "outside your area",
     "reasonLocation": "missing official location",
@@ -938,11 +938,11 @@
         "detail": "{targets}"
       },
       "coverage": {
-        "title": "Inspector coverage is decided during supervision",
+        "title": "The supervisor decides inspector coverage",
         "detail": "The Supervisor confirms the final assignment."
       },
       "capacity": {
-        "title": "Inspector capacity is decided during supervision",
+        "title": "The supervisor decides inspector capacity",
         "detail": "The Supervisor confirms the final assignment."
       },
       "nopackage": {
@@ -958,7 +958,7 @@
         "detail": "Submission remains possible; a Supervisor must assign an eligible Inspector before release."
       },
       "configMissing": {
-        "title": "Mandatory configuration is missing",
+        "title": "Required configuration is missing",
         "detail": "Set the visit type, a valid window (end after start) and an inspection checklist."
       },
       "windowImplausible": {
@@ -1031,7 +1031,7 @@
       "previewRegion": "Region",
       "previewFreshness": "Factory list sync",
       "previewFreshnessNever": "No sync record",
-      "previewRisk": "Risk (advisory)",
+      "previewRisk": "Risk (a suggestion)",
       "previewRiskUnknown": "Unknown",
       "visitType": "Visit type",
       "visitTypeFallback": {
@@ -1049,7 +1049,7 @@
       "otherHint": "Justify “Other” in Notes before dispatch."
     },
     "location": {
-      "heading": "Location (mandatory)",
+      "heading": "Location (required)",
       "useOfficial": "Use registered official location",
       "latitude": "Latitude *",
       "longitude": "Longitude *",
@@ -1109,11 +1109,11 @@
       "assign": "Allow a preferred Inspector, but require a Supervisor to confirm or replace them",
       "notify": "Notify Supervisors to decide within four business hours",
       "audit": "Record every step in the append-only audit log",
-      "reviewConfirm": "I reviewed the mandatory information and duplicate-active-visit rule"
+      "reviewConfirm": "I reviewed the required information and duplicate-active-visit rule"
     },
     "submit": {
       "blockedTitle": "Cannot create — minimum controls (P01)",
-      "create": "Submit urgent request for supervision",
+      "create": "Send urgent request to a supervisor",
       "creating": "Submitting…"
     }
   }

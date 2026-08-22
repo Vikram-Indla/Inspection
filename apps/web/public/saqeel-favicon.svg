@@ -1,15 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="256" height="256" role="img" aria-label="Inspection Platform">
-  <!-- Opaque plate: brand background_color (manifest.json). Guarantees contrast
-       against ANY browser chrome — light, dark, or a coloured tab group — instead
-       of inheriting the tab colour through a transparent background. -->
-  <rect width="24" height="24" rx="5.2" fill="#090714"/>
-  <!-- Solid shield silhouette in the brand accent — the same lavender/pink
-       tone as --nav-indicator (--sqx-action-primary-bg, dark theme), the exact
-       colour of the login page's shield mark. Replaces the earlier green,
-       which predates the SAQEEL palette and never matched any live token.
-       Filled, not stroked: at 16px a stroke-only mark vanishes. -->
-  <path d="M12 3.4 5 6.05v5.4c0 5.2 3 7.9 7 8.95 4-1.05 7-3.75 7-8.95v-5.4L12 3.4Z" fill="#B49AD8"/>
-  <!-- Check knocked out in the plate colour: negative space reads at small sizes
-       and keeps the silhouette to a single idea. -->
-  <path d="m8.9 11.85 2.25 2.25 4.3-4.95" fill="none" stroke="#090714" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Opaque brand plate. Measured against every tab background a browser puts
+       behind it: white 5.01:1, light theme 3.53:1, inactive grey 3.82:1, dark
+       3.21:1 — the only tested plate that clears 3:1 on all four. The previous
+       near-black plate scored 1.24:1 on a dark tab, and the PNG set shipped with
+       no plate at all, so the mark was invisible on any light chrome. -->
+  <rect width="24" height="24" rx="5.2" fill="#7E61AC"/>
+  <!-- White shield: 5.01:1 on the plate, and white holds its shape at 16px
+       where a tinted fill greys out. -->
+  <path d="M12 3.4 5 6.05v5.4c0 5.2 3 7.9 7 8.95 4-1.05 7-3.75 7-8.95v-5.4L12 3.4Z" fill="#FFFFFF"/>
+  <!-- Check knocked out in the plate colour: negative space survives downscaling
+       better than a third colour. -->
+  <path d="m8.9 11.85 2.25 2.25 4.3-4.95" fill="none" stroke="#7E61AC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

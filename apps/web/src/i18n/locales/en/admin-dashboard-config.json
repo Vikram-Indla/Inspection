@@ -4,10 +4,10 @@
   "loading": "Loading dashboard configuration…",
   "migration": {
     "title": "Foundation migration not yet applied",
-    "body": "The dashboard KPI/configuration tables are not readable. Apply migration {file} and reload. The catalogue below is shown from the code registry."
+    "body": "The dashboard KPI/configuration tables are not readable. Apply migration {file} and reload. The list below is shown from the built-in list."
   },
   "catalogue": {
-    "heading": "KPI catalogue",
+    "heading": "KPI list",
     "intro": "Formula and metric ID are set by the system and cannot be changed here. {implemented} of {total} metrics have a working formula today.",
     "colMetric": "Metric",
     "colCategory": "Category",

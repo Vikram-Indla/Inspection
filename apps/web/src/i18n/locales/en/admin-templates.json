@@ -1,5 +1,5 @@
 {
-  "title": "Template registry",
+  "title": "Template list",
   "context": "Template configuration",
   "loading": "Loading templates…",
   "breadcrumb": {
@@ -17,7 +17,7 @@
     "current": "Current step"
   },
   "error": {
-    "title": "Couldn’t load the template registry.",
+    "title": "Couldn’t load the template list.",
     "body": "Something went wrong on our side. Nothing changed.",
     "retry": "Reload to try again"
   },

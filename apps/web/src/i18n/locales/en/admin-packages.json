@@ -89,9 +89,9 @@
     "readOnlyBody": "You can view versions, previews and publish impact. Creating, saving or publishing needs the compliance or form administrator role.",
     "permissionUnknownTitle": "Write permissions could not be checked",
     "permissionUnknownBody": "Every edit control is hidden until your role can be read again. Reload to try again.",
-    "itemBankTitle": "The item catalogue is unavailable",
+    "itemBankTitle": "The item list is unavailable",
     "itemBankBody": "Versions and publish impact still show. Editing and field preview are paused. We could not read the item data they need.",
-    "templatesTitle": "The template registry is unavailable",
+    "templatesTitle": "The template list is unavailable",
     "templatesBody": "Packages still show. Template references cannot be added or changed until it can be read again."
   },
   "denied": {

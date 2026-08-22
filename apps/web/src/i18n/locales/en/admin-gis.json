@@ -78,7 +78,7 @@
     "previous": "Previous",
     "next": "Next",
     "status": "{a}–{b} of {n}",
-    "label": "Registry pages"
+    "label": "List pages"
   },
   "settings": {
     "setting": "Setting",
@@ -86,7 +86,7 @@
     "gps": "GPS accuracy for check-in",
     "arrival": "Arrival detection radius",
     "fence": "Geofence default radius",
-    "fenceNote": "per-factory override on the map",
+    "fenceNote": "change the fence for one factory on the map",
     "telemetry": "Telemetry interval",
     "deviation": "Route deviation alert",
     "retention": "Retention"

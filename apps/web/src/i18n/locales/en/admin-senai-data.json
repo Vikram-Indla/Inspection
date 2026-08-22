@@ -17,7 +17,7 @@
     "sources": "Sources",
     "endpoints": "Endpoints",
     "mapping": "Field mapping",
-    "reconcile": "Sync & reconcile"
+    "reconcile": "Update and match"
   },
   "fnd007": {
     "lead": "SENAI is the source of truth for factory identity, licences and industrial data. Inspection Platform reads and reconciles — it never writes back.",
@@ -65,7 +65,7 @@
   },
   "mapping": {
     "help": "How SENAI fields map to internal fields, with transform and status.",
-    "heading": "Field mapping registry",
+    "heading": "field mapping list",
     "body": "No field mapping is approved yet. There is nothing to show here. Do not add a mapping on this screen. It would change how we read the source data. Until a mapping is approved, the app uses its own rules. Fields with no rule show as a dash."
   },
   "reconcile": {
@@ -78,11 +78,11 @@
     "unvalidated": "Sources not validated",
     "unvalidatedDelta": "of {total}",
     "runUnavailable": "Run source not available",
-    "registryUnavailable": "Source registry not available",
-    "runsError": "Sync runs could not be read. Total row counts and freshness are not available; reconciliation divergences below remain independent.",
+    "registryUnavailable": "Source list not available",
+    "runsError": "Sync runs could not be read. Total row counts and freshness are not available; matching divergences below remain independent.",
     "connectionsError": "Source connections could not be read. The source-validation count is not available; recorded run and divergence facts are preserved.",
-    "error": "Reconciliation divergences could not be read. This is data that's not available, not a checked, empty divergence set.",
-    "caption": "Recorded reconciliation divergences",
+    "error": "Matching divergences could not be read. This is data that's not available, not a checked, empty divergence set.",
+    "caption": "Recorded matching divergences",
     "colEntity": "Entity",
     "colExternal": "Source identifier",
     "colOutcome": "Outcome",
@@ -92,6 +92,6 @@
     "emptyTitle": "No unresolved divergence",
     "emptyBody": "No unresolved divergence is recorded. This is a checked, empty result.",
     "footer": "Differences are resolved by an approved action, not edited here. The app never overwrites a difference on its own. It never sends the result back to SENAI.",
-    "openHistory": "Open sync, staging and reconciliation history"
+    "openHistory": "Open sync, staging and matching history"
   }
 }

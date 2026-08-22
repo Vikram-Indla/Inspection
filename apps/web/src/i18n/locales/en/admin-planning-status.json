@@ -44,7 +44,7 @@
   "sections": {
     "states": "Stages a visit goes through",
     "transitions": "How a visit moves between stages",
-    "capabilities": "Planning capabilities"
+    "capabilities": "Planning permissions"
   },
   "columns": {
     "from": "From",

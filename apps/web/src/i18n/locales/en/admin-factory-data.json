@@ -47,7 +47,7 @@
     "selectFactory": "Select a factory",
     "selected": "{name} · CR {cr} · License {license}",
     "openDossier": "Open factory profile (view only)",
-    "factoriesError": "The factory list could not be read. Import and reconciliation history below may still be available.",
+    "factoriesError": "The factory list could not be read. Import and matching history below may still be available.",
     "representativesError": "Representatives could not be read for this factory. Other factory facts remain available.",
     "document": {
       "title": "Document details",
@@ -114,7 +114,7 @@
   },
   "history": {
     "title": "Sync and import history",
-    "runsError": "Sync runs could not be read. Rejected rows and reconciliation records remain independently readable below.",
+    "runsError": "Sync runs could not be read. Rejected rows and matching records remain independently readable below.",
     "batchesError": "Batch tracking details could not be read. Available sync-run facts are kept without a guessed file origin.",
     "colCreated": "Created",
     "colModeSource": "Mode / source",
@@ -134,10 +134,10 @@
       "emptyBody": "No rejected staged rows. This is a checked, empty result."
     },
     "reconciliation": {
-      "title": "Reconciliation history",
-      "error": "Reconciliation history could not be read. This is data that's not available, not an empty history.",
+      "title": "Matching history",
+      "error": "Matching history could not be read. This is data that's not available, not an empty history.",
       "noReason": "No reason code",
-      "emptyTitle": "No reconciliation records",
+      "emptyTitle": "No matching records",
       "emptyBody": "You cannot see any matching records. We checked — there are none. Staged does not mean imported."
     }
   },

@@ -141,7 +141,7 @@
       "readOnlyRole": "{role} · view only",
       "readOnlyTitle": "Final submitted version.",
       "reason": "Reason",
-      "reasonPlaceholder": "mandatory for return/reject — recorded immutably",
+      "reasonPlaceholder": "required for return/reject — recorded permanently",
       "recording": "Recording…",
       "rejectImpact": "Reject is final. The inspection stays view only, and Compliance Management does not start. A new inspection needs a new visit.",
       "rejectWarnBody": "no compliance trigger; new inspection needs a new visit.",

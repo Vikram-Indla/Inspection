@@ -6,7 +6,7 @@
   },
   "title": "Language & translations",
   "subtitle": "English source and Arabic translation for every localized surface",
-  "loading": "Loading the translation registry",
+  "loading": "Loading the translation list",
   "coverage": {
     "arabic": "Arabic coverage",
     "arabicCaption": "{translated} of {total} keys",
@@ -98,7 +98,7 @@
     "audit": "Updates run through revisioned server actions."
   },
   "pagination": {
-    "label": "Registry pages",
+    "label": "List pages",
     "previous": "Previous",
     "next": "Next",
     "page": "Page {page} of {pageCount}"
@@ -110,7 +110,7 @@
     "request": "Request access"
   },
   "error": {
-    "title": "The translation registry could not be loaded",
+    "title": "The translation list could not be loaded",
     "body": "No key, translation or review state was changed. Retry, or quote the reference below to support.",
     "reference": "ref {id}",
     "retry": "Try again",

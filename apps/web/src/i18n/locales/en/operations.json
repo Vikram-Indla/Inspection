@@ -169,7 +169,7 @@
       "telemetry": "Automatic tracking",
       "arrival": "Arrival record",
       "checkin": "Check-in",
-      "override": "Manual override",
+      "override": "Set by hand",
       "deviation": "Route deviation"
     },
     "wallboard": {

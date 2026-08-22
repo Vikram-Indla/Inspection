@@ -50,8 +50,8 @@
   },
   "brief": {
     "heading": "AI Daily Brief",
-    "advisory": "Advisory only",
-    "unavailable": "No advisory is available right now — nothing was generated or changed."
+    "advisory": "A suggestion only",
+    "unavailable": "No suggestion is available right now. Nothing was made or changed."
   },
   "reco": {
     "heading": "AI recommendation — start here",

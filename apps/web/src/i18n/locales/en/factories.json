@@ -70,7 +70,7 @@
     "items": {
       "inspectionHistory": {
         "title": "Inspection history",
-        "body": "Approved and submitted inspection records, immutable versions and report outcomes."
+        "body": "Approved and submitted inspection records, versions that cannot be changed and report outcomes."
       },
       "violations": {
         "title": "Violations & enforcement",
@@ -78,7 +78,7 @@
       },
       "industrial": {
         "title": "Industrial information",
-        "body": "Products, materials, production lines, machinery and source reconciliation."
+        "body": "Products, materials, production lines, machinery and source matching."
       },
       "documents": {
         "title": "Documents & media",
@@ -92,7 +92,7 @@
       "first": "Only one risk calculation is recorded, so there is no movement to show."
     },
     "sources": {
-      "senaei": "Senaei registry",
+      "senaei": "Senaei list",
       "riskEngine": "Risk engine",
       "synced": "Synced",
       "notSynced": "Not synced",

@@ -113,13 +113,13 @@
     "heading": "Waiting for a setting",
     "summary": "{count} measures are waiting",
     "body": "Each one is waiting for a setting we cannot guess. Who to count. Over what period. What to compare against.",
-    "planningToSubmissionCohort": "Planning-to-submission cohort",
-    "repeatViolationLineage": "Repeat violation lineage and lookback",
+    "planningToSubmissionCohort": "Planning-to-submission group",
+    "repeatViolationLineage": "Repeat violations and the period looked at",
     "riskToAttentionRules": "Risk-to-attention snapshot rules",
     "healthScore": "Health Score",
     "licenceExposure": "Licence exposure",
     "slaUrgency": "SLA urgency",
-    "capacityUtilization": "Capacity and utilization",
+    "capacityUtilization": "Capacity and how busy people are",
     "strategicBrief": "Strategic inspection brief",
     "attentionQueue": "Needs attention",
     "export": "Export",
@@ -142,7 +142,7 @@
   "metrics": {
     "approved_inspection_compliance": {
       "title": "Approved-inspection compliance",
-      "definition": "Compliant eligible answers ÷ compliant plus non-compliant; zero denominator is N/A."
+      "definition": "Compliant answers ÷ compliant plus non-compliant answers. Shown as a dash when there are none."
     },
     "latest_l2_decision_mix": {
       "title": "Latest L2 decisions",
@@ -161,8 +161,8 @@
       "definition": "Visits you can see. Not a measure of how busy someone is."
     },
     "gps_override_count": {
-      "title": "GPS override count",
-      "definition": "Override events you can see."
+      "title": "Manual GPS changes",
+      "definition": "Manual GPS changes you can see."
     },
     "compliance_result_distribution": {
       "title": "Compliance-result distribution",
@@ -186,7 +186,7 @@
     },
     "expired_visit_rate": {
       "title": "Expired-visit rate",
-      "definition": "Visits at planning status expired ÷ visits in the period; zero denominator is N/A."
+      "definition": "Expired visits ÷ all visits in the period. Shown as a dash when there are none."
     },
     "immediate_visit_share": {
       "title": "Immediate-visit share",

@@ -31,7 +31,7 @@
     "return_reason": "Return reason",
     "cancellation_reason": "Cancellation reason",
     "manual_entry_reason": "Manual entry reason",
-    "assignment_override_reason": "Assignment override reason"
+    "assignment_override_reason": "Reason for changing an assignment by hand"
   },
   "flags": {
     "manual_entry_allowed": "Manual entry allowed",

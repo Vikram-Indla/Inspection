@@ -75,7 +75,7 @@
   "actions": {
     "cancelBtn": "Cancel visit",
     "cancelComments": "Cancellation comments",
-    "commentsHint": "mandatory when the reason is Other",
+    "commentsHint": "required when the reason is Other",
     "cutoffBody": "The system checks the visit window again when you submit. You can cancel or reschedule until {cutoff} (Asia/Riyadh). Reassignment has no time limit.",
     "cutoffTitle": "Cutoff for cancelling and rescheduling",
     "duplicateBtn": "Duplicate visit",
@@ -189,7 +189,7 @@
     "returnedSections": "returned",
     "reviewPrefix": "Review",
     "title": "{reference} — {factory}",
-    "unverifiedManual": "Unverified manual entry — pending reconciliation",
+    "unverifiedManual": "Unverified manual entry — waiting to be matched",
     "window": "Window",
     "historyTitle": "History",
     "historyDescription": "Every entry below is appended. Nothing here is edited or deleted.",

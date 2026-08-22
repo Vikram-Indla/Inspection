@@ -36,7 +36,7 @@
     "escalationPlaceholder": "None",
     "template": "Template",
     "templatePlaceholder": "Review decision recorded: {decision}",
-    "templateNote": "No template catalogue is configured, so this is free text.",
+    "templateNote": "No template list is configured, so this is free text.",
     "deactivationReason": "Deactivation reason",
     "reasonPlaceholder": "Why is this rule being deactivated?"
   },

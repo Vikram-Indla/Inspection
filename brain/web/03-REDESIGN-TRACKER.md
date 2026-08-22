@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-188.** Take T-189.
+implements the reservation. **Highest id in use: T-189.** Take T-190.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,24 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-189 · Last banned words cleared, favicon made visible
+`status: done` · `rules: WEB-003, WEB-011, WEB-016` · `est: 45m`
+`record:` [2026-08-22-T-189-final-words-and-favicon](sessions/2026-08/2026-08-22-T-189-final-words-and-favicon.md)
+
+117 EN + 43 AR strings. **Content baseline 121 → 0 — all four gate rules clean.**
+
+**The favicon PNGs shipped with no plate at all** (corner and centre both
+`0,0,0,0`), so a pale lavender mark sat on bare tab chrome: **1.25:1** on a light
+theme tab. The SVG did have a plate, but its near-black scored 1.24:1 on a dark
+tab — so both versions failed half the time. Now the IRP brand fill `#7E61AC`
+with a white shield: the only one of five candidates clearing 3:1 on white, light
+theme, grey and dark chrome, with the mark at 5.01:1. PNGs generated directly
+(no rasteriser on the machine) and verified by reading their pixels back.
+
+**Arabic needed three changes, not 117** — `كتالوج` is a loanword, `استشاري`
+formal, `التسوية` legalistic; but `صلاحية`, `سجل` and `إشراف` are ordinary
+Arabic. Same lesson as T-187: the Arabic is often plainer than the English.
 
 ### T-188 · Engineering terms removed from user copy
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
