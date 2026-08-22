@@ -41,7 +41,7 @@
     "degradedBodyOne": "One malformed record was withheld rather than shown as verified data.",
     "coordinatesTitle": "Location coverage is partial",
     "coordinatesBody": "{count} visits in this scope have no recorded official coordinates and are omitted from the map.",
-    "coordinatesBodyOne": "One visit in this scope has no recorded official coordinates and is omitted from the map."
+    "coordinatesBodyOne": "One visit in your area has no recorded map point. It is left off the map."
   },
   "calendar": {
     "weekOption": "Week",

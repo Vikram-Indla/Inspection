@@ -248,12 +248,12 @@
     "noBaseline": "No baseline in the previous period",
     "restricted": "Your role cannot see penalty notices",
     "seriesLabel": "Penalty notices issued, previous period then current",
-    "footnote": "Count of penalty notices issued in the scoped period against the preceding period of equal length.",
+    "footnote": "How many penalty notices were sent in this period. Compared with the period before it, of equal length.",
     "action": "Open Enforcement Library"
   },
   "executive": {
     "title": "Executive AI brief",
-    "fallback": "The recorded national figures in your scope moved over this period. Compare the counts above against the previous period of equal length — this brief describes recorded movement only and does not attribute a cause.",
+    "fallback": "The recorded national figures in your area moved this period. Compare the counts above with the period before, of equal length. This brief reports movement only. It does not say why.",
     "generate": "Generate brief",
     "generating": "Generating…"
   }

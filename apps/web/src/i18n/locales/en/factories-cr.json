@@ -111,7 +111,7 @@
   },
   "observed": {
     "heading": "Official vs latest approved observed snapshot",
-    "rule": "The observed column shows the official record as it was when someone submitted a report that was later approved. It does not change the current official record.",
+    "rule": "The observed column shows the official record as it stood at the time. That is when someone sent a report that was later approved. It does not change the record now.",
     "field": "Field",
     "official": "Current official",
     "captured": "Observed at submission",
@@ -133,7 +133,7 @@
   },
   "compliance": {
     "heading": "Approved inspection compliance",
-    "rule": "We use only the last sent version of approved inspections, with the checklist used at the time. Returned or rejected inspections still show below, but they never change this rate.",
+    "rule": "We use only the last sent version of approved inspections. We use the checklist as it was at the time. Returned or rejected inspections still show below. They never change this rate.",
     "notAvailable": "Not available",
     "na": "No eligible approved scored answers",
     "trend": "Approved compliance trend",
@@ -172,7 +172,7 @@
   },
   "chemicalCustoms": {
     "heading": "Chemical permits and customs exemptions",
-    "noPlant": "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number."
+    "noPlant": "The selected licence has no plant number. Chemical permits and customs exemptions are found by plant number."
   },
   "chemicalPermits": {
     "heading": "Chemical permits",

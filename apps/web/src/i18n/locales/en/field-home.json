@@ -17,7 +17,7 @@
   },
   "unavailable": {
     "alert": "Field data is temporarily unavailable (ERR-OPS-001). Try again.",
-    "scope": "Your assigned visits, today's schedule and route could not be read, so no counts are shown — this is not a count of zero.",
+    "scope": "We could not read your visits, today's schedule or your route. So no counts are shown. This does not mean the count is zero.",
     "briefHeading": "Daily brief",
     "stillAvailable": "Still available",
     "retry": "Try again",

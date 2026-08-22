@@ -177,7 +177,7 @@
     "media": "Recorded media",
     "officialCount": "{n} official factory images",
     "inspectionCount": "{n} inspection images",
-    "mediaNote": "Counts only — images are previewed and downloaded from the factory profile, where access is checked per asset.",
+    "mediaNote": "Counts only. Images are previewed and downloaded from the factory profile. Access is checked for each file.",
     "openLabel": "Open factory profile",
     "noContact": "No active representative is recorded"
   },

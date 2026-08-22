@@ -25,7 +25,7 @@
     "push": "Push notifications",
     "sms": "SMS notifications",
     "email": "Email notifications",
-    "inappNote": "In-app notifications (the bell) are always on — they are the only guaranteed delivery surface in this environment.",
+    "inappNote": "Alerts in the app (the bell) are always on. They are the only delivery we can guarantee here.",
     "save": "Save preferences",
     "saving": "Saving…",
     "saved": "Saved",

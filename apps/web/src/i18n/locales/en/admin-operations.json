@@ -62,7 +62,7 @@
   },
   "policyHold": {
     "title": "Retention, backup target, and restore goals are held by policy.",
-    "body": "No purge or successful-restore claim is turned on until approved values and evidence of the run exist."
+    "body": "We do not claim a purge or a successful restore yet. That needs approved values and proof of the run."
   },
   "actions": {
     "working": "Working…"

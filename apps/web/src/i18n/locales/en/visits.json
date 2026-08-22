@@ -8,7 +8,7 @@
     "legendInspector": "Inspector",
     "legendLabel": "Map legend",
     "noneInRegion": "No located visits in this region",
-    "noneInRegionBody": "No visit in this region has recorded factory coordinates, so nothing can be placed on the map.",
+    "noneInRegionBody": "No visit in this region has a recorded factory map point. So nothing can be placed on the map.",
     "colVisit": "Visit",
     "colFactory": "Factory",
     "colRegionCity": "Region / city",
@@ -308,6 +308,6 @@
     "ofCap": "{n} of {cap}",
     "overCap": "{n} of {cap} — over the limit",
     "noLoad": "—",
-    "note": "The limit is the configured daily maximum per inspector. Weekly bars show how a single inspector’s load is spread across the window; they are not a capacity measure. Weeks start Sunday."
+    "note": "The limit is the daily maximum set for each inspector. Weekly bars show how one inspector's work is spread. They do not measure capacity. Weeks start on Sunday."
   }
 }

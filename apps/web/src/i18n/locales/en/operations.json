@@ -188,7 +188,7 @@
       "title": "Not available yet",
       "body": "This board is not turned on here."
     },
-    "degraded": "Some exception sources are unavailable. The groups below are the ones that could be read; an unavailable source is not shown as zero.",
+    "degraded": "Some problem sources are not available. The groups below are the ones we could read. A source we could not read is never shown as zero.",
     "empty": {
       "title": "No open exceptions you can see",
       "body": "Open cases and risk exceptions show up here. Empty may also mean there are none you are allowed to see.",

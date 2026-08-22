@@ -42,7 +42,7 @@
     "title": "Factory master-data controls",
     "help": "These operations are always recorded in the Activity Log. They do not edit external CR, license, or plant identifiers.",
     "noWriteback": "View only — nothing is sent back.",
-    "noWritebackHelp": "Everything saved here is recorded in Inspection Platform only. No establishment or factory master-data change is sent to SENAI: the endpoint contract has no master-data write endpoint, so there is no path for one.",
+    "noWritebackHelp": "What you save here stays in this app. Nothing is sent back to SENAI. There is no agreed way to write factory records there.",
     "factory": "Factory",
     "selectFactory": "Select a factory",
     "selected": "{name} · CR {cr} · License {license}",

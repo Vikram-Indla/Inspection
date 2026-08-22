@@ -38,7 +38,7 @@
     "save": "Save settings (risk owner only)",
     "saving": "Saving…",
     "saved": "Saved — takes effect right away",
-    "savedNote": "Saving writes factors and bands to the engine settings after the weights-sum check. It takes effect right away for new score calculations — there is no draft or approval step on this screen.",
+    "savedNote": "Saving writes factors and bands to the engine settings, after checking the weights add up. It applies right away to new scores. There is no draft or approval step here.",
     "lastUpdated": "Last updated",
     "bandLow": "Low",
     "bandMedium": "Medium",
@@ -65,7 +65,7 @@
   },
   "trace": {
     "title": "Why this factory? — worked calculation trace",
-    "desc": "A line-by-line score trace isn’t shown here — this screen configures the model, not individual factories.",
+    "desc": "We do not show a line-by-line score trace here. This screen configures the model, not one factory.",
     "pre1": "A selected factory and its stored scoring inputs",
     "pre2": "The per-factor normalized values used at scoring time",
     "notYet": "Not available yet",

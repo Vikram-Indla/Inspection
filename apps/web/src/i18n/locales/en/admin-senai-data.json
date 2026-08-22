@@ -61,7 +61,7 @@
     "unverified": "not verified",
     "noCall": "No live call recorded. Documented is not connected.",
     "verificationUnavailable": "Live-call history could not be read.",
-    "footer": "Verification comes only from recorded senaei_sync_calls rows. A non-success response shows the dependent Factory 360 section as honestly not available right now — never a made-up value. Endpoints outside this contract are refused by the client before any request leaves the server."
+    "footer": "Only recorded sync-call rows count as proof. If a call did not succeed, the Factory 360 section says it is not available. It never shows a made-up value. Any address outside this agreement is refused before the request leaves the server."
   },
   "mapping": {
     "help": "How SENAI fields map to internal fields, with transform and status.",

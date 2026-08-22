@@ -94,6 +94,6 @@
     "missingId": "Missing lookup id. Nothing was changed.",
     "rowGoneOrRls": "That lookup row no longer exists, or the change was denied. Nothing was changed.",
     "reactivated": "\"{kind}.{key}\" turned back on — it appears in the lists the next time they load.",
-    "deactivated": "\"{kind}.{key}\" turned off (never deleted) — the lists show only values that are on, so it disappears the next time they load."
+    "deactivated": "\"{kind}.{key}\" turned off, never deleted. The lists show only values that are on. It disappears the next time they load."
   }
 }

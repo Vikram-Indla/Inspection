@@ -42,7 +42,7 @@
     "coordsLabel": "Official coordinates — owned by the GIS administrator",
     "coordsCaption": "Field observation never overwrites the official pin.",
     "radiusLabel": "Geofence radius (m)",
-    "radiusHint": "Tip: with this factory selected, click the map to set the fence edge at that point. Blank override falls back to the engine default ({default} m).",
+    "radiusHint": "Tip: with this factory chosen, click the map to set the fence edge there. Leave it blank to use the engine default ({default} m).",
     "save": "Save radius",
     "saving": "Saving…",
     "saved": "Saved",

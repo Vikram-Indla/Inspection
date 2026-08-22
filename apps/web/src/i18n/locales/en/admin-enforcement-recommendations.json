@@ -19,7 +19,7 @@
   },
   "scope": {
     "title": "Decision scope",
-    "body": "You can read decisions but not change them yet. When approval is switched on, it will record the decision only. It will not issue a penalty, close a factory, send a legal notice, or skip any enforcement step."
+    "body": "You can read decisions but not change them yet. When approval is switched on, it will record the decision only. It will not issue a penalty or close a factory. It will not send a legal notice or skip any enforcement step."
   },
   "readonly": {
     "title": "View only for your role",
@@ -68,7 +68,7 @@
     "already_decided": "This recommendation was already decided. Refresh the queue.",
     "maker_checker": "The recommender cannot decide their own recommendation.",
     "write_failed": "The decision could not be recorded. No change was claimed.",
-    "backend_guard_required": "Recording a decision is not available yet — a safe database step still needs to be added."
+    "backend_guard_required": "You cannot record a decision yet. A safe database step still needs to be added."
   },
   "loading": "Loading enforcement recommendations"
 }

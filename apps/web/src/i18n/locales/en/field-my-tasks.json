@@ -63,7 +63,7 @@
   "detail": {
     "selectPrompt": "Select a task",
     "selectBody": "Pick a task from the list to see the establishment record.",
-    "noDossier": "The full establishment record is unavailable until a commercial-registration/licence mapping exists for this factory, or Factory 360 access is granted.",
+    "noDossier": "The full establishment record opens once this factory is linked. It needs a commercial registration or a licence. It also opens if you have Factory 360 access.",
     "window": "Visit window",
     "factoryCode": "Factory code"
   },

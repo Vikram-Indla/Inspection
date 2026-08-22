@@ -128,7 +128,7 @@
       "loadError": "Could not load",
       "loadErrorDesc": "We could not load the record. Something may be wrong with the data source. Try again.",
       "mapping": "mapping",
-      "mediaPreviewUnavailable": "We cannot show media files here because there is no safe link for them on this page. The details stay view only, and the app never guesses a public link.",
+      "mediaPreviewUnavailable": "We cannot show media files here. There is no safe link for them on this page. The details stay view only, and the app never guesses a public link.",
       "noOpenDecision": "No open decision — status {status}.",
       "notFound": "Not found",
       "notFoundDesc": "No record matches this ID or it is outside your permitted scope.",
@@ -156,7 +156,7 @@
       "sigHeading": "Acknowledgement signature",
       "sigNone": "No drawn signature stored with this version (acknowledged by name only).",
       "startAction": "Start review",
-      "startBody": "Opening this record does not change anything (CD-028). Starting the review claims it for you and moves the inspection to under review — an action we record.",
+      "startBody": "Opening this record changes nothing. Starting the review claims it for you and moves the inspection to under review. We record that.",
       "startTitle": "Start review",
       "starting": "Starting…",
       "summary": "Inspection summary",
@@ -222,7 +222,7 @@
         "unavailable": "Not available",
         "violation": "Violation"
       },
-      "unauthBody": "You need an allowed role — review, planning, operations, audit, leadership, or the assigned inspector — with the right area. Seeing it in the menu does not mean you can open it.",
+      "unauthBody": "You need an allowed role: review, planning, operations, audit, leadership, or the assigned inspector. You also need the right area. Seeing it in the menu does not mean you can open it.",
       "unauthTitle": "You don’t have access to this review",
       "version": "Version",
       "violations": "Violations"
@@ -248,7 +248,7 @@
       "heading": "Version comparison — Tamper-evident Scope Rail",
       "navHint": "Comparison is navigation-only — there is no accept/merge action. When a diff is shown, selecting a scope-rail row scrolls to its answer.",
       "noPrior": "No prior version to compare — this is the first submitted version.",
-      "noScope": "No returned scope on record — expected/unexpected cannot be established, so changes are shown 'unavailable', never 'unchanged'.",
+      "noScope": "We do not have a record of what was sent back. So we cannot say which changes were expected. Each change shows as 'We do not know'.",
       "removed": "removed",
       "scopeSource": "Returned-scope authority (stored): {label}. Classification is never inferred from the diff.",
       "sourceUnavailable": "Comparison source not available.",
@@ -263,7 +263,7 @@
       "unavailHeading": "Comparisons not derived in the runtime",
       "unavailMetadata": "Metadata / section-order comparison — not compared.",
       "unavailNote": "These are honestly not available, not equal.",
-      "unavailPackage": "Checklist-meaning comparison — we do not check whether an answer means the same thing across checklist versions."
+      "unavailPackage": "Checklist meaning is not compared. We do not check whether an answer means the same thing across checklist versions."
     },
     "decision": {
       "approve": "approve",

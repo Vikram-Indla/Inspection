@@ -59,7 +59,7 @@
     "points": [
       "Configuration, connectivity and delivery are different truth states.",
       "Secrets are never shown; only the approved contract and runtime state are shown.",
-      "Providers that aren't available are blocked safely, and features that depend on them show this limit."
+      "Providers that are not available are stopped safely. Features that need them show this limit."
     ],
     "noteTitle": "Reconstruction note",
     "note": "We do not copy names, update times or health labels from the test system. This page only shows what you may see. If a record is missing, you see 'Not available' or an empty list."

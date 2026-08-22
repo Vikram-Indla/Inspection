@@ -19,8 +19,8 @@
   "fallback": {
     "heading": "Showing the standard reference",
     "pill": "Reference",
-    "error": "The live rules could not be read. What you see below is the standard set of stages, kept here as a reference, and it may be out of date.",
-    "none": "No rules have been published yet. What you see below is the standard set of stages, kept here as a reference, and it may be out of date.",
+    "error": "We could not read the live rules. Below is the standard set of stages, kept as a reference. It may be old.",
+    "none": "No rules have been published yet. Below is the standard set of stages, kept as a reference. It may be old.",
     "guards": {
       "STM-PLAN-002": "Assigned inspector acknowledges",
       "STM-VIS-001": "Execution window open",

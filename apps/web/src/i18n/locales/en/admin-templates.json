@@ -10,7 +10,7 @@
     "ariaLabel": "Configuration journey",
     "eyebrow": "Settings",
     "title": "Regulation to inspection package",
-    "description": "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them.",
+    "description": "Publish the legal source. Prepare the templates, which cannot change once published. Then build and publish the inspection package that uses them.",
     "regulations": "Regulations",
     "templates": "Templates",
     "packages": "Packages",
@@ -31,7 +31,7 @@
   },
   "registry": {
     "heading": "Template list",
-    "intro": "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings.",
+    "intro": "Create bilingual templates with versions, for forms, reports, action forms or penalties. Published versions cannot change. Package action forms and penalty links can use them.",
     "key": "Template key",
     "type": "Type",
     "version": "Version",

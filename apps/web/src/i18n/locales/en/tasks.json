@@ -3,7 +3,7 @@
   "loading": "Loading tasks…",
   "banner": {
     "title": "Task management.",
-    "body": "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope."
+    "body": "To reassign a task or change its status you need two things. A manager role in your area, and a reason. Every change is recorded. You see only tasks in your area."
   },
   "error": "Couldn’t load tasks. Nothing was changed. Try again.",
   "empty": {

@@ -15,7 +15,7 @@
   },
   "readonly": {
     "title": "View-only list",
-    "body": "Your role can view item details, usage and runtime previews. Creating or changing active state needs a Compliance or Form Admin role, enforced by the server and the database.",
+    "body": "Your role can see item details, usage and previews. Creating an item needs a Compliance or Form Admin role. So does turning one on or off. The server and the database enforce this.",
     "action": "Read only"
   },
   "nav": {
@@ -70,7 +70,7 @@
   },
   "audit": {
     "heading": "Item history",
-    "body": "Open Audit on one item to see its change history; broad access to the full audit table is not given.",
+    "body": "Open Audit on one item to see its change history. We do not give broad access to the full audit table.",
     "select": "No item selected.",
     "notFound": "The selected item is no longer in the readable catalogue.",
     "unavailable": "History couldn’t load — reload to retry. This does not mean the history is empty.",

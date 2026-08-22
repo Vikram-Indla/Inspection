@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-184.** Take T-185.
+implements the reservation. **Highest id in use: T-185.** Take T-186.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,26 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-185 · Every sentence under 15 words
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 1h`
+`record:` [2026-08-22-T-185-long-sentences](sessions/2026-08/2026-08-22-T-185-long-sentences.md)
+
+63 strings per language. **The `long-sentence` rule is now at zero.**
+
+**This is the wave that mattered.** Earlier waves swapped words; this one changed
+whether a sentence can be read in one pass. A 25-word sentence is not hard
+because of any single word — it is hard because the reader must hold it all in
+memory before it resolves.
+
+**Split, do not compress.** Shortening by deleting loses governed meaning, which
+WEB-008 forbids. Every rewrite keeps every fact and splits it across sentences.
+
+**My first draft failed its own rule 15 times out of 63**, and three of those
+were still over on the second pass. Writing short sentences is harder than
+recognising long ones — worth knowing for the next wave.
+
+Baseline **380 → 306**. Remaining: 284 banned-word, 17 idiom, 5 phrasal-verb.
 
 ### T-184 · "operational" removed, and the banned list corrected
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`

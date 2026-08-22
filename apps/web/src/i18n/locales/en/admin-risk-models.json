@@ -14,7 +14,7 @@
   },
   "banner": {
     "title": "Draft layer",
-    "body": "Drafts check that weights add up and that bands match the Risk Studio, then publish through maker-checker. Published versions can't be changed. No value is set here that the approved structure doesn't require."
+    "body": "Drafts check that weights add up and that bands match the Risk Studio. One person writes, another publishes. Published versions cannot change. Nothing is set here that the approved structure does not need."
   },
   "error": "Couldn't load risk models. Nothing changed.",
   "empty": {
@@ -22,7 +22,7 @@
     "body": "No risk models exist in your allowed scope. Create a draft to begin the maker-checker lifecycle."
   },
   "off": {
-    "consequence": "The risk-model draft layer is not turned on here; live risk settings are still edited on the Risk Studio.",
+    "consequence": "The risk-model draft layer is off here. Live risk settings are still edited in the Risk Studio.",
     "notAvailable": "Not available yet",
     "whyPrereq": "Why / prerequisites"
   },

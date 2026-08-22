@@ -10,7 +10,7 @@
   "subtitle": "Rules for which event goes to which channel, person and template",
   "readonly": {
     "title": "View only for your role",
-    "body": "You can view settings. Creating, publishing and deactivating rules need an admin settings role, and the system enforces this automatically."
+    "body": "You can see settings. Creating, publishing and turning off rules need an admin settings role. The system enforces this on its own."
   },
   "permissionsUnavailable": {
     "title": "Permissions not available",
@@ -95,7 +95,7 @@
     "missing_recipient": "Missing recipient — recipient role is not set.",
     "missing_reason": "A deactivation reason is required.",
     "not_found": "Rule not found, or outside your scope.",
-    "notice_not_configured": "Provider not available — recorded as a test row only; no live provider is set up for this channel.",
+    "notice_not_configured": "No provider is available. We recorded this as a test row only. No live provider is set for this channel.",
     "notice_delivered": "Test notification delivered."
   }
 }

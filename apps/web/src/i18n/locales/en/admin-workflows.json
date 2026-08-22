@@ -53,7 +53,7 @@
     "idempotent": "idempotent",
     "noIdempotencyKey": "no idempotency key",
     "selectHint": "Select a state to filter its outgoing transitions; select a transition row to inspect it.",
-    "selectTransition": "Select a transition from the table below to inspect its role, trigger, guards and side effects.",
+    "selectTransition": "Choose a step from the table below to see its role, trigger, checks and effects.",
     "noTransitions": "No outgoing transitions from this state.",
     "authoredElsewhere": "You can read this, but not change it here. To change it, start a draft and edit the steps below. A different person must publish it.",
     "none": "—"

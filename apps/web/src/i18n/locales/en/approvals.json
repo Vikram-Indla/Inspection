@@ -8,7 +8,7 @@
   "degraded": {
     "title": "The approval queue could not be read",
     "body": "Nothing is shown as empty. The queue is unavailable, which is not the same as having no requests.",
-    "detail": "The objects in this request could not be read — no empty result is claimed, and package actions stay disabled."
+    "detail": "We could not read the items in this request. We do not claim the result is empty. Package actions stay off."
   },
   "empty": {
     "title": "No requests waiting for your decision",
@@ -89,7 +89,7 @@
       "reject": "Reject object",
       "working": "Applying…",
       "cascade": "Rejecting this also auto-rejects {count} dependent object(s). The database applies that immediately and does not ask again.",
-      "returnNote": "Return is a package decision, not an object one — the database accepts only approve or reject for a single object.",
+      "returnNote": "Return applies to the whole package, not one item. The database accepts only approve or reject for a single item.",
       "done": "Decision recorded"
     }
   },
@@ -101,7 +101,7 @@
     "outstanding": "Some items are still waiting for a decision",
     "checks": "Checks",
     "missingComment": "Rejected or returned without a comment",
-    "missingCommentNote": "The database requires a comment on reject and return, so this should stay at zero; a non-zero count means a record predates that rule.",
+    "missingCommentNote": "The database requires a comment when you reject or return. So this should stay at zero. A number above zero means the record is older than that rule.",
     "validation": "Validation receipts",
     "validationAbsent": "Not recorded",
     "conflicts": "Dependency conflicts",
