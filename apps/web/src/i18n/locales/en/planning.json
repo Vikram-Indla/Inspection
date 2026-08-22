@@ -568,7 +568,7 @@
     },
     "ledger": {
       "heading": "Eligibility ledger",
-      "denominator": "In scope",
+      "denominator": "In your area",
       "eligible": "Eligible (match criteria)",
       "excluded": "Excluded by criteria",
       "freshness": "Oldest Factory list sync",
@@ -710,7 +710,7 @@
       },
       "noMatch": {
         "title": "No factory matches these criteria",
-        "body": "Every factory in scope was excluded by the current criteria. Widen a condition, or switch the group from ALL to ANY."
+        "body": "Your filters left out every factory in your area. Widen a condition, or switch the group from ALL to ANY."
       },
       "noFilterMatch": {
         "title": "No results for this filter",
@@ -758,7 +758,7 @@
     "emptyTitle": "No factories selected",
     "emptyBody": "Select target factories on the targeting screen, then continue to review.",
     "backToTargeting": "Back to targeting",
-    "scopeTitle": "Selection is no longer fully in scope",
+    "scopeTitle": "Part of your selection is no longer in your area",
     "scopeBody": "{n} selected factory record(s) could not be read in your current scope. Nothing was silently removed or published; return to targeting and refresh the selection.",
     "scopeReduced": "Removed {removed} duplicate factory record(s). {retained} retained — readiness re-checked.",
     "method": "Bulk plan — periodic compliance campaign",
@@ -886,7 +886,7 @@
     "eligConflicts": "Active conflicts",
     "eligManualOverride": "Manual override required",
     "reasonDup": "duplicate — active visit",
-    "reasonScope": "out of scope",
+    "reasonScope": "outside your area",
     "reasonLocation": "missing official location",
     "reasonInspector": "inspector conflict",
     "ackRequired": "{n} selected rows cannot be used. Agree below to continue with the rest, or go back and change your selection.",

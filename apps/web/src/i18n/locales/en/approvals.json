@@ -23,7 +23,7 @@
     "select": "Open request {number} for review",
     "selected": "Request {number}, currently open",
     "progress": "{decided} of {total} decided",
-    "emptyTitle": "No requests in scope",
+    "emptyTitle": "No requests in your area",
     "emptyBody": "Nothing is waiting for your decision with this filter."
   },
   "steps": {

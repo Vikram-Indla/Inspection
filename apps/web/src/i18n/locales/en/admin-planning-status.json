@@ -32,7 +32,7 @@
   "states": {
     "planned": "Planned",
     "acknowledged": "Accepted by inspector",
-    "in_execution": "Being carried out",
+    "in_execution": "In progress",
     "completed": "Completed",
     "closed": "Closed",
     "any": "Any stage"
@@ -78,7 +78,7 @@
     },
     "reschedule": {
       "label": "Change the dates",
-      "effect": "Move the window a planned visit must be carried out in"
+      "effect": "Change the dates a planned visit must happen within"
     }
   },
   "capabilitiesNote": "What each role is allowed to do is managed under Users and roles.",

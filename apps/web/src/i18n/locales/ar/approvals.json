@@ -23,7 +23,7 @@
     "select": "فتح الطلب {number} للمراجعة",
     "selected": "الطلب {number}، مفتوح حالياً",
     "progress": "{decided} من {total} تم البت فيها",
-    "emptyTitle": "لا توجد طلبات ضمن النطاق",
+    "emptyTitle": "لا توجد طلبات في نطاقك",
     "emptyBody": "لا شيء بانتظار قرارك بهذه التصفية."
   },
   "steps": {

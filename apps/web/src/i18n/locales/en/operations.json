@@ -27,7 +27,7 @@
     "title": "Visits by work state",
     "description": "Every visit in your area, grouped by the work state it is in now.",
     "aria": "Visits in your area by work state, ranked from largest to smallest",
-    "total": "{total} visits in scope"
+    "total": "{total} visits in your area"
   },
   "regions": {
     "title": "National performance by region",
@@ -82,7 +82,7 @@
   },
   "sla": {
     "title": "Deadline and resubmission alerts",
-    "description": "Deadlines use server timestamps and deadline rules that are set up. If those rules are missing, this stays unavailable.",
+    "description": "Deadlines use server times and the deadline rules that exist. If those rules are missing, this stays unavailable.",
     "visit": "Visit",
     "factory": "Factory",
     "deadline": "Deadline",

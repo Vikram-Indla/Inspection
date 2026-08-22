@@ -10,6 +10,7 @@ by agents with no memory between sessions. This file is the memory.
 
 | Date | Task | Record | Outcome |
 | --- | --- | --- | --- |
+| 2026-08-22 | T-186 · Every idiom and phrasal verb removed | [record](sessions/2026-08/2026-08-22-T-186-idioms-and-phrasal-verbs.md) | 22 strings/language; idiom 17→0, phrasal 5→0; 'in scope' → 'in your area'; baseline 306→266 |
 | 2026-08-22 | T-185 · Every sentence under 15 words | [record](sessions/2026-08/2026-08-22-T-185-long-sentences.md) | 63 strings/language; long-sentence rule 63→0; baseline 380→306; my first draft failed its own rule 15 times |
 | 2026-08-22 | T-184 · "operational" + banned-list triage | [record](sessions/2026-08/2026-08-22-T-184-operational-and-banned-list-triage.md) | 25 strings/language; 14 words wrongly banned in T-183 reversed; baseline 592→380; word-elimination at its limit |
 | 2026-08-22 | T-183 · administration/awaiting/blocked + wider banned list | [record](sessions/2026-08/2026-08-22-T-183-eliminate-admin-awaiting-blocked.md) | 72 strings/language; banned list 50→74; baseline re-cut 592 (gate sharper, not copy worse); i18n P0 747→640 |

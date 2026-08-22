@@ -84,7 +84,7 @@
       "title": "Top violated regulation",
       "definition": "Count of violations grouped by regulation",
       "example": "{count} linked violations in the current scope.",
-      "exampleEmpty": "No regulation-linked violations in scope.",
+      "exampleEmpty": "No violations linked to a regulation in your area.",
       "interpretation": "We count only violations linked to a regulation.",
       "action": "Open the regulation"
     },
@@ -110,7 +110,7 @@
     "description": "One compliance-rate formula, four lenses. Every row drills to the factories behind it.",
     "lens": "Lens",
     "openFactories": "Open factories",
-    "empty": "No eligible approved answers in scope.",
+    "empty": "No approved answers you can use in your area.",
     "footnote": "{lens} · compliance rate and record count.",
     "notRecorded": "Not recorded",
     "emptyTitle": "Nothing to compare yet",
@@ -130,11 +130,11 @@
     },
     "pipeline": {
       "title": "Pipeline by planning status",
-      "description": "Every visit in scope, grouped by the planning status it currently holds.",
-      "aria": "Visits in scope by planning status, ranked from largest to smallest",
-      "total": "{total} visits in scope",
-      "emptyTitle": "No visits in scope",
-      "empty": "No visits match the current scope, so there is no pipeline to break down."
+      "description": "Every visit in your area, grouped by the planning status it is in now.",
+      "aria": "Visits in your area by planning status, ranked from largest to smallest",
+      "total": "{total} visits in your area",
+      "emptyTitle": "No visits in your area",
+      "empty": "No visits match your filters, so there is nothing to show."
     },
     "workload": {
       "bar": "{name} — {count} active visits"
@@ -155,7 +155,7 @@
       "title": "Activity",
       "description": "Recorded events per day over the chosen period.",
       "aria": "Events per day over the chosen period",
-      "unit": "events in scope",
+      "unit": "events in your area",
       "peak": "Busiest day {date} — {count} events",
       "unbounded": "A daily trend needs a bounded period. Choose a date range to see it.",
       "emptyTitle": "No activity",
@@ -237,7 +237,7 @@
       "workload": "Active workload",
       "dailyCapacity": "Daily capacity",
       "unresolved": "Unresolved identity",
-      "emptyTitle": "No inspectors in scope",
+      "emptyTitle": "No inspectors in your area",
       "empty": "There are no inspector visits in your area.",
       "action": "Open Execution"
     }

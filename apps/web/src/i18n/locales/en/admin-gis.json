@@ -111,7 +111,7 @@
       "body": "The official factory pin stays owned by the GIS administrator; these are extra working layers. Geofence and accuracy use the approved engine defaults."
     },
     "error": "Couldn't load spatial data. Nothing changed.",
-    "emptyTitle": "No layers or working locations in scope",
+    "emptyTitle": "No layers or working locations in your area",
     "emptyBody": "GIS layers and working factory locations appear here. Empty may also mean none are in your scope.",
     "create": {
       "title": "Create a layer",

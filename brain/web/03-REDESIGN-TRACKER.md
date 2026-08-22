@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-185.** Take T-186.
+implements the reservation. **Highest id in use: T-186.** Take T-187.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,23 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-186 · Every idiom and phrasal verb removed
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 20m`
+`record:` [2026-08-22-T-186-idioms-and-phrasal-verbs](sessions/2026-08/2026-08-22-T-186-idioms-and-phrasal-verbs.md)
+
+22 strings per language. **`idiom` and `phrasal-verb` are both at zero.**
+
+**Seventeen of the twenty-two were the same idiom: "in scope"** — the kind of
+phrase a team stops hearing. An L2 reader cannot decode it from its two words:
+"scope" is not a place, and "in" does not mean "belonging to" anywhere else they
+have met it. Now **"in your area"**.
+
+Baseline **306 → 266**. Every remaining violation is now one rule,
+`banned-word`, and its shape is known: 84 `scope` · 20 `catalogue` ·
+15 `registry` · 15 `advisory` · 14 `capability` · 14 `reconciliation` ·
+14 `supervision` · 13 `override`, then the engineering-leak group
+(`json`, `metadata`, `endpoint`, `payload`, `uuid`, `schema` — 46 together).
 
 ### T-185 · Every sentence under 15 words
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 1h`

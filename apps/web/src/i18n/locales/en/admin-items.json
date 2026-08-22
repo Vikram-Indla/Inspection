@@ -32,7 +32,7 @@
     "heading": "Add an inspection item"
   },
   "empty": {
-    "title": "No inspection items set up yet",
+    "title": "No inspection items yet",
     "body": "Items belong to regulation clauses and are reused across checklists. Add the first item above."
   },
   "previewHeading": "Runtime preview — what the inspector sees",
