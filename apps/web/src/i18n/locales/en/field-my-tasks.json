@@ -86,7 +86,7 @@
     "notAvailable": "Not available",
     "restricted": "Restricted",
     "basis": "{passed}/{answered}",
-    "healthRiskNote": "Health score and risk score are separate, governed concepts."
+    "healthRiskNote": "Health score and risk score are two different things."
   },
   "license": {
     "heading": "License Data",
@@ -105,8 +105,8 @@
   },
   "regulatory": {
     "heading": "Regulatory Data",
-    "noSourceTag": "No governed source",
-    "noSource": "No governed source is connected yet for {section}.",
+    "noSourceTag": "No official source",
+    "noSource": "No official source is connected yet for {section}.",
     "noRecords": "No source-backed records are available in your scope for this section.",
     "activities": "Factory Activities",
     "manufacturing": "Manufacturing Status",

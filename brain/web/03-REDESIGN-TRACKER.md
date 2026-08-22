@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-180.** Take T-181.
+implements the reservation. **Highest id in use: T-181.** Take T-182.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,24 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-181 · Eliminate "governed" — the app's most-used banned word
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-181-eliminate-governed](sessions/2026-08/2026-08-22-T-181-eliminate-governed.md)
+
+**92 uses → 0.** In most strings the word was **deleted, not replaced** —
+"Governed activity" → "Activity", "View governed records" → "View records". It
+carried no information for a reader; it was the team reassuring itself the data
+was official. Where it did mean something it became "official", or the actual
+rule ("Governed by workflow configuration" → "Set by the workflow").
+
+**Arabic used five different words for it** (محوكمة، محكومة، معتمدة، مُنظَّم،
+الحاكمة) because five translators each solved the same untranslatable term
+differently. All rewritten, plus three Arabic strings whose English never said
+"governed".
+
+Baseline **313 → 246**. Gate caught a 17-word sentence on the way through.
+Top offenders now: `visible` 45 · `read-only` 30 · `administration` 26.
 
 ### T-180 · First copy rewrite wave — 26 worst strings, both languages
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`

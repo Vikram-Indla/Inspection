@@ -36,7 +36,7 @@
     "syncReport": "أُضيف {added} · تغيّرت الإنجليزية {enChanged} · تغيّرت العربية {arChanged} · غير مستخدمة {orphaned} · مستعادة {revived}"
   },
   "table": {
-    "caption": "نصوص الواجهة المحكومة",
+    "caption": "نصوص الواجهة",
     "source": "المصدر الإنجليزي",
     "translation": "الترجمة العربية",
     "state": "الحالة"

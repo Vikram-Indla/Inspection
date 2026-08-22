@@ -1,6 +1,6 @@
 {
   "title": "Dashboard Configuration",
-  "context": "Governed KPI catalogue & policy · filtered to your access · maker-checker",
+  "context": "Official KPI list and policy · limited to your access · one writes, another approves",
   "loading": "Loading dashboard configuration…",
   "migration": {
     "title": "Foundation migration not yet applied",

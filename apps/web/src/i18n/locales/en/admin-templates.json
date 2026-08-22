@@ -2,10 +2,13 @@
   "title": "Template registry",
   "context": "Template configuration",
   "loading": "Loading templates…",
-  "breadcrumb": { "label": "Breadcrumb", "administration": "Administration" },
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Administration"
+  },
   "journey": {
     "ariaLabel": "Configuration journey",
-    "eyebrow": "Governed configuration",
+    "eyebrow": "Settings",
     "title": "Regulation to inspection package",
     "description": "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them.",
     "regulations": "Regulations",
@@ -27,7 +30,7 @@
     "body": "Templates are versioned, bilingual objects used by packages and action forms."
   },
   "registry": {
-    "heading": "Governed template registry",
+    "heading": "Template list",
     "intro": "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings.",
     "key": "Template key",
     "type": "Type",

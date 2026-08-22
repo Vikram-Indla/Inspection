@@ -25,7 +25,7 @@
   },
   "legacyNote": "These older controls still work, so nothing breaks. Start any new change as a Compliance Configuration Request. This list stays the one to trust.",
   "gov": {
-    "heading": "How this catalogue is governed",
+    "heading": "The rules for this list",
     "body": "Anyone signed in can read the list. Only an admin can change it. Turning an item off keeps its history and saves a reason. An edit saves the old version first. We keep a record of every row change."
   },
   "create": {

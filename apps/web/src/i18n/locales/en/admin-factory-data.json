@@ -36,7 +36,7 @@
     "previewRows": "{rows} data rows · {columns} columns",
     "stage": "Stage validated batch",
     "staging": "Staging…",
-    "staged": "Batch {batch} staged: {pending} pending reconciliation, {rejected} rejected with safe row errors. Zero rows are accepted until governed reconciliation."
+    "staged": "Batch {batch} is waiting. {pending} rows still to match, {rejected} rejected with safe errors. No row is accepted until someone approves the match."
   },
   "masterData": {
     "title": "Factory master-data controls",

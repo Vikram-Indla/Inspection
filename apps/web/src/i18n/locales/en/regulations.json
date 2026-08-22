@@ -36,7 +36,7 @@
     "statusLegend": "Status"
   },
   "table": {
-    "caption": "Governed regulations, with the clause, inspection-item and violation footprint recorded against each.",
+    "caption": "Regulations, with the clause, inspection item and violations recorded against each.",
     "regulation": "Regulation",
     "authority": "Authority",
     "clauses": "Clauses",
@@ -166,7 +166,7 @@
     "openRequest": "Open request",
     "none": "Not recorded",
     "emptyTitle": "No published versions",
-    "emptyBody": "No governed version has been published for this regulation.",
+    "emptyBody": "No version has been published for this regulation.",
     "footnote": "Every version here was published through an approved configuration request. No version is inferred."
   },
   "audit": {

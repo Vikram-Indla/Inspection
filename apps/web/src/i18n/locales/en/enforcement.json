@@ -114,7 +114,7 @@
     "lensRule1": "One violation carries at most one mapping — a second is rejected by a unique constraint.",
     "lensRule2": "Legal basis must be present before a mapping is created; it is never inferred.",
     "lensRule3": "Maker-checker: the approver must differ from the creator.",
-    "lensRule4": "A published mapping is immutable — a change requires a governed successor.",
+    "lensRule4": "A published link cannot change. To change it, publish a new one.",
     "degradedTitle": "The violation catalogue could not be read",
     "degradedBody": "No count is claimed. The catalogue is unavailable, which is not the same as empty.",
     "emptyTitle": "No violation codes configured",

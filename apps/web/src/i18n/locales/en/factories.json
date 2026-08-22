@@ -82,7 +82,7 @@
       },
       "documents": {
         "title": "Documents & media",
-        "body": "Governed factory documents and official media, separated from inspection evidence."
+        "body": "Official factory documents and media, kept apart from inspection evidence."
       }
     }
   },
@@ -184,7 +184,7 @@
   "loading": "Loading factories",
   "riskMeter": {
     "label": "Risk score",
-    "caption": "{score} of {ceiling} on the governed scale",
-    "aria": "Risk score {score} out of a governed ceiling of {ceiling}"
+    "caption": "{score} of {ceiling} on the official scale",
+    "aria": "Risk score {score} out of {ceiling}"
   }
 }

@@ -7,7 +7,7 @@
     "hub": "Notification rules"
   },
   "title": "Notification & SLA rules",
-  "subtitle": "Governed event → channel → recipient → template rules for the delivery service",
+  "subtitle": "Rules for which event goes to which channel, person and template",
   "readonly": {
     "title": "Read-only for your role",
     "body": "You can view settings. Creating, publishing and deactivating rules need an admin settings role, and the system enforces this automatically."

@@ -8,7 +8,7 @@
   },
   "readOnlyPill": "Read-only",
   "governance": {
-    "heading": "Governed by workflow configuration",
+    "heading": "Set by the workflow",
     "body": "The published workflow decides which status can follow which. The database makes sure of it. This screen is read only. To change it, publish a new version.",
     "link": "Open workflow configuration"
   },

@@ -5,7 +5,7 @@
     "delegation": "Delegation"
   },
   "title": "Delegation",
-  "subtitle": "Temporarily delegate a governed role's authority to another authorized user.",
+  "subtitle": "Hand a role's authority to another approved user for a set time.",
   "tabs": {
     "label": "Delegation views",
     "active": "Active",

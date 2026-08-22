@@ -8,7 +8,7 @@
     "email": "Email",
     "region": "Region",
     "roles": "Roles",
-    "editNote": "Personal details, region and roles are governed elsewhere and are not editable from this screen (no self-service identity or role changes)."
+    "editNote": "Your details, region and roles are managed by your administrator. They cannot be changed here."
   },
   "appearance": {
     "heading": "Language & appearance",

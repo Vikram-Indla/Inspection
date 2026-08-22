@@ -36,7 +36,7 @@
     "syncReport": "Added {added} · English changed {enChanged} · Arabic changed {arChanged} · orphaned {orphaned} · restored {revived}"
   },
   "table": {
-    "caption": "Governed interface strings",
+    "caption": "Interface text",
     "source": "English source",
     "translation": "Arabic translation",
     "state": "State"

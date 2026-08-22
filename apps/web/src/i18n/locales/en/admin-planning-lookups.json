@@ -1,13 +1,13 @@
 {
   "title": "Planning lookups",
-  "subtitle": "Governed reference data that fills every planning list.",
+  "subtitle": "The official values that fill every planning list.",
   "loading": "Loading planning lookups",
   "breadcrumb": {
     "administration": "Administration",
     "label": "Planning lookups"
   },
   "governance": {
-    "heading": "Governed reference data",
+    "heading": "Official reference data",
     "pill": "Audited",
     "body": "These values fill every planning list — visit types, reasons, priorities. Every change records who made it and what it was before and after."
   },
@@ -80,7 +80,7 @@
   "actions": {
     "sessionEnded": "Your session has ended. Sign in again.",
     "noPermission": "You do not have permission to configure planning lookups.",
-    "invalidKind": "Choose a governed lookup kind. Nothing was changed.",
+    "invalidKind": "Choose a list type. Nothing was changed.",
     "invalidKey": "The key must be lowercase snake_case (a–z, 0–9, _). Nothing was changed.",
     "labelRequired": "An English label is required. Nothing was changed.",
     "sortNaN": "Sort order must be a number. Nothing was changed.",
@@ -90,10 +90,10 @@
     "keyExistsUpdate": "The key \"{key}\" already exists in kind \"{kind}\" — keys are unique per kind. Nothing was changed.",
     "keyExistsInsert": "The key \"{key}\" already exists in kind \"{kind}\" — edit that row instead. Nothing was changed.",
     "updated": "Lookup \"{kind}.{key}\" updated — audited; consumers see it on their next read.",
-    "added": "Lookup \"{kind}.{key}\" added as active — audited; it appears in governed selects on their next load.",
+    "added": "Lookup \"{kind}.{key}\" added as active — recorded; it appears in the lists the next time they load.",
     "missingId": "Missing lookup id. Nothing was changed.",
     "rowGoneOrRls": "That lookup row no longer exists, or the change was denied. Nothing was changed.",
-    "reactivated": "\"{kind}.{key}\" reactivated — it appears in governed selects on their next load.",
-    "deactivated": "\"{kind}.{key}\" deactivated (never deleted) — governed selects only read active rows, so it disappears on their next load."
+    "reactivated": "\"{kind}.{key}\" turned back on — it appears in the lists the next time they load.",
+    "deactivated": "\"{kind}.{key}\" turned off (never deleted) — the lists show only values that are on, so it disappears the next time they load."
   }
 }

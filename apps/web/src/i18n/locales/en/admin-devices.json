@@ -1,5 +1,9 @@
 {
-  "breadcrumb": { "label": "Trusted devices", "administration": "Administration", "devices": "Trusted devices" },
+  "breadcrumb": {
+    "label": "Trusted devices",
+    "administration": "Administration",
+    "devices": "Trusted devices"
+  },
   "title": "Trusted device and offline administration",
   "controlledRows": "{count} controlled rows",
   "registerUnavailable": "Register not available",
@@ -42,7 +46,7 @@
   },
   "result": {
     "session_expired": "Your session has ended. Sign in again.",
-    "invalid_request": "Select a governed command and provide a meaningful reason.",
+    "invalid_request": "Choose a command and give a clear reason.",
     "not_authorized": "You do not have permission to perform this action.",
     "device_not_found": "The device no longer exists or is outside your scope.",
     "invalid": "The requested command or reason is invalid. Nothing was changed.",

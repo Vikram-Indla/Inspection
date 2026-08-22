@@ -3,7 +3,7 @@
   "subtitle": "Final submitted report history",
   "back": "Back",
   "noValue": "—",
-  "locked": "Submitted records are locked. Corrections require a governed return and a new version.",
+  "locked": "Sent records are locked. To correct one, it must be returned and a new version made.",
   "cached": "Offline copy — read-only. Connect to refresh.",
   "empty": "No completed inspections yet",
   "unavailable": "Completed history is unavailable and no safe cached copy exists.",

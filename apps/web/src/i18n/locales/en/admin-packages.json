@@ -69,7 +69,7 @@
   },
   "templates": {
     "summary": "Action-form templates",
-    "hint": "Governed, versioned templates that package action forms and penalty mappings can reference."
+    "hint": "Official templates, kept in versions, that action forms and penalty lists can use."
   },
   "states": {
     "published": "Published",

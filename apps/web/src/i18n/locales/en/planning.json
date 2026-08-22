@@ -480,7 +480,7 @@
     "filteredTitle": "No visits match",
     "filteredBody": "No visits match the scoped search and filters. Clear them to see everything in your scope.",
     "noneTitle": "No visits are currently displayable",
-    "noneWithTotal": "{total} records exist in your scope, but none matched this page. Some may be excluded by governed data rules, or the list may need a moment under load — refresh to check again.",
+    "noneWithTotal": "{total} records exist in your area, but none matched this page. Some may be left out by data rules, or the list may need a moment. Refresh to check again.",
     "noneBody": "No visits are in your scope yet."
   },
   "bulkBar": {

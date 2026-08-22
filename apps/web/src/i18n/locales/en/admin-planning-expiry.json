@@ -8,7 +8,7 @@
   },
   "governance": {
     "heading": "One enabled version per rule type.",
-    "pill": "Governed",
+    "pill": "Official",
     "body": "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently, and every change is recorded in the audit trail."
   },
   "scheduler": {

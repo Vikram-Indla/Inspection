@@ -48,7 +48,7 @@
     "measure": "Measure",
     "state": "State",
     "basis": "Basis",
-    "emptyTitle": "No further governed measures"
+    "emptyTitle": "No further measures"
   },
   "national": {
     "title": "National performance",
@@ -56,8 +56,8 @@
       "question": "Are we achieving the national inspection strategy?",
       "title": "Inspection coverage against annual target",
       "definition": "Completed inspections as a percentage of the annual inspection target",
-      "example": "{count} completed inspections; no governed annual target is configured.",
-      "interpretation": "Coverage remains withheld until Administration publishes the governed inspection-cycle target.",
+      "example": "{count} inspections completed. No yearly target is set.",
+      "interpretation": "Coverage appears once Administration publishes the inspection-cycle target.",
       "action": "Open Planning"
     },
     "compliance": {
@@ -85,21 +85,21 @@
       "definition": "Count of violations grouped by regulation",
       "example": "{count} linked violations in the current scope.",
       "exampleEmpty": "No regulation-linked violations in scope.",
-      "interpretation": "Only violations carrying a governed regulation relationship are counted.",
+      "interpretation": "We count only violations linked to a regulation.",
       "action": "Open the regulation"
     },
     "critical": {
       "question": "Which factories require immediate intervention?",
       "title": "Critical factories requiring intervention",
       "definition": "Factories carrying a recorded high-risk band or active critical violation",
-      "example": "{count} factories match the governed recorded conditions.",
+      "example": "{count} factories match the recorded conditions.",
       "interpretation": "No substitute threshold is introduced by this screen.",
       "action": "Open Factory 360"
     },
     "annual": {
       "question": "Which factories still require inspection this year?",
       "title": "Factories pending annual inspection",
-      "definition": "Active factories with no completed inspection in the governed inspection year",
+      "definition": "Active factories with no completed inspection this inspection year",
       "example": "{count} factories are visible, but the annual-cycle policy is not configured.",
       "interpretation": "The screen withholds a count until the inspection-year policy is published.",
       "action": "Open Planning"
@@ -119,14 +119,14 @@
   },
   "requirement": {
     "title": "Strategic requirement coverage",
-    "description": "Governed measures not shown above, with their current live or blocked state."
+    "description": "Measures not shown above, and whether each one is live or stopped."
   },
   "charts": {
     "coverage": {
       "meterLabel": "Live source",
-      "meterAria": "{live} of {total} governed measures have a live source",
+      "meterAria": "{live} of {total} measures have a live source",
       "ratio": "{live} of {total} measures",
-      "allLive": "Every governed measure listed below has a live source."
+      "allLive": "Every measure listed below has a live source."
     },
     "pipeline": {
       "title": "Pipeline by planning status",
@@ -152,14 +152,14 @@
       "total": "{total} visits scheduled today"
     },
     "activity": {
-      "title": "Governed activity",
-      "description": "Recorded governed events per day across the selected period.",
-      "aria": "Governed events per day across the selected period",
+      "title": "Activity",
+      "description": "Recorded events per day over the chosen period.",
+      "aria": "Events per day over the chosen period",
       "unit": "events in scope",
       "peak": "Busiest day {date} — {count} events",
       "unbounded": "A daily trend needs a bounded period. Choose a date range to see it.",
-      "emptyTitle": "No governed activity",
-      "empty": "No governed events were recorded in this scope."
+      "emptyTitle": "No activity",
+      "empty": "No events were recorded in your area."
     }
   },
   "search": {
@@ -228,7 +228,7 @@
     },
     "requirement": {
       "title": "Operational requirement coverage",
-      "description": "Governed operational measures not shown above, with their current live or blocked state."
+      "description": "Day-to-day measures not shown above, and whether each one is live or stopped."
     },
     "capacity": {
       "title": "Inspector capacity",

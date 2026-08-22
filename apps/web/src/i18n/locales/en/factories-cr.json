@@ -67,7 +67,7 @@
     "highestRisk": "Highest-risk license",
     "approvedInspections": "Approved inspections",
     "openViolations": "Open violations",
-    "openViolationsUnavailable": "Not available — runtime violations have no governed open/closed state",
+    "openViolationsUnavailable": "Not available — these violations do not record whether they are open or closed",
     "activePenalties": "Active penalties",
     "activePenaltiesUnavailable": "Not available — current penalty statuses do not define Active/Expired/Cancelled",
     "noAggregate": "All-licenses facts only. No CR-level risk score or compliance rate is calculated."
@@ -120,7 +120,7 @@
     "changed": "Changed or unavailable",
     "capturedAt": "Captured",
     "origin": "Origin approved report",
-    "empty": "No approved report has a governed factory snapshot for this selected license yet.",
+    "empty": "No approved report has a factory record for this licence yet.",
     "fields": {
       "cr_number": "CR number",
       "industrial_license_number": "Industrial license",
@@ -168,7 +168,7 @@
   },
   "government": {
     "heading": "Government records",
-    "empty": "Government-domain records are unavailable until a governed source contract supplies them."
+    "empty": "Government records are not available until an agreed source supplies them."
   },
   "chemicalCustoms": {
     "heading": "Chemical permits and customs exemptions",

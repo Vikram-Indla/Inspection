@@ -18,7 +18,7 @@
   "error": {
     "title": "Execution data could not be loaded",
     "body": "Nothing was changed. No inspection state was affected.",
-    "unverified": "The governed response could not be verified. Nothing was changed.",
+    "unverified": "We could not check the answer. Nothing was changed.",
     "retry": "Retry",
     "back": "Back to the dashboard",
     "reference": "Reference {digest}"
@@ -136,9 +136,9 @@
     "eyebrow": "Planning window guard",
     "droppedOn": "{factory} was dropped on {date}. No date has been changed.",
     "requested": "A reschedule was requested for {factory}. No date has been changed.",
-    "currentWindow": "Current governed window",
+    "currentWindow": "Current window",
     "workflowNote": "The planning workflow validates conflicts and records the change.",
-    "noHandoff": "The proposed day is not transferred, because Planning has no governed handoff contract for it.",
+    "noHandoff": "Planning has no agreed way to move this day. It stays where it is.",
     "continue": "Continue in planning",
     "cancel": "Cancel"
   },
