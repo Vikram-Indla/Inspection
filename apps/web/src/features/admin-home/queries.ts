@@ -3,9 +3,6 @@ import type { supabaseServer } from "@/lib/supabase-server";
 
 type Client = Awaited<ReturnType<typeof supabaseServer>>;
 
-const REVIEW_ROLES = new Set(["admin", "supervisor"]);
-const AUDIT_ROLES = new Set(["admin", "supervisor", "planner"]);
-
 export type RequestRow = {
   id: string; request_number: string; title: string; owner_id: string;
   submitted_at: string | null; current_revision: number; status: string;
@@ -32,9 +29,8 @@ export async function loadAdminHome(sb: Client): Promise<AdminHomeRead> {
   const roleRead = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
-  const roles = new Set((roleRead.data ?? []).map(row => row.role_key));
-  const canReview = !roleRead.error && [...roles].some(role => REVIEW_ROLES.has(role));
-  const canAudit = !roleRead.error && [...roles].some(role => AUDIT_ROLES.has(role));
+  const canReview = !roleRead.error && Boolean(user);
+  const canAudit = !roleRead.error && Boolean(user);
 
   const requestRead = canReview && user
     ? await sb.from("compliance_configuration_requests")

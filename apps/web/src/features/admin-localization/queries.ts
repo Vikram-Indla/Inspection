@@ -47,9 +47,10 @@ export async function canManageLocalization(): Promise<boolean> {
 }
 
 export async function loadLocalization(query: LocalizationQuery): Promise<LocalizationResult> {
-  if (!await canManageLocalization()) return { kind: "unauthorized" };
-
   const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError || !user) return { kind: "unauthorized" };
+
   const rows: UiString[] = [];
   for (let from = 0; ; from += PAGE_READ_SIZE) {
     const result = await sb.from("ui_strings")
