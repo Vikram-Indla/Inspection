@@ -1,0 +1,65 @@
+{
+  "brand": {
+    "latin": "Inspection Platform",
+    "arabic": "منصة التفتيش"
+  },
+  "tagline": "Ministry of Industry & Mineral Resources",
+  "langBtn": "AR",
+  "copyright": "© 2026",
+  "net": {
+    "offline": "No network. You can still work."
+  },
+  "device": {
+    "trusted": "Trusted device",
+    "faceUnlock": "Open with Face ID",
+    "faceDesc": "Face ID checks you on this phone. Your face is never sent to us.",
+    "orPassword": "or use your password"
+  },
+  "form": {
+    "idLabel": "National ID / Staff number",
+    "password": "Password",
+    "showPw": "Show password",
+    "keepSignedIn": "Keep me signed in",
+    "forgot": "Forgot your password?",
+    "signIn": "Sign in"
+  },
+  "offline": {
+    "note": "You can work with no network. Your visits and photos are kept on this phone. They are sent when the network comes back.",
+    "dismiss": "Hide this message",
+    "known": "You have no network. You can only enter if you signed in on this phone before.",
+    "loginBlocked": "A new sign in needs a network. Connect, then try again.",
+    "continue": "Keep working with no network"
+  },
+  "status": {
+    "signingIn": "Signing you in…",
+    "unlocking": "Checking…",
+    "checkingSession": "Checking that you are signed in…",
+    "sessionExpired": "You were signed out. Sign in to go back to the same page.",
+    "signedOut": "You are signed out. This phone no longer keeps your details."
+  },
+  "errors": {
+    "bioUnavailable": "Face ID did not work on this phone. Use your password.",
+    "bioFallback": "Use my password",
+    "directoryBlocked": "National ID and staff number do not work yet. Use your work email.",
+    "invalid": "Those details did not work. Check them, or reset your password.",
+    "network": "We could not reach the sign in service. Check your network and try again."
+  },
+  "atlas": {
+    "overline": "ONE VISIT · START TO END",
+    "riyadhLabel": "RIYADH · ON SITE",
+    "stagesLabel": "Steps of a visit",
+    "stages": {
+      "plan": { "label": "Map", "event": "The map shows where the factories are." },
+      "travel": { "label": "On the way", "event": "Two cars leave Riyadh and one leaves Jazan. Each one has a factory to visit." },
+      "arrive": { "label": "Arriving", "event": "The teams reach their factories and confirm they are there." },
+      "inspect": { "label": "Inspection", "event": "The team takes photos and records what they found." },
+      "decide": { "label": "Zones", "event": "Point at a zone to lift it and see its inspection numbers." }
+    },
+    "dossier": {
+      "industry": "Industry",
+      "state": "Stage",
+      "close": "Close",
+      "mapLabel": "Factories on the map"
+    }
+  }
+}
