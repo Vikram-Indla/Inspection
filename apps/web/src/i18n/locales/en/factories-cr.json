@@ -2,7 +2,7 @@
   "title": "Factory 360",
   "badge": "Factory 360",
   "loading": "Loading Factory 360 profile",
-  "loadingDetail": "Loading the selected registration, license and recorded source metadata.",
+  "loadingDetail": "Loading the selected registration, licence and recorded source details.",
   "permission": {
     "title": "Factory 360 access required",
     "body": "You do not have access to this factory profile."
@@ -23,7 +23,7 @@
     "available": "Available",
     "heading": "Source status and freshness",
     "record": "Record used here",
-    "localCopy": "Inspection Platform canonical copy",
+    "localCopy": "Inspection Platform official copy",
     "system": "Source system",
     "timestamp": "Recorded sync timestamp",
     "noSla": "Freshness is shown as a recorded source fact; no unapproved staleness threshold is inferred."
@@ -187,11 +187,11 @@
   "documents": {
     "heading": "Documents and factory media",
     "restricted": "restricted",
-    "restrictedBody": "Document metadata requires Factory Documents permission.",
+    "restrictedBody": "You need Factory Documents access to see document details.",
     "download": "Download",
     "downloadUnavailable": "File unavailable",
     "downloadRestricted": "Download restricted",
-    "empty": "No source-backed document metadata is available."
+    "empty": "No source-backed document details are available."
   },
   "media": {
     "official": "Official factory gallery",

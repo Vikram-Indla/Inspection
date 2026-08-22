@@ -109,9 +109,9 @@
   },
   "addComponent": {
     "heading": "إضافة مكوّن",
-    "hint": "اللقطات كائنات JSON. لتعديل تابع فقط، أدرج مفتاح نسخة الأصل القائم.",
+    "hint": "اللقطات قيم مُنسَّقة. وللتغيير على الابن فقط، أضف مفتاح إصدار الأصل الحالي.",
     "type": "نوع المكوّن",
-    "target": "معرّف الهدف القائم (UUID)",
+    "target": "رقم الهدف الحالي",
     "targetRequired": "مطلوب للتعديل",
     "targetOptional": "اختياري",
     "current": "لقطة القيمة الحالية",
@@ -163,9 +163,9 @@
   "reference": "المرجع",
   "actions": {
     "titleRequired": "العنوان مطلوب.",
-    "jsonRequired": "كائن JSON مطلوب.",
-    "jsonNotObject": "يجب أن تكون القيمة كائن JSON.",
-    "jsonInvalid": "أدخل JSON صالحًا.",
+    "jsonRequired": "يجب إدخال قيمة مُنسَّقة.",
+    "jsonNotObject": "يجب أن تكون القيمة كائناً مُنسَّقاً.",
+    "jsonInvalid": "أدخل قيمة مُنسَّقة صحيحة.",
     "notAuthorized": "لا يمكن لدورك تنفيذ هذا الإجراء.",
     "reviewNotAuthorized": "يلزم دور مراجع امتثال.",
     "publishNotAuthorized": "يلزم دور مراجع امتثال للنشر.",
@@ -178,7 +178,7 @@
     "notEditable": "يمكن تعديل مراجعة المسودة الحالية فقط.",
     "notSubmittable": "هذا الطلب ليس في حالة قابلة للتقديم.",
     "revisionRequiresReturned": "لا يمكن إنشاء مراجعة جديدة إلا بعد الإعادة.",
-    "proposedSnapshotRequired": "يجب أن تكون القيم المقترحة كائن JSON.",
-    "modifyTargetRequired": "تتطلب طلبات التعديل معرّف هدف قائمًا (UUID)."
+    "proposedSnapshotRequired": "يجب أن تكون القيم المقترحة كائناً مُنسَّقاً.",
+    "modifyTargetRequired": "طلب التعديل يحتاج رقم هدف موجوداً."
   }
 }

@@ -125,7 +125,7 @@
     "export": "Export",
     "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
     "attentionQueueNote": "No live AI request is made.",
-    "exportNote": "Pending a canonical audit and correlation contract."
+    "exportNote": "Waiting for an approved audit and matching agreement."
   },
   "coverage": {
     "label": "Metric coverage",

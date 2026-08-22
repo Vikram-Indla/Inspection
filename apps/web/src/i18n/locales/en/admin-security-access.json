@@ -4,7 +4,7 @@
     "administration": "Admin",
     "audit": "Access review"
   },
-  "title": "Security posture and access review",
+  "title": "Security status and access review",
   "badge": "purpose-bound evidence access",
   "boundary": {
     "title": "Navigation is not authorization.",

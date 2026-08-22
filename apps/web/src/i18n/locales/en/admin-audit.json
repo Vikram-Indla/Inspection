@@ -18,7 +18,7 @@
     "print": "Print-safe"
   },
   "filter": {
-    "case": "Case / object UUID",
+    "case": "Case or record number",
     "casePlaceholder": "00000000-0000-0000-0000-000000000000",
     "search": "Search events",
     "searchPlaceholder": "event type, actor, correlation",
@@ -76,7 +76,7 @@
     "correlation": "Correlation",
     "before": "Before",
     "after": "After",
-    "payload": "Semantic payload",
+    "payload": "What changed",
     "missing": "MISSING"
   },
   "timetravel": {

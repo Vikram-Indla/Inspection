@@ -18,7 +18,7 @@
     "title": "Senaei provider",
     "status": "Not configured / not verified here",
     "noRemoteCall": "No remote call is made from this page. Undocumented provider domains remain SENAEI_API_CONTRACT_NOT_SUPPLIED.",
-    "help": "The endpoint contract and its recorded live-call check are shown in SENAI data management. Setting it up is not the same as being connected.",
+    "help": "The agreed connection and its recorded live-call check are shown in SENAI data management. Adding one does not mean it is connected.",
     "link": "SENAI data management"
   },
   "csv": {
@@ -32,7 +32,7 @@
       "remove": "Remove {name}",
       "hint": "factory360-v2 · up to 2 MB"
     },
-    "schemaNote": "Schema {schema}. Required identity columns: {required}. Files are staged for reconciliation; this action never overwrites factory truth.",
+    "schemaNote": "File format {schema}. Required identity columns: {required}. Files wait to be matched. This action never overwrites factory records.",
     "previewRows": "{rows} data rows · {columns} columns",
     "stage": "Stage validated batch",
     "staging": "Staging…",
@@ -50,7 +50,7 @@
     "factoriesError": "The factory list could not be read. Import and reconciliation history below may still be available.",
     "representativesError": "Representatives could not be read for this factory. Other factory facts remain available.",
     "document": {
-      "title": "Document metadata",
+      "title": "Document details",
       "type": "Type",
       "typeLicense": "License",
       "typeCr": "CR",
@@ -63,7 +63,7 @@
       "referencePlaceholder": "e.g. LIC-2026-0043",
       "validFrom": "Valid from",
       "validTo": "Valid to",
-      "submit": "Add metadata"
+      "submit": "Add details"
     },
     "representative": {
       "title": "Representative",
@@ -163,7 +163,7 @@
     "invalid_capacity": "Annual capacity must be a non-negative number.",
     "invalid_material": "Enter a name and choose a valid source.",
     "CSV_FILE_REQUIRED": "Attach a .csv file.",
-    "CSV_SCHEMA_VERSION_UNSUPPORTED": "This CSV schema version isn't supported.",
+    "CSV_SCHEMA_VERSION_UNSUPPORTED": "This file format version is not supported.",
     "CSV_FILE_SIZE_INVALID": "The file is empty or larger than 2 MB.",
     "CSV_UNCLOSED_QUOTE": "The CSV has an unclosed quote.",
     "CSV_HAS_NO_DATA_ROWS": "The CSV has no data rows.",

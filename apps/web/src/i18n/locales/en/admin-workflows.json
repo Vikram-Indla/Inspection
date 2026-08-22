@@ -50,7 +50,7 @@
     "requires": "Requires",
     "guards": "Guards",
     "sideEffects": "Side effects",
-    "idempotent": "idempotent",
+    "idempotent": "safe to repeat",
     "noIdempotencyKey": "no idempotency key",
     "selectHint": "Select a state to filter its outgoing transitions; select a transition row to inspect it.",
     "selectTransition": "Choose a step from the table below to see its role, trigger, checks and effects.",
@@ -66,7 +66,7 @@
     "created": "Draft created"
   },
   "editor": {
-    "payloadLabel": "State machine payload (object · states[] · transitions[])",
+    "payloadLabel": "Workflow definition (states and steps)",
     "saving": "Saving…",
     "save": "Save draft",
     "saved": "Saved"

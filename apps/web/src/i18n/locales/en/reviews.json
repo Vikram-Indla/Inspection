@@ -243,7 +243,7 @@
       "collectionHeading": "Fixed collection comparison",
       "collectionUnavailable": "Not available in one or both fixed snapshots — not treated as unchanged.",
       "emptyDiff": "No answer changed between these two versions (computed from stored snapshots — not a failure).",
-      "evidenceCollection": "Evidence manifest (ID + SHA metadata)",
+      "evidenceCollection": "Evidence list (ID and fingerprint)",
       "from": "Compare from",
       "heading": "Version comparison — tamper-evident change rail",
       "navHint": "Comparison is for looking only. There is no accept or merge action. When a difference is shown, choosing a row scrolls to its answer.",
@@ -261,7 +261,7 @@
       "to": "Compare to",
       "unavailEvidence": "Evidence / media comparison — not shown; marked not available, never 'unchanged'.",
       "unavailHeading": "Comparisons not derived in the runtime",
-      "unavailMetadata": "Metadata / section-order comparison — not compared.",
+      "unavailMetadata": "Section order was not compared.",
       "unavailNote": "These are honestly not available, not equal.",
       "unavailPackage": "Checklist meaning is not compared. We do not check whether an answer means the same thing across checklist versions."
     },

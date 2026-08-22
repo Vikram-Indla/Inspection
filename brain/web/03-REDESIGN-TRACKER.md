@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-187.** Take T-188.
+implements the reservation. **Highest id in use: T-188.** Take T-189.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,16 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-188 · Engineering terms removed from user copy
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-188-engineering-leaks](sessions/2026-08/2026-08-22-T-188-engineering-leaks.md)
+
+46 strings per language. `endpoint` → connection/address · `payload` → what
+changed · `metadata` → details · `UUID` → number · `JSON object` → structured
+value · `idempotent` → safe to repeat · `posture` → status.
+
+This is the group the original audit named first. Baseline **182 → 121**.
 
 ### T-187 · "scope" removed from English copy
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
