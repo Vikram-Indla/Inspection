@@ -45,7 +45,8 @@ export default function IntegrationsScreen({ data, locale }: { data: Integration
   }));
 
   return (
-    <IntegrationsFrame strings={strings} metrics={metrics} tabs={tabs}>
+    <IntegrationsFrame
+      actions={<IntegrationsGovernance strings={strings} />} strings={strings} metrics={metrics} tabs={tabs}>
       <div className={styles.stack}>
         <Card as="section" role="note">
           <CardHeader level="h2" title={strings.banner.title} />
@@ -78,8 +79,6 @@ export default function IntegrationsScreen({ data, locale }: { data: Integration
             alertLabel={strings.exports.title}
           />
         </div>
-
-        <IntegrationsGovernance strings={strings} />
       </div>
     </IntegrationsFrame>
   );

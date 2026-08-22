@@ -1,4 +1,5 @@
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
+import GovernanceNote from "@/components/saqeel/governance-note/governance-note";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import EmptyState from "@/components/saqeel/empty-state/empty-state";
@@ -26,7 +27,8 @@ export default function RiskStudioScreen({ data, locale }: {
   ];
 
   return (
-    <ShellPageFrame breadcrumbLabel={copy.breadcrumb.label} breadcrumbs={breadcrumbs} title={copy.title}>
+    <ShellPageFrame breadcrumbLabel={copy.breadcrumb.label} breadcrumbs={breadcrumbs} title={copy.title}
+      actions={<GovernanceNote label={copy.governance.label} lines={[copy.governance.sum, copy.governance.rls, copy.governance.trace]} />}>
       <div className={styles.stack}>
         <RiskSectionNav current="/admin/risk" labels={getMessages(locale).adminRiskModels.nav} />
 
@@ -86,18 +88,6 @@ export default function RiskStudioScreen({ data, locale }: {
             <CardBody><Text as="p" tone="secondary">{copy.reconstruction.note}</Text></CardBody>
           </Card>
 
-          <div className={styles.span}>
-            <Card as="section" role="note" labelledBy="risk-governance">
-              <CardHeader level="h2" titleId="risk-governance" title={copy.governance.label} />
-              <CardBody>
-                <div className={styles.governance}>
-                  <Text as="p" tone="secondary">{copy.governance.sum}</Text>
-                  <Text as="p" tone="secondary">{copy.governance.rls}</Text>
-                  <Text as="p" tone="secondary">{copy.governance.trace}</Text>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
         </div>
       </div>
     </ShellPageFrame>

@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
+import GovernanceNote from "@/components/saqeel/governance-note/governance-note";
 import StatusPill from "@/components/saqeel/status-pill/status-pill";
 import { Text } from "@/components/saqeel/type";
 import type { PlanningExpiryData } from "@/features/admin-planning-expiry/queries";
@@ -18,20 +19,10 @@ export default function ExpiryScreen({ data, locale }: {
     <ShellPageFrame
       breadcrumbLabel={copy.breadcrumb.label}
       breadcrumbs={[{ label: copy.breadcrumb.administration, href: "/admin" }, { label: copy.title }]}
+      actions={<><StatusPill tone="info">{copy.governance.pill}</StatusPill><GovernanceNote label={copy.governance.heading} lines={[copy.governance.body]} /></>}
       title={copy.title}
     >
       <div className={styles.stack}>
-        <Card as="section" role="status">
-          <CardHeader
-            level="h2"
-            title={copy.governance.heading}
-            trailing={<StatusPill tone="info">{copy.governance.pill}</StatusPill>}
-          />
-          <CardBody gap="tight">
-            <Text tone="secondary">{copy.governance.body}</Text>
-          </CardBody>
-        </Card>
-
         {data.readFailed ? (
           <Card as="section" role="alert">
             <CardHeader

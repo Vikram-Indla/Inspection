@@ -18,10 +18,11 @@ export type FrameTab = {
   readonly current?: boolean;
 };
 
-export default function IntegrationsFrame({ strings, metrics, tabs, children }: {
+export default function IntegrationsFrame({ strings, metrics, tabs, actions, children }: {
   strings: AdminIntegrationsMessages;
   metrics: readonly FrameMetric[];
   tabs: readonly FrameTab[];
+  actions?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -32,6 +33,7 @@ export default function IntegrationsFrame({ strings, metrics, tabs, children }: 
         { label: strings.breadcrumb.hub },
       ]}
       title={strings.title}
+      actions={actions}
     >
       <div className={styles.metrics}>
         {metrics.map(metric => (

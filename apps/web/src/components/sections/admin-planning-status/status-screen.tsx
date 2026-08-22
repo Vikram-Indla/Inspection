@@ -1,4 +1,5 @@
 import ShellPageFrame from "@/components/app-shell/shell-page-frame/shell-page-frame";
+import GovernanceNote from "@/components/saqeel/governance-note/governance-note";
 import Button from "@/components/saqeel/button/button";
 import { Card, CardBody, CardHeader } from "@/components/saqeel/card/card";
 import DefinitionList from "@/components/saqeel/definition-list/definition-list";
@@ -39,19 +40,9 @@ export default function StatusScreen({ data, locale }: {
       breadcrumbLabel={copy.breadcrumb.label}
       breadcrumbs={[{ label: copy.breadcrumb.administration, href: "/admin" }, { label: copy.title }]}
       title={copy.title}
-      actions={<StatusPill tone="neutral" ping={false}>{copy.readOnlyPill}</StatusPill>}
+      actions={<><StatusPill tone="neutral" ping={false}>{copy.readOnlyPill}</StatusPill><GovernanceNote label={copy.governance.heading} lines={[copy.governance.body]} /><Button href="/admin/workflows" prefetch={false} variant="link" size="sm">{copy.governance.link}</Button></>}
     >
       <div className={styles.stack}>
-        <Card as="section" role="note">
-          <CardHeader level="h2" title={copy.governance.heading} />
-          <CardBody gap="tight">
-            <Text tone="secondary">{copy.governance.body}</Text>
-            <Button href="/admin/workflows" prefetch={false} variant="link" size="sm">
-              {copy.governance.link}
-            </Button>
-          </CardBody>
-        </Card>
-
         {data.isFallback ? (
           <Card as="section" role="status">
             <CardHeader
