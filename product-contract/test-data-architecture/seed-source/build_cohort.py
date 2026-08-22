@@ -105,8 +105,8 @@ for stop, count, pstat, ostat, istat, decision in STOPS:
             "method": "bulk" if n % 17 == 0 else ("immediate" if n % 29 == 0 else "single"),
             "gps_override": "yes" if stop == "J09" else "no",
             "window_start": wstart.isoformat(),
-            "visit_type": ["routine","follow_up","complaint","licensing"][h("v", n) % 4],
-            "priority": ["low","normal","high","urgent"][h("pr", n) % 4],
+            "visit_type": ["routine","follow_up","complaint","licensing"][k % 4],
+            "priority": ["low","normal","high","urgent"][(k // 4 + k) % 4],
         })
 
 # Checklist responses + findings/violations on inspections that exist.
