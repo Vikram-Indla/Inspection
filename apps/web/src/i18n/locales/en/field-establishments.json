@@ -19,7 +19,7 @@
     "heading": "No establishments found",
     "body": "Change or clear the search filters. Only records you can access will show here."
   },
-  "count": "{shown} shown · {total} records in scope",
+  "count": "{shown} shown · {total} records in your area",
   "results": "Results",
   "card": {
     "licensed": "Licensed",

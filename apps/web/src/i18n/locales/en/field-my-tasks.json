@@ -19,7 +19,7 @@
     "active": "Active",
     "upcoming": "Upcoming",
     "alerts": "Needs attention",
-    "alertsUnavailable": "Assignment alerts are temporarily unavailable. Other assignment data remains visible.",
+    "alertsUnavailable": "Visit alerts are not available right now. The rest of your visit details still show.",
     "returned": "Returned",
     "expired": "Expired",
     "earliest": "Earliest first",
@@ -63,7 +63,7 @@
   "detail": {
     "selectPrompt": "Select a task",
     "selectBody": "Pick a task from the list to see the establishment record.",
-    "noDossier": "The full establishment record is unavailable until a commercial-registration/licence mapping exists for this factory, or Factory 360 access is granted.",
+    "noDossier": "The full establishment record opens once this factory is linked. It needs a commercial registration or a licence. It also opens if you have Factory 360 access.",
     "window": "Visit window",
     "factoryCode": "Factory code"
   },
@@ -86,7 +86,7 @@
     "notAvailable": "Not available",
     "restricted": "Restricted",
     "basis": "{passed}/{answered}",
-    "healthRiskNote": "Health score and risk score are separate, governed concepts."
+    "healthRiskNote": "Health score and risk score are two different things."
   },
   "license": {
     "heading": "License Data",
@@ -105,8 +105,8 @@
   },
   "regulatory": {
     "heading": "Regulatory Data",
-    "noSourceTag": "No governed source",
-    "noSource": "No governed source is connected yet for {section}.",
+    "noSourceTag": "No official source",
+    "noSource": "No official source is connected yet for {section}.",
     "noRecords": "No source-backed records are available in your scope for this section.",
     "activities": "Factory Activities",
     "manufacturing": "Manufacturing Status",

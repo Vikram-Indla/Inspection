@@ -16,10 +16,10 @@
   },
   "missing": {
     "title": "Record not in your scope",
-    "body": "The requested enforcement record is not visible under your access. Whether it exists is not disclosed."
+    "body": "You cannot see this enforcement record. We do not say whether it exists."
   },
   "empty": {
-    "title": "No enforcement records visible to you",
+    "title": "You cannot see any enforcement records",
     "body": "The read succeeded and returned none within your access scope.",
     "filteredTitle": "No records match",
     "filteredBody": "The library itself is not empty. Clear the search, status, date or region filter."
@@ -106,7 +106,7 @@
     "penaltyTab": "Penalty mapping",
     "governanceTitle": "Configuration request required",
     "readOnly": "Read only",
-    "governanceBody": "Creating, changing, publishing, activating and deactivating violations and penalties all happen through a compliance configuration request. This catalogue does not skip that process.",
+    "governanceBody": "Creating, changing and publishing violations and penalties all happen through a compliance configuration request. So does turning them on or off. This list does not skip that.",
     "readerNote": "Your role can view this catalogue. Changing it needs the compliance-admin or form-admin role, enforced by row-level security.",
     "openRequests": "Open configuration requests",
     "lensTitle": "Mapping validation lens",
@@ -114,13 +114,13 @@
     "lensRule1": "One violation carries at most one mapping — a second is rejected by a unique constraint.",
     "lensRule2": "Legal basis must be present before a mapping is created; it is never inferred.",
     "lensRule3": "Maker-checker: the approver must differ from the creator.",
-    "lensRule4": "A published mapping is immutable — a change requires a governed successor.",
+    "lensRule4": "A published link cannot change. To change it, publish a new one.",
     "degradedTitle": "The violation catalogue could not be read",
     "degradedBody": "No count is claimed. The catalogue is unavailable, which is not the same as empty.",
     "emptyTitle": "No violation codes configured",
     "emptyBody": "The read succeeded and returned none. Violations are configured through a compliance configuration request.",
     "count": "{count} violation codes",
-    "catalogueFootnote": "Violations are raised automatically from configured item responses; an inspector can never type or override one. Legal basis belongs to the penalty mapping, not the code. Catalogue codes are separate from issued violations, and every change is audit-tracked.",
+    "catalogueFootnote": "Answers in the form raise violations. An inspector cannot type one or change one. The legal basis comes from the penalty list, not from the code. List codes are separate from real violations. We keep a record of every change.",
     "penaltyFootnote": "One violation, one penalty — the database rejects a second mapping. Range and repeat presets are fixed choices, never money amounts or legal wording."
   },
   "code": {
@@ -138,7 +138,7 @@
     "unmapped": "Unmapped",
     "triggers": "Trigger trace — {count} inspection item(s)",
     "triggersEmpty": "No item response mapping currently references this code.",
-    "triggersUnavailable": "The inspection items could not be read — this is not a claim that none reference this code.",
+    "triggersUnavailable": "We could not read the inspection items. This does not mean none of them use this code.",
     "versions": "Version history — {count} version(s)",
     "derivation": "Lifecycle derived from active-from {from} and active-to {to}, as of {today} in Riyadh.",
     "absent": "Not recorded",
@@ -149,7 +149,7 @@
   "mapping": {
     "severity": "Level {level}",
     "lensMapped": "One active mapping",
-    "lensDraft": "Draft awaiting a distinct approver",
+    "lensDraft": "Draft waiting for a different approver",
     "lensUnmapped": "No mapping yet",
     "reference": "Penalty reference",
     "legalBasis": "Legal basis",

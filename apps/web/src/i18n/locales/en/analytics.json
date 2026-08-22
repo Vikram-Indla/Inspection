@@ -50,7 +50,7 @@
   "rates": {
     "heading": "Rates",
     "description": "Every rate on one scale, so the highest is the one to look at first.",
-    "ariaLabel": "Governed rates ranked from highest to lowest",
+    "ariaLabel": "Rates ranked from highest to lowest",
     "ofTotal": "{numerator} of {denominator}"
   },
   "counts": {
@@ -65,13 +65,13 @@
   },
   "breakdown": {
     "heading": "Breakdowns",
-    "description": "Each total split by its governed categories.",
+    "description": "Each total split by its official categories.",
     "ariaLabel": "{metric}: {summary}",
     "labels": {
       "banded": "Banded",
       "high": "High",
       "unbanded": "Unbanded",
-      "awaiting_disposition": "Awaiting disposition",
+      "awaiting_disposition": "Waiting for a decision",
       "rejected": "Rejected",
       "adopted": "Adopted",
       "issued": "Issued",
@@ -81,8 +81,8 @@
   },
   "unavailable": {
     "heading": "Not available in this period",
-    "summary": "{count} metrics have no governed source",
-    "summaryOne": "One metric has no governed source",
+    "summary": "{count} metrics have no official source",
+    "summaryOne": "One metric has no official source",
     "body": "Nothing is inferred for these. Each carries the reason its source reported.",
     "notApplicable": "Not applicable",
     "notConfigured": "N/A",
@@ -90,7 +90,7 @@
     "unavailable": "Unavailable"
   },
   "empty": {
-    "title": "No governed aggregates for this period",
+    "title": "No totals for this period",
     "body": "Widen the date range or clear the filters to see results in your scope."
   },
   "error": {
@@ -104,15 +104,15 @@
     "title": "You do not have access to analytics",
     "body": "Analytics is limited to planning, supervisory and administrative roles."
   },
-  "drill": "View governed records",
+  "drill": "View records",
   "lineage": "Lineage {trace}",
   "compare": {
-    "notice": "Comparison period {from} to {to}. Numeric comparison stays blocked pending a decision."
+    "notice": "Comparison period {from} to {to}. Number comparison is off until someone decides."
   },
   "bottlenecks": {
-    "heading": "Blocked on a governed value",
-    "summary": "{count} capabilities are blocked",
-    "body": "Each is waiting on a value the platform may not invent — a cohort rule, a lookback, a weighting, a threshold, a target or a denominator.",
+    "heading": "Waiting for a setting",
+    "summary": "{count} measures are waiting",
+    "body": "Each one is waiting for a setting we cannot guess. Who to count. Over what period. What to compare against.",
     "planningToSubmissionCohort": "Planning-to-submission cohort",
     "repeatViolationLineage": "Repeat violation lineage and lookback",
     "riskToAttentionRules": "Risk-to-attention snapshot rules",
@@ -121,18 +121,18 @@
     "slaUrgency": "SLA urgency",
     "capacityUtilization": "Capacity and utilization",
     "strategicBrief": "Strategic inspection brief",
-    "attentionQueue": "Operational attention queue",
+    "attentionQueue": "Needs attention",
     "export": "Export",
     "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
     "attentionQueueNote": "No live AI request is made.",
     "exportNote": "Pending a canonical audit and correlation contract."
   },
   "coverage": {
-    "label": "Governed metric coverage",
+    "label": "Metric coverage",
     "caption": "{resolved} of {total} metrics have a source",
-    "ariaLabel": "{resolved} of {total} governed metrics have a source, {percent}",
-    "reasons": "Blocked by reason",
-    "reasonsAriaLabel": "Blocked capabilities by reason: {summary}"
+    "ariaLabel": "{resolved} of {total} metrics have a source, {percent}",
+    "reasons": "Reason for waiting",
+    "reasonsAriaLabel": "Measures waiting, by reason: {summary}"
   },
   "units": {
     "factories": "{count} factories",
@@ -158,11 +158,11 @@
     },
     "scheduled_load_count": {
       "title": "Scheduled load count",
-      "definition": "Visible assignments; never utilization."
+      "definition": "Visits you can see. Not a measure of how busy someone is."
     },
     "gps_override_count": {
       "title": "GPS override count",
-      "definition": "Visible governed override events."
+      "definition": "Override events you can see."
     },
     "compliance_result_distribution": {
       "title": "Compliance-result distribution",
@@ -198,7 +198,7 @@
     },
     "inspector_coverage": {
       "title": "Inspector coverage",
-      "definition": "Distinct inspectors holding a visible assignment; never utilization."
+      "definition": "How many different inspectors hold a visit you can see. Not a measure of how busy they are."
     },
     "high_risk_factory_share": {
       "title": "High-risk factory share",
@@ -242,7 +242,7 @@
     },
     "ai_suggestion_adoption_rate": {
       "title": "AI suggestion adoption",
-      "definition": "Adopted suggestions ÷ suggestions that have been dispositioned. Suggestions still awaiting a decision are excluded."
+      "definition": "Suggestions used ÷ suggestions that were decided. Suggestions still waiting for a decision are left out."
     }
   }
 }

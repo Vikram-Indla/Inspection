@@ -1,5 +1,9 @@
 {
-  "breadcrumb": { "administration": "Administration", "list": "Compliance requests", "create": "Create request" },
+  "breadcrumb": {
+    "administration": "Admin",
+    "list": "Compliance requests",
+    "create": "Create request"
+  },
   "loading": "Loading configuration requests",
   "status": {
     "draft": "Draft",
@@ -59,12 +63,12 @@
   },
   "workspace": {
     "backList": "Request list",
-    "backQueue": "Awaiting approval",
+    "backQueue": "Waiting for approval",
     "notFoundTitle": "Request not found or outside your scope",
     "notFoundBody": "The read returned no request. No configuration content was loaded.",
     "notFoundBack": "Return to list",
     "returnReason": "Return or rejection reason",
-    "readOnlyTitle": "Read-only",
+    "readOnlyTitle": "View only",
     "readOnlyBody": "Your role can view this request but cannot change or decide it.",
     "summaryHeading": "Request",
     "noDescription": "No description supplied.",
@@ -169,8 +173,8 @@
     "commentRequired": "A comment is required for return or reject.",
     "componentRequired": "Add at least one component before submitting.",
     "dependencyCycle": "That dependency would create a cycle.",
-    "dependencyNotApproved": "Publication is blocked because a required parent is not approved.",
-    "orphanComponent": "Publication is blocked because a component has no approved or existing parent version.",
+    "dependencyNotApproved": "You cannot publish yet. A required parent is not approved.",
+    "orphanComponent": "You cannot publish yet. A part has no approved parent version.",
     "notEditable": "Only the current draft revision can be edited.",
     "notSubmittable": "This request is not in a submittable state.",
     "revisionRequiresReturned": "A new revision can be created only after return.",

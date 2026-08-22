@@ -1,5 +1,9 @@
 {
-  "breadcrumb": { "label": "Access review", "administration": "Administration", "audit": "Access review" },
+  "breadcrumb": {
+    "label": "Access review",
+    "administration": "Admin",
+    "audit": "Access review"
+  },
   "title": "Security posture and access review",
   "badge": "purpose-bound evidence access",
   "boundary": {
@@ -8,7 +12,7 @@
   },
   "schemaPending": "This data is unavailable in this environment. Nothing is inferred.",
   "stats": {
-    "roleHoldings": "Role holdings visible to you",
+    "roleHoldings": "Roles you can see",
     "notPermission": "Holdings are not an effective-permission proof.",
     "openReviews": "Open reviews",
     "overdue": "{count} overdue",
@@ -21,10 +25,13 @@
     "scope": "Scope and purpose",
     "status": "Status",
     "action": "Independent decision",
-    "empty": "No access reviews visible to you.",
+    "empty": "You cannot see any access reviews.",
     "due": "Due {date}"
   },
-  "status": { "open": "Open", "closed": "Closed" },
+  "status": {
+    "open": "Open",
+    "closed": "Closed"
+  },
   "decide": {
     "decision": "Decision",
     "decisionPlaceholder": "Choose a decision",
@@ -37,7 +44,7 @@
   },
   "grants": {
     "title": "Purpose-bound evidence grants",
-    "empty": "No evidence grants visible to you.",
+    "empty": "You cannot see any evidence grants.",
     "active": "Active",
     "revoked": "Revoked",
     "expired": "Expired"

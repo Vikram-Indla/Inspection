@@ -2,7 +2,7 @@
   "title": "Unregistered establishment",
   "subtitle": "Create a visit for a facility not in the system",
   "back": "Back",
-  "note": "This creates an immediate, self-assigned visit against a system-generated placeholder identity — photo and GPS capture stand in for a registered name until reconciliation.",
+  "note": "You are starting a visit now, and it is yours. This factory has no record yet. Your photo and your location will be used until we find its name.",
   "photosNote": "Photo capture is not available for this flow. Location and report type are captured below.",
   "location": {
     "heading": "Location",

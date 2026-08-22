@@ -1,14 +1,14 @@
 {
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "People & access"
   },
   "title": "Users & roles",
   "subtitle": "Accounts, role assignment and access review",
   "loading": "Loading users and roles",
   "metrics": {
-    "accounts": "Accounts in scope",
+    "accounts": "Accounts in your area",
     "accountsNote": "Only profiles you can see",
     "roles": "Role keys",
     "rolesNote": "Read from the role catalogue",
@@ -28,21 +28,21 @@
     "readOnly": "This session can read the roster but cannot change access."
   },
   "roster": {
-    "caption": "Accounts visible to your session",
+    "caption": "Accounts you can see",
     "user": "User",
     "email": "Email",
     "region": "Region",
     "roles": "Roles",
     "adminRole": "Administrator role",
     "standardRole": "Standard role",
-    "emptyTitle": "No accounts are visible to your session",
+    "emptyTitle": "You cannot see any accounts",
     "emptyBody": "Row Level Security filters this roster. Accounts outside your visibility are absent, not hidden."
   },
   "catalogue": {
     "title": "Role catalogue",
-    "body": "Only roles visible to your session through Row Level Security are listed.",
+    "body": "We list only the roles you are allowed to see.",
     "roleKey": "Role key",
-    "emptyTitle": "No roles are visible to your session",
+    "emptyTitle": "You cannot see any roles",
     "emptyBody": "The role catalogue is filtered by Row Level Security."
   },
   "manage": {
@@ -55,7 +55,7 @@
     "grantedAt": "granted {date}",
     "grantRole": "Grant role",
     "selectRoleToGrant": "Role to grant",
-    "noGrantableRoles": "This user already holds every visible role",
+    "noGrantableRoles": "This user already holds every role you can give",
     "revoke": "Revoke",
     "revokeRole": "Revoke role {name}",
     "revokeCapability": "Revoke capability {name}",
@@ -82,7 +82,7 @@
   },
   "roleCaps": {
     "title": "Role capabilities",
-    "intro": "Grant or revoke a capability for an entire role. A capability you do not hold cannot be granted to a role you hold, and access management can never be granted to or revoked from your own role.",
+    "intro": "Give or take away a permission for a whole role. You can only give a permission you already have. You can never change access for your own role.",
     "selectRole": "Select a role",
     "selectRolePlaceholder": "Choose a role",
     "noRoles": "No role is available to manage",
@@ -105,7 +105,7 @@
   "denied": {
     "title": "Access management is restricted",
     "body": "This screen requires the administrator role. Your session does not hold it, so nothing here is shown rather than hidden.",
-    "back": "Back to administration",
+    "back": "Back to Admin",
     "request": "Request access"
   },
   "error": {
@@ -116,15 +116,15 @@
     "rosterTitle": "The user roster could not be read",
     "rosterBody": "Nothing was changed. Reload the page to try again.",
     "rolesTitle": "Role details are not available",
-    "rolesBody": "The roster remains visible, but role labels and every access change are unavailable.",
+    "rolesBody": "You can still see the list, but role names and access changes are unavailable.",
     "permissionsTitle": "Permissions could not be verified",
     "permissionsBody": "Every write control is turned off until your access-management permission can be read again.",
     "manageTitle": "Access changes are unavailable",
-    "manageBody": "The roster remains visible, but one or more approved sources could not be read.",
+    "manageBody": "You can still see the list. One or more approved sources could not be read.",
     "catalogueTitle": "The role catalogue could not be read",
     "catalogueBody": "No role controls are available on this view.",
     "roleCapsTitle": "Role capability changes are unavailable",
-    "roleCapsBody": "The role catalogue remains visible, but an approved source could not be read."
+    "roleCapsBody": "You can still see the role list, but an approved source could not be read."
   },
   "notConfigured": "N/A",
   "unavailable": "Not available"

@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Rules & content"
   },
   "title": "Inspection packages",
@@ -20,7 +20,7 @@
     "showing": "{matched} of {total} packages",
     "newPackage": "New package",
     "writer": "Configuration writer",
-    "reader": "Read-only access",
+    "reader": "View-only access",
     "readAt": "Read from source at {time}"
   },
   "register": {
@@ -69,7 +69,7 @@
   },
   "templates": {
     "summary": "Action-form templates",
-    "hint": "Governed, versioned templates that package action forms and penalty mappings can reference."
+    "hint": "Official templates, kept in versions, that action forms and penalty lists can use."
   },
   "states": {
     "published": "Published",
@@ -85,19 +85,19 @@
     "immutable": "A package used by a published visit cannot have its structure edited. Changes create a new draft, and past inspections stay pinned to their original version."
   },
   "notices": {
-    "readOnlyTitle": "Read-only package access",
+    "readOnlyTitle": "View-only package access",
     "readOnlyBody": "You can view versions, previews and publish impact. Creating, saving or publishing needs the compliance or form administrator role.",
     "permissionUnknownTitle": "Write permissions could not be checked",
     "permissionUnknownBody": "Every edit control is hidden until your role can be read again. Reload to try again.",
     "itemBankTitle": "The item catalogue is unavailable",
-    "itemBankBody": "Versions and publish impact still show. Editing and field preview are paused because the item data they depend on could not be read.",
+    "itemBankBody": "Versions and publish impact still show. Editing and field preview are paused. We could not read the item data they need.",
     "templatesTitle": "The template registry is unavailable",
     "templatesBody": "Packages still show. Template references cannot be added or changed until it can be read again."
   },
   "denied": {
     "title": "Inspection packages are restricted",
     "body": "No package data has been loaded. This screen requires a configuration role, so nothing here is shown rather than hidden.",
-    "back": "Back to administration",
+    "back": "Back to Admin",
     "request": "Request access"
   },
   "error": {

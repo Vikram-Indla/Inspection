@@ -3,14 +3,14 @@
   "dash": "—",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "GIS studio"
   },
   "title": "GIS studio — geofencing",
   "subtitle": "Official coordinates and per-factory geofence radii, stamped on every geo event",
   "banner": {
     "title": "GIS studio.",
-    "body": "These values are stamped on every geo event, and the settings version is recorded with each check-in. Official coordinates stay owned by the GIS administrator; field observations never overwrite them. Per-factory geofence radii are edited on the map below."
+    "body": "We save these values with every map event. We save the settings version with every arrival. The GIS admin owns the official points. What an inspector sees never changes them. You can change the map circle for each factory below."
   },
   "error": {
     "title": "GIS data not available.",
@@ -42,12 +42,12 @@
     "coordsLabel": "Official coordinates — owned by the GIS administrator",
     "coordsCaption": "Field observation never overwrites the official pin.",
     "radiusLabel": "Geofence radius (m)",
-    "radiusHint": "Tip: with this factory selected, click the map to set the fence edge at that point. Blank override falls back to the engine default ({default} m).",
+    "radiusHint": "Tip: with this factory chosen, click the map to set the fence edge there. Leave it blank to use the engine default ({default} m).",
     "save": "Save radius",
     "saving": "Saving…",
     "saved": "Saved",
     "viewOnly": "View only — the gis_admin role is required to edit geofence radii.",
-    "defaultsTitle": "Engine defaults (read-only)",
+    "defaultsTitle": "Engine defaults (view only)",
     "defaultsCheckin": "Check-in accuracy",
     "defaultsArrival": "Arrival detection",
     "defaultsFence": "Default geofence",
@@ -95,7 +95,7 @@
     "expired": "Session expired — sign in again.",
     "no_factory": "No factory selected.",
     "bad_radius": "A positive radius in metres is required.",
-    "rls": "Update blocked — the gis_admin role is required (RLS factories_update)."
+    "rls": "You cannot update this. It needs the GIS admin role."
   },
   "spatial": {
     "loading": "Loading spatial canvas…",
@@ -111,7 +111,7 @@
       "body": "The official factory pin stays owned by the GIS administrator; these are extra working layers. Geofence and accuracy use the approved engine defaults."
     },
     "error": "Couldn't load spatial data. Nothing changed.",
-    "emptyTitle": "No layers or working locations in scope",
+    "emptyTitle": "No layers or working locations in your area",
     "emptyBody": "GIS layers and working factory locations appear here. Empty may also mean none are in your scope.",
     "create": {
       "title": "Create a layer",

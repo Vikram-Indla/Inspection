@@ -2,12 +2,15 @@
   "title": "Template registry",
   "context": "Template configuration",
   "loading": "Loading templates…",
-  "breadcrumb": { "label": "Breadcrumb", "administration": "Administration" },
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Admin"
+  },
   "journey": {
     "ariaLabel": "Configuration journey",
-    "eyebrow": "Governed configuration",
+    "eyebrow": "Settings",
     "title": "Regulation to inspection package",
-    "description": "Publish the legal source, prepare immutable templates, then assemble and publish the inspection package that references them.",
+    "description": "Publish the legal source. Prepare the templates, which cannot change once published. Then build and publish the inspection package that uses them.",
     "regulations": "Regulations",
     "templates": "Templates",
     "packages": "Packages",
@@ -19,7 +22,7 @@
     "retry": "Reload to try again"
   },
   "readonly": {
-    "title": "Read-only template access",
+    "title": "View-only template access",
     "body": "Creating or changing templates requires the admin role."
   },
   "empty": {
@@ -27,8 +30,8 @@
     "body": "Templates are versioned, bilingual objects used by packages and action forms."
   },
   "registry": {
-    "heading": "Governed template registry",
-    "intro": "Create versioned, bilingual templates for forms, reports, action forms, or penalties. Published versions can’t be changed, and can be used by package action forms and penalty mappings.",
+    "heading": "Template list",
+    "intro": "Create bilingual templates with versions, for forms, reports, action forms or penalties. Published versions cannot change. Package action forms and penalty links can use them.",
     "key": "Template key",
     "type": "Type",
     "version": "Version",

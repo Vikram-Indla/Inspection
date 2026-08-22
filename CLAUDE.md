@@ -115,6 +115,23 @@ Full text in `brain/web/rules/`. The ones that reject a diff on sight:
       is the short form of the above and links every other rule your task is
       also bound by.
 
+16. **Plain words, not the team's words.** Every user-visible string is written
+    for a reader in Riyadh whose English is a second language and often
+    elementary. Top-5,000 vocabulary, the job glossary, or taught once on first
+    use — nothing else. Sentences cap at **15 words**. No phrasal verbs (*set
+    up*, *carry out*, *check in*), no idioms (*in place*, *up to date*), no
+    formal connectors (*unless*, *whereas*, *pursuant to*). Errors name the next
+    action. Nothing to show is an em dash, never `N/A` or *not configured*.
+    Banned outright: *governed · read-only · reconciliation · capability ·
+    payload · schema · endpoint · UUID · JSON · metadata · docket · registry*.
+    Enforced by `npm run gates:content` — a ratchet, so existing debt does not
+    block but a new violation does, and the error names the replacement.
+    **Do not score this app with Flesch-Kincaid**; it is calibrated on native
+    readers and understates the problem roughly fourfold.
+    Full law: **`brain/web/rules/WEB-016-content-and-voice.md`** — read it in
+    full before writing or editing any user-visible text, and answer its §8
+    review gate in the session record.
+
 ---
 
 ## Design authority

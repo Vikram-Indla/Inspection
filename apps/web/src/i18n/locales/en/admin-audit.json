@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Audit",
-    "administration": "Administration",
+    "administration": "Admin",
     "audit": "Audit"
   },
   "title": "Inspection Flight Recorder",
@@ -35,7 +35,7 @@
     "sourceEvents": "source events",
     "last": "last"
   },
-  "policy": "Operational view only. Export, reveal, redaction, retention, watermark, purge and legal-evidence claims are held by policy.",
+  "policy": "Day-to-day view only. Export, reveal, hiding, keeping, watermark, purge and legal-evidence claims are set by policy.",
   "tags": {
     "policyHeld": "POLICY_HELD",
     "partialScope": "PARTIAL SCOPE.",
@@ -45,12 +45,12 @@
   },
   "banners": {
     "partial": "Results reflect only what you can currently read.",
-    "degraded": "Semantic replay contracts aren't applied in this environment. Generic events that can't be changed stay visible, and they aren't promoted to official facts.",
+    "degraded": "This system does not have the full event rules yet. Simple events stay on screen and cannot be changed. We do not treat them as official facts.",
     "partialHistory": "PARTIAL HISTORY. The limited server read reached its safety cap. Reconstruction and completeness aren't confirmed for this result."
   },
   "states": {
     "unauthorized": "You are not authorized to read audit events.",
-    "zero": "No audit facts are visible in your current scope."
+    "zero": "There are no audit records in your area."
   },
   "recorder": {
     "detail": "Open provenance",

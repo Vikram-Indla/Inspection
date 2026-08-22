@@ -21,13 +21,13 @@
     "countLabel": "on map"
   },
   "summary": {
-    "title": "Operational summary"
+    "title": "Summary"
   },
   "states": {
-    "title": "Visits by operational state",
-    "description": "Every visit in scope, grouped by the operational state it currently holds.",
-    "aria": "Visits in scope by operational state, ranked from largest to smallest",
-    "total": "{total} visits in scope"
+    "title": "Visits by work state",
+    "description": "Every visit in your area, grouped by the work state it is in now.",
+    "aria": "Visits in your area by work state, ranked from largest to smallest",
+    "total": "{total} visits in your area"
   },
   "regions": {
     "title": "National performance by region",
@@ -46,25 +46,25 @@
     "reminder": "Reminder {pct}%"
   },
   "exceptions": {
-    "title": "Live operational exceptions",
+    "title": "Live problems",
     "scope": "Records filtered to your access",
     "openRecord": "Open record",
-    "emptyTitle": "No open operational exceptions",
-    "emptyBody": "No open operational exceptions in this scope."
+    "emptyTitle": "No open problems",
+    "emptyBody": "There are no open problems in your area."
   },
   "stat": {
     "activeVisits": "Active visits",
     "onTheWay": "Inspectors on the way",
     "executing": "Executing inspections",
     "submittedToday": "Submitted today",
-    "alerts": "Active operational alerts",
+    "alerts": "Active alerts",
     "openExecution": "Open Execution"
   },
   "table": {
     "title": "Live positions list",
     "caption": "Accessible equivalent of the live map. Same records, same actions, no map dependency.",
     "inspector": "Inspector",
-    "state": "Operational state",
+    "state": "Work state",
     "visit": "Visit",
     "factory": "Factory",
     "location": "Region / city",
@@ -82,7 +82,7 @@
   },
   "sla": {
     "title": "Deadline and resubmission alerts",
-    "description": "Deadlines use server timestamps and deadline rules that are set up. If those rules are missing, this stays unavailable.",
+    "description": "Deadlines use server times and the deadline rules that exist. If those rules are missing, this stays unavailable.",
     "visit": "Visit",
     "factory": "Factory",
     "deadline": "Deadline",
@@ -188,7 +188,7 @@
       "title": "Not available yet",
       "body": "This board is not turned on here."
     },
-    "degraded": "Some exception sources are unavailable. The groups below are the ones that could be read; an unavailable source is not shown as zero.",
+    "degraded": "Some problem sources are not available. The groups below are the ones we could read. A source we could not read is never shown as zero.",
     "empty": {
       "title": "No open exceptions you can see",
       "body": "Open cases and risk exceptions show up here. Empty may also mean there are none you are allowed to see.",

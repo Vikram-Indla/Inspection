@@ -5,12 +5,12 @@
   "dash": "—",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Connections & geography",
     "senai": "SENAI data"
   },
   "title": "SENAI data management",
-  "subtitle": "Upstream source registry, endpoint contract, mapping, sync and reconciliation — read-only source of truth",
+  "subtitle": "Where SENAI data comes from, how it is matched and refreshed — view only",
   "back": "System connections",
   "tabs": {
     "label": "SENAI data sections",
@@ -26,7 +26,7 @@
     "snapshot": "Observed-on-inspection snapshots are captured separately and never overwrite the source."
   },
   "sources": {
-    "help": "Source data is read-only; this registry records which connections Inspection Platform uses. Setting it up is not the same as being connected.",
+    "help": "Source data is view only. This list records which connections the app uses. Adding one does not mean it is connected.",
     "error": "Source connections could not be read. Endpoint contract and recorded calls remain independently available.",
     "runsError": "Recorded runs could not be read. Available connection settings are kept without a guessed freshness or counts.",
     "caption": "Registered upstream source connections",
@@ -47,7 +47,7 @@
     "help": "The documented read contract Inspection Platform is permitted to call. This is the same allow-list the runtime client enforces.",
     "verified": "{verified}/{total} with a recorded live call",
     "verificationUnavailableShort": "Live-call verification not available",
-    "callsError": "Recorded live calls could not be read. The endpoint allow-list stays visible, but live-call verification is not available — not unverified.",
+    "callsError": "We could not read the recorded live calls. The allowed list still shows, but we cannot confirm the calls. That is not the same as failing them.",
     "caption": "SENAI endpoint contract and recorded call verification",
     "colMethod": "Method",
     "colEndpoint": "Endpoint",
@@ -61,12 +61,12 @@
     "unverified": "not verified",
     "noCall": "No live call recorded. Documented is not connected.",
     "verificationUnavailable": "Live-call history could not be read.",
-    "footer": "Verification comes only from recorded senaei_sync_calls rows. A non-success response shows the dependent Factory 360 section as honestly not available right now — never a made-up value. Endpoints outside this contract are refused by the client before any request leaves the server."
+    "footer": "Only recorded sync-call rows count as proof. If a call did not succeed, the Factory 360 section says it is not available. It never shows a made-up value. Any address outside this agreement is refused before the request leaves the server."
   },
   "mapping": {
     "help": "How SENAI fields map to internal fields, with transform and status.",
     "heading": "Field mapping registry",
-    "body": "No field-mapping registry exists in the applied schema, so no mapping rule can be shown. You must not invent SENAI-to-internal field mappings, transforms or enum maps here: they change how source data is understood later. Until a mapping registry is approved and applied, the adapters in lib/integrations/senaei/adapters stay the only source for mapping, and unmapped fields show up later as not configured."
+    "body": "No field mapping is approved yet. There is nothing to show here. Do not add a mapping on this screen. It would change how we read the source data. Until a mapping is approved, the app uses its own rules. Fields with no rule show as a dash."
   },
   "reconcile": {
     "lastSync": "Last recorded sync",
@@ -91,7 +91,7 @@
     "noReason": "No reason code recorded",
     "emptyTitle": "No unresolved divergence",
     "emptyBody": "No unresolved divergence is recorded. This is a checked, empty result.",
-    "footer": "Resolution is an approved reconciliation action, not an edit on this screen. Inspection Platform never silently overwrites a divergence in either direction, and never writes the resolution back to SENAI.",
+    "footer": "Differences are resolved by an approved action, not edited here. The app never overwrites a difference on its own. It never sends the result back to SENAI.",
     "openHistory": "Open sync, staging and reconciliation history"
   }
 }

@@ -11,14 +11,14 @@
   },
   "denied": {
     "title": "You do not have access to this destination",
-    "body": "The destination stays visible so the platform remains legible. Access is refused here, at the boundary.",
+    "body": "The page stays in the menu so you know it exists. You cannot open it.",
     "request": "Request access",
     "back": "Back to the dashboard"
   },
   "error": {
     "title": "Execution data could not be loaded",
     "body": "Nothing was changed. No inspection state was affected.",
-    "unverified": "The governed response could not be verified. Nothing was changed.",
+    "unverified": "We could not check the answer. Nothing was changed.",
     "retry": "Retry",
     "back": "Back to the dashboard",
     "reference": "Reference {digest}"
@@ -41,7 +41,7 @@
     "degradedBodyOne": "One malformed record was withheld rather than shown as verified data.",
     "coordinatesTitle": "Location coverage is partial",
     "coordinatesBody": "{count} visits in this scope have no recorded official coordinates and are omitted from the map.",
-    "coordinatesBodyOne": "One visit in this scope has no recorded official coordinates and is omitted from the map."
+    "coordinatesBodyOne": "One visit in your area has no recorded map point. It is left off the map."
   },
   "calendar": {
     "weekOption": "Week",
@@ -66,7 +66,7 @@
     "region": "Region",
     "risk": "Risk",
     "visitMode": "Visit mode",
-    "operationalState": "Operational state",
+    "operationalState": "Work state",
     "any": "Any",
     "clear": "Clear filters"
   },
@@ -81,7 +81,7 @@
     "risk": "Risk",
     "inspector": "Inspector",
     "regionCity": "Region and city",
-    "operationalState": "Operational state",
+    "operationalState": "Work state",
     "preparation": "Preparation",
     "reportType": "Report type",
     "locationData": "Location data",
@@ -136,9 +136,9 @@
     "eyebrow": "Planning window guard",
     "droppedOn": "{factory} was dropped on {date}. No date has been changed.",
     "requested": "A reschedule was requested for {factory}. No date has been changed.",
-    "currentWindow": "Current governed window",
+    "currentWindow": "Current window",
     "workflowNote": "The planning workflow validates conflicts and records the change.",
-    "noHandoff": "The proposed day is not transferred, because Planning has no governed handoff contract for it.",
+    "noHandoff": "Planning has no agreed way to move this day. It stays where it is.",
     "continue": "Continue in planning",
     "cancel": "Cancel"
   },

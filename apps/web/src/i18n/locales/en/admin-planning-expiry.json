@@ -4,15 +4,15 @@
   "loading": "Loading planning expiry rules",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration"
+    "administration": "Admin"
   },
   "governance": {
     "heading": "One enabled version per rule type.",
-    "pill": "Governed",
-    "body": "Enabling a version retires every other version of that rule type. New versions are created disabled so nothing changes silently, and every change is recorded in the audit trail."
+    "pill": "Official",
+    "body": "Turning a version on retires every other version of that rule type. New versions start turned off, so nothing changes quietly. Every change is recorded."
   },
   "scheduler": {
-    "note": "These rules are checked every 15 minutes. Only the enabled version of each rule applies, and a change takes effect at the next check."
+    "note": "These rules are checked every 15 minutes. Only the version that is on applies. A change takes effect at the next check."
   },
   "readOnly": {
     "heading": "You can view these rules but not change them",

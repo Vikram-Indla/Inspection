@@ -1,5 +1,9 @@
 {
-  "breadcrumb": { "administration": "الإدارة", "list": "طلبات الامتثال", "create": "إنشاء طلب" },
+  "breadcrumb": {
+    "administration": "الإدارة",
+    "list": "طلبات الامتثال",
+    "create": "إنشاء طلب"
+  },
   "loading": "جارٍ تحميل طلبات التهيئة",
   "status": {
     "draft": "مسودة",
@@ -64,7 +68,7 @@
     "notFoundBody": "لم تُعِد القراءة أي طلب. لم يُحمَّل أي محتوى تهيئة.",
     "notFoundBack": "العودة إلى القائمة",
     "returnReason": "سبب الإعادة أو الرفض",
-    "readOnlyTitle": "للقراءة فقط",
+    "readOnlyTitle": "للعرض فقط",
     "readOnlyBody": "يمكن لدورك عرض هذا الطلب دون تغييره أو البت فيه.",
     "summaryHeading": "الطلب",
     "noDescription": "لم يُقدَّم وصف.",
@@ -169,8 +173,8 @@
     "commentRequired": "التعليق مطلوب للإعادة أو الرفض.",
     "componentRequired": "أضف مكوّنًا واحدًا على الأقل قبل التقديم.",
     "dependencyCycle": "ستنشئ هذه التبعية حلقة.",
-    "dependencyNotApproved": "النشر محجوب لأن أصلًا مطلوبًا غير معتمد.",
-    "orphanComponent": "النشر محجوب لأن مكوّنًا لا يملك نسخة أصل معتمدة أو قائمة.",
+    "dependencyNotApproved": "لا يمكنك النشر بعد. يوجد أصل مطلوب غير معتمد.",
+    "orphanComponent": "لا يمكنك النشر بعد. يوجد جزء بلا إصدار أصل معتمد.",
     "notEditable": "يمكن تعديل مراجعة المسودة الحالية فقط.",
     "notSubmittable": "هذا الطلب ليس في حالة قابلة للتقديم.",
     "revisionRequiresReturned": "لا يمكن إنشاء مراجعة جديدة إلا بعد الإعادة.",

@@ -11,8 +11,8 @@ test.beforeEach(async ({ page }) => {
 test("field-card lockup carries the shield, Latin and Arabic wordmarks", async ({ page }) => {
   await page.goto("/login");
   await expect(page.locator(".fl-shield")).toHaveCount(1);
-  await expect(page.locator(".fl-brand-latin")).toHaveText("SAQEEL");
-  await expect(page.locator('.fl-brand-ar[lang="ar"]')).toHaveText("صقيل");
+  await expect(page.locator(".fl-brand-latin")).toHaveText("Inspection Platform");
+  await expect(page.locator('.fl-brand-ar[lang="ar"]')).toHaveText("منصة التفتيش");
 
   const css = source("src/app/login/login.css");
   expect(css).not.toContain("--sq-color-prism-magenta");

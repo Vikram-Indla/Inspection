@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Enforcement recommendations",
-    "administration": "Administration",
+    "administration": "Admin",
     "recommendations": "Enforcement recommendations"
   },
   "title": "Enforcement recommendations",
@@ -15,14 +15,14 @@
   },
   "config": {
     "title": "Enforcement policy: Not configured.",
-    "body": "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied."
+    "body": "We are waiting for the sponsor to send two things. First, the approved list of measures. Second, the official legal words for each one, with the law and its version. Until then we show no amount, no next step and no legal words."
   },
   "scope": {
     "title": "Decision scope",
-    "body": "Decisions are read-only for now, until the database supports a safe decision step. A future approval will only record the recommendation decision — it will not apply a penalty, close a factory, send a legal notice, or skip the enforcement rules."
+    "body": "You can read decisions but not change them yet. When approval is switched on, it will record the decision only. It will not issue a penalty or close a factory. It will not send a legal notice or skip any enforcement step."
   },
   "readonly": {
-    "title": "Read-only for your role",
+    "title": "View only for your role",
     "body": "You can view this list. To decide, you need an Operations or Compliance Admin role — the database enforces this."
   },
   "pending": "Pending recommendations",
@@ -30,7 +30,7 @@
   "loadError": "The recommendation queue is unavailable in this environment. No count is claimed.",
   "measureLabel": "Recommended measure",
   "unregistered": "unregistered/temporary",
-  "awaitingDecider": "Awaiting an Operations or Compliance Admin decision.",
+  "awaitingDecider": "Waiting for a decision from Operations or a Compliance Admin.",
   "recent": "Recently decided",
   "decidedLoadError": "Recent decisions are unavailable. No count is shown.",
   "noneDecided": "No decisions recorded yet.",
@@ -68,7 +68,7 @@
     "already_decided": "This recommendation was already decided. Refresh the queue.",
     "maker_checker": "The recommender cannot decide their own recommendation.",
     "write_failed": "The decision could not be recorded. No change was claimed.",
-    "backend_guard_required": "Recording a decision is not available yet — a safe database step still needs to be added."
+    "backend_guard_required": "You cannot record a decision yet. A safe database step still needs to be added."
   },
   "loading": "Loading enforcement recommendations"
 }

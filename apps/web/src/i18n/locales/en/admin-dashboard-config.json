@@ -1,6 +1,6 @@
 {
   "title": "Dashboard Configuration",
-  "context": "Governed KPI catalogue & policy · filtered to your access · maker-checker",
+  "context": "Official KPI list and policy · limited to your access · one writes, another approves",
   "loading": "Loading dashboard configuration…",
   "migration": {
     "title": "Foundation migration not yet applied",
@@ -8,7 +8,7 @@
   },
   "catalogue": {
     "heading": "KPI catalogue",
-    "intro": "Formula and metric id are system-seeded and immutable to ordinary admins; {implemented} of {total} metrics have a live formula today.",
+    "intro": "Formula and metric ID are set by the system and cannot be changed here. {implemented} of {total} metrics have a working formula today.",
     "colMetric": "Metric",
     "colCategory": "Category",
     "colUnit": "Unit",
@@ -23,7 +23,7 @@
   },
   "domains": {
     "heading": "Configuration domains",
-    "intro": "Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.",
+    "intro": "Each area publishes a version with a start date, and that version never changes. Admin settings can show less, never more.",
     "colDomain": "Domain",
     "colActiveVersion": "Active version",
     "colEffectiveFrom": "Effective from",
@@ -33,7 +33,7 @@
   "drafts": {
     "heading": "Drafts",
     "makerChecker": "maker-checker",
-    "noAuthority": "Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.",
+    "noAuthority": "You need Compliance, Ops or Security Admin rights to write a dashboard. Review and publish need Compliance, Leadership or Security Admin.",
     "domain": "Domain",
     "titleField": "Title",
     "titlePlaceholder": "Draft title",
@@ -48,12 +48,12 @@
     "publish": "Publish",
     "return": "Return",
     "returnReason": "Return reason",
-    "awaitingReviewer": "Awaiting an independent reviewer (maker-checker).",
-    "footer": "Authoring requires Compliance/Ops/Security Admin; review/publish requires Compliance/Leadership/Security Admin — and never the same person (maker ≠ checker)."
+    "awaitingReviewer": "Waiting for a second reviewer. Nobody approves their own work.",
+    "footer": "Writing needs Compliance, Ops or Security Admin. Review and publish need Compliance, Leadership or Security Admin. The same person cannot do both."
   },
   "category": {
     "inspector": "Inspector",
-    "operational": "Operational",
+    "operational": "Day-to-day",
     "strategic": "Strategic"
   },
   "unit": {
@@ -93,7 +93,7 @@
     "OPS-KPI-006": "Today's schedule load by inspector",
     "OPS-KPI-007": "GPS overrides today",
     "OPS-KPI-008": "Live activity feed",
-    "OPS-KPI-009": "Evidence-grounded operational nudges",
+    "OPS-KPI-009": "Day-to-day nudges backed by evidence",
     "IPAD-KPI-001": "Today's visits",
     "IPAD-KPI-002": "Remaining visits",
     "IPAD-KPI-003": "Pending attention",

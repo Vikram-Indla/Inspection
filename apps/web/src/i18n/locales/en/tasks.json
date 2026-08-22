@@ -2,15 +2,17 @@
   "title": "Tasks",
   "loading": "Loading tasks…",
   "banner": {
-    "title": "Governed task management.",
-    "body": "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope."
+    "title": "Task management.",
+    "body": "To reassign a task or change its status you need two things. A manager role in your area, and a reason. Every change is recorded. You see only tasks in your area."
   },
   "error": "Couldn’t load tasks. Nothing was changed. Try again.",
   "empty": {
     "title": "No tasks in your scope",
     "body": "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope."
   },
-  "board": { "label": "Task status board" },
+  "board": {
+    "label": "Task status board"
+  },
   "column": {
     "assigned": "Assigned",
     "inProgress": "In progress",

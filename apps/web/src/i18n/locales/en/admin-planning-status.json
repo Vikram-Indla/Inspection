@@ -3,13 +3,13 @@
   "subtitle": "How a visit moves between stages, and who may do what.",
   "loading": "Loading planning status rules",
   "breadcrumb": {
-    "administration": "Administration",
+    "administration": "Admin",
     "label": "Planning status rules"
   },
-  "readOnlyPill": "Read-only",
+  "readOnlyPill": "View only",
   "governance": {
-    "heading": "Governed by workflow configuration",
-    "body": "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.",
+    "heading": "Set by the workflow",
+    "body": "The published workflow decides which status can follow which. The database makes sure of it. This screen is read only. To change it, publish a new version.",
     "link": "Open workflow configuration"
   },
   "source": {
@@ -19,8 +19,8 @@
   "fallback": {
     "heading": "Showing the standard reference",
     "pill": "Reference",
-    "error": "The live rules could not be read. What you see below is the standard set of stages, kept here as a reference, and it may be out of date.",
-    "none": "No rules have been published yet. What you see below is the standard set of stages, kept here as a reference, and it may be out of date.",
+    "error": "We could not read the live rules. Below is the standard set of stages, kept as a reference. It may be old.",
+    "none": "No rules have been published yet. Below is the standard set of stages, kept as a reference. It may be old.",
     "guards": {
       "STM-PLAN-002": "Assigned inspector acknowledges",
       "STM-VIS-001": "Execution window open",
@@ -32,7 +32,7 @@
   "states": {
     "planned": "Planned",
     "acknowledged": "Accepted by inspector",
-    "in_execution": "Being carried out",
+    "in_execution": "In progress",
     "completed": "Completed",
     "closed": "Closed",
     "any": "Any stage"
@@ -60,11 +60,26 @@
   "no": "No",
   "noValue": "—",
   "capabilities": {
-    "publish": { "label": "Publish a plan", "effect": "Make a visit plan live so an inspector can act on it" },
-    "manage": { "label": "Create and edit plans", "effect": "Build and change visit plans before they go live" },
-    "cancel": { "label": "Cancel a visit", "effect": "Cancel a planned visit, giving one of the approved reasons" },
-    "reassign": { "label": "Change the inspector", "effect": "Give a planned visit to a different inspector" },
-    "reschedule": { "label": "Change the dates", "effect": "Move the window a planned visit must be carried out in" }
+    "publish": {
+      "label": "Publish a plan",
+      "effect": "Make a visit plan live so an inspector can act on it"
+    },
+    "manage": {
+      "label": "Create and edit plans",
+      "effect": "Build and change visit plans before they go live"
+    },
+    "cancel": {
+      "label": "Cancel a visit",
+      "effect": "Cancel a planned visit, giving one of the approved reasons"
+    },
+    "reassign": {
+      "label": "Change the inspector",
+      "effect": "Give a planned visit to a different inspector"
+    },
+    "reschedule": {
+      "label": "Change the dates",
+      "effect": "Change the dates a planned visit must happen within"
+    }
   },
   "capabilitiesNote": "What each role is allowed to do is managed under Users and roles.",
   "emptyTransitions": "No transitions are configured.",

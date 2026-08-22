@@ -4,15 +4,15 @@
   "dash": "—",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Connections & geography",
     "factory": "Factory data"
   },
   "title": "Factory data integration",
-  "subtitle": "Staging, master-data controls and import history — read-only Factory 360 profiles",
+  "subtitle": "Staged rows, master data and import history — Factory 360 profiles are view only",
   "banner": {
     "title": "Settings only.",
-    "body": "Factory 360 profiles are read-only. Setting up a provider does not prove it's connected. CSV rows stay staged until a separate, approved reconciliation, and source identifiers can't be silently replaced."
+    "body": "Factory 360 pages are read only. Adding a provider does not mean it is connected. Rows from a file wait until someone approves them. Source numbers cannot be changed quietly."
   },
   "provider": {
     "title": "Senaei provider",
@@ -36,17 +36,17 @@
     "previewRows": "{rows} data rows · {columns} columns",
     "stage": "Stage validated batch",
     "staging": "Staging…",
-    "staged": "Batch {batch} staged: {pending} pending reconciliation, {rejected} rejected with safe row errors. Zero rows are accepted until governed reconciliation."
+    "staged": "Batch {batch} is waiting. {pending} rows still to match, {rejected} rejected with safe errors. No row is accepted until someone approves the match."
   },
   "masterData": {
     "title": "Factory master-data controls",
     "help": "These operations are always recorded in the Activity Log. They do not edit external CR, license, or plant identifiers.",
-    "noWriteback": "Read-only — no write-back.",
-    "noWritebackHelp": "Everything saved here is recorded in Inspection Platform only. No establishment or factory master-data change is sent to SENAI: the endpoint contract has no master-data write endpoint, so there is no path for one.",
+    "noWriteback": "View only — nothing is sent back.",
+    "noWritebackHelp": "What you save here stays in this app. Nothing is sent back to SENAI. There is no agreed way to write factory records there.",
     "factory": "Factory",
     "selectFactory": "Select a factory",
     "selected": "{name} · CR {cr} · License {license}",
-    "openDossier": "Open factory profile (read-only)",
+    "openDossier": "Open factory profile (view only)",
     "factoriesError": "The factory list could not be read. Import and reconciliation history below may still be available.",
     "representativesError": "Representatives could not be read for this factory. Other factory facts remain available.",
     "document": {
@@ -125,7 +125,7 @@
     "providerSource": "provider",
     "noBatchProvenance": "No batch provenance recorded",
     "emptyTitle": "No sync or import runs",
-    "emptyBody": "No sync or import runs visible to you. This is a checked, empty result.",
+    "emptyBody": "You cannot see any update or import runs. We checked — there are none.",
     "rejected": {
       "title": "Rejected staged rows",
       "error": "Rejected staged rows could not be read. This is data that's not available, not an empty rejection set.",
@@ -138,7 +138,7 @@
       "error": "Reconciliation history could not be read. This is data that's not available, not an empty history.",
       "noReason": "No reason code",
       "emptyTitle": "No reconciliation records",
-      "emptyBody": "No reconciliation records visible to you. This is a checked, empty result. Staged does not mean imported."
+      "emptyBody": "You cannot see any matching records. We checked — there are none. Staged does not mean imported."
     }
   },
   "datePicker": {

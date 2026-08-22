@@ -36,7 +36,7 @@
     "statusLegend": "Status"
   },
   "table": {
-    "caption": "Governed regulations, with the clause, inspection-item and violation footprint recorded against each.",
+    "caption": "Regulations, with the clause, inspection item and violations recorded against each.",
     "regulation": "Regulation",
     "authority": "Authority",
     "clauses": "Clauses",
@@ -57,7 +57,7 @@
   },
   "empty": {
     "title": "No regulations recorded yet",
-    "body": "The library read succeeded and returned nothing. Regulations are the parents of every inspection item — the first one is created through a configuration request.",
+    "body": "The read worked and returned nothing. Regulations are the parent of every inspection item. Create the first one through a configuration request.",
     "filteredTitle": "No regulations match",
     "filteredBody": "The library itself is not empty. Clear the search, authority or lifecycle filter."
   },
@@ -100,10 +100,10 @@
     "penalties": "Penalties",
     "notRecorded": "Not recorded",
     "unavailable": "Unavailable",
-    "absent": "Description, inspection type and a last-modified timestamp are not stored against a regulation, so they are not shown. Legal source is recorded per clause, not per regulation."
+    "absent": "A regulation does not store a description, an inspection type or a last-changed time. So we do not show them. The legal source is recorded on each clause."
   },
   "items": {
-    "caption": "Inspection items under the clauses of this regulation, with the responses they accept and the violation each response raises.",
+    "caption": "Inspection items under the clauses of this regulation. Each one shows the answers it accepts and the violation each answer raises.",
     "item": "Inspection item",
     "clause": "Clause",
     "responses": "Responses",
@@ -166,7 +166,7 @@
     "openRequest": "Open request",
     "none": "Not recorded",
     "emptyTitle": "No published versions",
-    "emptyBody": "No governed version has been published for this regulation.",
+    "emptyBody": "No version has been published for this regulation.",
     "footnote": "Every version here was published through an approved configuration request. No version is inferred."
   },
   "audit": {
@@ -199,7 +199,7 @@
     "backToLibrary": "Back to the library",
     "attachments": "Source attachments",
     "attachmentsNote": "Files are held in private storage, checksummed, and opened through short-lived signed links.",
-    "attachmentsUnknown": "The attachment list could not be read for this version — this is not a claim that there are none.",
+    "attachmentsUnknown": "We could not read the attachment list for this version. This does not mean there are none.",
     "attachmentsEmptyTitle": "No attachments recorded",
     "attachmentsEmptyBody": "The read succeeded and returned none. No source document is filed against this version.",
     "file": "File",
@@ -208,7 +208,7 @@
     "noChecksum": "No checksum recorded",
     "clauses": "Clauses and mapped inspection items",
     "clausesNote": "Every clause here carries at least one mapped inspection item.",
-    "clausesUnknown": "The clause list could not be read for this version — this is not a claim that there are none.",
+    "clausesUnknown": "We could not read the clause list for this version. This does not mean there are none.",
     "clausesEmptyTitle": "No clauses recorded",
     "clausesEmptyBody": "The read succeeded and returned none. A regulation with no clauses cannot be published as it stands.",
     "clause": "Clause",
@@ -218,9 +218,9 @@
     "mappedItems": "Mapped inspection items",
     "itemsUnknown": "Read failed — unknown, not zero",
     "itemsNone": "No item mapped",
-    "unmappedWarning": "{count} clause(s) carry no mapped inspection item. Publication is blocked until every clause maps to one.",
+    "unmappedWarning": "{count} clauses have no inspection item linked. You cannot publish until every clause has one.",
     "lifecycle": "Lifecycle",
-    "lifecycleNote": "Deactivation applies at once and is logged. It also blocks future use of the inspection items, violations and penalties beneath this regulation, while past versions are kept. Reactivating does not reactivate them."
+    "lifecycleNote": "Turning this off happens at once and is recorded. It also stops future use of the inspection items, violations and penalties under it. Past versions are kept. Turning it back on does not bring them back."
   },
   "lifecycle": {
     "activationReason": "Activation reason",

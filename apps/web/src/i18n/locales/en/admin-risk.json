@@ -3,10 +3,13 @@
   "subtitle": "Risk factors, evaluation method and weighting",
   "loading": "Loading risk…",
   "notConfigured": "N/A",
-  "breadcrumb": { "label": "Breadcrumb", "administration": "Administration" },
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "administration": "Admin"
+  },
   "banner": {
     "title": "This is the Risk Studio.",
-    "body": "Weights and bands are live engine settings — scores must be reproducible from stored inputs plus this version. Only the risk owner can write; everyone else is blocked. Every save is recorded in the Activity Log, which can’t be changed."
+    "body": "Weights and bands are live settings. Anyone must be able to get the same score again. They use the saved answers and this version. Only the risk owner can change them. Every save goes to the Activity Log and stays there."
   },
   "metric": {
     "total": "Configured weight total",
@@ -35,7 +38,7 @@
     "save": "Save settings (risk owner only)",
     "saving": "Saving…",
     "saved": "Saved — takes effect right away",
-    "savedNote": "Saving writes factors and bands to the engine settings after the weights-sum check. It takes effect right away for new score calculations — there is no draft or approval step on this screen.",
+    "savedNote": "Saving writes factors and bands to the engine settings, after checking the weights add up. It applies right away to new scores. There is no draft or approval step here.",
     "lastUpdated": "Last updated",
     "bandLow": "Low",
     "bandMedium": "Medium",
@@ -58,11 +61,11 @@
   },
   "reconstruction": {
     "label": "Reconstruction note",
-    "note": "Prototype weights, bands and recalculation times are intentionally absent. This surface reads the live engine settings, while per-factory score explanation remains on the factory record where its scoring inputs exist."
+    "note": "We do not show test weights, bands or times. This page reads the live settings. To see why one factory got its score, open that factory."
   },
   "trace": {
     "title": "Why this factory? — worked calculation trace",
-    "desc": "A line-by-line score trace isn’t shown here — this screen configures the model, not individual factories.",
+    "desc": "We do not show a line-by-line score trace here. This screen configures the model, not one factory.",
     "pre1": "A selected factory and its stored scoring inputs",
     "pre2": "The per-factor normalized values used at scoring time",
     "notYet": "Not available yet",

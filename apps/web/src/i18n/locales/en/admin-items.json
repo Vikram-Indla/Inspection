@@ -14,38 +14,63 @@
     "body": "Your configuration permissions could not be verified. Writes are disabled; retry the page."
   },
   "readonly": {
-    "title": "Read-only catalogue",
-    "body": "Your role can view item details, usage and runtime previews. Creating or changing active state needs a Compliance or Form Admin role, enforced by the server and the database.",
+    "title": "View-only list",
+    "body": "Your role can see item details, usage and previews. Creating an item needs a Compliance or Form Admin role. So does turning one on or off. The server and the database enforce this.",
     "action": "Read only"
   },
-  "nav": { "regulations": "Regulations", "items": "Inspection Items", "createRequest": "Create request" },
-  "legacyNote": "Legacy compatibility authoring. Direct item controls stay available for now, for continuity. New or changed configuration should start in a Compliance Configuration Request; this catalogue stays the published source of truth.",
-  "gov": {
-    "heading": "How this catalogue is governed",
-    "body": "Anyone signed in can read the catalogue; writes require the admin role. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited."
+  "nav": {
+    "regulations": "Regulations",
+    "items": "Inspection Items",
+    "createRequest": "Create request"
   },
-  "create": { "heading": "Add an inspection item" },
+  "legacyNote": "These older controls still work, so nothing breaks. Start any new change as a Compliance Configuration Request. This list stays the one to trust.",
+  "gov": {
+    "heading": "The rules for this list",
+    "body": "Anyone signed in can read the list. Only an admin can change it. Turning an item off keeps its history and saves a reason. An edit saves the old version first. We keep a record of every row change."
+  },
+  "create": {
+    "heading": "Add an inspection item"
+  },
   "empty": {
-    "title": "No inspection items set up yet",
+    "title": "No inspection items yet",
     "body": "Items belong to regulation clauses and are reused across checklists. Add the first item above."
   },
   "previewHeading": "Runtime preview — what the inspector sees",
   "catalogueHeading": "Catalogue",
   "col": {
-    "code": "Code", "title": "Title", "clause": "Clause", "semantics": "Runtime semantics",
-    "weight": "Weight", "usage": "Published use", "status": "Status", "actions": "Actions"
+    "code": "Code",
+    "title": "Title",
+    "clause": "Clause",
+    "semantics": "Runtime semantics",
+    "weight": "Weight",
+    "usage": "Published use",
+    "status": "Status",
+    "actions": "Actions"
   },
-  "sem": { "nc": "NC→", "evidence": "evidence", "onNc": "on NC", "scoreExcluded": "score-excluded", "scoringOff": "scoring off" },
+  "sem": {
+    "nc": "NC→",
+    "evidence": "evidence",
+    "onNc": "on NC",
+    "scoreExcluded": "score-excluded",
+    "scoringOff": "scoring off"
+  },
   "usage": {
     "writerOnly": "Available to configuration writers",
     "unavailable": "unavailable — retry reload",
     "counts": "{packages} package(s) · {versions} version(s)"
   },
-  "status": { "active": "active", "deactivated": "deactivated" },
-  "rowActions": { "runtimePreview": "Inspector Runtime Preview", "requestChange": "Request change", "audit": "Audit" },
+  "status": {
+    "active": "active",
+    "deactivated": "deactivated"
+  },
+  "rowActions": {
+    "runtimePreview": "Inspector Runtime Preview",
+    "requestChange": "Request change",
+    "audit": "Audit"
+  },
   "audit": {
     "heading": "Item history",
-    "body": "Open Audit on one item to see its change history; broad access to the full audit table is not given.",
+    "body": "Open Audit on one item to see its change history. We do not give broad access to the full audit table.",
     "select": "No item selected.",
     "notFound": "The selected item is no longer in the readable catalogue.",
     "unavailable": "History couldn’t load — reload to retry. This does not mean the history is empty.",
@@ -53,38 +78,75 @@
     "system": "System"
   },
   "footer": "Items belong to regulations and are reused across checklists; deactivation keeps history. Writes need the compliance or form administrator role. Every item change is logged.",
-  "enum": { "compliant": "Compliant", "non_compliant": "Non-compliant", "na": "Not applicable", "value_date": "Value / date" },
+  "enum": {
+    "compliant": "Compliant",
+    "non_compliant": "Non-compliant",
+    "na": "Not applicable",
+    "value_date": "Value / date"
+  },
   "form": {
-    "code": "Code", "title": "Title", "titlePlaceholder": "Inspection item title",
-    "clause": "Clause", "selectClause": "Select clause…", "clauseUnavailable": "Clause list unavailable — try again",
-    "weight": "Weight", "responseModel": "Response model",
-    "evidenceRule": "Evidence rule", "evidenceNone": "No base evidence rule",
-    "evidencePhotoNc": "Photo mandatory on non-compliant", "evidenceVideoNc": "Video mandatory on non-compliant",
-    "evidenceDocumentNc": "Document mandatory on non-compliant", "evidenceCommentNc": "Comment mandatory on non-compliant",
+    "code": "Code",
+    "title": "Title",
+    "titlePlaceholder": "Inspection item title",
+    "clause": "Clause",
+    "selectClause": "Select clause…",
+    "clauseUnavailable": "Clause list unavailable — try again",
+    "weight": "Weight",
+    "responseModel": "Response model",
+    "evidenceRule": "Evidence rule",
+    "evidenceNone": "No base evidence rule",
+    "evidencePhotoNc": "Photo mandatory on non-compliant",
+    "evidenceVideoNc": "Video mandatory on non-compliant",
+    "evidenceDocumentNc": "Document mandatory on non-compliant",
+    "evidenceCommentNc": "Comment mandatory on non-compliant",
     "evidenceSource": "Configured policy — a fixed preset, not free text.",
-    "requirementMode": "Requirement mode", "requirementRequired": "Required", "requirementOptional": "Optional", "requirementConditional": "Conditional",
-    "visibleWhen": "Visible when", "visibleWhenHint": "Use the fixed key=value format.", "mandatoryWhenVisible": "Mandatory when visible",
-    "scoringEnabled": "Scoring enabled", "scoringDisabled": "Scoring disabled",
-    "guidance": "Guidance (EN)", "guidancePlaceholder": "What the inspector verifies",
-    "creating": "Creating…", "create": "Create item", "created": "Item created",
+    "requirementMode": "Requirement mode",
+    "requirementRequired": "Required",
+    "requirementOptional": "Optional",
+    "requirementConditional": "Conditional",
+    "visibleWhen": "Show when",
+    "visibleWhenHint": "Use the fixed key=value format.",
+    "mandatoryWhenVisible": "Required when shown",
+    "scoringEnabled": "Scoring enabled",
+    "scoringDisabled": "Scoring disabled",
+    "guidance": "Guidance (EN)",
+    "guidancePlaceholder": "What the inspector verifies",
+    "creating": "Creating…",
+    "create": "Create item",
+    "created": "Item created",
     "duplicate": "That item code already exists — codes are unique.",
-    "saving": "Saving…", "deactivate": "Deactivate", "reactivate": "Reactivate",
+    "saving": "Saving…",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
     "reasonNote": "History is preserved; the required reason and item-row change are recorded in audit history.",
     "deactivationReason": "Deactivation reason",
-    "saveDraft": "Save new version", "draftSaved": "New item version saved", "edit": "Edit"
+    "saveDraft": "Save new version",
+    "draftSaved": "New item version saved",
+    "edit": "Edit"
   },
   "preview": {
-    "select": "Preview item", "empty": "No items to preview yet.",
-    "responsesLabel": "Response the inspector records", "evidenceLabel": "Evidence policy",
-    "evidenceNone": "No base evidence required", "evidenceRequired": "{type} required when non-compliant (min {min})",
+    "select": "Preview item",
+    "empty": "No items to preview yet.",
+    "responsesLabel": "Response the inspector records",
+    "evidenceLabel": "Evidence policy",
+    "evidenceNone": "No base evidence required",
+    "evidenceRequired": "{type} required when non-compliant (min {min})",
     "evidenceSource": "configured policy — source: engine settings",
-    "guidanceLabel": "Inspector guidance", "guidanceNone": "No guidance recorded",
-    "scoringLabel": "Scoring", "weight": "weight {weight}", "noWeight": "no score weight",
-    "scoreExcluded": "excluded from score on: {responses}", "ncMaps": "Non-compliant maps to: {target}",
-    "conditional": "Conditional", "required": "Required", "optional": "Optional",
-    "mandatoryVisible": "mandatory when visible", "scoringOff": "scoring disabled; all responses excluded",
+    "guidanceLabel": "Inspector guidance",
+    "guidanceNone": "No guidance recorded",
+    "scoringLabel": "Scoring",
+    "weight": "weight {weight}",
+    "noWeight": "no score weight",
+    "scoreExcluded": "excluded from score on: {responses}",
+    "ncMaps": "Non-compliant maps to: {target}",
+    "conditional": "Conditional",
+    "required": "Required",
+    "optional": "Optional",
+    "mandatoryVisible": "required when shown",
+    "scoringOff": "scoring disabled; all responses excluded",
     "readonly": "This shows the saved configuration only — nothing here can be edited.",
     "deactivated": "This item is deactivated. It’s hidden from new checklist versions; existing history is kept.",
-    "active": "active", "deactivatedWord": "deactivated"
+    "active": "active",
+    "deactivatedWord": "deactivated"
   }
 }

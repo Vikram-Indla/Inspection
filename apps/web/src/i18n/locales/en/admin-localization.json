@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Rules & content"
   },
   "title": "Language & translations",
@@ -36,7 +36,7 @@
     "syncReport": "Added {added} · English changed {enChanged} · Arabic changed {arChanged} · orphaned {orphaned} · restored {revived}"
   },
   "table": {
-    "caption": "Governed interface strings",
+    "caption": "Interface text",
     "source": "English source",
     "translation": "Arabic translation",
     "state": "State"
@@ -106,7 +106,7 @@
   "denied": {
     "title": "Translations are restricted",
     "body": "No translation data has been loaded. This screen requires an administrator role, so nothing here is shown rather than hidden.",
-    "back": "Back to administration",
+    "back": "Back to Admin",
     "request": "Request access"
   },
   "error": {

@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "System operations",
-    "administration": "Administration",
+    "administration": "Admin",
     "operations": "System operations"
   },
   "title": "System operations and resilience",
@@ -23,7 +23,7 @@
   },
   "chart": {
     "title": "Error records by source",
-    "caption": "The most recent 50 records visible to you — not a system-health claim.",
+    "caption": "The 50 most recent records you can see. This does not say the system is healthy.",
     "aria": "Error records by source, counted from the 50 most recent records"
   },
   "errorQueue": {
@@ -34,7 +34,7 @@
     "attempts": "Attempts",
     "action": "Action",
     "retry": "Request idempotent retry",
-    "empty": "No error records visible to you. This isn't a claim about system health."
+    "empty": "You cannot see any error records. This does not say the system is healthy."
   },
   "flags": {
     "title": "Feature flag versions",
@@ -51,7 +51,7 @@
   "errorStatus": {
     "failed": "Failed",
     "retry_requested": "Retry requested",
-    "dependency_blocked": "Dependency blocked",
+    "dependency_blocked": "Waiting on something else",
     "resolved": "Resolved",
     "dead_letter": "Dead letter"
   },
@@ -62,7 +62,7 @@
   },
   "policyHold": {
     "title": "Retention, backup target, and restore goals are held by policy.",
-    "body": "No purge or successful-restore claim is turned on until approved values and evidence of the run exist."
+    "body": "We do not claim a purge or a successful restore yet. That needs approved values and proof of the run."
   },
   "actions": {
     "working": "Working…"

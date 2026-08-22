@@ -60,7 +60,7 @@ test.describe("DEC-040 the atlas login is canonical", () => {
   // scene that shows every layer at once rather than one story at a time.
   test("the Login v2 composition survives", () => {
     expect(loginCss).toContain("--atlas-canvas:  var(--nav-bg)");           // graphite re-ground
-    expect(loginCss).toContain("saturate(.58) hue-rotate(-10deg) brightness(.93)"); // raster grade
+    expect(loginCss).toContain("saturate(.72) hue-rotate(-10deg) brightness(1.1)"); // raster grade
     expect(loginCss).toContain("lg-story__seam");                            // 190px seam
     expect(loginCss).toContain("lg-atlas-image__wash");                      // colour + multiply wash
     expect(loginCss).toContain("min(132cqw");                                // plane over-scale

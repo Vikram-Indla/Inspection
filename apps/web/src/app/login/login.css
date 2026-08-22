@@ -208,13 +208,10 @@
   padding: clamp(18px, 2.2vw, 30px) clamp(20px, 2.4vw, 34px); pointer-events: none; }
 .lg-story__head > * { pointer-events: auto; }
 .lg-story__heading { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
-.lg-story__title { font: 700 18px/24px var(--font-body); color: var(--atlas-text);
-  text-shadow: 0 1px 12px var(--atlas-canvas), 0 0 4px var(--atlas-canvas); }
 .lg-story__overline { font: 600 10px/14px var(--font-mono); letter-spacing: 0.16em;
   color: var(--atlas-muted); align-self: start;
   text-shadow: 0 1px 8px var(--atlas-canvas); }
 [dir="rtl"] .lg-story__overline { align-self: end; }
-[dir="rtl"] .lg-story__title,
 [dir="rtl"] .lg-story__overline { font-family: var(--font-body); text-align: right; letter-spacing: 0; }
 
 .lg-story__frame { position: absolute; inset: 0; min-block-size: 0;
@@ -338,15 +335,15 @@
      loaded state may enhance motion, but must never gate core artwork. */
   object-fit: fill; opacity: 1;
   /* the raster is graded toward the credential column's graphite ground */
-  filter: saturate(.58) hue-rotate(-10deg) brightness(.93);
+  filter: saturate(.72) hue-rotate(-10deg) brightness(1.1);
   transition: opacity var(--transition-base); user-select: none; }
 .lg-atlas-image.is-ready .lg-atlas-image__media { opacity: 1; }
 /* two wash layers finish pulling the plate onto the nav palette: a colour pass
    that restates the hue, then a multiply pass that seats the shadows */
 .lg-atlas-image__wash { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
-.lg-atlas-image__wash--color { background: var(--atlas-canvas); opacity: .34;
+.lg-atlas-image__wash--color { background: var(--atlas-canvas); opacity: .26;
   mix-blend-mode: color; }
-.lg-atlas-image__wash--shade { background: color-mix(in srgb, var(--atlas-canvas) 18%, transparent);
+.lg-atlas-image__wash--shade { background: color-mix(in srgb, var(--atlas-canvas) 10%, transparent);
   mix-blend-mode: multiply; }
 
 /* ---- Arabic-first human journey + restrained zone depth -----------------

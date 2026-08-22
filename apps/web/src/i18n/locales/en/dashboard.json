@@ -5,7 +5,7 @@
   "perspective": {
     "label": "Dashboard perspective",
     "strategic": "Strategic View",
-    "operational": "Operational View"
+    "operational": "Day-to-day view"
   },
   "updated": {
     "label": "Updated",
@@ -48,7 +48,7 @@
     "measure": "Measure",
     "state": "State",
     "basis": "Basis",
-    "emptyTitle": "No further governed measures"
+    "emptyTitle": "No further measures"
   },
   "national": {
     "title": "National performance",
@@ -56,8 +56,8 @@
       "question": "Are we achieving the national inspection strategy?",
       "title": "Inspection coverage against annual target",
       "definition": "Completed inspections as a percentage of the annual inspection target",
-      "example": "{count} completed inspections; no governed annual target is configured.",
-      "interpretation": "Coverage remains withheld until Administration publishes the governed inspection-cycle target.",
+      "example": "{count} inspections completed. No yearly target is set.",
+      "interpretation": "Coverage appears once Admin publishes the inspection-cycle target.",
       "action": "Open Planning"
     },
     "compliance": {
@@ -84,23 +84,23 @@
       "title": "Top violated regulation",
       "definition": "Count of violations grouped by regulation",
       "example": "{count} linked violations in the current scope.",
-      "exampleEmpty": "No regulation-linked violations in scope.",
-      "interpretation": "Only violations carrying a governed regulation relationship are counted.",
+      "exampleEmpty": "No violations linked to a regulation in your area.",
+      "interpretation": "We count only violations linked to a regulation.",
       "action": "Open the regulation"
     },
     "critical": {
       "question": "Which factories require immediate intervention?",
       "title": "Critical factories requiring intervention",
       "definition": "Factories carrying a recorded high-risk band or active critical violation",
-      "example": "{count} factories match the governed recorded conditions.",
+      "example": "{count} factories match the recorded conditions.",
       "interpretation": "No substitute threshold is introduced by this screen.",
       "action": "Open Factory 360"
     },
     "annual": {
       "question": "Which factories still require inspection this year?",
       "title": "Factories pending annual inspection",
-      "definition": "Active factories with no completed inspection in the governed inspection year",
-      "example": "{count} factories are visible, but the annual-cycle policy is not configured.",
+      "definition": "Active factories with no completed inspection this inspection year",
+      "example": "You can see {count} factories, but the yearly cycle has no rule yet.",
       "interpretation": "The screen withholds a count until the inspection-year policy is published.",
       "action": "Open Planning"
     }
@@ -110,7 +110,7 @@
     "description": "One compliance-rate formula, four lenses. Every row drills to the factories behind it.",
     "lens": "Lens",
     "openFactories": "Open factories",
-    "empty": "No eligible approved answers in scope.",
+    "empty": "No approved answers you can use in your area.",
     "footnote": "{lens} · compliance rate and record count.",
     "notRecorded": "Not recorded",
     "emptyTitle": "Nothing to compare yet",
@@ -119,22 +119,22 @@
   },
   "requirement": {
     "title": "Strategic requirement coverage",
-    "description": "Governed measures not shown above, with their current live or blocked state."
+    "description": "Measures not shown above, and whether each one is live or stopped."
   },
   "charts": {
     "coverage": {
       "meterLabel": "Live source",
-      "meterAria": "{live} of {total} governed measures have a live source",
+      "meterAria": "{live} of {total} measures have a live source",
       "ratio": "{live} of {total} measures",
-      "allLive": "Every governed measure listed below has a live source."
+      "allLive": "Every measure listed below has a live source."
     },
     "pipeline": {
       "title": "Pipeline by planning status",
-      "description": "Every visit in scope, grouped by the planning status it currently holds.",
-      "aria": "Visits in scope by planning status, ranked from largest to smallest",
-      "total": "{total} visits in scope",
-      "emptyTitle": "No visits in scope",
-      "empty": "No visits match the current scope, so there is no pipeline to break down."
+      "description": "Every visit in your area, grouped by the planning status it is in now.",
+      "aria": "Visits in your area by planning status, ranked from largest to smallest",
+      "total": "{total} visits in your area",
+      "emptyTitle": "No visits in your area",
+      "empty": "No visits match your filters, so there is nothing to show."
     },
     "workload": {
       "bar": "{name} — {count} active visits"
@@ -142,24 +142,24 @@
     "activeField": {
       "title": "Active inspections by state",
       "description": "Where each field inspection currently stands, inside the total above.",
-      "aria": "Active field inspections by operational state, ranked from largest to smallest",
+      "aria": "Active field inspections by work state, ranked from largest to smallest",
       "total": "{total} active inspections"
     },
     "todayStates": {
       "title": "Today's schedule by state",
       "description": "Every visit scheduled for today, grouped by the state it currently holds.",
-      "aria": "Today's visits by operational state, ranked from largest to smallest",
+      "aria": "Today's visits by work state, ranked from largest to smallest",
       "total": "{total} visits scheduled today"
     },
     "activity": {
-      "title": "Governed activity",
-      "description": "Recorded governed events per day across the selected period.",
-      "aria": "Governed events per day across the selected period",
-      "unit": "events in scope",
+      "title": "Activity",
+      "description": "Recorded events per day over the chosen period.",
+      "aria": "Events per day over the chosen period",
+      "unit": "events in your area",
       "peak": "Busiest day {date} — {count} events",
       "unbounded": "A daily trend needs a bounded period. Choose a date range to see it.",
-      "emptyTitle": "No governed activity",
-      "empty": "No governed events were recorded in this scope."
+      "emptyTitle": "No activity",
+      "empty": "No events were recorded in your area."
     }
   },
   "search": {
@@ -179,7 +179,7 @@
     "groups": {
       "execution": "Execution status",
       "approvals": "Approvals",
-      "exceptions": "Operational exceptions"
+      "exceptions": "Things that need attention"
     },
     "today": {
       "title": "Today's operations",
@@ -198,7 +198,7 @@
       "active": {
         "question": "What inspections are currently active?",
         "title": "Active field inspections",
-        "definition": "Count of inspections with operational state = executing",
+        "definition": "How many inspections are being done right now",
         "action": "Open Operations Center"
       },
       "overdue": {
@@ -209,8 +209,8 @@
       },
       "awaiting": {
         "question": "Which inspection reports require review?",
-        "title": "Inspection reports awaiting approval",
-        "definition": "Count of submitted reports awaiting a review decision",
+        "title": "Inspection reports waiting for approval",
+        "definition": "How many sent reports are waiting for a review decision",
         "action": "Open Review & Approval"
       },
       "returned": {
@@ -227,8 +227,8 @@
       }
     },
     "requirement": {
-      "title": "Operational requirement coverage",
-      "description": "Governed operational measures not shown above, with their current live or blocked state."
+      "title": "Day-to-day measure coverage",
+      "description": "Day-to-day measures not shown above, and whether each one is live or stopped."
     },
     "capacity": {
       "title": "Inspector capacity",
@@ -237,8 +237,8 @@
       "workload": "Active workload",
       "dailyCapacity": "Daily capacity",
       "unresolved": "Unresolved identity",
-      "emptyTitle": "No inspectors in scope",
-      "empty": "No inspector assignments are visible in this scope.",
+      "emptyTitle": "No inspectors in your area",
+      "empty": "There are no inspector visits in your area.",
       "action": "Open Execution"
     }
   },
@@ -246,14 +246,14 @@
     "title": "Enforcement action trend",
     "comparison": "{sign}{n}% vs previous period",
     "noBaseline": "No baseline in the previous period",
-    "restricted": "Penalty notices are not visible to your role",
+    "restricted": "Your role cannot see penalty notices",
     "seriesLabel": "Penalty notices issued, previous period then current",
-    "footnote": "Count of penalty notices issued in the scoped period against the preceding period of equal length.",
+    "footnote": "How many penalty notices were sent in this period. Compared with the period before it, of equal length.",
     "action": "Open Enforcement Library"
   },
   "executive": {
     "title": "Executive AI brief",
-    "fallback": "The recorded national figures in your scope moved over this period. Compare the counts above against the previous period of equal length — this brief describes recorded movement only and does not attribute a cause.",
+    "fallback": "The recorded national figures in your area moved this period. Compare the counts above with the period before, of equal length. This brief reports movement only. It does not say why.",
     "generate": "Generate brief",
     "generating": "Generating…"
   }

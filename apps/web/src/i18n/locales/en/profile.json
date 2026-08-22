@@ -8,7 +8,7 @@
     "email": "Email",
     "region": "Region",
     "roles": "Roles",
-    "editNote": "Personal details, region and roles are governed elsewhere and are not editable from this screen (no self-service identity or role changes)."
+    "editNote": "Your details, region and roles are managed by your administrator. They cannot be changed here."
   },
   "appearance": {
     "heading": "Language & appearance",
@@ -25,11 +25,11 @@
     "push": "Push notifications",
     "sms": "SMS notifications",
     "email": "Email notifications",
-    "inappNote": "In-app notifications (the bell) are always on — they are the only guaranteed delivery surface in this environment.",
+    "inappNote": "Alerts in the app (the bell) are always on. They are the only delivery we can guarantee here.",
     "save": "Save preferences",
     "saving": "Saving…",
     "saved": "Saved",
-    "pushOptInNote": "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.",
+    "pushOptInNote": "To get alerts on a phone, you must allow them on that phone first. The switch above only decides if we send alerts to the phones you allowed.",
     "pushEnable": "Enable push on this device",
     "pushEnabling": "Requesting permission…",
     "pushEnabled": "Push enabled on this device",

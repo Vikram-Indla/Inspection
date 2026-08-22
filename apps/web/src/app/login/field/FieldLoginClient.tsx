@@ -56,38 +56,17 @@ import "./field-login.css";
 // an anomaly worth alarming a user over.
 
 export type FieldLoginStrings = {
-  brand1: string;
+  brand: { latin: string; arabic: string };
   tagline: string;
   langBtn: string;
-  netOnline: string;
-  netOffline: string;
-  trustedDevice: string;
-  faceUnlock: string;
-  faceDesc: string;
-  orPassword: string;
-  idLabel: string;
-  password: string;
-  showPw: string;
-  keepSignedIn: string;
-  forgot: string;
-  signIn: string;
-  offlineNote: string;
-  dismiss: string;
   copyright: string;
-  // Copy with no DC counterpart: states the mockup never had to express.
-  bioUnavailable: string;
-  bioFallback: string;
-  directoryBlocked: string;
-  authInvalid: string;
-  authNetwork: string;
-  signingIn: string;
-  unlocking: string;
-  checkingSession: string;
-  sessionExpired: string;
-  offlineKnown: string;
-  offlineLoginBlocked: string;
-  signedOut: string;
-  continueOffline: string;
+  net: { offline: string };
+  device: { trusted: string; faceUnlock: string; faceDesc: string; orPassword: string };
+  form: { idLabel: string; password: string; showPw: string; keepSignedIn: string; forgot: string; signIn: string };
+  offline: { note: string; dismiss: string; known: string; loginBlocked: string; continue: string };
+  status: { signingIn: string; unlocking: string; checkingSession: string; sessionExpired: string; signedOut: string };
+  errors: { bioUnavailable: string; bioFallback: string; directoryBlocked: string; invalid: string; network: string };
+  atlas: unknown;
 };
 
 const ShieldIcon = () => (
@@ -224,8 +203,8 @@ export default function FieldLoginClient({
           window.location.replace(safeAppReturnTo);
           return;
         }
-        if (reason === "expired") setMessage(s.sessionExpired);
-        else if (reason === "signedout") setMessage(s.signedOut);
+        if (reason === "expired") setMessage(s.status.sessionExpired);
+        else if (reason === "signedout") setMessage(s.status.signedOut);
         setBootstrapping(false);
         return;
       }
@@ -237,15 +216,15 @@ export default function FieldLoginClient({
         return;
       }
       if (bootstrap.status === "offline_known") {
-        setMessage(s.offlineKnown);
+        setMessage(s.offline.known);
         setOfflineReady(true);
       } else if (bootstrap.status === "expired" || reason === "expired") {
-        setMessage(s.sessionExpired);
+        setMessage(s.status.sessionExpired);
       } else if (bootstrap.status === "unauthorized") {
         await sb.auth.signOut();
         setMessage(null);
       } else if (reason === "signedout") {
-        setMessage(s.signedOut);
+        setMessage(s.status.signedOut);
       }
       setBootstrapping(false);
 
@@ -273,7 +252,7 @@ export default function FieldLoginClient({
     return () => {
       cancelled = true;
     };
-  }, [isFieldRecovery, reason, s.offlineKnown, s.sessionExpired, s.signedOut, safeAppReturnTo, safeReturnTo]);
+  }, [isFieldRecovery, reason, s.offline.known, s.status.sessionExpired, s.status.signedOut, safeAppReturnTo, safeReturnTo]);
 
   const unlockWithFaceId = useCallback(async () => {
     if (!lockScreen) return;
@@ -282,7 +261,7 @@ export default function FieldLoginClient({
     const ok = await unlockWithBiometric(lockScreen.record);
     setUnlocking(false);
     if (!ok) {
-      setMessage(s.bioUnavailable);
+      setMessage(s.errors.bioUnavailable);
       setShowPasswordFallback(true);
       return;
     }
@@ -291,24 +270,24 @@ export default function FieldLoginClient({
     // than assuming so.
     const { data: { session } } = await supabaseBrowser().auth.getSession();
     if (!session) {
-      setMessage(s.bioUnavailable);
+      setMessage(s.errors.bioUnavailable);
       setShowPasswordFallback(true);
       return;
     }
     const bootstrap = await bootstrapFieldSession(supabaseBrowser(), navigator.onLine);
     if (bootstrap.status === "ready" || bootstrap.status === "offline_known") window.location.assign(safeReturnTo);
     else {
-      setMessage(bootstrap.status === "unauthorized" ? null : s.sessionExpired);
+      setMessage(bootstrap.status === "unauthorized" ? null : s.status.sessionExpired);
       setShowPasswordFallback(true);
     }
-  }, [lockScreen, returnTo, s.bioUnavailable, s.sessionExpired]);
+  }, [lockScreen, returnTo, s.errors.bioUnavailable, s.status.sessionExpired]);
 
   const submitCredentials = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setMessage(null);
       if (!navigator.onLine) {
-        setMessage(s.offlineLoginBlocked);
+        setMessage(s.offline.loginBlocked);
         return;
       }
 
@@ -331,7 +310,7 @@ export default function FieldLoginClient({
       const testPersonaMatch = /^(admin[1-5]|planner[1-5]|supervisor[1-5]|inspector([1-9]|[12]\d|30))$/i.exec(id);
       const email = testPersonaMatch ? `${testPersonaMatch[0].toLowerCase()}@mim.gov.sa` : id;
       if (!email.includes("@")) {
-        setMessage(s.directoryBlocked);
+        setMessage(s.errors.directoryBlocked);
         return;
       }
 
@@ -343,11 +322,11 @@ export default function FieldLoginClient({
       setBusy(false);
 
       if (error) {
-        setMessage(/fetch|network/i.test(error.message) ? s.authNetwork : s.authInvalid);
+        setMessage(/fetch|network/i.test(error.message) ? s.errors.network : s.errors.invalid);
         return;
       }
       if (!data.session) {
-        setMessage(s.authInvalid);
+        setMessage(s.errors.invalid);
         return;
       }
       // Authentication surfaces are dark-locked. Carry that product default
@@ -384,10 +363,9 @@ export default function FieldLoginClient({
       // check never made. Supabase already persists the session itself.
       window.location.assign("/launch");
     },
-    [identifier, isFieldRecovery, keepSignedIn, password, returnTo, safeAppReturnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked, safeReturnTo],
+    [identifier, isFieldRecovery, keepSignedIn, password, returnTo, safeAppReturnTo, s.errors.directoryBlocked, s.errors.invalid, s.errors.network, s.offline.loginBlocked, safeReturnTo],
   );
 
-  const netLabel = online ? s.netOnline : s.netOffline;
   const showLockScreen = lockScreen !== null && !showPasswordFallback;
 
   const localeHref = useMemo(
@@ -400,10 +378,10 @@ export default function FieldLoginClient({
     <main className="fl-root" dir={dir} lang={lang}>
       {/* top utility row */}
       <div className="fl-top">
-        <span className={`fl-pill ${online ? "fl-net-online" : "fl-net-offline"}`}>
-          <span className={`fl-dot${online ? " fl-live" : ""}`} />
-          {netLabel}
-        </span>
+        {!online && <span className="fl-pill fl-net-offline">
+          <span className="fl-dot" />
+          {s.net.offline}
+        </span>}
         <span className="fl-grow" />
         <a className="fl-langbtn" href={localeHref}>
           {s.langBtn}
@@ -418,10 +396,10 @@ export default function FieldLoginClient({
           <ShieldIcon />
           <div className="fl-brand">
             <span className="fl-brand-latin" lang="en">
-              {s.brand1}
+              {s.brand.latin}
             </span>
             <span className="fl-brand-ar" lang="ar">
-              منصة التفتيش
+              {s.brand.arabic}
             </span>
           </div>
           <div className="t-caption fl-tagline">{s.tagline}</div>
@@ -438,28 +416,28 @@ export default function FieldLoginClient({
               Per the note above: the plain form is the safe default and is what
               renders during that window. */}
           {bootstrapping ? (
-            <div className="fl-msg" role="status">{s.checkingSession}</div>
+            <div className="fl-msg" role="status">{s.status.checkingSession}</div>
           ) : null}
           {showLockScreen ? (
             <>
               <div className="fl-pill fl-trusted-pill">
                 <LockIcon />
-                {s.trustedDevice} · <span className="id-code" dir="ltr">{lockScreen.deviceId}</span>
+                {s.device.trusted} · <span className="id-code" dir="ltr">{lockScreen.deviceId}</span>
               </div>
               <button
                 type="button"
                 className="fl-bio"
                 onClick={unlockWithFaceId}
-                aria-label={s.faceUnlock}
+                aria-label={s.device.faceUnlock}
                 disabled={unlocking}
               >
                 <FaceIcon />
               </button>
-              <div className="fl-face-title">{unlocking ? s.unlocking : s.faceUnlock}</div>
-              <div className="t-caption fl-face-desc">{s.faceDesc}</div>
+              <div className="fl-face-title">{unlocking ? s.status.unlocking : s.device.faceUnlock}</div>
+              <div className="t-caption fl-face-desc">{s.device.faceDesc}</div>
               <div className="fl-or">
                 <span className="fl-or-line" />
-                <span className="t-label fl-or-label">{s.orPassword}</span>
+                <span className="t-label fl-or-label">{s.device.orPassword}</span>
                 <span className="fl-or-line" />
               </div>
             </>
@@ -467,7 +445,7 @@ export default function FieldLoginClient({
 
           <form className="fl-form" onSubmit={submitCredentials}>
               <label className="fl-label">
-                <span className="t-label">{s.idLabel}</span>
+                <span className="t-label">{s.form.idLabel}</span>
                 <TextInput
                   type="text"
                   autoComplete="username"
@@ -476,7 +454,7 @@ export default function FieldLoginClient({
                 />
               </label>
               <label className="fl-label">
-                <span className="t-label">{s.password}</span>
+                <span className="t-label">{s.form.password}</span>
                 <TextInput
                   type={showPw ? "text" : "password"}
                   autoComplete="current-password"
@@ -486,7 +464,7 @@ export default function FieldLoginClient({
                     <IconButton
                       icon={showPw ? "conceal" : "reveal"}
                       size="sm"
-                      label={s.showPw}
+                      label={s.form.showPw}
                       pressed={showPw}
                       onClick={() => setShowPw(v => !v)}
                     />
@@ -500,10 +478,10 @@ export default function FieldLoginClient({
                     checked={keepSignedIn}
                     onChange={e => setKeepSignedIn(e.target.checked)}
                   />
-                  {s.keepSignedIn}
+                  {s.form.keepSignedIn}
                 </label>
                 <a href="/reset" className="fl-forgot">
-                  {s.forgot}
+                  {s.form.forgot}
                 </a>
               </div>
 
@@ -515,12 +493,12 @@ export default function FieldLoginClient({
               {offlineReady && (
                 <button type="button" className="btn btn-secondary btn-lg btn-block"
                   onClick={() => window.location.assign(safeReturnTo)}>
-                  {s.continueOffline}
+                  {s.offline.continue}
                 </button>
               )}
 
               <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy || !online}>
-                {busy ? s.signingIn : s.signIn}
+                {busy ? s.status.signingIn : s.form.signIn}
               </button>
           </form>
         </div>
@@ -530,7 +508,7 @@ export default function FieldLoginClient({
           in field-login.css) so the credential block stays centred against the
           full column and dismissing the note cannot shift the form. */}
       <div className="fl-foot">
-        {showOfflineNote && <div className="fl-foot-note">
+        {showOfflineNote && !online && <div className="fl-foot-note">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -542,9 +520,9 @@ export default function FieldLoginClient({
             <path d="M5 12.55a11 11 0 0 1 14 0M8.5 16.05a6 6 0 0 1 7 0M2 8.82a15 15 0 0 1 20 0" />
             <circle cx="12" cy="20" r="1" />
           </svg>
-          <span className="t-compact">{s.offlineNote}</span>
+          <span className="t-compact">{s.offline.note}</span>
           <button type="button" className="fl-foot-dismiss" onClick={() => setShowOfflineNote(false)}
-            aria-label={s.dismiss} title={s.dismiss}>
+            aria-label={s.offline.dismiss} title={s.offline.dismiss}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
               strokeLinecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
           </button>

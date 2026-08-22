@@ -1,6 +1,10 @@
 {
-  "breadcrumb": { "label": "Trusted devices", "administration": "Administration", "devices": "Trusted devices" },
-  "title": "Trusted device and offline administration",
+  "breadcrumb": {
+    "label": "Trusted devices",
+    "administration": "Admin",
+    "devices": "Trusted devices"
+  },
+  "title": "Trusted devices and offline admin",
   "controlledRows": "{count} controlled rows",
   "registerUnavailable": "Register not available",
   "rule": {
@@ -17,7 +21,7 @@
     "status": "Trust state",
     "lastSeen": "Last seen",
     "action": "Command",
-    "empty": "No enrolled devices visible to you.",
+    "empty": "You cannot see any enrolled devices.",
     "never": "Never",
     "unassigned": "unassigned",
     "unverified": "unverified",
@@ -38,11 +42,11 @@
   "evidence": {
     "title": "Command evidence",
     "unavailable": "Command evidence is not available. No command state is inferred.",
-    "empty": "No commands visible to you."
+    "empty": "You cannot see any commands."
   },
   "result": {
     "session_expired": "Your session has ended. Sign in again.",
-    "invalid_request": "Select a governed command and provide a meaningful reason.",
+    "invalid_request": "Choose a command and give a clear reason.",
     "not_authorized": "You do not have permission to perform this action.",
     "device_not_found": "The device no longer exists or is outside your scope.",
     "invalid": "The requested command or reason is invalid. Nothing was changed.",

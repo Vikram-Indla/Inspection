@@ -3,14 +3,14 @@
   "dash": "—",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Notification rules"
   },
   "title": "Notification & SLA rules",
-  "subtitle": "Governed event → channel → recipient → template rules for the delivery service",
+  "subtitle": "Rules for which event goes to which channel, person and template",
   "readonly": {
-    "title": "Read-only for your role",
-    "body": "You can view settings. Creating, publishing and deactivating rules need an admin settings role, and the system enforces this automatically."
+    "title": "View only for your role",
+    "body": "You can see settings. Creating, publishing and turning off rules need an admin settings role. The system enforces this on its own."
   },
   "permissionsUnavailable": {
     "title": "Permissions not available",
@@ -22,7 +22,7 @@
     "chip": "register not available"
   },
   "rolesUnavailable": "Recipient roles are not available. Rule creation is turned off; existing rules remain readable.",
-  "escalationNote": "SLA timers and escalation roles are stored as settings. Automatic breach-firing (a scheduled process that escalates when a timer runs out) is separate, and this screen does not build it.",
+  "escalationNote": "We save the timers and the roles to warn as settings. Nothing warns anyone on its own yet. This screen does not build that.",
   "form": {
     "createTitle": "Create a draft rule",
     "eventKey": "Event",
@@ -95,7 +95,7 @@
     "missing_recipient": "Missing recipient — recipient role is not set.",
     "missing_reason": "A deactivation reason is required.",
     "not_found": "Rule not found, or outside your scope.",
-    "notice_not_configured": "Provider not available — recorded as a test row only; no live provider is set up for this channel.",
+    "notice_not_configured": "No provider is available. We recorded this as a test row only. No live provider is set for this channel.",
     "notice_delivered": "Test notification delivered."
   }
 }

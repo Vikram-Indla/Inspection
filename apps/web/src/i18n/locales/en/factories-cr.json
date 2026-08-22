@@ -67,7 +67,7 @@
     "highestRisk": "Highest-risk license",
     "approvedInspections": "Approved inspections",
     "openViolations": "Open violations",
-    "openViolationsUnavailable": "Not available — runtime violations have no governed open/closed state",
+    "openViolationsUnavailable": "Not available — these violations do not record whether they are open or closed",
     "activePenalties": "Active penalties",
     "activePenaltiesUnavailable": "Not available — current penalty statuses do not define Active/Expired/Cancelled",
     "noAggregate": "All-licenses facts only. No CR-level risk score or compliance rate is calculated."
@@ -95,7 +95,7 @@
   },
   "visits": {
     "heading": "Visit summary",
-    "boundary": "Operational context only. Inspection answers, evidence, findings, reviewer comments and personal contact data are excluded.",
+    "boundary": "Visit context only. Inspection answers, evidence, findings, reviewer comments and personal contact details are left out.",
     "reference": "Visit reference",
     "date": "Date",
     "type": "Type",
@@ -111,7 +111,7 @@
   },
   "observed": {
     "heading": "Official vs latest approved observed snapshot",
-    "rule": "The observed column shows the official record as it was when someone submitted a report that was later approved. It does not change the current official record.",
+    "rule": "The observed column shows the official record as it stood at the time. That is when someone sent a report that was later approved. It does not change the record now.",
     "field": "Field",
     "official": "Current official",
     "captured": "Observed at submission",
@@ -120,7 +120,7 @@
     "changed": "Changed or unavailable",
     "capturedAt": "Captured",
     "origin": "Origin approved report",
-    "empty": "No approved report has a governed factory snapshot for this selected license yet.",
+    "empty": "No approved report has a factory record for this licence yet.",
     "fields": {
       "cr_number": "CR number",
       "industrial_license_number": "Industrial license",
@@ -133,7 +133,7 @@
   },
   "compliance": {
     "heading": "Approved inspection compliance",
-    "rule": "Calculated only from the latest final submitted version of approved inspections and the checklist version used for the inspection. Returned or rejected inspections stay visible below, but they never affect this rate.",
+    "rule": "We use only the last sent version of approved inspections. We use the checklist as it was at the time. Returned or rejected inspections still show below. They never change this rate.",
     "notAvailable": "Not available",
     "na": "No eligible approved scored answers",
     "trend": "Approved compliance trend",
@@ -156,7 +156,7 @@
     "grace": "Grace period",
     "graceDays": "{count} days",
     "origin": "Originating approved report",
-    "empty": "No violations from approved inspection reports are visible in your scope."
+    "empty": "There are no violations from approved reports in your area."
   },
   "industrial": {
     "heading": "Industrial information",
@@ -168,11 +168,11 @@
   },
   "government": {
     "heading": "Government records",
-    "empty": "Government-domain records are unavailable until a governed source contract supplies them."
+    "empty": "Government records are not available until an agreed source supplies them."
   },
   "chemicalCustoms": {
     "heading": "Chemical permits and customs exemptions",
-    "noPlant": "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number."
+    "noPlant": "The selected licence has no plant number. Chemical permits and customs exemptions are found by plant number."
   },
   "chemicalPermits": {
     "heading": "Chemical permits",
@@ -201,7 +201,7 @@
     "origin": "Origin report",
     "originContext": "Origin context",
     "ocr": "Contextual OCR",
-    "evidenceEmpty": "No linked inspection, arrival or violation evidence is visible in your scope."
+    "evidenceEmpty": "There is no linked inspection, arrival or violation evidence in your area."
   },
   "timeline": {
     "heading": "Business-event timeline",
@@ -255,7 +255,7 @@
   "enforcement": {
     "heading": "Penalty history",
     "origin": "Origin report",
-    "empty": "No penalty notices are visible in your scope."
+    "empty": "There are no penalty notices in your area."
   },
   "actions": {
     "heading": "Actions",
@@ -283,7 +283,7 @@
     "completed": "Completed",
     "issued": "Issued",
     "industrial": "Industrial",
-    "operational": "Operational",
+    "operational": "Working",
     "periodic": "Periodic",
     "immediate": "Immediate",
     "follow_up": "Follow-up",

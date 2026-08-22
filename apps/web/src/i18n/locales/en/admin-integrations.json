@@ -4,7 +4,7 @@
   "unavailable": "Not available",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Connections & geography"
   },
   "title": "System connections",
@@ -44,24 +44,24 @@
     "title": "API and rule events",
     "help": "Append-only outcomes linked by correlation ID.",
     "error": "API events could not be read. This is data that's not available, not an empty event history.",
-    "emptyTitle": "No events visible",
-    "emptyBody": "No events visible to you. This is a checked, empty result."
+    "emptyTitle": "No events",
+    "emptyBody": "You cannot see any events. We checked — there are none."
   },
   "exports": {
     "title": "Data-sharing exports",
     "help": "Prepared is not delivered. Delivery requires an artifact hash and receipt.",
     "error": "Export jobs could not be read. This is data that's not available, not an empty export history.",
-    "emptyTitle": "No export jobs visible",
-    "emptyBody": "No export jobs visible to you. This is a checked, empty result."
+    "emptyTitle": "No export jobs",
+    "emptyBody": "You cannot see any export jobs. We checked — there are none."
   },
   "governance": {
     "title": "Governance on this surface",
     "points": [
       "Configuration, connectivity and delivery are different truth states.",
       "Secrets are never shown; only the approved contract and runtime state are shown.",
-      "Providers that aren't available are blocked safely, and features that depend on them show this limit."
+      "Providers that are not available are stopped safely. Features that need them show this limit."
     ],
     "noteTitle": "Reconstruction note",
-    "note": "Prototype provider names, sync times and health labels are not copied. The register, event stream and export jobs are backend reads limited to what you're allowed to see; missing tables or rows show as not available or as a checked, empty state."
+    "note": "We do not copy names, update times or health labels from the test system. This page only shows what you may see. If a record is missing, you see 'Not available' or an empty list."
   }
 }

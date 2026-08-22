@@ -41,6 +41,7 @@ between them. What is not written here did not happen.
 | [`rules/WEB-013-translation-resources.md`](rules/WEB-013-translation-resources.md) | **No hardcoded copy, ever.** Every user-visible word lives in `i18n/locales/{en,ar}/<namespace>.json` and is loaded by key; no namespace for the page means you create one in both locales, not that you inline the text |
 | [`rules/WEB-014-typography-contract.md`](rules/WEB-014-typography-contract.md) | **No typography in feature code, ever.** Nine roles; if it is a sentence it is `body`; text renders through `Text`/`Heading`/`Overline`/`Mono`/`Metric`; cards are `Card`/`CardHeader` with a fixed slot order. Ratcheted by `npm run gates:typography` |
 | [`rules/WEB-015-form-controls.md`](rules/WEB-015-form-controls.md) | **Design components only, every input placeholdered.** No raw `<input>`/`<select>`/`<textarea>` (hidden inputs excepted); dates use `DatePickerField`/`DatePicker`, never `<input type="date">` (removed from `TextInputType`); every input carries a real-example placeholder from i18n; a missing control is built in `components/saqeel/` first, never bridged with raw HTML. Ratcheted by `npm run gates:date-inputs` |
+| [`rules/WEB-016-content-and-voice.md`](rules/WEB-016-content-and-voice.md) | **Plain words, not the team's words.** Written for a Riyadh reader whose English is a second language: top-5,000 vocabulary or the job glossary, 15-word sentences, no phrasal verbs, idioms or formal connectors; errors name the next action; nothing to show is an em dash. `governed`/`read-only`/`reconciliation`/`payload`/`UUID` banned outright. **Do not score this app with Flesch-Kincaid.** Ratcheted by `npm run gates:content` |
 
 **Task prompts are deliberately short.** Everything a prompt does not say is in
 `WEB-008` and `WEB-009`. If a prompt seems to be missing the rules, it is not —
@@ -104,6 +105,10 @@ If you read nothing else, these are the ones that get a diff rejected on sight.
     `ar` in the same commit, Arabic questions end in `؟`, Arabic never receives
     `letter-spacing`, and a screen is reviewed in Arabic before it is called
     done. English gets the compromise, never Arabic (WEB-011).
+    **30% of the application — 2,370 strings — is still hardcoded English with
+    no Arabic at all.** That is the largest content defect in the product and it
+    outranks every readability finding (WEB-016 §5). Agents may draft Arabic;
+    agents may not approve it.
 17. **Never modify the DOM directly.** The rendered DOM is a pure function of
     state — the only way it changes is by changing what render returns. No
     `innerHTML`/`textContent` writes, no `createElement`/`appendChild`/`remove`,
