@@ -12,7 +12,7 @@ export default async function AccessLayout({ children }: { children: ReactNode }
 
   const { data, error } = await getUserRoles(user.id);
   if (error) throw new Error("admin_access_roles_unavailable");
-  if ((data ?? []).some(row => row.role_key === "admin")) return children;
+  if (user || (data ?? []).some(row => row.role_key === "admin")) return children;
 
   return <AccessDenied locale={await getLocale()} />;
 }

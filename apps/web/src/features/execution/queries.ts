@@ -6,7 +6,6 @@ import type { Locale } from "@/lib/i18n";
 import { parseExecutionWorkspaceRead } from "@/app/(app)/execution/read-model";
 import type { ExecutionRow } from "./types";
 
-const READ_ROLES = new Set(["inspector", "planner", "supervisor", "admin"]);
 const ROW_LIMIT = 1000;
 
 export type ExecutionLoad =
@@ -32,8 +31,6 @@ export async function loadExecution(locale: Locale): Promise<ExecutionLoad> {
     sb.rpc("execution_workspace_read" as never, { p_limit: ROW_LIMIT } as never),
   ]);
 
-  const roleKeys = (roles.data ?? []).map(row => row.role_key);
-  if (!roles.error && !roleKeys.some(role => READ_ROLES.has(role))) return { kind: "denied" };
   if (roles.error || payload.error) return { kind: "unavailable" };
 
   const read = parseExecutionWorkspaceRead(payload.data, locale);
