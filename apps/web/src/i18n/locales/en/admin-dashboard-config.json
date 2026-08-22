@@ -48,7 +48,7 @@
     "publish": "Publish",
     "return": "Return",
     "returnReason": "Return reason",
-    "awaitingReviewer": "Awaiting an independent reviewer (maker-checker).",
+    "awaitingReviewer": "Waiting for a second reviewer. Nobody approves their own work.",
     "footer": "Authoring requires Compliance/Ops/Security Admin; review/publish requires Compliance/Leadership/Security Admin — and never the same person (maker ≠ checker)."
   },
   "category": {

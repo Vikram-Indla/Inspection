@@ -1,10 +1,10 @@
 {
   "breadcrumb": {
     "label": "Trusted devices",
-    "administration": "Administration",
+    "administration": "Admin",
     "devices": "Trusted devices"
   },
-  "title": "Trusted device and offline administration",
+  "title": "Trusted devices and offline admin",
   "controlledRows": "{count} controlled rows",
   "registerUnavailable": "Register not available",
   "rule": {

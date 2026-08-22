@@ -1,5 +1,5 @@
 {
-  "title": "Awaiting approval",
+  "title": "Waiting for approval",
   "loading": "Loading the approval queue…",
   "access": {
     "signedOutTitle": "Approval queue access denied",
@@ -11,7 +11,7 @@
     "detail": "The objects in this request could not be read — no empty result is claimed, and package actions stay disabled."
   },
   "empty": {
-    "title": "No requests awaiting your decision",
+    "title": "No requests waiting for your decision",
     "body": "Maker-checker excludes your own requests. Nothing else is open in your access scope.",
     "stepTitle": "Nothing of this kind in the package",
     "stepBody": "The read succeeded and returned none. This request changes no object of this kind."
@@ -24,7 +24,7 @@
     "selected": "Request {number}, currently open",
     "progress": "{decided} of {total} decided",
     "emptyTitle": "No requests in scope",
-    "emptyBody": "Nothing is awaiting your decision under the current filter."
+    "emptyBody": "Nothing is waiting for your decision with this filter."
   },
   "steps": {
     "label": "Review sequence",
@@ -98,7 +98,7 @@
     "none": "None in this package",
     "breakdown": "{approved} approved · {rejected} rejected · {pending} pending",
     "settled": "Every object carries a terminal decision",
-    "outstanding": "Objects are still awaiting a decision",
+    "outstanding": "Some items are still waiting for a decision",
     "checks": "Checks",
     "missingComment": "Rejected or returned without a comment",
     "missingCommentNote": "The database requires a comment on reject and return, so this should stay at zero; a non-zero count means a record predates that rule.",
@@ -119,8 +119,8 @@
     "heading": "Package decision",
     "readOnly": "Read only. Your role can view this request but cannot decide or publish it.",
     "ready": "Ready",
-    "blocked": "Blocked",
-    "gate": "Publication stays blocked until every object carries a terminal decision. The database rechecks that gate before publishing.",
+    "blocked": "Stopped",
+    "gate": "You cannot publish until every item has a final decision. The database checks again before publishing.",
     "publish": "Publish approved configuration",
     "returnReason": "Return reason",
     "returnAction": "Return package",

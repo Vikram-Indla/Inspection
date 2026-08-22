@@ -29,7 +29,7 @@
     "proposed": "Proposed by",
     "approved": "approved by",
     "distinct": "distinct approver",
-    "pending": "awaiting a distinct approver (maker-checker, enforced by the database)",
+    "pending": "waiting for a different approver — the database makes sure of it",
     "unknownUser": "Unknown user"
   },
   "deck": {

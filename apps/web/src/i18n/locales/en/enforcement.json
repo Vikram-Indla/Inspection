@@ -149,7 +149,7 @@
   "mapping": {
     "severity": "Level {level}",
     "lensMapped": "One active mapping",
-    "lensDraft": "Draft awaiting a distinct approver",
+    "lensDraft": "Draft waiting for a different approver",
     "lensUnmapped": "No mapping yet",
     "reference": "Penalty reference",
     "legalBasis": "Legal basis",

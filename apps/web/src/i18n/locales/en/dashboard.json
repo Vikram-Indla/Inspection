@@ -57,7 +57,7 @@
       "title": "Inspection coverage against annual target",
       "definition": "Completed inspections as a percentage of the annual inspection target",
       "example": "{count} inspections completed. No yearly target is set.",
-      "interpretation": "Coverage appears once Administration publishes the inspection-cycle target.",
+      "interpretation": "Coverage appears once Admin publishes the inspection-cycle target.",
       "action": "Open Planning"
     },
     "compliance": {
@@ -209,8 +209,8 @@
       },
       "awaiting": {
         "question": "Which inspection reports require review?",
-        "title": "Inspection reports awaiting approval",
-        "definition": "Count of submitted reports awaiting a review decision",
+        "title": "Inspection reports waiting for approval",
+        "definition": "How many sent reports are waiting for a review decision",
         "action": "Open Review & Approval"
       },
       "returned": {

@@ -149,7 +149,7 @@
   "mapping": {
     "severity": "المستوى {level}",
     "lensMapped": "ربط واحد فعّال",
-    "lensDraft": "مسودة بانتظار معتمد مختلف",
+    "lensDraft": "مسودة بانتظار معتمِد مختلف",
     "lensUnmapped": "لا يوجد ربط بعد",
     "reference": "مرجع الجزاء",
     "legalBasis": "السند النظامي",

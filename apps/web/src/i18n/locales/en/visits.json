@@ -255,7 +255,7 @@
     "draft": "Draft",
     "validated": "Validated",
     "published": "Published",
-    "pending_supervision": "Pending supervision",
+    "pending_supervision": "Waiting for supervisor",
     "returned": "Returned",
     "cancelled": "Cancelled",
     "expired": "Expired",

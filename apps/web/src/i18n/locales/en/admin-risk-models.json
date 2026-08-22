@@ -1,5 +1,8 @@
 {
-  "breadcrumb": { "administration": "Administration", "label": "Risk model workbench" },
+  "breadcrumb": {
+    "administration": "Admin",
+    "label": "Risk model workbench"
+  },
   "title": "Risk model workbench",
   "loading": "Loading risk models",
   "nav": {

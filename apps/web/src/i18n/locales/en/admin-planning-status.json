@@ -3,7 +3,7 @@
   "subtitle": "How a visit moves between stages, and who may do what.",
   "loading": "Loading planning status rules",
   "breadcrumb": {
-    "administration": "Administration",
+    "administration": "Admin",
     "label": "Planning status rules"
   },
   "readOnlyPill": "View only",

@@ -4,7 +4,7 @@
     "administration": "الإدارة",
     "devices": "الأجهزة الموثوقة"
   },
-  "title": "إدارة الأجهزة الموثوقة والعمل دون اتصال",
+  "title": "الأجهزة الموثوقة والإدارة دون اتصال",
   "controlledRows": "{count} صف مُتحكَّم به",
   "registerUnavailable": "السجل غير متاح",
   "rule": {

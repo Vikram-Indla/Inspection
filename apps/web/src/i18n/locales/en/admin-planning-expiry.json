@@ -4,7 +4,7 @@
   "loading": "Loading planning expiry rules",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration"
+    "administration": "Admin"
   },
   "governance": {
     "heading": "One enabled version per rule type.",

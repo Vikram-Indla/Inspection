@@ -218,7 +218,7 @@
     "mappedItems": "Mapped inspection items",
     "itemsUnknown": "Read failed — unknown, not zero",
     "itemsNone": "No item mapped",
-    "unmappedWarning": "{count} clause(s) carry no mapped inspection item. Publication is blocked until every clause maps to one.",
+    "unmappedWarning": "{count} clauses have no inspection item linked. You cannot publish until every clause has one.",
     "lifecycle": "Lifecycle",
     "lifecycleNote": "Deactivation applies at once and is logged. It also blocks future use of the inspection items, violations and penalties beneath this regulation, while past versions are kept. Reactivating does not reactivate them."
   },

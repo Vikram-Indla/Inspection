@@ -1,5 +1,8 @@
 {
-  "breadcrumb": { "administration": "الإدارة", "label": "ورشة نماذج المخاطر" },
+  "breadcrumb": {
+    "administration": "الإدارة",
+    "label": "ورشة نماذج المخاطر"
+  },
   "title": "ورشة نماذج المخاطر",
   "loading": "جارٍ تحميل نماذج المخاطر",
   "nav": {

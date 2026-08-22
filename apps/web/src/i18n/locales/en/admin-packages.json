@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "Rules & content"
   },
   "title": "Inspection packages",
@@ -97,7 +97,7 @@
   "denied": {
     "title": "Inspection packages are restricted",
     "body": "No package data has been loaded. This screen requires a configuration role, so nothing here is shown rather than hidden.",
-    "back": "Back to administration",
+    "back": "Back to Admin",
     "request": "Request access"
   },
   "error": {

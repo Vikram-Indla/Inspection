@@ -51,7 +51,7 @@
   "errorStatus": {
     "failed": "فشل",
     "retry_requested": "طُلبت إعادة المحاولة",
-    "dependency_blocked": "محجوب بسبب اعتمادية",
+    "dependency_blocked": "بانتظار شيء آخر",
     "resolved": "تمّت معالجته",
     "dead_letter": "رسالة ميتة"
   },

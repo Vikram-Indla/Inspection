@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-182.** Take T-183.
+implements the reservation. **Highest id in use: T-183.** Take T-184.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,23 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-183 · Third rewrite wave, and a wider banned list
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-183-eliminate-admin-awaiting-blocked](sessions/2026-08/2026-08-22-T-183-eliminate-admin-awaiting-blocked.md)
+
+72 strings per language: `administration` → `Admin` (21 breadcrumbs), `awaiting`
+→ `waiting for`, `blocked` → `stopped` or a plain "you cannot …".
+
+**The gate was not protecting the earlier waves.** `visible` had been removed by
+T-182 but was never in the gate's banned list — it could have walked straight
+back in. Banned list extended **50 → 74 words**.
+
+**Baseline rises 206 → 592 on purpose.** The gate now sees 386 violations it was
+blind to. Pre-existing debt, not new damage. **A baseline that rises because the
+gate got sharper is not the same as one that rises because the copy got worse.**
+
+i18n corpus on the audit instrument: **P0 1,183 → 640, P1 2,365 → 1,538.**
 
 ### T-182 · Eliminate "visible" and "read-only"
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`

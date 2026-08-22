@@ -3,7 +3,7 @@
   "dash": "—",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "GIS studio"
   },
   "title": "GIS studio — geofencing",
@@ -95,7 +95,7 @@
     "expired": "Session expired — sign in again.",
     "no_factory": "No factory selected.",
     "bad_radius": "A positive radius in metres is required.",
-    "rls": "Update blocked — the gis_admin role is required (RLS factories_update)."
+    "rls": "You cannot update this. It needs the GIS admin role."
   },
   "spatial": {
     "loading": "Loading spatial canvas…",

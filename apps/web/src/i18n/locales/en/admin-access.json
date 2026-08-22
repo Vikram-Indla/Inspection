@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration",
+    "administration": "Admin",
     "hub": "People & access"
   },
   "title": "Users & roles",
@@ -105,7 +105,7 @@
   "denied": {
     "title": "Access management is restricted",
     "body": "This screen requires the administrator role. Your session does not hold it, so nothing here is shown rather than hidden.",
-    "back": "Back to administration",
+    "back": "Back to Admin",
     "request": "Request access"
   },
   "error": {

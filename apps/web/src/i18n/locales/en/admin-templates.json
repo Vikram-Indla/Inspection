@@ -4,7 +4,7 @@
   "loading": "Loading templates…",
   "breadcrumb": {
     "label": "Breadcrumb",
-    "administration": "Administration"
+    "administration": "Admin"
   },
   "journey": {
     "ariaLabel": "Configuration journey",

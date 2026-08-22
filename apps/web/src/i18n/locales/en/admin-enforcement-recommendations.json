@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "Enforcement recommendations",
-    "administration": "Administration",
+    "administration": "Admin",
     "recommendations": "Enforcement recommendations"
   },
   "title": "Enforcement recommendations",
@@ -30,7 +30,7 @@
   "loadError": "The recommendation queue is unavailable in this environment. No count is claimed.",
   "measureLabel": "Recommended measure",
   "unregistered": "unregistered/temporary",
-  "awaitingDecider": "Awaiting an Operations or Compliance Admin decision.",
+  "awaitingDecider": "Waiting for a decision from Operations or a Compliance Admin.",
   "recent": "Recently decided",
   "decidedLoadError": "Recent decisions are unavailable. No count is shown.",
   "noneDecided": "No decisions recorded yet.",

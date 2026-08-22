@@ -1,7 +1,7 @@
 {
   "breadcrumb": {
     "label": "System operations",
-    "administration": "Administration",
+    "administration": "Admin",
     "operations": "System operations"
   },
   "title": "System operations and resilience",
@@ -51,7 +51,7 @@
   "errorStatus": {
     "failed": "Failed",
     "retry_requested": "Retry requested",
-    "dependency_blocked": "Dependency blocked",
+    "dependency_blocked": "Waiting on something else",
     "resolved": "Resolved",
     "dead_letter": "Dead letter"
   },

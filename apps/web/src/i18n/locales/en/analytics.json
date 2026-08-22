@@ -71,7 +71,7 @@
       "banded": "Banded",
       "high": "High",
       "unbanded": "Unbanded",
-      "awaiting_disposition": "Awaiting disposition",
+      "awaiting_disposition": "Waiting for a decision",
       "rejected": "Rejected",
       "adopted": "Adopted",
       "issued": "Issued",
@@ -107,11 +107,11 @@
   "drill": "View records",
   "lineage": "Lineage {trace}",
   "compare": {
-    "notice": "Comparison period {from} to {to}. Numeric comparison stays blocked pending a decision."
+    "notice": "Comparison period {from} to {to}. Number comparison is off until someone decides."
   },
   "bottlenecks": {
     "heading": "Waiting for a setting",
-    "summary": "{count} capabilities are blocked",
+    "summary": "{count} measures are waiting",
     "body": "Each one is waiting for a setting we cannot guess. Who to count. Over what period. What to compare against.",
     "planningToSubmissionCohort": "Planning-to-submission cohort",
     "repeatViolationLineage": "Repeat violation lineage and lookback",
@@ -131,8 +131,8 @@
     "label": "Metric coverage",
     "caption": "{resolved} of {total} metrics have a source",
     "ariaLabel": "{resolved} of {total} metrics have a source, {percent}",
-    "reasons": "Blocked by reason",
-    "reasonsAriaLabel": "Blocked capabilities by reason: {summary}"
+    "reasons": "Reason for waiting",
+    "reasonsAriaLabel": "Measures waiting, by reason: {summary}"
   },
   "units": {
     "factories": "{count} factories",
@@ -242,7 +242,7 @@
     },
     "ai_suggestion_adoption_rate": {
       "title": "AI suggestion adoption",
-      "definition": "Adopted suggestions ÷ suggestions that have been dispositioned. Suggestions still awaiting a decision are excluded."
+      "definition": "Suggestions used ÷ suggestions that were decided. Suggestions still waiting for a decision are left out."
     }
   }
 }

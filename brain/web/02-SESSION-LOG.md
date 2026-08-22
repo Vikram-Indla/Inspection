@@ -10,6 +10,7 @@ by agents with no memory between sessions. This file is the memory.
 
 | Date | Task | Record | Outcome |
 | --- | --- | --- | --- |
+| 2026-08-22 | T-183 · administration/awaiting/blocked + wider banned list | [record](sessions/2026-08/2026-08-22-T-183-eliminate-admin-awaiting-blocked.md) | 72 strings/language; banned list 50→74; baseline re-cut 592 (gate sharper, not copy worse); i18n P0 1183→640 |
 | 2026-08-22 | T-182 · Eliminate "visible" and "read-only" (en + ar) | [record](sessions/2026-08/2026-08-22-T-182-eliminate-visible-readonly.md) | 75 uses → 0; read-only → "view only"; baseline 246→206 |
 | 2026-08-22 | T-181 · Eliminate "governed" (en + ar) | [record](sessions/2026-08/2026-08-22-T-181-eliminate-governed.md) | 92 uses → 0; word deleted not swapped in most; Arabic had 5 variants; baseline 313→246 |
 | 2026-08-22 | T-180 · First copy rewrite wave (26 strings, en + ar) | [record](sessions/2026-08/2026-08-22-T-180-first-copy-rewrite-wave.md) | baseline 352→313; mean L2 load 8-24 → 0.32; gate caught its own author; Arabic needs sign-off |
