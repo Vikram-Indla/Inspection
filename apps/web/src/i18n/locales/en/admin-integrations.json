@@ -18,7 +18,7 @@
   },
   "metrics": {
     "registered": "Registered endpoints",
-    "registeredNote": "Read from the endpoint registry",
+    "registeredNote": "Read from the connection list",
     "configured": "Configured endpoints",
     "configuredNote": "Contract and runtime address recorded",
     "events": "Recent API events",
@@ -26,13 +26,13 @@
   },
   "banner": {
     "title": "Configuration is not connectivity.",
-    "body": "An endpoint becomes configured only with an approved contract and runtime address. Secrets are never displayed here."
+    "body": "A connection counts as ready only with an approved agreement and a live address. Secrets are never shown here."
   },
   "registry": {
-    "title": "Endpoint registry",
+    "title": "Connection list",
     "help": "Contract version, runtime state and dependency truth — not secret material.",
     "count": "{count} endpoints",
-    "error": "The endpoint registry could not be read. Event and export data below may still be available.",
+    "error": "The connection list could not be read. Event and export data below may still be available.",
     "colName": "Name",
     "colType": "Type",
     "colContract": "Contract",
@@ -49,7 +49,7 @@
   },
   "exports": {
     "title": "Data-sharing exports",
-    "help": "Prepared is not delivered. Delivery requires an artifact hash and receipt.",
+    "help": "Prepared is not delivered. Delivery needs a file fingerprint and a receipt.",
     "error": "Export jobs could not be read. This is data that's not available, not an empty export history.",
     "emptyTitle": "No export jobs",
     "emptyBody": "You cannot see any export jobs. We checked — there are none."

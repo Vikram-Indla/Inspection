@@ -25,7 +25,7 @@
   },
   "empty": {
     "title": "No risk model stored",
-    "body": "No risk settings exist in your allowed scope. Create one through the approved setup process before using this studio."
+    "body": "No risk settings exist in your area. Create one through the approved setup process before using this studio."
   },
   "form": {
     "factorsTitle": "Factors & weights (must sum to 1.00)",
@@ -51,7 +51,7 @@
     "weightRange": "Every weight must be a number between 0 and 1 — your draft is preserved.",
     "weightSum": "Weights must sum to 1.00 — your draft is preserved.",
     "bandBounds": "Band boundaries must be whole numbers with 0 ≤ low < medium ≤ 99 — your draft is preserved.",
-    "provider": "Couldn’t save — risk-owner scope is required. Nothing changed."
+    "provider": "We could not save. It needs the risk owner role. Nothing changed."
   },
   "governance": {
     "label": "Governance on this surface",

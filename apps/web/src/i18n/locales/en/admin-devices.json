@@ -48,7 +48,7 @@
     "session_expired": "Your session has ended. Sign in again.",
     "invalid_request": "Choose a command and give a clear reason.",
     "not_authorized": "You do not have permission to perform this action.",
-    "device_not_found": "The device no longer exists or is outside your scope.",
+    "device_not_found": "The device no longer exists or is outside your area.",
     "invalid": "The requested command or reason is invalid. Nothing was changed.",
     "write_failed": "The change could not be saved. Nothing was changed. Try again.",
     "queued": "Command queued. Completion awaits a genuine device acknowledgement."

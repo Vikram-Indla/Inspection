@@ -4,11 +4,11 @@
     "administration": "Admin",
     "audit": "Access review"
   },
-  "title": "Security posture and access review",
+  "title": "Security status and access review",
   "badge": "purpose-bound evidence access",
   "boundary": {
     "title": "Navigation is not authorization.",
-    "body": "Access policy enforces every read and action. This screen exposes only the signed-in actor's readable scope."
+    "body": "Access rules check every read and action. This screen shows only what the signed-in user may read."
   },
   "schemaPending": "This data is unavailable in this environment. Nothing is inferred.",
   "stats": {
@@ -22,7 +22,7 @@
   "reviews": {
     "title": "Access certification queue",
     "subject": "Subject",
-    "scope": "Scope and purpose",
+    "scope": "What it covers and why",
     "status": "Status",
     "action": "Independent decision",
     "empty": "You cannot see any access reviews.",

@@ -24,23 +24,23 @@
     "reference": "Reference {digest}"
   },
   "empty": {
-    "scopeTitle": "No inspections scheduled in your scope",
+    "scopeTitle": "No inspections scheduled in your area",
     "scopeBody": "Visits appear here once Planning assigns them to you or your team.",
     "scopeAction": "Open planning",
     "filteredTitle": "No inspections match these filters",
-    "filteredBody": "{total} visits are in your scope. Clear the filters to see them.",
+    "filteredBody": "{total} visits are in your area. Clear the filters to see them.",
     "filteredAction": "Clear filters",
     "mapTitle": "No recorded coordinates in this view",
     "mapBody": "The table view remains fully usable."
   },
   "notice": {
     "boundedTitle": "Bounded result set",
-    "boundedBody": "Showing {shown} of {total} visits in your scope. Rows beyond this limit are not shown.",
+    "boundedBody": "Showing {shown} of {total} visits in your area. Rows beyond this limit are not shown.",
     "degradedTitle": "Some execution records are unavailable",
     "degradedBody": "{count} malformed records were withheld rather than shown as verified data.",
     "degradedBodyOne": "One malformed record was withheld rather than shown as verified data.",
     "coordinatesTitle": "Location coverage is partial",
-    "coordinatesBody": "{count} visits in this scope have no recorded official coordinates and are omitted from the map.",
+    "coordinatesBody": "{count} visits in this area have no recorded official coordinates and are omitted from the map.",
     "coordinatesBodyOne": "One visit in your area has no recorded map point. It is left off the map."
   },
   "calendar": {
@@ -71,7 +71,7 @@
     "clear": "Clear filters"
   },
   "table": {
-    "caption": "Inspection visits in your scope",
+    "caption": "Inspection visits in your area",
     "visitRef": "Visit reference",
     "factory": "Factory",
     "planningWindow": "Planning window",
@@ -103,7 +103,7 @@
     "eyebrow": "Execution visit",
     "close": "Close visit details",
     "refreshing": "Refreshing the visit record",
-    "notFound": "This record is no longer available in your scope.",
+    "notFound": "This record is no longer available in your area.",
     "unverified": "The detail response could not be verified. The list snapshot remains read only.",
     "windowNote": "Date and assignment changes continue through the state-guarded visit workflow.",
     "planningWindow": "Planning window",

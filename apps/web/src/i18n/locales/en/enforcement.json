@@ -15,12 +15,12 @@
     "body": "No record count is claimed. The library is unavailable, which is not the same as empty."
   },
   "missing": {
-    "title": "Record not in your scope",
+    "title": "Record not in your area",
     "body": "You cannot see this enforcement record. We do not say whether it exists."
   },
   "empty": {
     "title": "You cannot see any enforcement records",
-    "body": "The read succeeded and returned none within your access scope.",
+    "body": "The read succeeded and returned none in your area.",
     "filteredTitle": "No records match",
     "filteredBody": "The library itself is not empty. Clear the search, status, date or region filter."
   },

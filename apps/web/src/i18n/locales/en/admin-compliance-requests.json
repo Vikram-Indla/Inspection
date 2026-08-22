@@ -64,7 +64,7 @@
   "workspace": {
     "backList": "Request list",
     "backQueue": "Waiting for approval",
-    "notFoundTitle": "Request not found or outside your scope",
+    "notFoundTitle": "Request not found or outside your area",
     "notFoundBody": "The read returned no request. No configuration content was loaded.",
     "notFoundBack": "Return to list",
     "returnReason": "Return or rejection reason",
@@ -109,9 +109,9 @@
   },
   "addComponent": {
     "heading": "Add component",
-    "hint": "Snapshots are JSON objects. For a child-only modification, include its existing parent version key.",
+    "hint": "Snapshots are structured values. For a child-only change, include its existing parent version key.",
     "type": "Component type",
-    "target": "Existing target UUID",
+    "target": "Existing target number",
     "targetRequired": "Required for modify",
     "targetOptional": "Optional",
     "current": "Current-value snapshot",
@@ -163,9 +163,9 @@
   "reference": "Reference",
   "actions": {
     "titleRequired": "Title is required.",
-    "jsonRequired": "A JSON object is required.",
-    "jsonNotObject": "The value must be a JSON object.",
-    "jsonInvalid": "Enter valid JSON.",
+    "jsonRequired": "A structured value is required.",
+    "jsonNotObject": "The value must be a structured object.",
+    "jsonInvalid": "Enter a valid structured value.",
     "notAuthorized": "Your role cannot perform this request action.",
     "reviewNotAuthorized": "A compliance reviewer role is required.",
     "publishNotAuthorized": "A compliance reviewer role is required to publish.",
@@ -178,7 +178,7 @@
     "notEditable": "Only the current draft revision can be edited.",
     "notSubmittable": "This request is not in a submittable state.",
     "revisionRequiresReturned": "A new revision can be created only after return.",
-    "proposedSnapshotRequired": "Proposed values must be a JSON object.",
-    "modifyTargetRequired": "Modify requests require an existing target UUID."
+    "proposedSnapshotRequired": "Proposed values must be a structured object.",
+    "modifyTargetRequired": "A change request needs an existing target number."
   }
 }

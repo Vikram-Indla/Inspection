@@ -22,12 +22,12 @@
   },
   "field": {
     "account": "Account",
-    "dateScope": "Date scope",
+    "dateScope": "Date range",
     "from": "From",
     "language": "Language",
     "navigation": "Navigation",
     "profileSettings": "Profile settings",
-    "regionScope": "Region scope",
+    "regionScope": "Region",
     "roles": "Roles",
     "to": "To"
   },

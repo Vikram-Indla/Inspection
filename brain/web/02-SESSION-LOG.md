@@ -10,6 +10,8 @@ by agents with no memory between sessions. This file is the memory.
 
 | Date | Task | Record | Outcome |
 | --- | --- | --- | --- |
+| 2026-08-22 | T-188 · Engineering terms removed from user copy | [record](sessions/2026-08/2026-08-22-T-188-engineering-leaks.md) | 46 strings/language; endpoint/payload/metadata/UUID/JSON gone; baseline 182→121 |
+| 2026-08-22 | T-187 · "scope" removed from English copy | [record](sessions/2026-08/2026-08-22-T-187-scope.md) | 84 → 0; English-only because Arabic نطاق is already plain; baseline 266→182 |
 | 2026-08-22 | T-186 · Every idiom and phrasal verb removed | [record](sessions/2026-08/2026-08-22-T-186-idioms-and-phrasal-verbs.md) | 22 strings/language; idiom 17→0, phrasal 5→0; 'in scope' → 'in your area'; baseline 306→266 |
 | 2026-08-22 | T-185 · Every sentence under 15 words | [record](sessions/2026-08/2026-08-22-T-185-long-sentences.md) | 63 strings/language; long-sentence rule 63→0; baseline 380→306; my first draft failed its own rule 15 times |
 | 2026-08-22 | T-184 · "operational" + banned-list triage | [record](sessions/2026-08/2026-08-22-T-184-operational-and-banned-list-triage.md) | 25 strings/language; 14 words wrongly banned in T-183 reversed; baseline 592→380; word-elimination at its limit |

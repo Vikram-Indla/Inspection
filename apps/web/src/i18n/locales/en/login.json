@@ -49,11 +49,26 @@
     "riyadhLabel": "RIYADH · ON SITE",
     "stagesLabel": "Steps of a visit",
     "stages": {
-      "plan": { "label": "Map", "event": "The map shows where the factories are." },
-      "travel": { "label": "On the way", "event": "Two cars leave Riyadh and one leaves Jazan. Each one has a factory to visit." },
-      "arrive": { "label": "Arriving", "event": "The teams reach their factories and confirm they are there." },
-      "inspect": { "label": "Inspection", "event": "The team takes photos and records what they found." },
-      "decide": { "label": "Zones", "event": "Point at a zone to lift it and see its inspection numbers." }
+      "plan": {
+        "label": "Map",
+        "event": "The map shows where the factories are."
+      },
+      "travel": {
+        "label": "On the way",
+        "event": "Two cars leave Riyadh and one leaves Jazan. Each one has a factory to visit."
+      },
+      "arrive": {
+        "label": "Arriving",
+        "event": "The teams reach their factories and confirm they are there."
+      },
+      "inspect": {
+        "label": "Inspection",
+        "event": "The team takes photos and records what they found."
+      },
+      "decide": {
+        "label": "Zones",
+        "event": "Point at a zone to lift it and see its inspection numbers."
+      }
     },
     "dossier": {
       "industry": "Industry",

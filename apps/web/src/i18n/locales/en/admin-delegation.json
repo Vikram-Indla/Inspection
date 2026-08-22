@@ -19,14 +19,14 @@
     "revoked": "Revoked"
   },
   "card": {
-    "scope": "Scope",
+    "scope": "Area",
     "window": "Window",
     "reason": "Reason",
     "revokedNote": "Revoked"
   },
   "empty": {
     "activeTitle": "No active delegations",
-    "activeBody": "You haven't created an active delegation in your authorized scope yet.",
+    "activeBody": "You haven't created an active delegation in your area yet.",
     "receivedTitle": "No delegations received",
     "receivedBody": "No one has delegated an active role to you yet.",
     "historyTitle": "No history",
@@ -45,7 +45,7 @@
     "caption": "Delegation history",
     "delegator": "Delegator",
     "delegate": "Delegate",
-    "scope": "Scope",
+    "scope": "Area",
     "window": "Window",
     "status": "Status"
   },
@@ -55,7 +55,7 @@
     "delegate": "Delegate",
     "delegatePlaceholder": "name@authority.gov.sa",
     "delegateHelp": "Enter the email of an existing authorized user.",
-    "scope": "Scope (role)",
+    "scope": "Area (role)",
     "scopePlaceholder": "Choose a role you hold",
     "startsAt": "Starts",
     "endsAt": "Ends",
@@ -85,7 +85,7 @@
   "result": {
     "session_expired": "Your session expired. Sign in again.",
     "delegate_required": "The delegate's email is required.",
-    "scope_required": "A scope is required.",
+    "scope_required": "You must choose an area.",
     "reason_required": "A reason is required.",
     "dates_required": "A start and end date are required.",
     "missing_reference": "The delegation reference is missing.",
@@ -93,7 +93,7 @@
     "self_not_allowed": "You cannot delegate to yourself.",
     "window_invalid": "The end date must be after the start date.",
     "scope_not_held": "You can only delegate a role you currently hold.",
-    "delegate_not_found": "That delegate could not be found in your authorized scope.",
+    "delegate_not_found": "That delegate could not be found in your area.",
     "not_found": "That delegation could not be found.",
     "not_active": "Only an active delegation can be revoked.",
     "not_authorized": "Only the delegator or an Admin can revoke this delegation.",

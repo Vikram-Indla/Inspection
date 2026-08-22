@@ -40,7 +40,7 @@
     "sender": "Sender",
     "eventKey": "Event key",
     "notifId": "Notification ID",
-    "payloadEmpty": "No notification payload is available.",
+    "payloadEmpty": "This alert has no extra details.",
     "openVisit": "Open visit"
   }
 }

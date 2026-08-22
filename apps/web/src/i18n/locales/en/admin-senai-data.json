@@ -21,13 +21,13 @@
   },
   "fnd007": {
     "lead": "SENAI is the source of truth for factory identity, licences and industrial data. Inspection Platform reads and reconciles — it never writes back.",
-    "holds": "holds: the endpoint contract has no establishment master-data write-back.",
-    "breach": "breach: the endpoint contract now has a master-data write endpoint. Stop and escalate.",
+    "holds": "holds: the agreed connection cannot write establishment records back.",
+    "breach": "breach: the agreed connection can now write records back. Stop and report it.",
     "snapshot": "Observed-on-inspection snapshots are captured separately and never overwrite the source."
   },
   "sources": {
     "help": "Source data is view only. This list records which connections the app uses. Adding one does not mean it is connected.",
-    "error": "Source connections could not be read. Endpoint contract and recorded calls remain independently available.",
+    "error": "Source connections could not be read. The agreement and recorded calls are still available on their own.",
     "runsError": "Recorded runs could not be read. Available connection settings are kept without a guessed freshness or counts.",
     "caption": "Registered upstream source connections",
     "colSystem": "Source system",
@@ -48,9 +48,9 @@
     "verified": "{verified}/{total} with a recorded live call",
     "verificationUnavailableShort": "Live-call verification not available",
     "callsError": "We could not read the recorded live calls. The allowed list still shows, but we cannot confirm the calls. That is not the same as failing them.",
-    "caption": "SENAI endpoint contract and recorded call verification",
+    "caption": "SENAI connection agreement and recorded call checks",
     "colMethod": "Method",
-    "colEndpoint": "Endpoint",
+    "colEndpoint": "Address",
     "colPurpose": "Purpose",
     "colLastCall": "Last recorded call",
     "colVerification": "Live-call verification",

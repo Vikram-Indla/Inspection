@@ -38,7 +38,7 @@
     "effectiveFrom": "Effective from",
     "titleEn": "English title",
     "titleAr": "Arabic title",
-    "schema": "Schema (JSON object)",
+    "schema": "Structure",
     "create": "Create draft template version",
     "creating": "Creating…",
     "save": "Save draft",

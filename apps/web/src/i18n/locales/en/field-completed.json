@@ -14,7 +14,7 @@
   "open": "View receipt",
   "receipt": {
     "notFound": "Receipt unavailable",
-    "integrity": "This inspection is unavailable, outside your assignment scope, or has no final submitted version. No editable record was used instead.",
+    "integrity": "This inspection is unavailable, outside your assigned area, or has no final submitted version. No editable record was used instead.",
     "title": "Completion receipt",
     "readOnly": "Locked final version — view only",
     "reference": "Completion reference",

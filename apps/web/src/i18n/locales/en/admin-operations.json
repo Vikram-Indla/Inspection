@@ -14,7 +14,7 @@
   "sourceUnavailable": "This source is not available. Records may exist that cannot be shown.",
   "unavailable": "Not available",
   "stats": {
-    "endpoints": "Endpoint contracts",
+    "endpoints": "Connection agreements",
     "configured": "{count} configured",
     "openErrors": "Open error records",
     "noThroughput": "No throughput claim is derived from this count.",
@@ -33,7 +33,7 @@
     "status": "Status",
     "attempts": "Attempts",
     "action": "Action",
-    "retry": "Request idempotent retry",
+    "retry": "Try again safely",
     "empty": "You cannot see any error records. This does not say the system is healthy."
   },
   "flags": {

@@ -7,7 +7,7 @@
   "title": "Inspection Flight Recorder",
   "code": "MVP2·M2-05",
   "skip": "Skip to event chronology",
-  "portfolio": "All cases in current scope",
+  "portfolio": "All cases in your area",
   "modes": {
     "label": "Audit replay modes",
     "recorder": "Flight recorder",
@@ -18,7 +18,7 @@
     "print": "Print-safe"
   },
   "filter": {
-    "case": "Case / object UUID",
+    "case": "Case or record number",
     "casePlaceholder": "00000000-0000-0000-0000-000000000000",
     "search": "Search events",
     "searchPlaceholder": "event type, actor, correlation",
@@ -38,7 +38,7 @@
   "policy": "Day-to-day view only. Export, reveal, hiding, keeping, watermark, purge and legal-evidence claims are set by policy.",
   "tags": {
     "policyHeld": "POLICY_HELD",
-    "partialScope": "PARTIAL SCOPE.",
+    "partialScope": "PART ONLY.",
     "degraded": "DEGRADED.",
     "conflict": "CONFLICT",
     "zeroDisclosure": "zero disclosure"
@@ -76,7 +76,7 @@
     "correlation": "Correlation",
     "before": "Before",
     "after": "After",
-    "payload": "Semantic payload",
+    "payload": "What changed",
     "missing": "MISSING"
   },
   "timetravel": {

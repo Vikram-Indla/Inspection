@@ -72,7 +72,7 @@
     "lastUpdate": "Last update",
     "actions": "Actions",
     "openRecord": "Open record",
-    "emptyTitle": "No live positions in this scope"
+    "emptyTitle": "No live positions in this area"
   },
   "scope": {
     "region": "Region",
@@ -88,7 +88,7 @@
     "deadline": "Deadline",
     "status": "Deadline status",
     "escalation": "Escalation",
-    "emptyTitle": "No deadline alerts in this scope",
+    "emptyTitle": "No deadline alerts in this area",
     "resubmissionOverdue": "Resubmission overdue",
     "resubmissionPending": "Resubmission pending"
   },
@@ -137,7 +137,7 @@
     },
     "list": {
       "title": "Active inspectors",
-      "noScope": "No active visits in your scope right now",
+      "noScope": "No active visits in your area right now",
       "noPositions": "No inspectors currently active"
     },
     "details": {

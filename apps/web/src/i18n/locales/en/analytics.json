@@ -55,7 +55,7 @@
   },
   "counts": {
     "heading": "Counts",
-    "description": "Distinct records inside the selected period and scope.",
+    "description": "How many different records fall inside the chosen period and area.",
     "groups": {
       "visits": "Visits",
       "coverage": "Coverage",
@@ -91,7 +91,7 @@
   },
   "empty": {
     "title": "No totals for this period",
-    "body": "Widen the date range or clear the filters to see results in your scope."
+    "body": "Widen the date range or clear the filters to see results in your area."
   },
   "error": {
     "title": "Analytics could not be loaded",
@@ -125,7 +125,7 @@
     "export": "Export",
     "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
     "attentionQueueNote": "No live AI request is made.",
-    "exportNote": "Pending a canonical audit and correlation contract."
+    "exportNote": "Waiting for an approved audit and matching agreement."
   },
   "coverage": {
     "label": "Metric coverage",
@@ -174,7 +174,7 @@
     },
     "visit_volume": {
       "title": "Visit volume",
-      "definition": "Visits whose planning window opens inside the selected period and scope."
+      "definition": "Visits whose planning window opens inside the chosen period and area."
     },
     "published_visit_count": {
       "title": "Published visits",
@@ -194,7 +194,7 @@
     },
     "factory_coverage": {
       "title": "Factory coverage",
-      "definition": "Distinct factories carrying at least one visit in the period and scope."
+      "definition": "How many different factories have at least one visit in the period and area."
     },
     "inspector_coverage": {
       "title": "Inspector coverage",

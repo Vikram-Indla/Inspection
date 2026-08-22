@@ -15,7 +15,7 @@
     "empty": "No versions"
   },
   "toolbar": {
-    "search": "Search package code, title or scope",
+    "search": "Search package code, title or area",
     "searchAction": "Search",
     "showing": "{matched} of {total} packages",
     "newPackage": "New package",
@@ -26,7 +26,7 @@
   "register": {
     "caption": "Packages you can see",
     "noVersions": "No versions yet",
-    "noScope": "No scope recorded",
+    "noScope": "No area recorded",
     "sections": "{sections} sections · {items} items",
     "actionForms": "{count} action forms",
     "effective": "Effective {from} to {to}",
