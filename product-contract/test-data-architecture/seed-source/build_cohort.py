@@ -140,6 +140,33 @@ for j in journeys:
              evidence=str(3 + h("ev", j["journey_ref"]) % 4), findings=str(findings),
              violations=str(violations), penalties=str(penalties))
 
+# The platform enforces inspector capacity (guard_assignment_window_overlap):
+# one inspector cannot hold two assignments whose windows overlap. Allocate each
+# inspector a distinct slot on each date, so the cohort is actually schedulable.
+SLOTS = ["07:00","09:30","12:00","14:30","17:00"]
+booked = {}
+for j in journeys:
+    if not j["inspector"]:
+        j["window_start_time"] = SLOTS[0]; j["slot_index"] = "0"; continue
+    d = j["window_start"]; who = j["inspector"]
+    used = booked.setdefault((who, d), [])
+    if len(used) < len(SLOTS):
+        idx = len(used)
+    else:
+        # Slots exhausted for that inspector on that date: push to the next free day.
+        day = date.fromisoformat(d); idx = 0
+        while True:
+            day += timedelta(days=1); d = day.isoformat()
+            used = booked.setdefault((who, d), [])
+            if len(used) < len(SLOTS): idx = len(used); break
+        j["window_start"] = d
+    used.append(idx)
+    j["window_start_time"] = SLOTS[idx]; j["slot_index"] = str(idx)
+
+overlaps = sum(1 for v in booked.values() if len(v) != len(set(v)))
+assert overlaps == 0, f"{overlaps} inspector-day slots double-booked"
+print(f"scheduling      0 overlaps across {len(booked)} inspector-days")
+
 with open("journeys.csv","w",encoding="utf-8",newline="") as fh:
     w=csv.DictWriter(fh,fieldnames=list(journeys[0].keys())); w.writeheader(); w.writerows(journeys)
 
