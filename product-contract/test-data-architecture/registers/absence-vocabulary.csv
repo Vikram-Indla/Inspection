@@ -1,0 +1,9 @@
+class_id,label_en,label_ar,meaning,correct_display,sub_line_en,fixable_by_test_data,current_code_behaviour,example_on_screen
+ABS-0,Live,مباشر,Source is live and a value exists,the number,none,n/a,correct,Checklist items by issuing authority
+ABS-1,Zero,صفر,Source is live; the query ran; the true count is 0,0,No records in this period,YES — loading journeys turns this into a real number,WRONG — renders as Unavailable,Risk-to-attention mismatch
+ABS-2,Not applicable,لا ينطبق,Source is live but the rate has no denominator (0 eligible records),N/A,No eligible records in scope,YES — loading checklist responses turns this into a real percentage,WRONG — renders as Unavailable,National compliance rate
+ABS-3,Not configured,غير مهيأ,Computable but blocked on an unpublished Admin policy version,Not configured,Publish <policy> in Administration,PARTLY — test data must publish the policy version,correct (renders N/A),Inspection coverage against annual target
+ABS-4,Unavailable,غير متاح,No source column or table exists in the schema at all,Unavailable,Source not in schema — see <DEC-ID>,NO — needs a migration,correct,Risk distribution / Licence exposure / Repeat violation rate
+ABS-5,Decision required,قرار مطلوب,Formula blocked by an open governance decision,Decision required,Blocked by <DEC-ID>,NO — needs a governance ruling,correct,Violation trend by regulation and severity
+ABS-6,Partial,جزئي,One contributing source failed; value is a partial view,Partial,Partial source data · <sources>,n/a,correct,any metric during a source outage
+ABS-7,Stale,قديم,Value computed from data past its freshness expectation,Stale,As of <timestamp>,n/a,correct,cached snapshots

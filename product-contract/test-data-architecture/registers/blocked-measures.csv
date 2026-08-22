@@ -1,0 +1,12 @@
+measure_id,title,blocker_class,decision_ref,what_is_actually_missing,can_test_data_fix_it,action_required
+STR-KPI-002,Risk distribution,ABS-4 schema,DEC-DASH-002,No Health Score snapshot or history source exists. factories.risk_score belongs to the separate Risk Engine and must not be substituted.,NO,Migration adding a governed Health Score snapshot source
+STR-KPI-003,Violation trend by regulation and severity,ABS-5 governance,DEC-DASH-003,violations has no official issue-time column and the severity vocabulary is not normalised (L1/L2 vs medium).,NO,Governance ruling then a migration adding issued_at and a normalised severity
+STR-KPI-005,Licence exposure,ABS-4 schema,DEC-DASH-005,No governed definition of exposure over industrial_licenses.,NO,Governance ruling defining exposure then implementation
+STR-KPI-011,Repeat violation rate,ABS-4 schema,DEC-DASH-011,No governed repeat window or repeat-identity rule.,NO,Governance ruling defining the repeat window
+STR-KPI-007,Inspection coverage,ABS-3 policy,DEC-DASH-007,The computation exists. It is gated on a published inspection_cycle_policy that defines what due means.,YES — L1,Publish inspection_cycle_policy as part of the load (unit U-08)
+STR-KPI-008,Uninspected factories,ABS-3 policy,DEC-DASH-007,Same gate as STR-KPI-007.,YES — L1,Publish inspection_cycle_policy (unit U-08)
+OPS-KPI-002,Expiring soon,ABS-3 policy,DEC-DASH-007b,Gated on a published sla_urgency_policy warn_at_fraction.,YES — L1,Publish sla_urgency_policy (unit U-09)
+STR-KPI-012,Evidence-grounded strategic summary,ABS-3 policy,DEC-DASH-012,AI advisory needs a published policy and grounded evidence refs.,PARTLY,Publish the advisory policy and load approved journeys
+OPS-KPI-009,Evidence-grounded operational nudges,ABS-3 policy,DEC-DASH-012b,Same as STR-KPI-012 on the operational side.,PARTLY,Publish the advisory policy
+OPS-KPI-005,Pending publish,ABS-4 deferred,—,Deferred by design — no projection written.,NO,Product decision to implement
+IPAD-KPI-007,Personal trends,ABS-4 deferred,—,Deferred by design.,NO,Product decision to implement

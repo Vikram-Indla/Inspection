@@ -1,0 +1,26 @@
+stop_id,stop_name_en,stop_name_ar,count_type,rows_created_when_journey_reaches_this_stop,key_column_values,screens_that_need_it,demo_count,qa_count
+J00,Draft plan,مسودة خطة,terminal,visit_plans + visits,visit_plans.status=draft; visits.planning_status=draft; operational_state=new,Planning · Draft tab,24,6
+J01,Pending supervision,بانتظار الاعتماد,terminal,+ workflow_task_assignments,visits.planning_status=pending_supervision,Planning · Pending supervision tab; Tasks,18,4
+J02,Published — not yet assigned,منشورة دون إسناد,terminal,+ visit_lifecycle_events(publish),visits.planning_status=published; operational_state=new,Planning · Published tab; Operations pipeline; OPS-KPI-001,22,5
+J03,Returned to planner,معادة للمخطط,terminal,+ visit_lifecycle_events(return),visits.planning_status=returned,Planning · Returned tab,10,4
+J04,Cancelled,ملغاة,terminal,visits.cancellation_reason set,visits.planning_status=cancelled,Planning · Cancelled tab; STR-KPI-006 cancellation rate,14,4
+J05,Expired,منتهية الصلاحية,terminal,none (window_end past and still unassigned),visits.planning_status=expired,Planning · Expired tab; Admin Planning Expiry Rules,8,3
+J06,Assigned to inspector,مسندة لمفتش,terminal,+ assignments,assignments.status=assigned,Field · My tasks; Operations workload; OPS-KPI-006,30,6
+J07,En route,في الطريق,terminal,+ journey_sessions + geo_events(depart),visits.operational_state=on_the_way,Operations live map; Execution,12,3
+J08,Arrived inside geofence,وصل داخل النطاق,terminal,+ geo_events(arrive),visits.operational_state=arrived,Operations; Execution,8,2
+J09,Arrived by GPS override,وصل بتجاوز الموقع,terminal,+ geo_events(override) + override reason,geo_events.kind=override,OPS-KPI-007 GPS overrides today; Admin GIS,6,3
+J10,Executing,قيد التنفيذ,terminal,+ inspections(in_progress) + partial checklist_responses,inspections.status=in_progress,Execution workspace; OPS-KPI-003 Active executions,18,4
+J11,Submitted — under review,مقدمة قيد المراجعة,terminal,+ inspections(submitted) + submission_versions v1 + full checklist_responses + evidence,inspections.status=submitted; reviews.status=pending,Reviews queue; OPS-KPI-004 Pending approvals,40,6
+J12,Returned for correction,معادة للتصحيح,terminal,+ reviews(decision=return),reviews.decision=return,Reviews; STR-KPI-004 decision mix,12,4
+J13,Resubmitted after correction,أعيد تقديمها,terminal,+ submission_versions v2,submission_versions.version=2,Reviews; Audit Trail,8,3
+J14,Approved,معتمدة,terminal,+ reviews(decision=approve); visit closes,reviews.decision=approve; visits.operational_state=closed,"STR-KPI-001/004, Analytics, Factory 360",160,12
+J15,Rejected,مرفوضة,terminal,+ reviews(decision=reject),reviews.decision=reject,Reviews; STR-KPI-004,10,3
+A01,Carries non-compliant answers,يحمل إجابات غير مطابقة,attribute,checklist_responses.value=non_compliant on an approved journey,response.value=non_compliant,STR-KPI-001 compliance-rate numerator/denominator,45,8
+A02,Carries a finding,يحمل ملاحظة,attribute,+ findings + evidence,findings.severity in (minor major critical),Execution; Factory 360,35,6
+A03,Carries a violation,يحمل مخالفة,attribute,+ violations linked to inspection and violation_code,violations.status=issued,Enforcement Library; STR-KPI-003; Factory 360,28,6
+A04,Carries a penalty,يحمل عقوبة,attribute,+ inspection_penalties + penalty_notices,inspection_penalties.status=issued,Enforcement Library; Dashboard enforcement trend,14,4
+A05,Repeat violation same factory and clause,مخالفة متكررة,attribute,second violation same factory + clause inside the repeat window,violations.regulation_clause_id repeated,STR-KPI-011 (BLOCKED — needs schema),9,3
+M01,Immediate / ad-hoc visit,زيارة فورية,modifier,visit_plans.method=immediate + governed reason,visits.execution_mode=immediate,Planning · Immediate; Audit Trail,10,4
+M02,Bulk-planned cohort,خطة جماعية,modifier,one visit_plans row producing N visits in one transaction,visit_plans.method=bulk,Planning · Bulk,3 plans x 20 visits,2 x 5
+M03,Unregistered establishment captured in field,منشأة غير مسجلة,modifier,+ factories(unregistered) created from the field,factories.registration_status=unregistered,Field · Unregistered; Admin Factory Data,6,3
+M04,Senaei-sourced factory,مصنع من صناعي,modifier,+ senaei_reconciliation_records + senaei_sync_runs,factories.source_system=senaei,Admin Senai Data; Factory 360 provenance,20,5
