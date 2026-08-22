@@ -5,7 +5,8 @@
   python3 scripts/test-data/load.py load
   python3 scripts/test-data/load.py verify
   python3 scripts/test-data/load.py unload --dry-run
-  python3 scripts/test-data/load.py unload --confirm
+  python3 scripts/test-data/load.py unload --confirm        # respects immutability
+  python3 scripts/test-data/load.py reset --confirm         # full wipe of this batch
 
 Identity: every row's primary key is uuid5(BATCH, "<table>:<logical key>"), so a
 re-run upserts instead of duplicating and unload deletes by exact id — never by a
@@ -44,6 +45,8 @@ IMMUTABLE = {
 }
 # Accepted reference data the seed verifies but never owns.
 NEVER_DELETE = IMMUTABLE | {"roles", "capabilities", "permissions", "engine_settings"}
+# Not every table is keyed on "id". Assuming so made profiles silently un-deletable.
+KEY_COLUMN = {"profiles": "user_id", "dashboard_config_heads": "config_key"}
 
 # Statements carrying thousands of ids exceed the argv limit, so anything large
 # goes through a file rather than -c.
@@ -415,7 +418,7 @@ def unload(confirm):
             if c.isdigit() and int(c):
                 blocked.append((t, int(c))); print(f"  {'IMMUTABLE':<14} {int(c):>6}          {t}")
             continue
-        key = "config_key" if t == "dashboard_config_heads" else "id"
+        key = KEY_COLUMN.get(t, "id")
         inlist = ",".join(lit(i) for i in ids)
         mine = q(f"select count(*) from {t} where {key} in ({inlist})")
         allrows = q(f"select count(*) from {t}")
@@ -450,10 +453,69 @@ def unload(confirm):
         print(f"  visits remaining    {q('select count(*) from visits')}")
         print(f"  factories remaining {q('select count(*) from factories')}  (pre-existing rows intact)")
 
+def reset(confirm):
+    """Full removal of the batch, including append-only rows.
+
+    A submitted inspection is immutable during normal operation — that is correct
+    and must never be circumvented on a real system. Resetting a TRAINING database
+    is a different act, and Postgres has a first-class mechanism for it:
+    session_replication_role = replica suspends triggers for the session. It needs
+    superuser, which is itself the guard: nobody holds it where it would matter.
+
+    Scope is unchanged — only ids this batch derived are deleted.
+    """
+    db = q("select current_database()")
+    if any(t in db.lower() for t in ("prod", "production")):
+        raise SystemExit("REFUSED: database name looks like production")
+    if os.environ.get("NODE_ENV") == "production":
+        raise SystemExit("REFUSED: NODE_ENV=production")
+    su = q("select usesuper from pg_user where usename = current_user")
+    if su != "t":
+        raise SystemExit("REFUSED: reset needs superuser to suspend triggers.\n"
+                         "         Use 'unload --confirm' for the trigger-respecting removal.")
+    if not confirm:
+        print("reset — dry run. Pass --confirm to execute.")
+    owned = batch_ids()
+    order = ["reviews","submission_versions","visit_package_snapshots","checklist_responses",
+             "inspections","geo_events","assignments","visits","visit_plans",
+             "dashboard_config_heads","dashboard_config_versions","package_versions","packages",
+             "violation_codes","inspection_items","regulation_clauses","regulations",
+             "industrial_licenses","factories","commercial_registrations","profiles"]
+    print(f"reset  database {db}  batch {BATCH}")
+    stmts, total = [], 0
+    for t in order:
+        ids = owned.get(t) or []
+        if not ids or t == "audit_events": continue
+        key = KEY_COLUMN.get(t, "id")
+        inlist = ",".join(lit(i) for i in ids)
+        n = q(f"select count(*) from {t} where {key} in ({inlist})")
+        if not n.isdigit():
+            raise SystemExit(f"REFUSED: cannot count rows in {t} by {key} — {n}")
+        if not int(n): continue
+        total += int(n)
+        print(f"  {'delete' if confirm else 'would delete':<14} {int(n):>6}  {t}")
+        stmts.append(f"delete from {t} where {key} in ({inlist});")
+    users = [uid("profiles", p["username"]) for p in read("personas.csv")]
+    inlist = ",".join(lit(u) for u in users)
+    n = q(f"select count(*) from auth.users where id in ({inlist})")
+    if n.isdigit() and int(n):
+        total += int(n); print(f"  {'delete' if confirm else 'would delete':<14} {int(n):>6}  auth.users")
+        stmts.append(f"delete from auth.users where id in ({inlist});")
+    if confirm and stmts:
+        # One transaction: either the whole batch goes or nothing does.
+        psql("begin; set local session_replication_role = replica;\n" + "\n".join(stmts) + "\ncommit;")
+    print(f"\n  {'deleted' if confirm else 'would delete'} {total} rows in one transaction")
+    print(f"  audit_events        {q('select count(*) from audit_events')}  (deliberately kept — the")
+    print( "                      trail of what the training run did stays readable)")
+    if confirm:
+        for t in ("visits","inspections","checklist_responses","submission_versions","factories","profiles"):
+            print(f"  {t:<20}{q(f'select count(*) from {t}')} remaining")
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "verify"
     if cmd == "preflight": preflight()
     elif cmd == "load": preflight(); load()
     elif cmd == "verify": verify()
     elif cmd == "unload": unload("--confirm" in sys.argv)
+    elif cmd == "reset": reset("--confirm" in sys.argv)
     else: raise SystemExit(__doc__)

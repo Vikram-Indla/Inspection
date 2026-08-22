@@ -1,12 +1,30 @@
-# Unload cannot empty this platform — proved, not assumed
+# Load and unload — what works, and the constraint behind it
 
 Established by running the loader and the unloader against a real PostgreSQL 16
 database with 248 of the repository's 274 migrations applied (165 tables), on
 2026-08-22. Every statement below is an observed result, not a schema reading.
 
-## The finding
+## Summary
 
-**Once a visit reaches submission, its entire upstream graph becomes permanent.**
+Two commands, and the difference between them matters.
+
+| | `unload --confirm` | `reset --confirm` |
+|---|---|---|
+| Respects immutability triggers | yes | no — suspends them |
+| Needs superuser | no | **yes** |
+| Removes a submitted journey | no | yes |
+| Use for | clearing pre-submission rehearsal data on any environment | returning a training database to its baseline |
+
+Both delete only ids this batch derived. Neither touches `audit_events`, and
+neither touches a row that was in the database beforehand.
+
+**Proved end to end:** load → verify → reset → load again returns the identical
+figure (82.9% compliance, 1,715 of 2,070) on both loads, on a real database.
+
+## The constraint
+
+**Once a visit reaches submission, its entire upstream graph becomes permanent
+under normal operation.**
 
 `submission_versions` refuses `DELETE` through `block_submission_version_mutation`,
 exactly as `audit_events` does. Because `submission_versions.inspection_id`
@@ -42,16 +60,34 @@ decided on it, and a factory can be penalised because of it. A platform that let
 that be deleted would not be defensible. **The constraint is the product working,
 not a bug to route around.**
 
+## How reset gets past it
+
+Postgres has a first-class mechanism for exactly this:
+`set local session_replication_role = replica` suspends triggers for the session.
+`reset` wraps the whole batch deletion in one transaction under that setting, so
+either every row goes or none does.
+
+**The privilege is the guard.** It requires superuser, which nobody holds on an
+environment where this would be dangerous. `reset` additionally refuses a database
+whose name looks like production and refuses `NODE_ENV=production`. On anything
+without superuser it declines and points at `unload` instead.
+
+This does not weaken the immutability rule. A submitted inspection stays
+undeletable through every normal path — the application, the API, any RLS-scoped
+session. Resetting a training database is an administrative act performed by a
+database owner, and it is the same act as dropping and recreating the database,
+without the ten minutes of re-running 274 migrations.
+
+Measured: **7,610 rows removed in one transaction**, leaving 0 visits, 0
+inspections, 0 answers, 0 submissions, 0 profiles — and the 24 pre-existing
+factories exactly as they were.
+
 ## What it means for training
 
-- **A training database cannot be reset by deletion.** Resetting means recreating
-  the database and re-running migrations, then loading a fresh batch.
-- **Unload is still useful, on a narrower promise:** it removes everything from a
-  cohort that never reached submission — drafts, published visits, assignments,
-  journeys, geo events, executing inspections. That covers planning and operations
-  rehearsal, which is most of what a training session repeats.
-- **Plan the cohort around this.** If a session needs repeated resets, generate a
-  cohort whose journeys stop before submission, and load the submitted tail once.
+- A session can be reset and re-run in seconds, repeatedly, with identical results.
+- `audit_events` is kept on purpose. The trail of what a training run did stays
+  readable afterwards, which is useful for reviewing the session.
+- Nothing that was in the database before the batch is ever touched.
 
 ## Correction to the earlier design
 
