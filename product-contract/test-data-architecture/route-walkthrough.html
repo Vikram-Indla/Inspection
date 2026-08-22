@@ -1,0 +1,255 @@
+<title>Trainee Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#FBFAFC; --surface:#FFFFFF; --sunk:#F4F1F8;
+    --ink:#241C33; --body:#3D3550; --muted:#6B6280;
+    --brand:#5A4478; --accent:#7E61AC; --line:#E6E1EE; --hair:#EFEBF5;
+    --live:#1B7A5A; --live-bg:#E4F3ED;
+    --policy:#8F6407; --policy-bg:#FAF0DC;
+    --blocked:#8C3A46; --blocked-bg:#F8E7E9;
+    --shadow:0 1px 0 var(--hair);
+    --measure:70ch;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#131019; --surface:#1B1724; --sunk:#221D2E;
+      --ink:#EFEBF5; --body:#CFC8DC; --muted:#968EA9;
+      --brand:#C0A8E0; --accent:#A183D0; --line:#2F2940; --hair:#272134;
+      --live:#5CCB9E; --live-bg:#12281F;
+      --policy:#E0AC46; --policy-bg:#2C2210;
+      --blocked:#E28E98; --blocked-bg:#301A1E;
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#131019; --surface:#1B1724; --sunk:#221D2E;
+      --ink:#EFEBF5; --body:#CFC8DC; --muted:#968EA9;
+      --brand:#C0A8E0; --accent:#A183D0; --line:#2F2940; --hair:#272134;
+      --live:#5CCB9E; --live-bg:#12281F;
+      --policy:#E0AC46; --policy-bg:#2C2210;
+      --blocked:#E28E98; --blocked-bg:#301A1E;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--body);
+    font-family:Inter,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 32px 96px}
+  .spine{max-width:var(--measure)}
+  h1,h2,h3{font-family:Spectral,Georgia,serif; color:var(--ink); text-wrap:balance; margin:0}
+  h1{font-size:clamp(2.1rem,4.4vw,3.1rem); font-weight:600; line-height:1.1; letter-spacing:-.015em}
+  h2{font-size:1.65rem; font-weight:500; line-height:1.2}
+  h3{font-size:1.12rem; font-weight:600; line-height:1.35}
+  p{margin:0}
+  a{color:var(--accent)}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86em}
+
+  .eyebrow{
+    font-size:.72rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent); margin:0;
+  }
+  header.masthead{
+    border-bottom:1px solid var(--line); padding:76px 0 40px; margin-bottom:64px;
+    display:flex; flex-direction:column; gap:20px;
+  }
+  header.masthead .lede{font-size:1.16rem; color:var(--body); max-width:64ch}
+  .meta{display:flex; flex-wrap:wrap; gap:10px 28px; font-size:.82rem; color:var(--muted)}
+  .meta b{color:var(--ink); font-weight:600}
+
+  section{display:flex; flex-direction:column; gap:26px; margin-bottom:80px}
+  section > .spine{display:flex; flex-direction:column; gap:16px}
+  .sechead{display:flex; flex-direction:column; gap:8px}
+
+  figure{margin:0; display:flex; flex-direction:column; gap:14px}
+  figure svg{width:100%; height:auto; display:block; color:var(--ink)}
+  figcaption{font-size:.86rem; color:var(--muted); max-width:72ch}
+  .figframe{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:28px 24px; overflow-x:auto;
+  }
+
+  table{border-collapse:collapse; width:100%; font-size:.88rem}
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+  th{
+    text-align:left; font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); padding:14px 16px; border-bottom:1px solid var(--line); white-space:nowrap;
+    background:var(--sunk);
+  }
+  td{padding:13px 16px; border-bottom:1px solid var(--hair); vertical-align:top; color:var(--body)}
+  tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; color:var(--ink); font-weight:500}
+  td strong{color:var(--ink); font-weight:600}
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+    font-size:.72rem; font-weight:600; letter-spacing:.02em;
+    padding:3px 9px; border-radius:3px; border:1px solid transparent;
+  }
+  .chip::before{content:""; width:5px; height:5px; border-radius:50%; background:currentColor}
+  .chip.live{color:var(--live); background:var(--live-bg); border-color:color-mix(in srgb, var(--live) 28%, transparent)}
+  .chip.policy{color:var(--policy); background:var(--policy-bg); border-color:color-mix(in srgb, var(--policy) 30%, transparent)}
+  .chip.blocked{color:var(--blocked); background:var(--blocked-bg); border-color:color-mix(in srgb, var(--blocked) 30%, transparent)}
+
+  .split{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:22px; display:flex; flex-direction:column; gap:10px;
+  }
+  .card .k{font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+  .card .v{font-family:Spectral,Georgia,serif; font-size:2rem; color:var(--ink); line-height:1; font-variant-numeric:tabular-nums}
+  .card p{font-size:.88rem; color:var(--muted)}
+
+  .meter{display:flex; flex-direction:column; gap:12px}
+  .meter .track{display:flex; height:14px; border-radius:3px; overflow:hidden; border:1px solid var(--line)}
+  .meter .seg{height:100%}
+  .meter .legend{display:flex; flex-wrap:wrap; gap:8px 22px; font-size:.84rem; color:var(--muted)}
+  .meter .legend span b{color:var(--ink); font-variant-numeric:tabular-nums}
+
+  pre{
+    margin:0; background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:20px 22px; overflow-x:auto; font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.83rem; line-height:1.85; color:var(--body);
+  }
+  pre b{color:var(--ink); font-weight:500}
+  pre i{color:var(--muted); font-style:normal}
+
+  .rule{border:0; border-top:1px solid var(--line); margin:0}
+  .callout{
+    border-inline-start:2px solid var(--accent); padding:2px 0 2px 20px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  ol.steps{margin:0; padding:0; list-style:none; counter-reset:s; display:flex; flex-direction:column; gap:2px}
+  ol.steps li{
+    counter-increment:s; display:grid; grid-template-columns:28px 1fr; gap:14px;
+    padding:14px 0; border-bottom:1px solid var(--hair); font-size:.92rem;
+  }
+  ol.steps li::before{
+    content:counter(s); font-family:"IBM Plex Mono",monospace; font-size:.78rem;
+    color:var(--accent); padding-top:2px;
+  }
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps b{color:var(--ink); font-weight:600}
+  ul.plain{margin:0; padding-inline-start:20px; display:flex; flex-direction:column; gap:8px}
+  ul.plain li{padding-inline-start:4px}
+  ul.plain::marker{color:var(--accent)}
+  @media (max-width:640px){ .wrap{padding:0 20px 64px} header.masthead{padding-top:48px} }
+</style>
+
+<style>
+  pre.mermaid{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:24px; text-align:center; overflow-x:auto}
+  .stage{display:flex; flex-direction:column; gap:18px; padding:26px 0; border-top:1px solid var(--line)}
+  .stagehead{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
+  .stagenum{
+    font-family:"IBM Plex Mono",monospace; font-size:.74rem; font-weight:500; letter-spacing:.08em;
+    color:var(--surface); background:var(--brand); padding:4px 9px; border-radius:3px; white-space:nowrap;
+  }
+  .gate{
+    display:flex; flex-direction:column; gap:8px; background:var(--sunk);
+    border-inline-start:3px solid var(--policy); border-radius:0 5px 5px 0; padding:16px 20px;
+  }
+  .gate .gk{font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--policy)}
+  .gate p{font-size:.9rem}
+  .askbox{background:var(--surface); border:1px solid var(--accent); border-radius:6px; padding:24px; display:flex; flex-direction:column; gap:16px}
+  .ask{display:grid; grid-template-columns:auto 1fr; gap:12px 16px; align-items:start; padding-bottom:16px; border-bottom:1px solid var(--hair)}
+  .ask:last-child{border-bottom:0; padding-bottom:0}
+  .ask .qn{font-family:"IBM Plex Mono",monospace; font-size:.76rem; color:var(--accent); padding-top:3px}
+  .ask b{color:var(--ink); display:block; margin-bottom:4px}
+  .ask span{font-size:.9rem}
+</style>
+<div class="wrap">
+<header class="masthead">
+  <p class="eyebrow">MIM Inspection Platform · trainee walkthrough</p>
+  <h1>What the data looks like</h1>
+  <p class="lede">Every route a trainee opens, and the exact rows and numbers they will see. Nothing below is an estimate — every figure is computed from the generated cohort, and the sample rows are real rows from it.</p>
+  <div class="meta">
+    <span><b>73</b> establishments</span>
+    <span><b>300</b> visits</span>
+    <span><b>19,990</b> checklist answers</span>
+    <span><b>45</b> users</span>
+    <span>anchor 22 Aug 2026</span>
+  </div>
+</header>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">1 · Planning</p><h2>/planning</h2>
+  <p>Every tab has rows. A trainee can click all seven and never hit an empty screen.</p></div>
+  <div class="split"><div class="card"><span class="k">All</span><span class="v">300</span><p>every visit in scope</p></div><div class="card"><span class="k">Draft</span><span class="v">24</span><p>planner has not submitted</p></div><div class="card"><span class="k">Pending supervision</span><span class="v">18</span><p>waiting on a supervisor</p></div><div class="card"><span class="k">Published</span><span class="v">226</span><p>approved to run</p></div><div class="card"><span class="k">Returned</span><span class="v">10</span><p>sent back to planner</p></div><div class="card"><span class="k">Cancelled</span><span class="v">14</span><p>with a recorded reason</p></div><div class="card"><span class="k">Expired</span><span class="v">8</span><p>window passed unassigned</p></div></div>
+  <h3 class="spine">Draft tab — first rows a trainee sees</h3>
+  <div class="tablewrap"><table><thead><tr><th>Reference</th><th>Establishment</th><th>Region</th><th>Type</th><th>Priority</th><th>State</th><th>Inspector</th><th>Window</th></tr></thead><tbody><tr><td>JRN-2026-0001</td><td>Al Uyaynah Paper Converting</td><td>Riyadh</td><td>routine</td><td>low</td><td>new</td><td></td><td>2026-08-05</td></tr><tr><td>JRN-2026-0002</td><td>Jubail Industrial Coatings Plant</td><td>Eastern</td><td>complaint</td><td>urgent</td><td>new</td><td></td><td>2026-08-17</td></tr><tr><td>JRN-2026-0003</td><td>Rawdah Packaging Solutions</td><td>Riyadh</td><td>routine</td><td>high</td><td>new</td><td></td><td>2026-05-05</td></tr><tr><td>JRN-2026-0004</td><td>Riyadh Paints and Coatings</td><td>Riyadh</td><td>follow_up</td><td>urgent</td><td>new</td><td></td><td>2026-06-27</td></tr><tr><td>JRN-2026-0005</td><td>Hail Wheat Processing Mills</td><td>Hail</td><td>complaint</td><td>normal</td><td>new</td><td></td><td>2026-08-13</td></tr></tbody></table></div>
+  <h3 class="spine">Cancelled tab</h3>
+  <div class="tablewrap"><table><thead><tr><th>Reference</th><th>Establishment</th><th>Region</th><th>Type</th><th>Priority</th><th>State</th><th>Inspector</th><th>Window</th></tr></thead><tbody><tr><td>JRN-2026-0075</td><td>Unaizah Dairy Products Plant</td><td>Qassim</td><td>follow_up</td><td>high</td><td>new</td><td></td><td>2026-06-18</td></tr><tr><td>JRN-2026-0076</td><td>Riyadh Precision Machinery Works</td><td>Riyadh</td><td>follow_up</td><td>urgent</td><td>new</td><td></td><td>2026-06-25</td></tr><tr><td>JRN-2026-0077</td><td>Hofuf Date Packing Industries</td><td>Eastern</td><td>licensing</td><td>normal</td><td>new</td><td></td><td>2026-05-30</td></tr><tr><td>JRN-2026-0078</td><td>Qatif Marine Equipment Co.</td><td>Eastern</td><td>follow_up</td><td>low</td><td>new</td><td></td><td>2026-05-16</td></tr><tr><td>JRN-2026-0079</td><td>Najran Cement Products Works</td><td>Najran</td><td>complaint</td><td>normal</td><td>new</td><td></td><td>2026-08-04</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">2 · Operations Center</p><h2>/operations</h2>
+  <p>44 inspectors are in motion on the anchor date, so the live map has moving pins rather than one static dot.</p></div>
+  <div class="split"><div class="card"><span class="k">Pipeline</span><span class="v">300</span><p>all visits</p></div><div class="card"><span class="k">On the map now</span><span class="v">44</span><p>travelling, arrived or executing</p></div><div class="card"><span class="k">GPS overrides today</span><span class="v">6</span><p>arrival outside the geofence</p></div><div class="card"><span class="k">Assigned</span><span class="v">30</span><p>not yet started</p></div></div>
+  <h3 class="spine">By operational state</h3>
+  <div class="tablewrap"><table><thead><tr><th>State</th><th>Visits</th></tr></thead><tbody><tr><td>new</td><td>96</td></tr><tr><td>assigned</td><td>30</td></tr><tr><td>on_the_way</td><td>12</td></tr><tr><td>arrived</td><td>14</td></tr><tr><td>executing</td><td>18</td></tr><tr><td>under_review</td><td>70</td></tr><tr><td>closed</td><td>60</td></tr></tbody></table></div>
+  <h3 class="spine">Live on the map right now</h3>
+  <div class="tablewrap"><table><thead><tr><th>Reference</th><th>Establishment</th><th>Region</th><th>Type</th><th>Priority</th><th>State</th><th>Inspector</th><th>Window</th></tr></thead><tbody><tr><td>JRN-2026-0127</td><td>Al Yamamah Steel Fabrication</td><td>Riyadh</td><td>licensing</td><td>normal</td><td>on_the_way</td><td>inspector2</td><td>2026-08-22</td></tr><tr><td>JRN-2026-0128</td><td>Obhur Plastic Packaging Co.</td><td>Makkah</td><td>licensing</td><td>urgent</td><td>on_the_way</td><td>inspector24</td><td>2026-08-22</td></tr><tr><td>JRN-2026-0129</td><td>Jubail Industrial Coatings Plant</td><td>Eastern</td><td>routine</td><td>high</td><td>on_the_way</td><td>inspector9</td><td>2026-08-22</td></tr><tr><td>JRN-2026-0130</td><td>Obhur Plastic Packaging Co.</td><td>Makkah</td><td>licensing</td><td>normal</td><td>on_the_way</td><td>inspector11</td><td>2026-08-22</td></tr><tr><td>JRN-2026-0131</td><td>Al Ahsa Poultry Feed Mills</td><td>Eastern</td><td>follow_up</td><td>low</td><td>on_the_way</td><td>inspector22</td><td>2026-08-22</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">3 · Execution</p><h2>/execution</h2>
+  <p>Partly-filled inspections, so a trainee can see a checklist mid-flight rather than only blank or only complete.</p></div>
+  <div class="split"><div class="card"><span class="k">Active now</span><span class="v">18</span><p>inspections in progress</p></div><div class="card"><span class="k">Answers recorded</span><span class="v">1,530</span><p>across active inspections</p></div><div class="card"><span class="k">Per inspection</span><span class="v">85 of 142</span><p>about 60% complete</p></div></div>
+  <div class="tablewrap"><table><thead><tr><th>Reference</th><th>Establishment</th><th>Inspector</th><th>Answers</th><th>Evidence</th><th>Findings</th></tr></thead><tbody><tr><td>JRN-2026-0153</td><td>Yanbu Petrochemical Support Industries</td><td>inspector19</td><td>85</td><td>4</td><td>1</td></tr><tr><td>JRN-2026-0154</td><td>Uyun Al Jawa Plastic Pipes Factory</td><td>inspector16</td><td>85</td><td>4</td><td>3</td></tr><tr><td>JRN-2026-0155</td><td>Abha Highland Water Bottling</td><td>inspector9</td><td>85</td><td>6</td><td>3</td></tr><tr><td>JRN-2026-0156</td><td>Abha Highland Water Bottling</td><td>inspector14</td><td>85</td><td>3</td><td>2</td></tr><tr><td>JRN-2026-0157</td><td>Najd Advanced Plastics Factory</td><td>inspector23</td><td>85</td><td>5</td><td>1</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">4 · Review &amp; Approval</p><h2>/reviews</h2>
+  <p>A supervisor opens a full 142-item submission with evidence attached and decides.</p></div>
+  <div class="split"><div class="card"><span class="k">Waiting</span><span class="v">48</span><p>queue on open</p></div><div class="card"><span class="k">Decided</span><span class="v">82</span><p>total decisions</p></div><div class="card"><span class="k">Approved</span><span class="v">60</span><p>→ counts toward compliance</p></div><div class="card"><span class="k">Returned</span><span class="v">12</span><p>correction loop</p></div><div class="card"><span class="k">Rejected</span><span class="v">10</span><p></p></div></div>
+  <div class="tablewrap"><table><thead><tr><th>Reference</th><th>Establishment</th><th>Region</th><th>Answers</th><th>Non-compliant</th><th>Evidence</th><th>Supervisor</th></tr></thead><tbody><tr><td>JRN-2026-0171</td><td>Hail Wheat Processing Mills</td><td>Hail</td><td>142</td><td>20</td><td>5</td><td>supervisor5</td></tr><tr><td>JRN-2026-0172</td><td>Jubail Polymer Compounding Co.</td><td>Eastern</td><td>142</td><td>20</td><td>6</td><td>supervisor2</td></tr><tr><td>JRN-2026-0173</td><td>Sudair Solar Panel Assembly</td><td>Riyadh</td><td>142</td><td>20</td><td>3</td><td>supervisor2</td></tr><tr><td>JRN-2026-0174</td><td>Hofuf Date Packing Industries</td><td>Eastern</td><td>142</td><td>20</td><td>4</td><td>supervisor4</td></tr><tr><td>JRN-2026-0175</td><td>Najran Cement Products Works</td><td>Najran</td><td>142</td><td>20</td><td>3</td><td>supervisor8</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">5 · Enforcement Library</p><h2>/admin/violations</h2></div>
+  <div class="split"><div class="card"><span class="k">Violations</span><span class="v">87</span><p>on approved inspections</p></div><div class="card"><span class="k">Penalties</span><span class="v">34</span><p>where a mapping exists</p></div><div class="card"><span class="k">Establishments affected</span><span class="v">38</span><p>of 73</p></div></div>
+  <div class="tablewrap"><table><thead><tr><th>Reference</th><th>Establishment</th><th>Region</th><th>Violations</th><th>Penalties</th></tr></thead><tbody><tr><td>JRN-2026-0231</td><td>Al Baha Mountain Spring Bottling</td><td>Al Baha</td><td>2</td><td>0</td></tr><tr><td>JRN-2026-0232</td><td>Al Jouf Olive Oil Pressing Co.</td><td>Al Jouf</td><td>1</td><td>1</td></tr><tr><td>JRN-2026-0233</td><td>Asir Leather Tanning Works</td><td>Asir</td><td>1</td><td>1</td></tr><tr><td>JRN-2026-0234</td><td>Dhahran Industrial Valves Factory</td><td>Eastern</td><td>2</td><td>1</td></tr><tr><td>JRN-2026-0235</td><td>Hail Wheat Processing Mills</td><td>Hail</td><td>1</td><td>0</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">6 · Factory 360</p><h2>/factories</h2></div>
+  <div class="split"><div class="card"><span class="k">Establishments</span><span class="v">73</span><p>13 regions, 27 industrial sites</p></div><div class="card"><span class="k">With visit history</span><span class="v">72</span><p>the rest are deliberately untouched</p></div><div class="card"><span class="k">Busiest establishment</span><span class="v">8</span><p>visits on one factory</p></div></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">7 · Field app</p><h2>/field/*</h2></div>
+  <div class="split"><div class="card"><span class="k">Inspectors</span><span class="v">24</span><p>each logs in and sees only their own work</p></div><div class="card"><span class="k">Average workload</span><span class="v">8.5</span><p>assignments per inspector</p></div></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">8 · Analytics</p><h2>/analytics</h2>
+  <p>The page defaults to the rolling 30 days. 24 of 60 approved visits land inside it, so the tiles carry signal while the 12-month trend still has shape.</p></div>
+  <div class="tablewrap"><table><thead><tr><th>Region</th><th>Approved visits</th></tr></thead><tbody><tr><td>Riyadh</td><td>20</td></tr><tr><td>Eastern</td><td>9</td></tr><tr><td>Qassim</td><td>6</td></tr><tr><td>Madinah</td><td>5</td></tr><tr><td>Al Baha</td><td>3</td></tr><tr><td>Asir</td><td>3</td></tr><tr><td>Hail</td><td>3</td></tr><tr><td>Northern Borders</td><td>3</td></tr><tr><td>Al Jouf</td><td>2</td></tr><tr><td>Makkah</td><td>2</td></tr><tr><td>Najran</td><td>2</td></tr><tr><td>Jazan</td><td>1</td></tr><tr><td>Tabuk</td><td>1</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">9 · Dashboard</p><h2>/dashboard</h2>
+  <p>Computed from everything above. These are the numbers, not placeholders.</p></div>
+  <div class="tablewrap"><table><thead><tr><th>Measure</th><th>Trainee sees</th><th>Where it comes from</th></tr></thead><tbody><tr><td><b>National compliance rate</b></td><td><b>83.7%</b></td><td>6,426 compliant of 7,680 eligible answers on approved inspections</td></tr><tr><td><b>Inspection approval rate</b></td><td><b>73.2%</b></td><td>60 approved of 82 decided</td></tr><tr><td><b>Cancellation rate</b></td><td><b>4.7%</b></td><td>14 cancelled of 300</td></tr><tr><td><b>Checklist items by authority</b></td><td><b>142</b></td><td>published package items</td></tr><tr><td><b>Visit pipeline</b></td><td><b>300</b></td><td>all visits</td></tr><tr><td><b>Active executions</b></td><td><b>18</b></td><td>inspections in progress</td></tr><tr><td><b>Pending approvals</b></td><td><b>48</b></td><td>reviews awaiting decision</td></tr><tr><td><b>GPS overrides today</b></td><td><b>6</b></td><td>arrivals outside the geofence, anchor date</td></tr><tr><td>Inspection coverage</td><td><span class="chip policy">Not configured</span></td><td>publish the inspection-cycle policy</td></tr><tr><td>Uninspected factories</td><td><span class="chip policy">Not configured</span></td><td>publish the inspection-cycle policy</td></tr><tr><td>Expiring soon</td><td><span class="chip policy">Not configured</span></td><td>publish the SLA urgency policy</td></tr><tr><td>Risk distribution</td><td><span class="chip blocked">Unavailable</span></td><td>no Health Score source in the schema</td></tr><tr><td>Licence exposure</td><td><span class="chip blocked">Unavailable</span></td><td>no governed exposure rule</td></tr><tr><td>Repeat violation rate</td><td><span class="chip blocked">Unavailable</span></td><td>no repeat-window rule</td></tr><tr><td>Violation trend</td><td><span class="chip blocked">Decision required</span></td><td>violations carry no issue-date column</td></tr></tbody></table></div>
+  <div class="spine callout">
+    <h3>What a trainee will ask on day one</h3>
+    <p><strong>“Why do six tiles say Unavailable?”</strong> Three need a policy published in Administration — a five-minute admin task, not a code change. Three cannot be filled by any amount of data; they need a schema change or a governance ruling. Both answers are defensible in front of a room. Inventing numbers for them would not be.</p>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead"><p class="eyebrow">Simulation</p><h2>How you see this before anything is loaded</h2></div>
+  <ol class="steps">
+    <li><b>You are looking at it.</b> Every number on this page was computed by <code>build_cohort.py</code> from the generated cohort. No database was touched.</li>
+    <li><b>The cohort is three files.</b> <code>factories.csv</code> (73), <code>personas.csv</code> (45), <code>journeys.csv</code> (300). Open them, change a name, re-run the script, and this page changes with them.</li>
+    <li><b>Nothing is random.</b> The generator uses no clock and no random seed. The same inputs always produce the same 300 journeys, so the demo is identical every time you run it.</li>
+    <li><b>Then it loads.</b> Once you approve the shape, the loader writes these rows through the real application paths so the audit trail is genuine, and the unload script removes them by exact row ID.</li>
+  </ol>
+</section>
+
+<hr class="rule">
+<p style="margin-top:24px; font-size:.82rem; color:var(--muted)">Cohort: <code>seed-source/journeys.csv</code> · <code>personas.csv</code> · <code>factories.csv</code> · Figures: <code>seed-source/route-preview.json</code> · Regenerate: <code>python3 build_cohort.py</code> · No database has been written to.</p>
+</div>

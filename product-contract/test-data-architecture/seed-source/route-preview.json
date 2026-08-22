@@ -1,0 +1,100 @@
+{
+ "totals": {
+  "factories": 73,
+  "personas": 45,
+  "journeys": 300,
+  "regions": 13,
+  "checklist_responses": 19990,
+  "evidence": 665,
+  "findings": 280,
+  "violations": 87,
+  "penalties": 34
+ },
+ "planning_tabs": {
+  "all": 300,
+  "draft": 24,
+  "pending_supervision": 18,
+  "published": 226,
+  "returned": 10,
+  "cancelled": 14,
+  "expired": 8
+ },
+ "operations": {
+  "pipeline_total": 300,
+  "by_state": {
+   "new": 96,
+   "assigned": 30,
+   "on_the_way": 12,
+   "arrived": 14,
+   "executing": 18,
+   "under_review": 70,
+   "closed": 60
+  },
+  "on_map_today": 44,
+  "gps_overrides_today": 6
+ },
+ "execution": {
+  "active": 18,
+  "assigned_today": 8,
+  "responses_in_progress": 1530
+ },
+ "reviews": {
+  "queue_pending": 48,
+  "decided": 82,
+  "approve": 60,
+  "returned": 12,
+  "reject": 10
+ },
+ "enforcement": {
+  "violations": 87,
+  "penalties": 34,
+  "factories_with_violations": 38
+ },
+ "dashboard": {
+  "STR-KPI-001_compliance_rate": 83.7,
+  "STR-KPI-001_numerator": 6426,
+  "STR-KPI-001_denominator": 7680,
+  "STR-KPI-004_approval_rate": 73.2,
+  "STR-KPI-006_cancellation_rate": 4.7,
+  "STR-KPI-009_checklist_items": 142,
+  "OPS-KPI-001_visit_pipeline": 300,
+  "OPS-KPI-003_active_executions": 18,
+  "OPS-KPI-004_pending_approvals": 48,
+  "OPS-KPI-007_gps_overrides_today": 6,
+  "STR-KPI-002_risk_distribution": "Unavailable — no Health Score source",
+  "STR-KPI-003_violation_trend": "Decision required — no issue-date column",
+  "STR-KPI-005_licence_exposure": "Unavailable — no governed rule",
+  "STR-KPI-011_repeat_violation": "Unavailable — no repeat window rule",
+  "STR-KPI-007_coverage": "Not configured — publish inspection-cycle policy",
+  "STR-KPI-008_uninspected": "Not configured — publish inspection-cycle policy",
+  "OPS-KPI-002_expiring_soon": "Not configured — publish SLA urgency policy"
+ },
+ "analytics": {
+  "approved_in_last_30_days": 24,
+  "approved_total": 60,
+  "by_region": {
+   "Al Baha": 3,
+   "Al Jouf": 2,
+   "Asir": 3,
+   "Eastern": 9,
+   "Hail": 3,
+   "Jazan": 1,
+   "Madinah": 5,
+   "Makkah": 2,
+   "Najran": 2,
+   "Northern Borders": 3,
+   "Qassim": 6,
+   "Riyadh": 20,
+   "Tabuk": 1
+  }
+ },
+ "factory360": {
+  "establishments": 73,
+  "with_history": 72,
+  "max_visits_one_factory": 8
+ },
+ "field_inspector": {
+  "inspectors": 24,
+  "avg_assignments": 8.5
+ }
+}
