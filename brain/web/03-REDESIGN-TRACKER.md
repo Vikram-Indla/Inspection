@@ -13,7 +13,7 @@ Statuses: `todo` · `in-progress` · `blocked` · `done`
 **Claim the next id here at the START of a task, before writing code.** T-076 and
 T-101 and T-106 were each used by two concurrent sessions; every one of those
 collisions was predicted in this file and none was prevented, because nothing
-implements the reservation. **Highest id in use: T-183.** Take T-184.
+implements the reservation. **Highest id in use: T-184.** Take T-185.
 
 **The collision count is 6, not 3** (T-134): T-026, T-027, T-046 (**four times**),
 T-077 and T-078 all name two or more different tasks in `02-SESSION-LOG.md`.
@@ -22,6 +22,24 @@ The cheapest real control is a gate that fails on a duplicate `T-NNN` there.
 ---
 
 ## NOW
+
+### T-184 · "operational" removed, and the banned list corrected
+`status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`
+`record:` [2026-08-22-T-184-operational-and-banned-list-triage](sessions/2026-08/2026-08-22-T-184-operational-and-banned-list-triage.md)
+
+`Operational state` → `Work state`. `Operational View` → `Day-to-day view`.
+25 strings per language.
+
+**T-183 over-banned and this reverses it.** Fourteen words were wrongly added:
+`mode`, `cancelled`, `temporarily`, `invalid`, `verified`, `criteria` and more.
+"Light mode" is universal interface vocabulary; "Cancelled" is a status everyone
+knows. **Rewriting them would have made the product worse while the numbers said
+it got better.** Baseline fell 592 → 380 — a corrected rule, not corrected copy.
+
+**Mechanical word-elimination has now reached its limit here.** The remaining
+top "offenders" are ordinary words a film-subtitle frequency corpus does not
+contain often. The real remaining work is the **63 long sentences**, `CR`
+expansion, and above all the **2,370 hardcoded literals with no Arabic**.
 
 ### T-183 · Third rewrite wave, and a wider banned list
 `status: done` · `rules: WEB-011, WEB-013, WEB-016` · `est: 30m`

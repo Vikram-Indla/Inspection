@@ -53,7 +53,7 @@
     "colVisitRef": "Visit Reference",
     "colPlanningType": "Planning Type",
     "colPlanningStatus": "Planning Status",
-    "colOperationalState": "Operational State",
+    "colOperationalState": "Work state",
     "colVisitType": "Visit Type",
     "colVisitMode": "Visit Mode",
     "colPriority": "Priority",

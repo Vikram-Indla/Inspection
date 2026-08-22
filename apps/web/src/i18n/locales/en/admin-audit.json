@@ -35,7 +35,7 @@
     "sourceEvents": "source events",
     "last": "last"
   },
-  "policy": "Operational view only. Export, reveal, redaction, retention, watermark, purge and legal-evidence claims are held by policy.",
+  "policy": "Day-to-day view only. Export, reveal, hiding, keeping, watermark, purge and legal-evidence claims are set by policy.",
   "tags": {
     "policyHeld": "POLICY_HELD",
     "partialScope": "PARTIAL SCOPE.",

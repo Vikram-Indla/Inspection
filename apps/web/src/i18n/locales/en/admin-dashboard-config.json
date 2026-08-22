@@ -53,7 +53,7 @@
   },
   "category": {
     "inspector": "Inspector",
-    "operational": "Operational",
+    "operational": "Day-to-day",
     "strategic": "Strategic"
   },
   "unit": {
@@ -93,7 +93,7 @@
     "OPS-KPI-006": "Today's schedule load by inspector",
     "OPS-KPI-007": "GPS overrides today",
     "OPS-KPI-008": "Live activity feed",
-    "OPS-KPI-009": "Evidence-grounded operational nudges",
+    "OPS-KPI-009": "Day-to-day nudges backed by evidence",
     "IPAD-KPI-001": "Today's visits",
     "IPAD-KPI-002": "Remaining visits",
     "IPAD-KPI-003": "Pending attention",

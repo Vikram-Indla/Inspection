@@ -5,7 +5,7 @@
   "perspective": {
     "label": "Dashboard perspective",
     "strategic": "Strategic View",
-    "operational": "Operational View"
+    "operational": "Day-to-day view"
   },
   "updated": {
     "label": "Updated",
@@ -142,13 +142,13 @@
     "activeField": {
       "title": "Active inspections by state",
       "description": "Where each field inspection currently stands, inside the total above.",
-      "aria": "Active field inspections by operational state, ranked from largest to smallest",
+      "aria": "Active field inspections by work state, ranked from largest to smallest",
       "total": "{total} active inspections"
     },
     "todayStates": {
       "title": "Today's schedule by state",
       "description": "Every visit scheduled for today, grouped by the state it currently holds.",
-      "aria": "Today's visits by operational state, ranked from largest to smallest",
+      "aria": "Today's visits by work state, ranked from largest to smallest",
       "total": "{total} visits scheduled today"
     },
     "activity": {
@@ -179,7 +179,7 @@
     "groups": {
       "execution": "Execution status",
       "approvals": "Approvals",
-      "exceptions": "Operational exceptions"
+      "exceptions": "Things that need attention"
     },
     "today": {
       "title": "Today's operations",
@@ -198,7 +198,7 @@
       "active": {
         "question": "What inspections are currently active?",
         "title": "Active field inspections",
-        "definition": "Count of inspections with operational state = executing",
+        "definition": "How many inspections are being done right now",
         "action": "Open Operations Center"
       },
       "overdue": {
@@ -227,7 +227,7 @@
       }
     },
     "requirement": {
-      "title": "Operational requirement coverage",
+      "title": "Day-to-day measure coverage",
       "description": "Day-to-day measures not shown above, and whether each one is live or stopped."
     },
     "capacity": {

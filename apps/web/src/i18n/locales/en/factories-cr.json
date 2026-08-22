@@ -95,7 +95,7 @@
   },
   "visits": {
     "heading": "Visit summary",
-    "boundary": "Operational context only. Inspection answers, evidence, findings, reviewer comments and personal contact data are excluded.",
+    "boundary": "Visit context only. Inspection answers, evidence, findings, reviewer comments and personal contact details are left out.",
     "reference": "Visit reference",
     "date": "Date",
     "type": "Type",
@@ -283,7 +283,7 @@
     "completed": "Completed",
     "issued": "Issued",
     "industrial": "Industrial",
-    "operational": "Operational",
+    "operational": "Working",
     "periodic": "Periodic",
     "immediate": "Immediate",
     "follow_up": "Follow-up",

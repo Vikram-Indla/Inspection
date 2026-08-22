@@ -66,7 +66,7 @@
     "region": "Region",
     "risk": "Risk",
     "visitMode": "Visit mode",
-    "operationalState": "Operational state",
+    "operationalState": "Work state",
     "any": "Any",
     "clear": "Clear filters"
   },
@@ -81,7 +81,7 @@
     "risk": "Risk",
     "inspector": "Inspector",
     "regionCity": "Region and city",
-    "operationalState": "Operational state",
+    "operationalState": "Work state",
     "preparation": "Preparation",
     "reportType": "Report type",
     "locationData": "Location data",

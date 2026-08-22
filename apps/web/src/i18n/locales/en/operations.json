@@ -21,12 +21,12 @@
     "countLabel": "on map"
   },
   "summary": {
-    "title": "Operational summary"
+    "title": "Summary"
   },
   "states": {
-    "title": "Visits by operational state",
-    "description": "Every visit in scope, grouped by the operational state it currently holds.",
-    "aria": "Visits in scope by operational state, ranked from largest to smallest",
+    "title": "Visits by work state",
+    "description": "Every visit in your area, grouped by the work state it is in now.",
+    "aria": "Visits in your area by work state, ranked from largest to smallest",
     "total": "{total} visits in scope"
   },
   "regions": {
@@ -46,25 +46,25 @@
     "reminder": "Reminder {pct}%"
   },
   "exceptions": {
-    "title": "Live operational exceptions",
+    "title": "Live problems",
     "scope": "Records filtered to your access",
     "openRecord": "Open record",
-    "emptyTitle": "No open operational exceptions",
-    "emptyBody": "No open operational exceptions in this scope."
+    "emptyTitle": "No open problems",
+    "emptyBody": "There are no open problems in your area."
   },
   "stat": {
     "activeVisits": "Active visits",
     "onTheWay": "Inspectors on the way",
     "executing": "Executing inspections",
     "submittedToday": "Submitted today",
-    "alerts": "Active operational alerts",
+    "alerts": "Active alerts",
     "openExecution": "Open Execution"
   },
   "table": {
     "title": "Live positions list",
     "caption": "Accessible equivalent of the live map. Same records, same actions, no map dependency.",
     "inspector": "Inspector",
-    "state": "Operational state",
+    "state": "Work state",
     "visit": "Visit",
     "factory": "Factory",
     "location": "Region / city",

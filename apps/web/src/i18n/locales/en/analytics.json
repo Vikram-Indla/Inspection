@@ -121,7 +121,7 @@
     "slaUrgency": "SLA urgency",
     "capacityUtilization": "Capacity and utilization",
     "strategicBrief": "Strategic inspection brief",
-    "attentionQueue": "Operational attention queue",
+    "attentionQueue": "Needs attention",
     "export": "Export",
     "strategicBriefNote": "It cannot approve, publish, assign, penalise or enforce.",
     "attentionQueueNote": "No live AI request is made.",
