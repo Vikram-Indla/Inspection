@@ -1,0 +1,43 @@
+unit_id,layer,entity,table,id_derivation,parent,smoke,demo,qa,perf,notes
+U-01,L0,Role,roles,verify only,—,verify,verify,verify,verify,Never written — run fails if the accepted v1 set is missing or mutated
+U-02,L0,Capability / permission,capabilities permissions role_permissions,verify only,U-01,verify,verify,verify,verify,Same
+U-03,L0,Planning lookup,planning_lookups,verify only,—,verify,verify,verify,verify,Visit types priorities cancellation reasons
+U-04,L0,Regulation and clause,compliance_regulation_library regulation_clauses,verify only,—,verify,verify,verify,verify,9 issuing authorities
+U-05,L0,Violation code,violation_codes,verify only,U-04,verify,verify,verify,verify,—
+U-06,L0,Engine setting,engine_settings,verify only,—,verify,verify,verify,verify,risk gis sla evidence otp v1 — accepted values
+U-07,L1,KPI parameter version,dashboard_config_heads dashboard_config_versions,uuidv5(batch,'kpi_parameters'),—,1,1,1,1,Publishes governed targets — REQUIRED for STR-KPI-007
+U-08,L1,Inspection cycle policy,dashboard_config_versions,uuidv5(batch,'inspection_cycle_policy'),—,1,1,1,1,REQUIRED to unblock STR-KPI-007 and STR-KPI-008
+U-09,L1,SLA urgency policy,dashboard_config_versions,uuidv5(batch,'sla_urgency_policy'),—,1,1,1,1,REQUIRED to unblock OPS-KPI-002
+U-10,L1,Inspection package,packages,uuidv5(batch,'package:'||code),U-04,2,6,8,10,Each with items drawn from U-04
+U-11,L1,Published package version,package_versions,uuidv5(batch,'pkgver:'||code||':'||n),U-10,2,8,12,14,At least one draft version must exist for the fail-closed test
+U-12,L1,Checklist item,inspection_items,uuidv5(batch,'item:'||code),U-11,40,142,220,400,Grouped by issuing authority — feeds STR-KPI-009
+U-13,L1,Planning expiry rule,planning_expiry_rules,uuidv5(batch,'expiry:'||n),—,1,3,5,5,Drives J05
+U-14,L1,Notification rule,notification_rules,uuidv5(batch,'notifrule:'||n),U-01,3,8,12,12,—
+U-15,L2,Persona (auth user + profile + role grant),auth.users profiles user_roles,uuidv5(batch,'persona:'||username),U-01,10,49,70,120,"5 admin 6 planner 8 supervisor 4 reviewer 24 inspector 2 boundary (multi-role no-workspace)"
+U-16,L2,Region,derived from factories.region,—,—,2,5,5,13,KSA regions — code-side list not a table
+U-17,L2,City,derived from factories.city,U-16,—,4,15,20,45,—
+U-18,L2,Factory,factories,uuidv5(batch,'factory:'||factory_code),U-17,6,60,120,2000,Spread across regions sectors and risk bands
+U-19,L2,Factory location / geofence,factory_locations,uuidv5(batch,'floc:'||factory_code),U-18,6,60,120,2000,Real KSA coordinates + arrival radius
+U-20,L2,Industrial licence,industrial_licenses,uuidv5(batch,'lic:'||factory_code||':'||n),U-18,6,72,150,2400,Mixed active expiring expired
+U-21,L2,Production line item,plant_production_line_items,uuidv5(batch,'prod:'||factory_code||':'||n),U-18,12,300,600,8000,Product and raw-material coherence rules apply
+U-22,L2,Factory representative,factory_representatives,uuidv5(batch,'rep:'||factory_code),U-18,6,60,120,2000,—
+U-23,L2,Trusted device,mvp3_devices,uuidv5(batch,'device:'||username),U-15,4,24,30,120,One per inspector
+U-24,L3,Visit plan,visit_plans,uuidv5(batch,'plan:'||plan_ref),U-15,8,90,140,600,"Single immediate and bulk methods"
+U-25,L3,Journey (THE UNIT),visits,uuidv5(batch,'journey:'||journey_ref),U-24 U-18 U-11,20,300,480,20000,One row per journey; terminal stop decides every downstream row
+U-26,L3,Assignment,assignments,uuidv5(batch,'assign:'||journey_ref),U-25 U-15,14,254,400,17000,Created from stop J06 onward
+U-27,L3,Journey session,journey_sessions,uuidv5(batch,'jsess:'||journey_ref),U-25,10,224,360,15000,From stop J07 onward
+U-28,L3,Geo event,geo_events,uuidv5(batch,'geo:'||journey_ref||':'||kind),U-27,20,560,900,40000,depart arrive override
+U-29,L3,Inspection,inspections,uuidv5(batch,'insp:'||journey_ref),U-25 U-11,10,248,400,14000,From stop J10 onward
+U-30,L3,Checklist response,checklist_responses,uuidv5(batch,'resp:'||journey_ref||':'||item_code),U-29 U-12,400,35216,88000,1960000,One per item per inspection — the largest table by far
+U-31,L3,Evidence,evidence,uuidv5(batch,'evid:'||journey_ref||':'||n),U-29,20,900,1600,50000,Metadata + SHA-256 only; no binaries in the repo
+U-32,L3,Finding,findings,uuidv5(batch,'find:'||journey_ref||':'||n),U-29,4,35,80,3000,—
+U-33,L3,Submission version,submission_versions,uuidv5(batch,'subv:'||journey_ref||':'||v),U-29,8,248,400,14000,Immutable — v2 exists only for J13
+U-34,L3,Review,reviews,uuidv5(batch,'rev:'||journey_ref||':'||n),U-33,8,230,380,13000,Latest decided review per inspection drives STR-KPI-004
+U-35,L3,Violation,violations,uuidv5(batch,'viol:'||journey_ref||':'||n),U-29 U-05,3,28,70,2500,—
+U-36,L3,Penalty,inspection_penalties penalty_notices,uuidv5(batch,'pen:'||journey_ref),U-35,2,14,35,1200,Amounts must come from governed penalty_mappings — never invented
+U-37,L3,Factory check,inspection_factory_checks,uuidv5(batch,'fchk:'||journey_ref),U-29 U-18,8,248,400,14000,—
+U-38,L3,Senaei reconciliation record,senaei_reconciliation_records senaei_sync_runs,uuidv5(batch,'senaei:'||factory_code),U-18,2,20,40,200,Records honest stub / not_configured outcomes only
+U-39,L4,Audit event,audit_events,server-generated,all L3 writes,auto,auto,auto,auto,NEVER inserted and NEVER deleted — append-only and immutable
+U-40,L4,Notification,notifications,uuidv5(batch,'notif:'||journey_ref||':'||n),U-25 U-15,20,900,1400,40000,Deleted with its parent journey
+U-41,L4,Visit lifecycle event,visit_lifecycle_events,uuidv5(batch,'vle:'||journey_ref||':'||n),U-25,40,1200,2000,80000,Deleted with its parent journey
+U-42,registry,Seed run,seed_runs,batch uuid,—,1,1,1,1,NEW TABLE — the load/unload ledger

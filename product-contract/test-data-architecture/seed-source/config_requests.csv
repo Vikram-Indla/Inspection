@@ -1,0 +1,31 @@
+request_ref,kind,regulation_code,clause_ref,issuing_authority_code,status,status_label,raised_by,decided_by,raised_on,components
+CCR-2026-001,Amend clause wording,HCIS-PRO-04,1.6,HCIS,draft,Draft,admin3,,2026-06-04,3
+CCR-2026-002,Amend clause wording,HCIS-SEC-01,2.4,HCIS,draft,Draft,admin3,,2026-08-23,2
+CCR-2026-003,Add checklist item,SFDA-GMP-02,2.8,SFDA,draft,Draft,admin2,,2026-04-12,4
+CCR-2026-004,Add checklist item,NCEC-EMS-01,2.2,NCEC,draft,Draft,admin4,,2026-01-09,3
+CCR-2026-005,Add regulation,SFDA-HYG-05,5.8,SFDA,submitted,Awaiting review,admin3,,2026-07-12,1
+CCR-2026-006,Change penalty mapping,CD-HAZ-06,1.4,CD,submitted,Awaiting review,admin3,,2026-08-25,2
+CCR-2026-007,Add regulation,SASO-MET-07,3.5,SASO,submitted,Awaiting review,admin2,,2026-07-21,2
+CCR-2026-008,Change evidence rule,MIM-PRD-03,3.7,MIM,submitted,Awaiting review,admin5,,2026-02-20,3
+CCR-2026-009,Add checklist item,SFDA-HYG-05,2.8,SFDA,submitted,Awaiting review,admin2,,2026-04-13,3
+CCR-2026-010,Retire violation code,MIM-LIC-01,2.8,MIM,submitted,Awaiting review,admin1,,2026-02-22,1
+CCR-2026-011,Retire violation code,MHRSD-OSH-09,2.8,MHRSD,submitted,Awaiting review,admin2,,2026-05-09,4
+CCR-2026-012,Add regulation,SASO-MET-07,3.5,SASO,under_review,Under review,admin1,,2026-07-25,1
+CCR-2026-013,Amend clause wording,SFDA-HYG-05,1.6,SFDA,under_review,Under review,admin3,,2026-08-02,4
+CCR-2026-014,Add regulation,CD-HAZ-06,3.1,CD,under_review,Under review,admin4,,2026-04-21,2
+CCR-2026-015,Change evidence rule,SFDA-GMP-02,3.7,SFDA,under_review,Under review,admin4,,2026-05-20,2
+CCR-2026-016,Amend clause wording,MHRSD-WRK-02,1.8,MHRSD,under_review,Under review,admin5,,2026-06-12,3
+CCR-2026-017,Retire violation code,SASO-QMS-03,2.4,SASO,approved,Approved,admin1,admin1,2026-01-07,4
+CCR-2026-018,Add checklist item,SFDA-GMP-02,5.5,SFDA,approved,Approved,admin1,admin4,2026-07-01,4
+CCR-2026-019,Amend clause wording,SFDA-GMP-02,2.8,SFDA,approved,Approved,admin2,admin3,2026-04-05,1
+CCR-2026-020,Change penalty mapping,HCIS-SEC-01,3.7,HCIS,approved,Approved,admin2,admin2,2026-04-27,4
+CCR-2026-021,Add checklist item,CD-EMR-11,2.5,CD,approved,Approved,admin2,admin2,2026-01-09,2
+CCR-2026-022,Retire violation code,HCIS-PRO-04,3.8,HCIS,approved,Approved,admin2,admin2,2026-02-11,2
+CCR-2026-023,Amend clause wording,SASO-QMS-03,1.1,SASO,rejected,Rejected,admin5,admin2,2026-01-25,2
+CCR-2026-024,Amend clause wording,SASO-MET-07,2.3,SASO,rejected,Rejected,admin2,admin2,2026-02-10,1
+CCR-2026-025,Change evidence rule,HCIS-PRO-04,4.6,HCIS,rejected,Rejected,admin1,admin3,2026-01-01,4
+CCR-2026-026,Amend clause wording,SBC-801,1.8,SBC,published,Published,admin3,admin1,2026-05-17,2
+CCR-2026-027,Add checklist item,SASO-MET-07,2.3,SASO,published,Published,admin1,admin2,2026-01-03,4
+CCR-2026-028,Amend clause wording,SASO-MET-07,3.5,SASO,published,Published,admin5,admin5,2026-06-07,4
+CCR-2026-029,Change evidence rule,HCIS-SEC-01,5.8,HCIS,published,Published,admin3,admin2,2026-07-17,4
+CCR-2026-030,Amend clause wording,NCEC-EMS-01,2.2,NCEC,published,Published,admin5,admin1,2026-05-09,3

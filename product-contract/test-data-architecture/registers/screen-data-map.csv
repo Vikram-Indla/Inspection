@@ -1,0 +1,83 @@
+nav_group,screen,route,panel_or_section,object_or_measure,measure_id,source_tables,absence_class_today,unlocked_by,journey_stops_required,demo_target_value
+Overview,Dashboard,/dashboard,Header,Updated timestamp (Riyadh),—,server clock,ABS-0,—,—,live
+Overview,Dashboard,/dashboard,Executive AI brief,Evidence-grounded strategic summary,STR-KPI-012,inspections+reviews+violations via brief builder,ABS-3,L1 AI advisory policy + L3 approved journeys,J14 A03,3 traceable statements
+Overview,Dashboard,/dashboard,Your work (Supervisor),Active executions,OPS-KPI-003,inspections,ABS-1,L3,J10,18
+Overview,Dashboard,/dashboard,Your work (Supervisor),GPS overrides today,OPS-KPI-007,geo_events,ABS-1,L3,J09 dated today,6
+Overview,Dashboard,/dashboard,Your work (Supervisor),Pending approvals,OPS-KPI-004,reviews,ABS-1,L3,J11,40
+Overview,Dashboard,/dashboard,Your work (Supervisor),Live activity feed,OPS-KPI-008,audit_events,ABS-1,L4 (side effect of L3),all,>200 events
+Overview,Dashboard,/dashboard,National performance,Inspection coverage against annual target,STR-KPI-007,visits+factories+cycle policy,ABS-3,L1 inspection_cycle_policy MUST be published,J14,68%
+Overview,Dashboard,/dashboard,National performance,National compliance rate,STR-KPI-001,checklist_responses on approved inspections,ABS-2,L3,J14 A01,82%
+Overview,Dashboard,/dashboard,National performance,Inspection approval rate,STR-KPI-004,reviews,ABS-2,L3,J12 J14 J15,84%
+Overview,Dashboard,/dashboard,Compliance performance explorer,Compliance rate by region/city/sector/authority,STR-KPI-001,checklist_responses+factories,ABS-2,L2+L3,J14 A01 across 5 regions,5 bars
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Checklist items by issuing authority,STR-KPI-009,inspection_items,ABS-1,L1 packages published,—,142
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Risk distribution,STR-KPI-002,NO SOURCE — Health Score snapshot missing,ABS-4,MIGRATION (DEC-DASH-002),—,blocked
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Violation trend by regulation and severity,STR-KPI-003,violations (no issue-date column),ABS-5,GOVERNANCE (DEC-DASH-003),—,blocked
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Licence exposure,STR-KPI-005,industrial_licenses (no governed exposure rule),ABS-4,MIGRATION (DEC-DASH-005),—,blocked
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Cancellation rate,STR-KPI-006,visits,ABS-2,L3,J04,5.8%
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Risk-to-attention mismatch,STR-KPI-010,factories+visits,ABS-1,L2+L3,J02 J14 across risk bands,12
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Repeat violation rate,STR-KPI-011,violations (no repeat window rule),ABS-4,MIGRATION (DEC-DASH-011),—,blocked
+Overview,Dashboard,/dashboard,Strategic requirement coverage,Uninspected factories by stage/sector/region,STR-KPI-008,factories+visits+cycle policy,ABS-3,L1 inspection_cycle_policy,J14,19
+Overview,Dashboard,/dashboard,Operational view,Visit pipeline,OPS-KPI-001,visits,ABS-1,L3,J02 J06 J07 J10 J11,300
+Overview,Dashboard,/dashboard,Operational view,Expiring soon,OPS-KPI-002,visits+SLA policy,ABS-3,L1 sla_urgency_policy MUST be published,J02 J06 with near window_end,9
+Overview,Dashboard,/dashboard,Operational view,Today's schedule load by inspector,OPS-KPI-006,visits+assignments+profiles,ABS-1,L2+L3,J06 dated today,24 inspectors
+Overview,Dashboard,/dashboard,Operational view,Pending publish (admin only),OPS-KPI-005,deferred,ABS-4,deferred by design,—,blocked
+Overview,Dashboard,/dashboard,Operational view,Evidence-grounded operational nudges,OPS-KPI-009,advisory engine,ABS-3,L1 advisory policy,—,blocked
+Overview,Operations Center,/operations,Live map,Inspector pins and factory geofences,—,visits+assignments+factory_locations+geo_events,ABS-1,L2 coordinates + L3,J07 J08 J09,20 moving pins
+Overview,Operations Center,/operations,Pipeline board,Visits by operational_state,—,visits,ABS-1,L3,J02 J06 J07 J08 J10 J11,6 columns populated
+Overview,Operations Center,/operations,Exceptions,Overdue / GPS override / stalled,—,visits+geo_events,ABS-1,L3,J05 J09,14
+Overview,Operations Center,/operations,Evidence rail,Recent evidence captured,—,evidence,ABS-1,L3,J11 A02,60 items
+Overview,Factory 360,/factories,Establishment header,Factory identity CR licence,—,factories+industrial_licenses,ABS-1,L2,—,60 factories
+Overview,Factory 360,/factories,Compliance history,Inspection and violation history per factory,—,inspections+violations+reviews,ABS-1,L3,J14 A03,avg 5 per factory
+Overview,Factory 360,/factories,Production profile,Product and raw-material lines,—,plant_production_line_items,ABS-1,L2,M04,3-8 lines per factory
+Overview,Factory 360,/factories,Risk band,Governed Health Score band,—,NO SOURCE,ABS-4,MIGRATION (DEC-DASH-002),—,blocked
+Operations,Planning,/planning,Tab · All,All visits in scope,—,visits,ABS-1,L3,all terminal stops,300
+Operations,Planning,/planning,Tab · Draft,planning_status in (draft validated),—,visits+visit_plans,ABS-1,L3,J00,24
+Operations,Planning,/planning,Tab · Pending supervision,planning_status=pending_supervision,—,visits,ABS-1,L3,J01,18
+Operations,Planning,/planning,Tab · Published,planning_status=published,—,visits,ABS-1,L3,J02 J06 onward,238
+Operations,Planning,/planning,Tab · Returned,planning_status=returned,—,visits,ABS-1,L3,J03,10
+Operations,Planning,/planning,Tab · Cancelled,planning_status=cancelled + reason,—,visits,ABS-1,L3,J04,14
+Operations,Planning,/planning,Tab · Expired,planning_status=expired,—,visits,ABS-1,L1 planning_expiry_rules + L3,J05,8
+Operations,Planning,/planning,Filter · Visit type,Governed visit-type lookup,—,planning_lookups,ABS-1,L0,—,6 types
+Operations,Planning,/planning,Filter · Priority,Governed priority lookup,—,planning_lookups,ABS-1,L0,—,4 priorities
+Operations,Planning,/planning,Filter · Region and City,KSA region/city,—,factories,ABS-1,L2,—,5 regions 15 cities
+Operations,Planning,/planning,Filter · Inspector,Assignable inspector roster,—,profiles+user_roles+assignments,ABS-1,L2,J06,24 inspectors
+Operations,Planning,/planning,Drafts rail,Planner's own unpublished drafts,—,visit_plans,ABS-1,L3,J00,6 per planner
+Operations,Planning,/planning,Row · Last update,Latest lifecycle event per visit,—,visit_lifecycle_events,ABS-1,L4,all,every row
+Operations,Planning,/planning/single,Single visit wizard,Factory + package version + window + inspector,—,factories+package_versions+profiles,ABS-1,L1+L2,—,creates J00
+Operations,Planning,/planning/bulk,Bulk planning,Cohort selection by risk/region/sector,—,factories+inspections+violations,ABS-1,L2+L3,M02,3 cohorts x 20
+Operations,Planning,/planning/immediate,Immediate visit,Ad-hoc visit with governed reason,—,factories+package_versions+planning_lookups+profiles,ABS-1,L0+L1+L2,M01,10
+Operations,Execution,/execution,Assigned work,Inspector's active visits,—,assignments+visits+inspections,ABS-1,L3,J06 J07 J08 J10,inspector-scoped
+Operations,Execution,/execution,Checklist,Package items and responses,—,package_versions+inspection_items+checklist_responses,ABS-1,L1+L3,J10 J11,142 items
+Operations,Execution,/execution,Evidence capture,Photos and documents with hash,—,evidence,ABS-1,L3,J11 A02,3-6 per inspection
+Operations,Execution,/execution,Findings,Findings with severity,—,findings,ABS-1,L3,A02,35
+Operations,Execution,/execution,Submission,Immutable submission version,—,submission_versions,ABS-1,L3,J11 J13,248
+Operations,Review & Approval,/reviews,Queue,Submitted inspections awaiting decision,—,inspections+reviews,ABS-1,L3,J11,40
+Operations,Review & Approval,/reviews,Decision,Approve / Return / Reject,—,reviews,ABS-1,L3,J12 J14 J15,182 decided
+Operations,Review & Approval,/reviews,Factory checks,Pre-decision factory verification,—,inspection_factory_checks,ABS-1,L2+L3,J11,per review
+Operations,Review & Approval,/reviews,SLA,Review turnaround against SLA,—,engine_settings(sla)+reviews,ABS-3,L1 sla_calendars,J11 J14,4 breaches
+Compliance,Compliance Library,/admin/regulations,Regulation catalogue,Regulations clauses and authorities,—,compliance_regulation_library+violation_codes,ABS-1,L0,—,9 authorities
+Compliance,Approval Queue,/admin/compliance-approvals,Configuration requests,Requests awaiting compliance approval,—,compliance_configuration_requests+components+decisions,ABS-1,L1,—,12 requests
+Compliance,Enforcement Library,/admin/violations,Violations,Issued violations by code and severity,—,violations+violation_codes,ABS-1,L3,A03,28
+Compliance,Enforcement Library,/admin/violations,Penalties,Penalty notices and amounts,—,inspection_penalties+penalty_notices,ABS-1,L1 penalty_mappings + L3,A04,14
+Insights,Analytics,/analytics,Metric tiles,Windowed KPI snapshot,—,analytics_metric_snapshot over visits/inspections/responses,ABS-2,L3 dated inside the window,J14 in last 30 days,120 in window
+Insights,Analytics,/analytics,Compliance distribution,Compliant vs non-compliant split,—,checklist_responses,ABS-2,L3,J14 A01,82/18
+Insights,Analytics,/analytics,Trend,Period-over-period comparison,—,visits+inspections by window,ABS-2,L3 spread over 12 months,J14 across 12 months,12 points
+Administration,Users & roles,/admin/access,Roster,Personas role grants and capabilities,—,profiles+user_roles+roles+capabilities+permissions,ABS-1,L0+L2,—,45 personas
+Administration,Survey Configuration,/admin/packages,Packages,Packages versions and items,—,packages+package_versions+inspection_items+configuration_templates,ABS-1,L1,—,6 packages
+Administration,Planning Expiry Rules,/admin/planning/expiry,Rules,Expiry rule set,—,planning_expiry_rules,ABS-1,L1,J05,3 rules
+Administration,Planning Lookups,/admin/planning/lookups,Lookups,Visit types priorities reasons,—,planning_lookups,ABS-1,L0,—,4 lookup sets
+Administration,Planning Status Rules,/admin/planning/status,Status config,Planning status transition rules,—,config_versions,ABS-1,L1,—,1 published version
+Administration,Risk Configuration,/admin/risk,Risk engine settings,Risk weights and bands,—,engine_settings(risk)+risk_models,ABS-1,L0 verify-only,—,v1 accepted
+Administration,GIS Studio,/admin/gis,Geofence config,Arrival radius per factory,—,engine_settings(gis)+factories+factory_locations,ABS-1,L1+L2,J08 J09,60 geofences
+Administration,Notification Configuration,/admin/notifications,Rules,Notification rules per role,—,notification_rules+roles,ABS-1,L1,—,8 rules
+Administration,Delegation,/admin/delegation,Delegations,Active and historical delegations,—,delegations+profiles,ABS-1,L2,—,4 active
+Administration,Audit Trail,/admin/audit,Events,Immutable audit events,—,audit_events+audit_semantic_events+audit_event_registry,ABS-1,L4 NEVER SEEDED DIRECTLY,all,>2000 events
+Administration,Integration Management,/admin/integrations,Endpoints,External endpoint health,—,mvp3_integration_endpoints+mvp3_api_events,ABS-3,L1 stub contract,M04,5 endpoints
+Administration,Senai Data,/admin/senai-data,Sync runs,Senaei reconciliation and sync history,—,senaei_sync_runs+senaei_sync_calls+senaei_reconciliation_records,ABS-3,L1 stub contract,M04,20 records
+Administration,Trusted Devices,/admin/devices,Devices,Registered field devices,—,mvp3_devices+mvp3_device_commands,ABS-1,L2,—,24 devices
+Field,My tasks,/field/my-tasks,Task list,Assigned visits for today,—,assignments+industrial_licenses+notifications,ABS-1,L3,J06,per inspector
+Field,Drafts,/field/drafts,Offline drafts,Unsubmitted inspections,—,assignments+inspections,ABS-1,L3,J10,per inspector
+Field,Completed,/field/completed,Completed work,Submitted and approved inspections,—,assignments+inspections+reviews,ABS-1,L3,J11 J14,per inspector
+Field,Establishments,/field/establishments,Factory lookup,Searchable factory register,—,factories,ABS-1,L2,—,60
+Field,Unregistered,/field/unregistered,New establishment capture,Unregistered factory report,—,factories+package_versions,ABS-1,L2,M03,6
+Field,Notifications,/field/notifications,Inbox,Visit-context notifications,—,notifications+visits,ABS-1,L4,all,per inspector

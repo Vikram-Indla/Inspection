@@ -1,0 +1,77 @@
+clause_id,regulation_code,clause_ref,title_en,title_ar,issuing_authority_code,applicability,legal_source
+SBC-801-1.8,SBC-801,1.8,Portable fire extinguisher provision and servicing,توفير وصيانة طفايات الحريق اليدوية,SBC,all industrial establishments,SBC-801 §1.8
+SBC-801-2.5,SBC-801,2.5,Fixed suppression system readiness,جاهزية أنظمة الإطفاء الثابتة,SBC,all industrial establishments,SBC-801 §2.5
+SBC-801-3.4,SBC-801,3.4,Fire detection and alarm coverage,تغطية أنظمة كشف الحريق والإنذار,SBC,condition-specific,SBC-801 §3.4
+SBC-801-4.6,SBC-801,4.6,Structural fire separation and compartmentation,الفصل الإنشائي ضد الحريق,SBC,all industrial establishments,SBC-801 §4.6
+SBC-801-5.2,SBC-801,5.2,Load-bearing element condition,حالة العناصر الحاملة,SBC,all industrial establishments,SBC-801 §5.2
+SBC-201-1.6,SBC-201,1.6,Portable fire extinguisher provision and servicing,توفير وصيانة طفايات الحريق اليدوية,SBC,all industrial establishments,SBC-201 §1.6
+SBC-201-2.4,SBC-201,2.4,Fixed suppression system readiness,جاهزية أنظمة الإطفاء الثابتة,SBC,all industrial establishments,SBC-201 §2.4
+SBC-201-3.5,SBC-201,3.5,Fire detection and alarm coverage,تغطية أنظمة كشف الحريق والإنذار,SBC,condition-specific,SBC-201 §3.5
+SBC-201-4.7,SBC-201,4.7,Structural fire separation and compartmentation,الفصل الإنشائي ضد الحريق,SBC,all industrial establishments,SBC-201 §4.7
+SBC-201-5.7,SBC-201,5.7,Load-bearing element condition,حالة العناصر الحاملة,SBC,all industrial establishments,SBC-201 §5.7
+HCIS-SEC-01-1.7,HCIS-SEC-01,1.7,Perimeter control and access points,التحكم في المحيط ونقاط الدخول,HCIS,all industrial establishments,HCIS-SEC-01 §1.7
+HCIS-SEC-01-2.4,HCIS-SEC-01,2.4,Access authorisation records,سجلات تصاريح الدخول,HCIS,all industrial establishments,HCIS-SEC-01 §2.4
+HCIS-SEC-01-3.7,HCIS-SEC-01,3.7,Surveillance coverage of critical areas,تغطية المراقبة للمناطق الحرجة,HCIS,condition-specific,HCIS-SEC-01 §3.7
+HCIS-SEC-01-4.4,HCIS-SEC-01,4.4,Process hazard analysis currency,حداثة تحليل مخاطر العمليات,HCIS,all industrial establishments,HCIS-SEC-01 §4.4
+HCIS-SEC-01-5.8,HCIS-SEC-01,5.8,Management of change records,سجلات إدارة التغيير,HCIS,all industrial establishments,HCIS-SEC-01 §5.8
+HCIS-PRO-04-1.6,HCIS-PRO-04,1.6,Perimeter control and access points,التحكم في المحيط ونقاط الدخول,HCIS,all industrial establishments,HCIS-PRO-04 §1.6
+HCIS-PRO-04-2.2,HCIS-PRO-04,2.2,Access authorisation records,سجلات تصاريح الدخول,HCIS,all industrial establishments,HCIS-PRO-04 §2.2
+HCIS-PRO-04-3.8,HCIS-PRO-04,3.8,Surveillance coverage of critical areas,تغطية المراقبة للمناطق الحرجة,HCIS,condition-specific,HCIS-PRO-04 §3.8
+HCIS-PRO-04-4.6,HCIS-PRO-04,4.6,Process hazard analysis currency,حداثة تحليل مخاطر العمليات,HCIS,all industrial establishments,HCIS-PRO-04 §4.6
+HCIS-PRO-04-5.2,HCIS-PRO-04,5.2,Management of change records,سجلات إدارة التغيير,HCIS,all industrial establishments,HCIS-PRO-04 §5.2
+CD-EMR-11-1.4,CD-EMR-11,1.4,Exit route availability and signage,توفر مسارات الخروج واللوحات الإرشادية,CD,all industrial establishments,CD-EMR-11 §1.4
+CD-EMR-11-2.5,CD-EMR-11,2.5,Assembly point designation,تحديد نقاط التجمع,CD,all industrial establishments,CD-EMR-11 §2.5
+CD-EMR-11-3.3,CD-EMR-11,3.3,Evacuation drill records,سجلات تمارين الإخلاء,CD,condition-specific,CD-EMR-11 §3.3
+CD-EMR-11-4.5,CD-EMR-11,4.5,Hazardous material segregation by class,فصل المواد الخطرة حسب الفئة,CD,all industrial establishments,CD-EMR-11 §4.5
+CD-EMR-11-5.7,CD-EMR-11,5.7,Safety data sheet availability,توفر صحائف بيانات السلامة,CD,all industrial establishments,CD-EMR-11 §5.7
+CD-HAZ-06-1.4,CD-HAZ-06,1.4,Exit route availability and signage,توفر مسارات الخروج واللوحات الإرشادية,CD,all industrial establishments,CD-HAZ-06 §1.4
+CD-HAZ-06-2.6,CD-HAZ-06,2.6,Assembly point designation,تحديد نقاط التجمع,CD,all industrial establishments,CD-HAZ-06 §2.6
+CD-HAZ-06-3.1,CD-HAZ-06,3.1,Evacuation drill records,سجلات تمارين الإخلاء,CD,condition-specific,CD-HAZ-06 §3.1
+CD-HAZ-06-4.4,CD-HAZ-06,4.4,Hazardous material segregation by class,فصل المواد الخطرة حسب الفئة,CD,all industrial establishments,CD-HAZ-06 §4.4
+CD-HAZ-06-5.8,CD-HAZ-06,5.8,Safety data sheet availability,توفر صحائف بيانات السلامة,CD,all industrial establishments,CD-HAZ-06 §5.8
+SFDA-GMP-02-1.8,SFDA-GMP-02,1.8,Personnel hygiene controls,ضوابط النظافة الشخصية للعاملين,SFDA,all industrial establishments,SFDA-GMP-02 §1.8
+SFDA-GMP-02-2.8,SFDA-GMP-02,2.8,Production area cleaning verification,التحقق من نظافة مناطق الإنتاج,SFDA,all industrial establishments,SFDA-GMP-02 §2.8
+SFDA-GMP-02-3.7,SFDA-GMP-02,3.7,Cold chain temperature records,سجلات درجات حرارة سلسلة التبريد,SFDA,condition-specific,SFDA-GMP-02 §3.7
+SFDA-GMP-02-4.2,SFDA-GMP-02,4.2,Pest control programme evidence,إثبات برنامج مكافحة الآفات,SFDA,all industrial establishments,SFDA-GMP-02 §4.2
+SFDA-GMP-02-5.5,SFDA-GMP-02,5.5,Batch traceability records,سجلات تتبع التشغيلات,SFDA,all industrial establishments,SFDA-GMP-02 §5.5
+SFDA-HYG-05-1.6,SFDA-HYG-05,1.6,Personnel hygiene controls,ضوابط النظافة الشخصية للعاملين,SFDA,all industrial establishments,SFDA-HYG-05 §1.6
+SFDA-HYG-05-2.8,SFDA-HYG-05,2.8,Production area cleaning verification,التحقق من نظافة مناطق الإنتاج,SFDA,all industrial establishments,SFDA-HYG-05 §2.8
+SFDA-HYG-05-3.4,SFDA-HYG-05,3.4,Cold chain temperature records,سجلات درجات حرارة سلسلة التبريد,SFDA,condition-specific,SFDA-HYG-05 §3.4
+SFDA-HYG-05-4.8,SFDA-HYG-05,4.8,Pest control programme evidence,إثبات برنامج مكافحة الآفات,SFDA,all industrial establishments,SFDA-HYG-05 §4.8
+SFDA-HYG-05-5.8,SFDA-HYG-05,5.8,Batch traceability records,سجلات تتبع التشغيلات,SFDA,all industrial establishments,SFDA-HYG-05 §5.8
+SASO-QMS-03-1.1,SASO-QMS-03,1.1,Quality management documentation,توثيق إدارة الجودة,SASO,all industrial establishments,SASO-QMS-03 §1.1
+SASO-QMS-03-2.4,SASO-QMS-03,2.4,Product conformity marking,علامات مطابقة المنتج,SASO,all industrial establishments,SASO-QMS-03 §2.4
+SASO-QMS-03-3.7,SASO-QMS-03,3.7,Instrument calibration certificates,شهادات معايرة الأجهزة,SASO,condition-specific,SASO-QMS-03 §3.7
+SASO-QMS-03-4.2,SASO-QMS-03,4.2,Calibration interval adherence,الالتزام بفترات المعايرة,SASO,all industrial establishments,SASO-QMS-03 §4.2
+SASO-MET-07-1.2,SASO-MET-07,1.2,Quality management documentation,توثيق إدارة الجودة,SASO,all industrial establishments,SASO-MET-07 §1.2
+SASO-MET-07-2.3,SASO-MET-07,2.3,Product conformity marking,علامات مطابقة المنتج,SASO,all industrial establishments,SASO-MET-07 §2.3
+SASO-MET-07-3.5,SASO-MET-07,3.5,Instrument calibration certificates,شهادات معايرة الأجهزة,SASO,condition-specific,SASO-MET-07 §3.5
+SASO-MET-07-4.1,SASO-MET-07,4.1,Calibration interval adherence,الالتزام بفترات المعايرة,SASO,all industrial establishments,SASO-MET-07 §4.1
+NCEC-EMS-01-1.1,NCEC-EMS-01,1.1,Stack emission monitoring records,سجلات مراقبة انبعاثات المداخن,NCEC,all industrial establishments,NCEC-EMS-01 §1.1
+NCEC-EMS-01-2.2,NCEC-EMS-01,2.2,Effluent discharge compliance,الالتزام بتصريف المخلفات السائلة,NCEC,all industrial establishments,NCEC-EMS-01 §2.2
+NCEC-EMS-01-3.3,NCEC-EMS-01,3.3,Waste segregation at source,فصل النفايات من المصدر,NCEC,condition-specific,NCEC-EMS-01 §3.3
+NCEC-EMS-01-4.7,NCEC-EMS-01,4.7,Licensed waste contractor manifests,بيانات مقاولي النفايات المرخصين,NCEC,all industrial establishments,NCEC-EMS-01 §4.7
+NCEC-WST-04-1.5,NCEC-WST-04,1.5,Stack emission monitoring records,سجلات مراقبة انبعاثات المداخن,NCEC,all industrial establishments,NCEC-WST-04 §1.5
+NCEC-WST-04-2.4,NCEC-WST-04,2.4,Effluent discharge compliance,الالتزام بتصريف المخلفات السائلة,NCEC,all industrial establishments,NCEC-WST-04 §2.4
+NCEC-WST-04-3.3,NCEC-WST-04,3.3,Waste segregation at source,فصل النفايات من المصدر,NCEC,condition-specific,NCEC-WST-04 §3.3
+NCEC-WST-04-4.7,NCEC-WST-04,4.7,Licensed waste contractor manifests,بيانات مقاولي النفايات المرخصين,NCEC,all industrial establishments,NCEC-WST-04 §4.7
+MHRSD-OSH-09-1.8,MHRSD-OSH-09,1.8,Personal protective equipment provision,توفير معدات الوقاية الشخصية,MHRSD,all industrial establishments,MHRSD-OSH-09 §1.8
+MHRSD-OSH-09-2.8,MHRSD-OSH-09,2.8,Machine guarding condition,حالة حواجز حماية الآلات,MHRSD,all industrial establishments,MHRSD-OSH-09 §2.8
+MHRSD-OSH-09-3.1,MHRSD-OSH-09,3.1,Incident reporting records,سجلات الإبلاغ عن الحوادث,MHRSD,condition-specific,MHRSD-OSH-09 §3.1
+MHRSD-OSH-09-4.7,MHRSD-OSH-09,4.7,First aid provision and training,الإسعافات الأولية والتدريب,MHRSD,all industrial establishments,MHRSD-OSH-09 §4.7
+MHRSD-OSH-09-5.1,MHRSD-OSH-09,5.1,Worker accommodation standards,معايير سكن العمال,MHRSD,all industrial establishments,MHRSD-OSH-09 §5.1
+MHRSD-WRK-02-1.8,MHRSD-WRK-02,1.8,Personal protective equipment provision,توفير معدات الوقاية الشخصية,MHRSD,all industrial establishments,MHRSD-WRK-02 §1.8
+MHRSD-WRK-02-2.5,MHRSD-WRK-02,2.5,Machine guarding condition,حالة حواجز حماية الآلات,MHRSD,all industrial establishments,MHRSD-WRK-02 §2.5
+MHRSD-WRK-02-3.5,MHRSD-WRK-02,3.5,Incident reporting records,سجلات الإبلاغ عن الحوادث,MHRSD,condition-specific,MHRSD-WRK-02 §3.5
+MHRSD-WRK-02-4.7,MHRSD-WRK-02,4.7,First aid provision and training,الإسعافات الأولية والتدريب,MHRSD,all industrial establishments,MHRSD-WRK-02 §4.7
+MHRSD-WRK-02-5.1,MHRSD-WRK-02,5.1,Worker accommodation standards,معايير سكن العمال,MHRSD,all industrial establishments,MHRSD-WRK-02 §5.1
+MIM-LIC-01-1.7,MIM-LIC-01,1.7,Licence validity and displayed copy,سريان الترخيص والنسخة المعروضة,MIM,all industrial establishments,MIM-LIC-01 §1.7
+MIM-LIC-01-2.8,MIM-LIC-01,2.8,Activity matches licensed scope,مطابقة النشاط لنطاق الترخيص,MIM,all industrial establishments,MIM-LIC-01 §2.8
+MIM-LIC-01-3.3,MIM-LIC-01,3.3,Declared production capacity accuracy,دقة الطاقة الإنتاجية المعلنة,MIM,condition-specific,MIM-LIC-01 §3.3
+MIM-LIC-01-4.6,MIM-LIC-01,4.6,Raw material declarations,إقرارات المواد الخام,MIM,all industrial establishments,MIM-LIC-01 §4.6
+MIM-PRD-03-1.5,MIM-PRD-03,1.5,Licence validity and displayed copy,سريان الترخيص والنسخة المعروضة,MIM,all industrial establishments,MIM-PRD-03 §1.5
+MIM-PRD-03-2.2,MIM-PRD-03,2.2,Activity matches licensed scope,مطابقة النشاط لنطاق الترخيص,MIM,all industrial establishments,MIM-PRD-03 §2.2
+MIM-PRD-03-3.7,MIM-PRD-03,3.7,Declared production capacity accuracy,دقة الطاقة الإنتاجية المعلنة,MIM,condition-specific,MIM-PRD-03 §3.7
+MIM-PRD-03-4.5,MIM-PRD-03,4.5,Raw material declarations,إقرارات المواد الخام,MIM,all industrial establishments,MIM-PRD-03 §4.5
+MOMRAH-MUN-05-1.3,MOMRAH-MUN-05,1.3,Municipal permit validity,سريان الرخصة البلدية,MOMRAH,all industrial establishments,MOMRAH-MUN-05 §1.3
+MOMRAH-MUN-05-2.5,MOMRAH-MUN-05,2.5,Site boundary and signage compliance,الالتزام بحدود الموقع واللوحات,MOMRAH,all industrial establishments,MOMRAH-MUN-05 §2.5
