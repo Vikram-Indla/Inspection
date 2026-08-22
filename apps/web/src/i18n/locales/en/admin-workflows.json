@@ -5,7 +5,6 @@
     "leaf": "Lifecycles"
   },
   "title": "Workflow builder",
-  "subtitle": "States, transitions, guards and SLA · workflow_admin only · versioned.",
   "banner": {
     "title": "Only approved changes.",
     "body": "We check every change against the published version only. Nobody can skip a status. A change starts as a draft. A different person must approve it. Once published, a version cannot change. Risk and deadline values live in the engine settings."

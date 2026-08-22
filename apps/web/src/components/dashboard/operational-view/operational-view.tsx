@@ -18,7 +18,6 @@ import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./operational-view.module.css";
-import MeasureCoverage from "../measure-coverage/measure-coverage";
 import OperationalCharts from "../operational-charts/operational-charts";
 import OperationalGroups from "../operational-groups/operational-groups";
 import RequirementRegister from "../requirement-register/requirement-register";
@@ -86,14 +85,8 @@ export default function OperationalView({ locale, metrics, projection, partialSo
           level="h2"
           titleId="dashboard-operational-requirement"
           title={copy.requirement.title}
-          description={copy.requirement.description}
         />
         <CardBody gap="tight">
-          <MeasureCoverage
-            coverage={coverage}
-            locale={locale}
-            strings={dashboard.charts.coverage}
-          />
           <RequirementRegister
             metrics={requirementStrip.metrics}
             methodology={requirementStrip.methodology}
@@ -107,7 +100,6 @@ export default function OperationalView({ locale, metrics, projection, partialSo
           level="h2"
           titleId="dashboard-inspector-capacity"
           title={copy.capacity.title}
-          description={copy.capacity.note}
         />
         <CardBody gap="tight">
           <DataTable

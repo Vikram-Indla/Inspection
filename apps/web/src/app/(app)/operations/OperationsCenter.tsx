@@ -126,7 +126,6 @@ export default function OperationsCenter({
       ) : (
           <OperationsMapPanel
             title={operations.map.title}
-            description={operations.map.description}
             count={activeMapEntries.length}
             countLabel={operations.map.countLabel}
             action={
@@ -142,7 +141,6 @@ export default function OperationsCenter({
       {activeView === "performance" ? (
         <OperationsRegions
           title={operations.regions.title}
-          description={operations.regions.description}
           unavailable={operations.regions.unavailable}
           regions={regions.map(region => ({
             name: region.name,

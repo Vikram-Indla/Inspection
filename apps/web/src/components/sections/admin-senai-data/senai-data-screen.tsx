@@ -34,7 +34,6 @@ export default function SenaiDataScreen({ tab, data, locale }: {
         { label: strings.breadcrumb.hub, href: "/admin/integrations" },
         { label: strings.breadcrumb.senai },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <div className={styles.stack}>

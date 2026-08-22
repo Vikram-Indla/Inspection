@@ -25,12 +25,19 @@
   border-collapse: collapse;
 }
 
+/* A table caption restates the heading directly above it for a sighted reader
+   and adds a line of text to every table in the product. It stays in the markup
+   for assistive technology, where it is the only thing naming the table, and is
+   taken out of sight. */
 .caption {
-  padding-block-end: var(--sqx-space-4);
-  font: var(--sqx-text-body);
-  color: var(--sqx-text-muted);
-  text-align: start;
-  text-wrap: pretty;
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .head {

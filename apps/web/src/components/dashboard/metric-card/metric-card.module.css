@@ -12,9 +12,13 @@
   align-self: flex-start;
   inline-size: fit-content;
   min-block-size: var(--sqx-control-h-sm);
-  padding-inline: var(--sqx-space-4);
-  margin-inline-start: calc(var(--sqx-space-4) * -1);
-  color: var(--sqx-action-tertiary-text);
+  inline-size: var(--sqx-control-h-sm);
+  justify-content: center;
+  padding: 0;
+  /* Help triggers appear on every card and every table row. Brand colour on
+     all of them marks the rule rather than the exception, so they read as
+     secondary text and earn colour only on hover and focus. */
+  color: var(--sqx-text-secondary);
   background: transparent;
   border: var(--sqx-border-width-hair) solid transparent;
   border-radius: var(--sqx-radius-control);
@@ -28,6 +32,7 @@
 }
 
 .summary:hover {
+  color: var(--sqx-action-tertiary-text);
   background: var(--sqx-action-tertiary-hover);
 }
 

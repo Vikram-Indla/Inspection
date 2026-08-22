@@ -21,7 +21,6 @@ export default function OperationalCharts({ locale, pipeline, pipelineTotal, occ
           level="h2"
           titleId="dashboard-pipeline-breakdown"
           title={copy.pipeline.title}
-          description={copy.pipeline.description}
         />
         <CardBody gap="tight">
           <PipelineBreakdown
@@ -38,7 +37,6 @@ export default function OperationalCharts({ locale, pipeline, pipelineTotal, occ
           level="h2"
           titleId="dashboard-activity-trend"
           title={copy.activity.title}
-          description={copy.activity.description}
         />
         <CardBody gap="tight">
           <ActivityTrend

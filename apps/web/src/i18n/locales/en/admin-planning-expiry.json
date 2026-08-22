@@ -1,6 +1,5 @@
 {
   "title": "Planning Expiry Rules",
-  "subtitle": "Rules that expire visits which were never acknowledged, dated, started or completed",
   "loading": "Loading planning expiry rules",
   "breadcrumb": {
     "label": "Breadcrumb",

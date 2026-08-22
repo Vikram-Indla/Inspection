@@ -8,7 +8,6 @@
     "hub": "Connections & geography"
   },
   "title": "System connections",
-  "subtitle": "External data sources and connected systems",
   "tabs": {
     "label": "System connections sections",
     "connections": "Connections",

@@ -81,7 +81,7 @@ export default function AccessManager({
 
   return (
     <Card>
-      <CardHeader level="h2" title={strings.manage.title} description={strings.manage.intro} />
+      <CardHeader level="h2" title={strings.manage.title} />
       <CardBody>
         <div className={styles.picker}>
           <SaqeelSelect

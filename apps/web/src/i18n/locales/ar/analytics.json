@@ -49,13 +49,11 @@
   },
   "rates": {
     "heading": "المعدلات",
-    "description": "كل المعدلات على مقياس واحد، ليظهر الأعلى منها أولًا.",
     "ariaLabel": "المعدلات مرتبة من الأعلى إلى الأدنى",
     "ofTotal": "{numerator} من {denominator}"
   },
   "counts": {
     "heading": "الأعداد",
-    "description": "السجلات المتمايزة ضمن الفترة والنطاق المحددين.",
     "groups": {
       "visits": "الزيارات",
       "coverage": "التغطية",
@@ -65,7 +63,6 @@
   },
   "breakdown": {
     "heading": "التوزيعات",
-    "description": "كل إجمالي موزّعاً على فئاته الرسمية.",
     "ariaLabel": "{metric}: {summary}",
     "labels": {
       "banded": "مصنَّفة",

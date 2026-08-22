@@ -8,7 +8,6 @@
   },
   "home": {
     "title": "Planning",
-    "subtitle": "Create inspection visits — bulk, single or immediate",
     "loading": "Loading visit planning",
     "createVisit": "Create visit",
     "oneMethod": "Choose one planning method for this creation session.",

@@ -28,7 +28,6 @@ export default function AnalyticsBreakdowns({ breakdowns, strings, locale }: {
         level="h2"
         titleId="analytics-breakdowns"
         title={strings.breakdown.heading}
-        description={strings.breakdown.description}
       />
       <CardBody>
         <div className={styles.grid}>

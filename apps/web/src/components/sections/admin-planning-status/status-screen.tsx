@@ -39,7 +39,6 @@ export default function StatusScreen({ data, locale }: {
       breadcrumbLabel={copy.breadcrumb.label}
       breadcrumbs={[{ label: copy.breadcrumb.administration, href: "/admin" }, { label: copy.title }]}
       title={copy.title}
-      description={copy.subtitle}
       actions={<StatusPill tone="neutral" ping={false}>{copy.readOnlyPill}</StatusPill>}
     >
       <div className={styles.stack}>

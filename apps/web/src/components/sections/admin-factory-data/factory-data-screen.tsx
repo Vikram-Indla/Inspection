@@ -23,7 +23,6 @@ export default function FactoryDataScreen({ data, locale }: { data: FactoryDataV
         { label: strings.breadcrumb.hub, href: "/admin/integrations" },
         { label: strings.breadcrumb.factory },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <div className={styles.stack}>

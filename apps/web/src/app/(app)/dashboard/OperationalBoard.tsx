@@ -6,9 +6,8 @@ type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetr
 
 const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
 
-function OperationalCard({ locale, question, title, value, definition, href, action }: {
+function OperationalCard({ locale, title, value, definition, href, action }: {
   locale: Locale;
-  question: string;
   title: string;
   value: string;
   definition: string;
@@ -17,7 +16,6 @@ function OperationalCard({ locale, question, title, value, definition, href, act
 }) {
   return (
     <article className="panel kpi">
-      <span className="tl-meta">{question}</span>
       <h3>{title}</h3>
       <strong className="kpi-value">{value}</strong>
       <p className="desc"><b>{copy(locale, "Definition", "التعريف")}</b> {definition}</p>
@@ -35,7 +33,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
   const operational = metrics.operational;
   const todaysOperations = [
     {
-      question: copy(locale, "What needs to be executed today?", "ما الذي يجب تنفيذه اليوم؟"),
       title: copy(locale, "Today's planned visits", "زيارات اليوم المخططة"),
       value: String(operational.todayVisits.length),
       definition: copy(locale, "Count of visits scheduled for today", "عدد الزيارات المجدولة لليوم"),
@@ -43,7 +40,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       action: copy(locale, "Open Execution", "فتح التنفيذ"),
     },
     {
-      question: copy(locale, "How much work has been completed today?", "ما مقدار العمل المكتمل اليوم؟"),
       title: copy(locale, "Today's visit completion rate", "معدل إكمال زيارات اليوم"),
       value: operational.todayCompletionRate == null ? copy(locale, "Unavailable", "غير متاح") : `${operational.todayCompletionRate}%`,
       definition: copy(locale, "(Completed visits today ÷ planned visits today) × 100", "(زيارات اليوم المكتملة ÷ زيارات اليوم المخططة) × 100"),
@@ -51,7 +47,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       action: copy(locale, "Open Execution", "فتح التنفيذ"),
     },
     {
-      question: copy(locale, "What inspections are currently active?", "ما التفتيشات النشطة حالياً؟"),
       title: copy(locale, "Active field inspections", "التفتيشات الميدانية النشطة"),
       value: String(operational.activeField),
       definition: copy(locale, "Count of inspections with operational state = executing", "عدد التفتيشات التي تكون حالتها التشغيلية = قيد التنفيذ"),
@@ -59,7 +54,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       action: copy(locale, "Open Operations Center", "فتح مركز العمليات"),
     },
     {
-      question: copy(locale, "Which visits are delayed?", "ما الزيارات المتأخرة؟"),
       title: copy(locale, "Overdue planned visits", "الزيارات المخططة المتأخرة"),
       value: String(operational.overdueRows.length),
       definition: copy(locale, "Planned date earlier than today and status not completed or cancelled", "تاريخ مخطط يسبق اليوم والحالة ليست مكتملة أو ملغاة"),
@@ -67,7 +61,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       action: copy(locale, "Open Planning", "فتح التخطيط"),
     },
     {
-      question: copy(locale, "Which inspection reports require review?", "ما تقارير التفتيش التي تتطلب المراجعة؟"),
       title: copy(locale, "Inspection reports awaiting approval", "تقارير التفتيش بانتظار الاعتماد"),
       value: String(operational.pendingApprovalsCount),
       definition: copy(locale, "Count of submitted reports awaiting a review decision", "عدد التقارير المقدمة بانتظار قرار المراجعة"),
@@ -75,7 +68,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       action: copy(locale, "Open Review & Approval", "فتح المراجعة والاعتماد"),
     },
     {
-      question: copy(locale, "Which inspections require rework?", "ما التفتيشات التي تتطلب إعادة عمل؟"),
       title: copy(locale, "Returned inspection reports", "تقارير التفتيش المعادة"),
       value: String(operational.returnedRows.length),
       definition: copy(locale, "Count of reports returned to inspectors", "عدد التقارير المعادة إلى المفتشين"),
@@ -83,7 +75,6 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       action: copy(locale, "Open Execution", "فتح التنفيذ"),
     },
     {
-      question: copy(locale, "Which factories should be inspected next?", "ما المصانع التي يجب تفتيشها تالياً؟"),
       title: copy(locale, "High-priority visits pending execution", "الزيارات عالية الأولوية بانتظار التنفيذ"),
       value: String(operational.highPriorityRows.length),
       definition: copy(locale, "Planned visits at high or critical risk, not yet executed", "زيارات مخططة بمخاطر عالية أو حرجة لم تُنفذ بعد"),
@@ -135,11 +126,10 @@ export default function OperationalBoard({ locale, metrics, requirementStrip, re
       <section className="panel stack" aria-labelledby="inspector-capacity-heading">
         <div className="panel-row">
           <h2 id="inspector-capacity-heading">{copy(locale, "Inspector capacity", "طاقة المفتشين")}</h2>
-          <span id="inspector-capacity-note" className="tl-meta">{copy(locale, "Planned + in progress; declared daily capacity is not configured", "المخطط + قيد التنفيذ؛ الطاقة اليومية المعلنة غير مهيأة")}</span>
         </div>
         <div className="panel-body stack">
           <div className="table-wrap">
-            <table className="table" aria-describedby="inspector-capacity-note">
+            <table className="table">
               <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col" className="cell-num">{copy(locale, "Active workload", "عبء العمل النشط")}</th><th scope="col">{copy(locale, "Daily capacity", "الطاقة اليومية")}</th></tr></thead>
               <tbody>
             {operational.workload.length ? operational.workload.slice(0, 8).map(row => (

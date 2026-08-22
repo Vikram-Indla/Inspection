@@ -49,10 +49,7 @@ export default function MeasureCoverage({ coverage, locale, strings }: {
     <figure className={styles.root} role="img" aria-label={fill(strings.meterAria, counts)}>
       <div className={styles.head}>
         <Metric>{formatPercent(coverage.percent, locale)}</Metric>
-        <span className={styles.identity}>
-          <Text role="label" as="span">{strings.meterLabel}</Text>
-          <Text role="label" tone="muted" as="span">{fill(strings.ratio, counts)}</Text>
-        </span>
+        <Text role="label" tone="muted" as="span">{fill(strings.ratio, counts)}</Text>
       </div>
 
       <div className={styles.track} aria-hidden="true">
@@ -66,15 +63,6 @@ export default function MeasureCoverage({ coverage, locale, strings }: {
         ))}
       </div>
 
-      <ul className={styles.legend}>
-        {segments.map(segment => (
-          <li key={segment.key} className={styles.legendItem}>
-            <span className={styles.swatch} data-tone={segment.tone} aria-hidden="true" />
-            <Text role="label" as="span" dir="auto">{segment.label}</Text>
-            <Text role="label" tone="secondary" as="span" numeric>{formatCount(segment.count, locale)}</Text>
-          </li>
-        ))}
-      </ul>
 
       {coverage.reasons.length === 0 ? (
         <Text role="label" tone="secondary" as="figcaption">{strings.allLive}</Text>

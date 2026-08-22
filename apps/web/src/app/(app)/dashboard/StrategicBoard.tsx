@@ -9,9 +9,8 @@ type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetr
 const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
 const percentOrNull = (value: number | null, suffix = "%") => value == null ? null : `${value}${suffix}`;
 
-function MetricCard({ locale, question, title, value, valueKind = "number", emptyText, definition, example, interpretation, href, action }: {
+function MetricCard({ locale, title, value, valueKind = "number", emptyText, definition, example, interpretation, href, action }: {
   locale: Locale;
-  question: string;
   title: string;
   /** null renders the governed absence state, de-ranked below the value ramp. */
   value: string | null;
@@ -26,7 +25,6 @@ function MetricCard({ locale, question, title, value, valueKind = "number", empt
 }) {
   return (
     <article className="panel kpi">
-      <span className="tl-meta">{question}</span>
       <h3>{title}</h3>
       {value == null
         ? <span className="badge badge-pending">{emptyText ?? copy(locale, "Unavailable", "غير متاح")}</span>
@@ -80,7 +78,6 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
         <div className="kpi-grid">
           <MetricCard
             locale={locale}
-            question={copy(locale, "Are we achieving the national inspection strategy?", "هل نحقق استراتيجية التفتيش الوطنية؟")}
             title={copy(locale, "Inspection coverage against annual target", "تغطية التفتيش مقابل المستهدف السنوي")}
             value={null}
             emptyText={copy(locale, "N/A", "لا ينطبق")}
@@ -91,7 +88,6 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
           />
           <MetricCard
             locale={locale}
-            question={copy(locale, "How compliant is the industrial sector?", "ما مستوى امتثال القطاع الصناعي؟")}
             title={copy(locale, "National compliance rate", "معدل الامتثال الوطني")}
             value={percentOrNull(strategic.complianceRate)}
             definition={copy(locale, "Percentage of eligible inspection answers that were compliant", "النسبة المئوية لإجابات التفتيش المؤهلة المطابقة")}
@@ -101,7 +97,6 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
           />
           <MetricCard
             locale={locale}
-            question={copy(locale, "Are inspection reports approved without excessive rework?", "هل تعتمد تقارير التفتيش دون إعادة عمل مفرطة؟")}
             title={copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش")}
             value={percentOrNull(strategic.decisionApprovalRate)}
             definition={copy(locale, "Percentage of decided Level-2 review outcomes that were approved", "النسبة المئوية لنتائج مراجعة المستوى الثاني المحسومة التي اعتُمدت")}
@@ -174,7 +169,6 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
         <div className="kpi-grid">
           <MetricCard
             locale={locale}
-            question={copy(locale, "Which regulations generate the most violations?", "ما اللوائح التي تولد أكبر عدد من المخالفات؟")}
             title={copy(locale, "Top violated regulation", "اللائحة الأكثر مخالفة")}
             value={topViolation?.label ?? null}
             valueKind="text"
@@ -185,7 +179,6 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
           />
           <MetricCard
             locale={locale}
-            question={copy(locale, "Which factories require immediate intervention?", "ما المصانع التي تتطلب تدخلاً فورياً؟")}
             title={copy(locale, "Critical factories requiring intervention", "المصانع الحرجة التي تتطلب التدخل")}
             value={String(strategic.criticalFactories.length)}
             definition={copy(locale, "Factories carrying a recorded high-risk band or active critical violation", "المصانع ذات نطاق مخاطر مرتفع مسجل أو مخالفة حرجة نشطة")}
@@ -195,7 +188,6 @@ export default function StrategicBoard({ locale, metrics, factories, group, para
           />
           <MetricCard
             locale={locale}
-            question={copy(locale, "Which factories still require inspection this year?", "ما المصانع التي لا تزال تتطلب تفتيشاً هذا العام؟")}
             title={copy(locale, "Factories pending annual inspection", "المصانع بانتظار التفتيش السنوي")}
             value={null}
             emptyText={copy(locale, "N/A", "لا ينطبق")}

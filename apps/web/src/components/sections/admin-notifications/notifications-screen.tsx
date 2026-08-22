@@ -19,7 +19,6 @@ export default function NotificationsScreen({ data, locale }: { data: Notificati
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <div className={styles.stack}>

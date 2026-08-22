@@ -49,13 +49,11 @@
   },
   "rates": {
     "heading": "Rates",
-    "description": "Every rate on one scale, so the highest is the one to look at first.",
     "ariaLabel": "Rates ranked from highest to lowest",
     "ofTotal": "{numerator} of {denominator}"
   },
   "counts": {
     "heading": "Counts",
-    "description": "How many different records fall inside the chosen period and area.",
     "groups": {
       "visits": "Visits",
       "coverage": "Coverage",
@@ -65,7 +63,6 @@
   },
   "breakdown": {
     "heading": "Breakdowns",
-    "description": "Each total split by its official categories.",
     "ariaLabel": "{metric}: {summary}",
     "labels": {
       "banded": "Banded",

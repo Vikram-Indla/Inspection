@@ -25,7 +25,6 @@ export default async function ExceptionBoard() {
         degraded={page.degraded}
         strings={{
           heading: board.heading,
-          description: board.description,
           degraded: board.degraded,
           emptyTitle: board.empty.title,
           emptyBody: page.degraded ? board.empty.degraded : board.empty.body,

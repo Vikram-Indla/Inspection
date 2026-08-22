@@ -45,7 +45,6 @@ export default function DelegationScreen({ view, data, locale }: {
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.delegation },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <div className={styles.stack}>

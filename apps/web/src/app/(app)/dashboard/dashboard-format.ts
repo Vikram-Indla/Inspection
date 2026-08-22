@@ -59,7 +59,7 @@ export function isBlocked(status: MetricSourceStatus): boolean {
 /** Honest, localized status label for a non-live source status. */
 export function statusLabel(status: MetricSourceStatus, locale: Locale): string {
   switch (status) {
-    case "not_configured": return t(locale, "N/A", "لا ينطبق");
+    case "not_configured": return "—";
     case "unavailable": return t(locale, "Unavailable", "غير متاح");
     case "decision_required": return t(locale, "Decision required", "قرار مطلوب");
     case "stale": return t(locale, "Stale", "قديم");
@@ -75,10 +75,13 @@ export function statusTone(status: MetricSourceStatus): DisplayTone {
     // Absent data is not a breach. Critical is reserved for real severity so it
     // stays legible when it appears.
     case "unavailable": return "neutral";
+    // An unconfigured target or a pending decision is not a warning — nothing
+    // is wrong, the setting simply does not exist yet. Amber is kept for real
+    // severity so it stays legible when it appears.
     case "decision_required":
     case "not_configured":
-    case "stale":
-    case "partial": return "warning";
+    case "partial": return "neutral";
+    case "stale": return "warning";
     case "live": return "success";
     default: return "neutral";
   }
@@ -116,7 +119,7 @@ export function metricDisplay(metric: SharedMetric, locale: Locale): MetricDispl
       metricId: metric.metricId,
       title,
       kind: "status",
-      text: notConfigured ? t(locale, "N/A", "لا ينطبق") : statusLabel(metric.sourceStatus, locale),
+      text: notConfigured ? "—" : statusLabel(metric.sourceStatus, locale),
       tone: statusTone(metric.sourceStatus),
       naMuted: notConfigured,
       // The status chip above (statusLabel) already names the precise reason

@@ -9,7 +9,6 @@
     "factory": "Factory data"
   },
   "title": "Factory data integration",
-  "subtitle": "Staged rows, master data and import history — Factory 360 profiles are view only",
   "banner": {
     "title": "Settings only.",
     "body": "Factory 360 pages are read only. Adding a provider does not mean it is connected. Rows from a file wait until someone approves them. Source numbers cannot be changed quietly."

@@ -16,7 +16,6 @@ export default function WorkflowsScreen({ data, locale }: { data: WorkflowsView;
     <ShellPageFrame
       breadcrumbLabel={strings.breadcrumb.label}
       breadcrumbs={[{ label: strings.breadcrumb.root }, { label: strings.breadcrumb.leaf }]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <div className={styles.stack}>

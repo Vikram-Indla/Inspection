@@ -37,7 +37,6 @@ export default function AnalyticsCounts({ counts, strings, query, locale }: {
         level="h2"
         titleId="analytics-counts"
         title={strings.counts.heading}
-        description={strings.counts.description}
       />
       <CardBody>
         {bands.map(band => (

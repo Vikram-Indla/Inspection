@@ -19,7 +19,6 @@ export default function GisScreen({ data, locale }: { data: GisView; locale: Loc
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
       ]}
-      description={strings.subtitle}
       title={strings.title}
       actions={data.versionLabel ? <Text as="span" role="mono" tone="muted">{data.versionLabel}</Text> : undefined}
     >

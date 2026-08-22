@@ -129,7 +129,6 @@
   },
   "compliance": {
     "title": "Compliance",
-    "description": "Inspection reports, violations and penalties recorded for this factory.",
     "reports": "Inspection reports",
     "violations": "Violations",
     "penalties": "Penalties",

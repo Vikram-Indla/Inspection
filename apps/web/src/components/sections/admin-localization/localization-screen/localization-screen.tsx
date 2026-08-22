@@ -28,7 +28,6 @@ export default function LocalizationScreen({ data, query, locale }: {
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <LocalizationCoverage data={data} locale={locale} strings={strings} />

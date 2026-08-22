@@ -3,7 +3,6 @@ import { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";
 import Button from "@/components/saqeel/button/button";
 import { fetchDashboardSnapshot } from "@/features/dashboard/client";
 import { queryEnforcementTrend } from "@/features/dashboard/enforcement-trend";
-import { buildBriefContext } from "@/features/dashboard/executive-brief";
 import { withView, type DashboardScope } from "@/features/dashboard/scope";
 import type { DashboardSnapshot } from "@/features/dashboard/types";
 import { fill, getMessages } from "@/i18n/messages";
@@ -169,13 +168,13 @@ export default async function DashboardSections({ locale, scope }: {
       {resolved.view === "strategic" ? (
         <ExecutiveBrief
           locale={locale}
-          context={buildBriefContext(resolved, enforcementTrend, {
+          facts={{
             completedInspections: metrics.strategic.completedInspections,
             criticalFactories: metrics.strategic.criticalFactories.length,
             factories: snapshot.factories.length,
-          })}
-          period={{ from: resolved.scope.fromDate, to: resolved.scope.toDate }}
-          region={resolved.region}
+            hasAnnualTarget: metrics.strategic.inspectionCoverageRate != null,
+          }}
+          trend={enforcementTrend}
           strings={dashboard.executive}
         />
       ) : null}

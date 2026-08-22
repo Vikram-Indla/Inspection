@@ -42,7 +42,6 @@ export default function AnalyticsRates({ rates, strings, query, locale }: {
         level="h2"
         titleId="analytics-rates"
         title={strings.rates.heading}
-        description={strings.rates.description}
       />
       <CardBody>
         <div className={styles.heroes}>

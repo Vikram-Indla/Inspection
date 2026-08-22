@@ -10,7 +10,6 @@
     "senai": "SENAI data"
   },
   "title": "SENAI data management",
-  "subtitle": "Where SENAI data comes from, how it is matched and refreshed — view only",
   "back": "System connections",
   "tabs": {
     "label": "SENAI data sections",

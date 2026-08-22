@@ -21,7 +21,6 @@ export default function CompletedScreen({ data, locale }: {
         </Button>
         <div className={styles.headerIdentity}>
           <Heading level={1} visual="subheading">{copy.title}</Heading>
-          <Text role="label" tone="secondary" as="p">{copy.subtitle}</Text>
         </div>
       </header>
 

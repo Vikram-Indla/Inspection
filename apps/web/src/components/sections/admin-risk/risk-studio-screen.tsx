@@ -26,7 +26,7 @@ export default function RiskStudioScreen({ data, locale }: {
   ];
 
   return (
-    <ShellPageFrame breadcrumbLabel={copy.breadcrumb.label} breadcrumbs={breadcrumbs} title={copy.title} description={copy.subtitle}>
+    <ShellPageFrame breadcrumbLabel={copy.breadcrumb.label} breadcrumbs={breadcrumbs} title={copy.title}>
       <div className={styles.stack}>
         <RiskSectionNav current="/admin/risk" labels={getMessages(locale).adminRiskModels.nav} />
 

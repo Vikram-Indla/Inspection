@@ -10,7 +10,6 @@ import type { Locale } from "@/lib/i18n";
 
 export type OperationsStatesStrings = {
   readonly title: string;
-  readonly description: string;
   readonly aria: string;
   readonly total: string;
 };
@@ -53,7 +52,6 @@ export default function OperationsStates({ counts, locale, strings }: {
         level="h2"
         titleId="operations-states"
         title={strings.title}
-        description={strings.description}
       />
       <CardBody gap="tight">
         <BarSeries

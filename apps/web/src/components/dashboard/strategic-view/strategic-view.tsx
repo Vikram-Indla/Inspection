@@ -18,7 +18,6 @@ import type { DashboardKpiProjection } from "@/lib/dashboard-kpi/contract";
 import type { Locale } from "@/lib/i18n";
 import { localeHref } from "@/lib/locale-path";
 import styles from "./strategic-view.module.css";
-import MeasureCoverage from "../measure-coverage/measure-coverage";
 import RequirementRegister from "../requirement-register/requirement-register";
 import MetricCard, { MetricCardModel, MetricCardStrings } from "../metric-card/metric-card";
 import ComplianceExplorer from "../compliance-explorer/compliance-explorer";
@@ -147,7 +146,6 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
         hrefFor={label => localeHref(locale, `/factories?${scope.lens}=${encodeURIComponent(label)}`)}
         strings={{
           title: dashboard.explorer.title,
-          description: dashboard.explorer.description,
           lens: dashboard.explorer.lens,
           lensLabel: common.entity[scope.lens],
           openFactories: dashboard.explorer.openFactories,
@@ -183,14 +181,8 @@ export default function StrategicView({ locale, scope, metrics, projection, fact
           level="h2"
           titleId="dashboard-requirement-coverage"
           title={dashboard.requirement.title}
-          description={dashboard.requirement.description}
         />
         <CardBody gap="tight">
-          <MeasureCoverage
-            coverage={coverage}
-            locale={locale}
-            strings={dashboard.charts.coverage}
-          />
           <RequirementRegister
             metrics={requirementStrip.metrics}
             methodology={requirementStrip.methodology}

@@ -6,7 +6,6 @@ import styles from "./metric-card.module.css";
 import { Text } from "@/components/saqeel/type";
 
 export type MetricCardModel = {
-  readonly question: string;
   readonly title: string;
   readonly value: string | null;
   readonly valueKind?: "number" | "text";
@@ -33,7 +32,7 @@ export default function MetricCard({ model, strings }: {
   const blocked = model.value === null;
   return (
     <Card>
-      <CardHeader title={model.title} description={model.question} />
+      <CardHeader title={model.title} />
       <CardBody gap="tight">
         <CardValueSlot>
           {blocked
@@ -43,11 +42,8 @@ export default function MetricCard({ model, strings }: {
             : <CardValue kind={model.valueKind ?? "number"}>{model.value}</CardValue>}
         </CardValueSlot>
         <details className={styles.disclosure}>
-          <summary className={styles.summary}>
-            <Icon name="disclosure" size="sm" />
-            <Text as="span" role="label" tone="inherit">
-              {blocked ? strings.why : strings.methodology}
-            </Text>
+          <summary className={styles.summary} aria-label={blocked ? strings.why : strings.methodology}>
+            <Icon name="info" size="sm" />
           </summary>
           <div className={styles.detail}>
             <Text tone="secondary">

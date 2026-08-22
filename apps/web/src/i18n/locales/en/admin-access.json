@@ -5,7 +5,6 @@
     "hub": "People & access"
   },
   "title": "Users & roles",
-  "subtitle": "Accounts, role assignment and access review",
   "loading": "Loading users and roles",
   "metrics": {
     "accounts": "Accounts in your area",
@@ -47,7 +46,6 @@
   },
   "manage": {
     "title": "Access management",
-    "intro": "Give or take away roles, and direct permission changes.",
     "selectUser": "Select a user",
     "selectUserPlaceholder": "Choose an account",
     "noUsers": "No account is available to manage",

@@ -14,7 +14,6 @@ export type ExplorerRow = {
 
 export type ExplorerStrings = {
   readonly title: string;
-  readonly description: string;
   readonly lens: string;
   readonly lensLabel: string;
   readonly openFactories: string;
@@ -80,7 +79,6 @@ export default function ComplianceExplorer({ rows, lenses, currentLens, hrefFor,
         level="h2"
         titleId="dashboard-compliance-explorer"
         title={strings.title}
-        description={strings.description}
         trailing={<SegmentedControl items={lenses} value={currentLens} label={strings.lens} tone="accent" />}
       />
       <CardBody gap="tight">

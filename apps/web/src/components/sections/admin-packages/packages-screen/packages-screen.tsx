@@ -36,7 +36,6 @@ export default function PackagesScreen({
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       <PackagesFilters counts={data.counts} locale={locale} query={query} strings={strings} />

@@ -48,9 +48,8 @@ export function OperationsSummary({ title, stats }: {
   );
 }
 
-export function OperationsRegions({ title, description, unavailable, regions }: {
+export function OperationsRegions({ title, unavailable, regions }: {
   title: string;
-  description: string;
   unavailable: string;
   regions: readonly RegionStat[];
 }) {
@@ -60,7 +59,6 @@ export function OperationsRegions({ title, description, unavailable, regions }: 
         level="h2"
         titleId="operations-regions"
         title={title}
-        description={description}
         trailing={<StatusPill tone="warning" ping={false}>{unavailable}</StatusPill>}
       />
       <CardBody>

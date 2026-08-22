@@ -30,7 +30,6 @@
   },
   "list": {
     "title": "Compliance configuration requests",
-    "subtitle": "Create and change regulations, items, violations and penalties through two-person review.",
     "create": "Create request",
     "createRoleNote": "Creating a request needs an admin role.",
     "errorTitle": "Request list can't load",

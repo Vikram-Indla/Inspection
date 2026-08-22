@@ -24,7 +24,6 @@ export default async function MonitoringSection({ data, model, scope }: {
         level="h2"
         titleId="operations-monitoring-heading"
         title={opsText.monitoring.title}
-        description={opsText.monitoring.description}
         trailing={
           <OperationsScopeFilter
             view={scope.view}

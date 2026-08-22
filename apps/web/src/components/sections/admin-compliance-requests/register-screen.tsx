@@ -50,7 +50,6 @@ export default function RegisterScreen({ data, locale }: {
       breadcrumbLabel={copy.breadcrumb.list}
       breadcrumbs={[{ label: copy.breadcrumb.administration, href: "/admin" }, { label: c.title }]}
       title={c.title}
-      description={c.subtitle}
       actions={data.canCreate ? (
         <Button href="/admin/compliance-requests/new" prefetch={false} variant="primary" size="sm" icon="create">
           {c.create}

@@ -5,7 +5,6 @@
     "delegation": "Delegation"
   },
   "title": "Delegation",
-  "subtitle": "Hand a role's authority to another approved user for a set time.",
   "tabs": {
     "label": "Delegation views",
     "active": "Active",

@@ -32,7 +32,6 @@ export default function AccessFrame({ strings, metrics, tabs, children }: {
         { label: strings.breadcrumb.administration, href: "/admin" },
         { label: strings.breadcrumb.hub },
       ]}
-      description={strings.subtitle}
       title={strings.title}
     >
       {metrics?.length ? (

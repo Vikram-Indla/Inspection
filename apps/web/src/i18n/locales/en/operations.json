@@ -17,7 +17,6 @@
   },
   "map": {
     "title": "Saudi Arabia",
-    "description": "Live inspector and factory positions across the Kingdom.",
     "countLabel": "on map"
   },
   "summary": {
@@ -25,13 +24,11 @@
   },
   "states": {
     "title": "Visits by work state",
-    "description": "Every visit in your area, grouped by the work state it is in now.",
     "aria": "Visits in your area by work state, ranked from largest to smallest",
     "total": "{total} visits in your area"
   },
   "regions": {
     "title": "National performance by region",
-    "description": "Selecting a region drills to its factories and active visits.",
     "unavailable": "Compliance unavailable",
     "detail": "{factories} factories · {active} active visits"
   },
@@ -179,7 +176,6 @@
   "board": {
     "title": "Exception board",
     "heading": "Open exceptions",
-    "description": "Every count traces to a real record. Decisions stay on the record that owns them — this board only groups and links.",
     "mostRecent": "Most recent",
     "loading": {
       "label": "Loading the exception board"
@@ -206,7 +202,6 @@
     }
   },
   "monitoring": {
-    "title": "Visit and inspector monitoring",
-    "description": "Visit status, assignments and the latest recorded geofence results you can see."
+    "title": "Visit and inspector monitoring"
   }
 }

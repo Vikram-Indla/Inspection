@@ -7,7 +7,6 @@ import type { ExceptionGroupView } from "@/features/operations/exceptions/view";
 
 export type OperationsBoardStrings = {
   readonly heading: string;
-  readonly description: string;
   readonly degraded: string;
   readonly emptyTitle: string;
   readonly emptyBody: string;
@@ -24,7 +23,6 @@ export default function OperationsBoard({ groups, degraded, strings: s }: {
         level="h2"
         titleId="operations-board"
         title={s.heading}
-        description={s.description}
       />
       <CardBody>
         {degraded && groups.length > 0 ? (

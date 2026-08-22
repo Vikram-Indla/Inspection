@@ -21,7 +21,7 @@ export default function SpatialScreen({ data, locale }: { data: SpatialView; loc
 
   if (!data.enabled) {
     return (
-      <ShellPageFrame breadcrumbLabel={gis.breadcrumb.label} breadcrumbs={breadcrumbs} description={s.subtitle} title={s.title}>
+      <ShellPageFrame breadcrumbLabel={gis.breadcrumb.label} breadcrumbs={breadcrumbs} title={s.title}>
         <NotYetBoundary
           title={s.title}
           consequence={s.off.consequence}
@@ -34,7 +34,7 @@ export default function SpatialScreen({ data, locale }: { data: SpatialView; loc
   }
 
   return (
-    <ShellPageFrame breadcrumbLabel={gis.breadcrumb.label} breadcrumbs={breadcrumbs} description={s.subtitle} title={s.title}>
+    <ShellPageFrame breadcrumbLabel={gis.breadcrumb.label} breadcrumbs={breadcrumbs} title={s.title}>
       <div className={styles.stack}>
         <Card as="section" role="note">
           <CardHeader level="h2" title={s.banner.title} />

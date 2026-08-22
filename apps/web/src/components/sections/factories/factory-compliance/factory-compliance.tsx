@@ -39,7 +39,6 @@ export type CompliancePenaltyRow = {
 
 export type FactoryComplianceStrings = {
   readonly title: string;
-  readonly description: string;
   readonly reports: string;
   readonly violations: string;
   readonly penalties: string;
@@ -100,7 +99,6 @@ export default function FactoryCompliance({ reports, violations, penalties, pena
         level="h2"
         titleId="factory-compliance-title"
         title={strings.title}
-        description={strings.description}
       />
       <CardBody>
         <Text role="label" tone="muted">{strings.reports}</Text>

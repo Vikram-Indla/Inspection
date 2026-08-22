@@ -19,7 +19,6 @@ export default function LookupsScreen({ data, locale }: {
       breadcrumbLabel={copy.breadcrumb.label}
       breadcrumbs={[{ label: copy.breadcrumb.administration, href: "/admin" }, { label: copy.title }]}
       title={copy.title}
-      description={copy.subtitle}
     >
       <div className={styles.stack}>
         <Card as="section" role="status">

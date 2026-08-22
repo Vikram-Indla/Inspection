@@ -27,7 +27,6 @@ export default function MyTasksScreen({ data, locale }: {
       ) : null}
       <div className={styles.headerIdentity}>
         <Heading level={1} visual="subheading">{copy.title}</Heading>
-        <Text role="label" tone="secondary" as="p">{copy.subtitle}</Text>
       </div>
       <div className={styles.headerControls}>
         <MyTasksSyncStatus

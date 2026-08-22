@@ -53,7 +53,6 @@
   "national": {
     "title": "National performance",
     "coverage": {
-      "question": "Are we achieving the national inspection strategy?",
       "title": "Inspection coverage against annual target",
       "definition": "Completed inspections as a percentage of the annual inspection target",
       "example": "{count} inspections completed. No yearly target is set.",
@@ -61,7 +60,6 @@
       "action": "Open Planning"
     },
     "compliance": {
-      "question": "How compliant is the industrial sector?",
       "title": "National compliance rate",
       "definition": "Percentage of eligible inspection answers that were compliant",
       "example": "{compliant} compliant of {eligible} eligible answers.",
@@ -69,7 +67,6 @@
       "action": "Open Analytics"
     },
     "approval": {
-      "question": "Are inspection reports approved without excessive rework?",
       "title": "Inspection approval rate",
       "definition": "Percentage of decided Level-2 review outcomes that were approved",
       "example": "{approved} approved of {decided} decided outcomes.",
@@ -80,7 +77,6 @@
   "intervention": {
     "title": "Strategic intervention",
     "topViolation": {
-      "question": "Which regulations generate the most violations?",
       "title": "Top violated regulation",
       "definition": "Count of violations grouped by regulation",
       "example": "{count} linked violations in your area.",
@@ -89,7 +85,6 @@
       "action": "Open the regulation"
     },
     "critical": {
-      "question": "Which factories require immediate intervention?",
       "title": "Critical factories requiring intervention",
       "definition": "Factories carrying a recorded high-risk band or active critical violation",
       "example": "{count} factories match the recorded conditions.",
@@ -97,7 +92,6 @@
       "action": "Open Factory 360"
     },
     "annual": {
-      "question": "Which factories still require inspection this year?",
       "title": "Factories pending annual inspection",
       "definition": "Active factories with no completed inspection this inspection year",
       "example": "You can see {count} factories, but the yearly cycle has no rule yet.",
@@ -107,7 +101,6 @@
   },
   "explorer": {
     "title": "Compliance performance explorer",
-    "description": "One compliance-rate formula, four lenses. Every row drills to the factories behind it.",
     "lens": "Lens",
     "openFactories": "Open factories",
     "empty": "No approved answers you can use in your area.",
@@ -118,8 +111,7 @@
     "countHeading": "Records"
   },
   "requirement": {
-    "title": "Strategic requirement coverage",
-    "description": "Measures not shown above, and whether each one is live or stopped."
+    "title": "Strategic requirement coverage"
   },
   "charts": {
     "coverage": {
@@ -130,7 +122,6 @@
     },
     "pipeline": {
       "title": "Pipeline by planning status",
-      "description": "Every visit in your area, grouped by the planning status it is in now.",
       "aria": "Visits in your area by planning status, ranked from largest to smallest",
       "total": "{total} visits in your area",
       "emptyTitle": "No visits in your area",
@@ -141,19 +132,16 @@
     },
     "activeField": {
       "title": "Active inspections by state",
-      "description": "Where each field inspection currently stands, inside the total above.",
       "aria": "Active field inspections by work state, ranked from largest to smallest",
       "total": "{total} active inspections"
     },
     "todayStates": {
       "title": "Today's schedule by state",
-      "description": "Every visit scheduled for today, grouped by the state it currently holds.",
       "aria": "Today's visits by work state, ranked from largest to smallest",
       "total": "{total} visits scheduled today"
     },
     "activity": {
       "title": "Activity",
-      "description": "Recorded events per day over the chosen period.",
       "aria": "Events per day over the chosen period",
       "unit": "events in your area",
       "peak": "Busiest day {date} — {count} events",
@@ -184,51 +172,43 @@
     "today": {
       "title": "Today's operations",
       "planned": {
-        "question": "What needs to be executed today?",
         "title": "Today's planned visits",
         "definition": "Count of visits scheduled for today",
         "action": "Open Execution"
       },
       "completion": {
-        "question": "How much work has been completed today?",
         "title": "Today's visit completion rate",
         "definition": "(Completed visits today ÷ planned visits today) × 100",
         "action": "Open Execution"
       },
       "active": {
-        "question": "What inspections are currently active?",
         "title": "Active field inspections",
         "definition": "How many inspections are being done right now",
         "action": "Open Operations Center"
       },
       "overdue": {
-        "question": "Which visits are delayed?",
         "title": "Overdue planned visits",
         "definition": "Planned date earlier than today and status not completed or cancelled",
         "action": "Open Planning"
       },
       "awaiting": {
-        "question": "Which inspection reports require review?",
         "title": "Inspection reports waiting for approval",
         "definition": "How many sent reports are waiting for a review decision",
         "action": "Open Review & Approval"
       },
       "returned": {
-        "question": "Which inspections require rework?",
         "title": "Returned inspection reports",
         "definition": "Count of reports returned to inspectors",
         "action": "Open Execution"
       },
       "highPriority": {
-        "question": "Which factories should be inspected next?",
         "title": "High-priority visits pending execution",
         "definition": "Planned visits at high or critical risk, not yet executed",
         "action": "Open Planning"
       }
     },
     "requirement": {
-      "title": "Day-to-day measure coverage",
-      "description": "Day-to-day measures not shown above, and whether each one is live or stopped."
+      "title": "Day-to-day measure coverage"
     },
     "capacity": {
       "title": "Inspector capacity",
@@ -252,9 +232,14 @@
     "action": "Open Enforcement Library"
   },
   "executive": {
-    "title": "Executive AI brief",
-    "fallback": "The recorded national figures in your area moved this period. Compare the counts above with the period before, of equal length. This brief reports movement only. It does not say why.",
-    "generate": "Generate brief",
-    "generating": "Generating…"
+    "title": "Executive brief",
+    "completed": "{count} inspections were completed in this period.",
+    "critical": "{count} of {total} factories are recorded as high risk.",
+    "penaltiesUp": "{count} penalty notices were sent, {change} more than the period before.",
+    "penaltiesDown": "{count} penalty notices were sent, {change} fewer than the period before.",
+    "penaltiesSame": "{count} penalty notices were sent, the same as the period before.",
+    "penaltiesUnknown": "Penalty notices could not be read for this period.",
+    "coverage": "Coverage against the yearly target cannot be shown. No target is published yet.",
+    "caveat": "This brief reports what was recorded. It does not say why."
   }
 }

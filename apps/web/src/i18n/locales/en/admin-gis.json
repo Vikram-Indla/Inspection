@@ -7,7 +7,6 @@
     "hub": "GIS studio"
   },
   "title": "GIS studio — geofencing",
-  "subtitle": "Official coordinates and per-factory geofence radii, stamped on every geo event",
   "banner": {
     "title": "GIS studio.",
     "body": "We save these values with every map event. We save the settings version with every arrival. The GIS admin owns the official points. What an inspector sees never changes them. You can change the map circle for each factory below."
@@ -100,7 +99,6 @@
   "spatial": {
     "loading": "Loading spatial canvas…",
     "title": "Spatial canvas",
-    "subtitle": "Additive working layers and factory locations — the official pin stays GIS-admin owned",
     "off": {
       "consequence": "The spatial canvas is not enabled here. Mapbox provider is held.",
       "notAvailable": "Not available yet",
