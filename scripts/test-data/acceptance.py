@@ -6,7 +6,11 @@ Approved values: product-contract/test-data-architecture/CONSENT-RECORD.md
 
   python3 scripts/test-data/acceptance.py
 """
-import subprocess, sys
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from load import q
 
 # Cohort rows carry an F-<site>-nnn code. Rows already in the database use a
 # different shape (F-1101). Counting all of them was an early false failure.
@@ -36,10 +40,6 @@ CHECKS = [
  ("Rejected",            "select count(*) from reviews where decision='reject'", 10),
  ("Policies published",  "select count(*) from dashboard_config_heads", 3),
 ]
-
-def q(sql):
-    r = subprocess.run(["psql", "-tA", "-c", sql], capture_output=True, text=True)
-    return r.stdout.strip()
 
 def main():
     print("acceptance — approved figures against live SQL\n")

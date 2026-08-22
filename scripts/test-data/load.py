@@ -117,6 +117,16 @@ def q(sql):
     r = _run(sql, ["-tA"])
     return r.stdout.strip() if r.returncode == 0 else f"ERR {r.stderr.strip()[:90]}"
 
+# The first query doubles as the reachability probe. Letting an unreachable
+# database fall through reports it as a missing schema, which sends whoever
+# reads the log looking in the wrong place.
+def current_database():
+    db = q("select current_database()")
+    if db.startswith("ERR ") or not db:
+        raise SystemExit(f"REFUSED: cannot reach the database over the "
+                         f"{_transport()} transport.\n         {db or 'empty response'}")
+    return db
+
 def lit(v):
     if v is None or v == "": return "null"
     return "'" + str(v).replace("'", "''") + "'"
@@ -132,7 +142,7 @@ TABLE_COUNT_SQL = "select count(*) from information_schema.tables where table_sc
 
 def preflight():
     print("preflight")
-    db = q("select current_database()")
+    db = current_database()
     print(f"  database            {db}")
     if any(t in db.lower() for t in ("prod", "production")):
         raise SystemExit("REFUSED: database name looks like production")
@@ -508,7 +518,7 @@ def reset(confirm):
 
     Scope is unchanged — only ids this batch derived are deleted.
     """
-    db = q("select current_database()")
+    db = current_database()
     if any(t in db.lower() for t in ("prod", "production")):
         raise SystemExit("REFUSED: database name looks like production")
     if os.environ.get("NODE_ENV") == "production":
