@@ -1,4 +1,3 @@
-export const ANALYTICS_ROLES = ["admin","supervisor","planner"] as const;
 export type AnalyticsQuery = {
   periodFrom:string; periodTo:string; compareFrom:string|null; compareTo:string|null;
   region:string|null; factoryId:string|null; method:"bulk"|"single"|"immediate"|null;

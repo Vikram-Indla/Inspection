@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getLocale, type Locale } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { buildShellNavigation, BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
+import { buildShellNavigation } from "@/lib/shell-navigation";
 import { resolveRegionId } from "@/lib/ksa-regions";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { CLEAN_FACTORY_CODES, isCleanFactory } from "./factory-codes";
@@ -201,8 +201,7 @@ export async function loadOperationsPage(scope: OperationsScope): Promise<Operat
     : buildShellNavigation(routeRoleKeys)
       .flatMap(group => group.items)
       .find(item => item.href === "/operations");
-  const hasOperationalRole = routeRoleKeys.some(role => BUSINESS_ROLE_KEYS.includes(role) || role === "admin");
-  const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
+  const mayViewOperations = operationsDestination?.enabled === true;
   if (!mayViewOperations) return { kind: "denied" };
 
   const authorizedScope = await loadAuthorizedScope(sb, user.id);

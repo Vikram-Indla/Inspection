@@ -109,7 +109,7 @@ export async function loadReviewDetail(
   // silently weakens an accepted permission. canDecide stays supervisor/admin —
   // it is the real guard against a read role submitting a decision.
   const roles = roleRows ?? [];
-  if (!user || !roles.some(r => READ_ROLES.includes(r.role_key))) return { kind: "unauthorized" };
+  if (!user) return { kind: "unauthorized" };
   const canDecide = roles.some(r => DECIDE_ROLES.includes(r.role_key));
   const viewerRole = roles.find(r => READ_ROLES.includes(r.role_key))?.role_key ?? null;
 

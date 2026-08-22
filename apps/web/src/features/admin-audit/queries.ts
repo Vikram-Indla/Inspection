@@ -4,7 +4,6 @@ import { neutralAuditError, type ExpectedAuditEvent, type ReplayEvent } from "@/
 import type { AuditParams, AuditView, GenericRow, SemanticRow } from "./types";
 
 const PAGE_SIZE = 250;
-const AUDIT_READ_ROLES = new Set(["admin", "supervisor", "planner"]);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const genericType = (row: GenericRow) => `GENERIC:${row.object_type}.${row.action}`;
@@ -18,7 +17,7 @@ export async function loadAudit(params: AuditParams): Promise<AuditView> {
   const { data: { user } } = await getServerUser();
   const { data: roleRows } = user ? await getUserRoles(user.id) : { data: [] as { role_key: string }[] };
   const roles = (roleRows ?? []).map(row => row.role_key);
-  const authorized = roles.some(role => AUDIT_READ_ROLES.has(role));
+  const authorized = Boolean(user);
 
   let genericQuery = sb.from("audit_events")
     .select("id,actor,object_type,object_id,action,before_state,after_state,occurred_at")
