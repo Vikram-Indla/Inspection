@@ -1,0 +1,10 @@
+step,phase,command,what_it_does,guard,failure_behaviour
+1,LOAD,npm run testdata:preflight,"Proves target is non-production, migrations are current, L0 reference data is present and unmutated","Refuses any host not on the allowlist; refuses NODE_ENV=production; refuses if the project ref matches the production ref",Abort before any write
+2,LOAD,npm run testdata:load -- --profile demo --anchor 2026-08-22,"Runs modules 01→14 in DAG order, writing L1→L2→L3 with uuidv5 IDs derived from the batch id","Registers the batch in seed_runs as in_progress before the first write",Marks the batch partial and stops; already-written rows stay valid and removable
+3,LOAD,(automatic),"Writes the manifest to product-contract/evidence/seed-runs/<batch>.json with exact row IDs per table",—,A run with no manifest cannot be unloaded — the loader fails rather than skip it
+4,VERIFY,npm run testdata:verify -- --batch <id>,"Referential integrity, RLS spot-checks as each persona, and one assertion per screen row in the screen map",—,Reports which screens are still empty and why
+5,STATUS,npm run testdata:status,"Lists every batch: id, label, profile, anchor date, status, row counts",read-only,—
+6,UNLOAD,npm run testdata:unload -- --batch <id> --dry-run,"Prints exactly which tables and how many rows WOULD be deleted, in reverse-DAG order",zero writes,—
+7,UNLOAD,npm run testdata:unload -- --batch <id> --confirm,"Deletes L4-removable → L3 → L2 → L1 strictly in reverse dependency order, by explicit row ID from the manifest","Refuses a batch id absent from seed_runs; refuses to delete any row not named in the manifest",Stops at the first orphan reference and reports it
+8,UNLOAD,(automatic),"Marks seed_runs.status = cleaned and keeps the registry row so the batch id can never be reused",—,—
+9,UNLOAD,npm run testdata:unload -- --all --confirm,"Unloads every batch whose status is completed or partial, newest first — this is the whole-data unload","Same guards; still never touches L0 or audit_events",—

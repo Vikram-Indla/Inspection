@@ -1,0 +1,102 @@
+name: test-data
+
+# Loading, verifying and removing the training cohort against the staging
+# Supabase project. Manual only — this writes to a shared database and must
+# never be triggered by a push.
+#
+# Requires two repository secrets:
+#   SUPABASE_PROJECT_ID    the project ref
+#   SUPABASE_MGMT_TOKEN    a Supabase management token for the owning account
+#
+# With those set the loader routes SQL over HTTPS to the platform SQL endpoint,
+# which is the only route into a hosted project: port 5432 is raw TCP and no
+# database password is issued.
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: What to run
+        required: true
+        default: preflight
+        type: choice
+        options:
+          - preflight
+          - load
+          - verify
+          - unload-dry-run
+          - unload
+          - reset
+      confirm:
+        description: 'Destructive commands only (unload, reset): type the project ref to confirm'
+        required: false
+        type: string
+      as_of:
+        description: 'Optional YYYY-MM-DD to date the cohort against. Defaults to the day of the run.'
+        required: false
+        type: string
+
+concurrency:
+  group: test-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check credentials are present
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_MGMT_TOKEN: ${{ secrets.SUPABASE_MGMT_TOKEN }}
+        run: |
+          missing=
+          [ -n "$SUPABASE_PROJECT_ID" ] || missing="$missing SUPABASE_PROJECT_ID"
+          [ -n "$SUPABASE_MGMT_TOKEN" ] || missing="$missing SUPABASE_MGMT_TOKEN"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "Credentials present. Target ref ends ...${SUPABASE_PROJECT_ID: -4}"
+
+      - name: Require typed confirmation for destructive commands
+        if: contains(fromJSON('["unload","reset"]'), inputs.command)
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$CONFIRM" != "$SUPABASE_PROJECT_ID" ]; then
+            echo "::error::'${{ inputs.command }}' removes rows. Re-run and type the project ref into the confirm box."
+            exit 1
+          fi
+          echo "Confirmed."
+
+      - name: ${{ inputs.command }}
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_MGMT_TOKEN: ${{ secrets.SUPABASE_MGMT_TOKEN }}
+          AS_OF: ${{ inputs.as_of }}
+        run: |
+          case "${{ inputs.command }}" in
+            unload-dry-run) set -- unload --dry-run ;;
+            unload)         set -- unload --confirm ;;
+            reset)          set -- reset  --confirm ;;
+            *)              set -- "${{ inputs.command }}" ;;
+          esac
+          # Left empty, the loader dates the cohort against the day of the run.
+          if [ -n "$AS_OF" ]; then set -- "$@" --as-of "$AS_OF"; fi
+          python3 scripts/test-data/load.py "$@"
+
+      - name: acceptance
+        if: inputs.command == 'load' || inputs.command == 'verify'
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_MGMT_TOKEN: ${{ secrets.SUPABASE_MGMT_TOKEN }}
+        run: python3 scripts/test-data/acceptance.py

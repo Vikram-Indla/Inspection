@@ -1,0 +1,435 @@
+<title>Populate Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#FBFAFC; --surface:#FFFFFF; --sunk:#F4F1F8;
+    --ink:#241C33; --body:#3D3550; --muted:#6B6280;
+    --brand:#5A4478; --accent:#7E61AC; --line:#E6E1EE; --hair:#EFEBF5;
+    --live:#1B7A5A; --live-bg:#E4F3ED;
+    --policy:#8F6407; --policy-bg:#FAF0DC;
+    --blocked:#8C3A46; --blocked-bg:#F8E7E9;
+    --shadow:0 1px 0 var(--hair);
+    --measure:70ch;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#131019; --surface:#1B1724; --sunk:#221D2E;
+      --ink:#EFEBF5; --body:#CFC8DC; --muted:#968EA9;
+      --brand:#C0A8E0; --accent:#A183D0; --line:#2F2940; --hair:#272134;
+      --live:#5CCB9E; --live-bg:#12281F;
+      --policy:#E0AC46; --policy-bg:#2C2210;
+      --blocked:#E28E98; --blocked-bg:#301A1E;
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#131019; --surface:#1B1724; --sunk:#221D2E;
+      --ink:#EFEBF5; --body:#CFC8DC; --muted:#968EA9;
+      --brand:#C0A8E0; --accent:#A183D0; --line:#2F2940; --hair:#272134;
+      --live:#5CCB9E; --live-bg:#12281F;
+      --policy:#E0AC46; --policy-bg:#2C2210;
+      --blocked:#E28E98; --blocked-bg:#301A1E;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--body);
+    font-family:Inter,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 32px 96px}
+  .spine{max-width:var(--measure)}
+  h1,h2,h3{font-family:Spectral,Georgia,serif; color:var(--ink); text-wrap:balance; margin:0}
+  h1{font-size:clamp(2.1rem,4.4vw,3.1rem); font-weight:600; line-height:1.1; letter-spacing:-.015em}
+  h2{font-size:1.65rem; font-weight:500; line-height:1.2}
+  h3{font-size:1.12rem; font-weight:600; line-height:1.35}
+  p{margin:0}
+  a{color:var(--accent)}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86em}
+
+  .eyebrow{
+    font-size:.72rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent); margin:0;
+  }
+  header.masthead{
+    border-bottom:1px solid var(--line); padding:76px 0 40px; margin-bottom:64px;
+    display:flex; flex-direction:column; gap:20px;
+  }
+  header.masthead .lede{font-size:1.16rem; color:var(--body); max-width:64ch}
+  .meta{display:flex; flex-wrap:wrap; gap:10px 28px; font-size:.82rem; color:var(--muted)}
+  .meta b{color:var(--ink); font-weight:600}
+
+  section{display:flex; flex-direction:column; gap:26px; margin-bottom:80px}
+  section > .spine{display:flex; flex-direction:column; gap:16px}
+  .sechead{display:flex; flex-direction:column; gap:8px}
+
+  figure{margin:0; display:flex; flex-direction:column; gap:14px}
+  figure svg{width:100%; height:auto; display:block; color:var(--ink)}
+  figcaption{font-size:.86rem; color:var(--muted); max-width:72ch}
+  .figframe{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:28px 24px; overflow-x:auto;
+  }
+
+  table{border-collapse:collapse; width:100%; font-size:.88rem}
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+  th{
+    text-align:left; font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); padding:14px 16px; border-bottom:1px solid var(--line); white-space:nowrap;
+    background:var(--sunk);
+  }
+  td{padding:13px 16px; border-bottom:1px solid var(--hair); vertical-align:top; color:var(--body)}
+  tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; color:var(--ink); font-weight:500}
+  td strong{color:var(--ink); font-weight:600}
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+    font-size:.72rem; font-weight:600; letter-spacing:.02em;
+    padding:3px 9px; border-radius:3px; border:1px solid transparent;
+  }
+  .chip::before{content:""; width:5px; height:5px; border-radius:50%; background:currentColor}
+  .chip.live{color:var(--live); background:var(--live-bg); border-color:color-mix(in srgb, var(--live) 28%, transparent)}
+  .chip.policy{color:var(--policy); background:var(--policy-bg); border-color:color-mix(in srgb, var(--policy) 30%, transparent)}
+  .chip.blocked{color:var(--blocked); background:var(--blocked-bg); border-color:color-mix(in srgb, var(--blocked) 30%, transparent)}
+
+  .split{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:22px; display:flex; flex-direction:column; gap:10px;
+  }
+  .card .k{font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+  .card .v{font-family:Spectral,Georgia,serif; font-size:2rem; color:var(--ink); line-height:1; font-variant-numeric:tabular-nums}
+  .card p{font-size:.88rem; color:var(--muted)}
+
+  .meter{display:flex; flex-direction:column; gap:12px}
+  .meter .track{display:flex; height:14px; border-radius:3px; overflow:hidden; border:1px solid var(--line)}
+  .meter .seg{height:100%}
+  .meter .legend{display:flex; flex-wrap:wrap; gap:8px 22px; font-size:.84rem; color:var(--muted)}
+  .meter .legend span b{color:var(--ink); font-variant-numeric:tabular-nums}
+
+  pre{
+    margin:0; background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:20px 22px; overflow-x:auto; font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.83rem; line-height:1.85; color:var(--body);
+  }
+  pre b{color:var(--ink); font-weight:500}
+  pre i{color:var(--muted); font-style:normal}
+
+  .rule{border:0; border-top:1px solid var(--line); margin:0}
+  .callout{
+    border-inline-start:2px solid var(--accent); padding:2px 0 2px 20px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  ol.steps{margin:0; padding:0; list-style:none; counter-reset:s; display:flex; flex-direction:column; gap:2px}
+  ol.steps li{
+    counter-increment:s; display:grid; grid-template-columns:28px 1fr; gap:14px;
+    padding:14px 0; border-bottom:1px solid var(--hair); font-size:.92rem;
+  }
+  ol.steps li::before{
+    content:counter(s); font-family:"IBM Plex Mono",monospace; font-size:.78rem;
+    color:var(--accent); padding-top:2px;
+  }
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps b{color:var(--ink); font-weight:600}
+  ul.plain{margin:0; padding-inline-start:20px; display:flex; flex-direction:column; gap:8px}
+  ul.plain li{padding-inline-start:4px}
+  ul.plain::marker{color:var(--accent)}
+  @media (max-width:640px){ .wrap{padding:0 20px 64px} header.masthead{padding-top:48px} }
+</style>
+
+<style>
+  pre.mermaid{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:24px; text-align:center; overflow-x:auto}
+  .stage{display:flex; flex-direction:column; gap:18px; padding:26px 0; border-top:1px solid var(--line)}
+  .stagehead{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
+  .stagenum{
+    font-family:"IBM Plex Mono",monospace; font-size:.74rem; font-weight:500; letter-spacing:.08em;
+    color:var(--surface); background:var(--brand); padding:4px 9px; border-radius:3px; white-space:nowrap;
+  }
+  .gate{
+    display:flex; flex-direction:column; gap:8px; background:var(--sunk);
+    border-inline-start:3px solid var(--policy); border-radius:0 5px 5px 0; padding:16px 20px;
+  }
+  .gate .gk{font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--policy)}
+  .gate p{font-size:.9rem}
+  .askbox{background:var(--surface); border:1px solid var(--accent); border-radius:6px; padding:24px; display:flex; flex-direction:column; gap:16px}
+  .ask{display:grid; grid-template-columns:auto 1fr; gap:12px 16px; align-items:start; padding-bottom:16px; border-bottom:1px solid var(--hair)}
+  .ask:last-child{border-bottom:0; padding-bottom:0}
+  .ask .qn{font-family:"IBM Plex Mono",monospace; font-size:.76rem; color:var(--accent); padding-top:3px}
+  .ask b{color:var(--ink); display:block; margin-bottom:4px}
+  .ask span{font-size:.9rem}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">MIM Inspection Platform · awaiting your consent</p>
+  <h1>Populate order</h1>
+  <p class="lede">What Administration must contain before a planner can create anything, what a planner must publish before an inspector can work, what an inspector must submit before the dashboard can show a number — and why loading factories alone leaves half the screen empty.</p>
+  <div class="meta">
+    <span><b>6</b> stages</span>
+    <span><b>4</b> hard gates</span>
+    <span><b>30</b> Riyadh establishments</span>
+    <span>Riyadh · Sudair · Al-Kharj</span>
+  </div>
+</header>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">The chain</p>
+    <h2>Nothing downstream exists until the gate above it is satisfied</h2>
+    <p>These are not conventions. Each gate is a foreign key or a NOT NULL constraint in the schema — the database physically refuses the next step until the row above exists.</p>
+  </div>
+
+  <pre class="mermaid">
+flowchart LR
+  ADMIN["STAGE 0<br/>ADMINISTRATION"]
+  PLAN["STAGE 1<br/>PLANNER"]
+  EXEC["STAGE 2<br/>INSPECTOR"]
+  REV["STAGE 3<br/>REVIEWER"]
+  ENF["STAGE 4<br/>ENFORCEMENT"]
+  DASH["STAGE 5<br/>DASHBOARD<br/>ANALYTICS"]
+  RISK["RISK ENGINE"]
+
+  ADMIN -->|"GATE A<br/>published package version<br/>+ factory + inspector profile"| PLAN
+  PLAN -->|"GATE B<br/>assignments row"| EXEC
+  EXEC -->|"GATE C<br/>submission_versions v1"| REV
+  REV -->|"GATE D<br/>reviews.decision = approve"| DASH
+  REV --> ENF
+  ENF --> DASH
+  ADMIN -.->|"engine_settings.risk<br/>+ risk_models"| RISK
+  ENF -.->|"violation history"| RISK
+  RISK -.->|"risk band for<br/>bulk cohorts"| PLAN
+
+  classDef s fill:#7E61AC,stroke:#413259,color:#fff
+  classDef r fill:#F4F1F8,stroke:#7E61AC,color:#241C33
+  class ADMIN,PLAN,EXEC,REV,ENF,DASH s
+  class RISK r
+  </pre>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Gate</th><th>The constraint</th><th>What breaks if you skip it</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A</strong></td><td><code>visits.factory_id</code> NOT NULL → <code>factories</code>; <code>visits.package_version_id</code> → <code>package_versions</code></td><td>Planning wizard cannot save. A factory with no <strong>published</strong> package version is not selectable — a draft version does not count.</td></tr>
+        <tr><td><strong>B</strong></td><td><code>assignments.inspector_id</code> → <code>profiles.user_id</code></td><td>The inspector's Field app is empty. No journey, no geo events, no execution. RLS shows an inspector only what they are assigned.</td></tr>
+        <tr><td><strong>C</strong></td><td><code>reviews</code> requires a submitted <code>inspections</code> row with a <code>submission_versions</code> snapshot</td><td>The Review queue is empty and <code>OPS-KPI-004 Pending approvals</code> reads 0 — correctly, but with nothing to demonstrate.</td></tr>
+        <tr><td><strong>D</strong></td><td><code>STR-KPI-001</code> counts <code>checklist_responses</code> on <strong>approved</strong> inspections only</td><td>National compliance rate stays <span class="chip live">N/A</span>. Submitted-but-unreviewed work contributes nothing. <strong>This is the single most common reason the dashboard looks dead.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Stage by stage</p>
+    <h2>What to populate, and what it turns on</h2>
+  </div>
+
+  <div class="stage">
+    <div class="stagehead"><span class="stagenum">STAGE 0</span><h3>Administration — before anyone logs in</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Populate</th><th>Table</th><th>Turns on</th></tr></thead>
+      <tbody>
+        <tr><td>Roles, capabilities, permissions</td><td><code>roles</code> <code>capabilities</code> <code>role_permissions</code></td><td>Login itself. Verified, never written — a mutated set aborts the run.</td></tr>
+        <tr><td>49 personas with role grants</td><td><code>profiles</code> <code>user_roles</code></td><td>Every screen. Two boundary personas prove refusal paths.</td></tr>
+        <tr><td>Visit types, priorities, cancellation reasons</td><td><code>planning_lookups</code></td><td>Planning filters and the cancel dialog.</td></tr>
+        <tr><td>Regulations → clauses → violation codes → penalty mappings</td><td><code>compliance_regulation_library</code> <code>violation_codes</code> <code>penalty_mappings</code></td><td>Compliance Library, and the only governed source of penalty amounts.</td></tr>
+        <tr><td>Checklist items → packages → <strong>published</strong> versions</td><td><code>inspection_items</code> <code>packages</code> <code>package_versions</code></td><td><strong>Gate A.</strong> Also <code>STR-KPI-009</code> Checklist items by issuing authority.</td></tr>
+        <tr><td>30 establishments with CR, licence, geofence</td><td><code>factories</code> <code>commercial_registrations</code> <code>industrial_licenses</code> <code>factory_locations</code></td><td>Factory 360, planning target search, arrival checks.</td></tr>
+        <tr><td>Engine settings — risk, gis, sla, evidence, otp</td><td><code>engine_settings</code></td><td>Geofence radius, SLA clocks, evidence rules. Verified, never overwritten.</td></tr>
+        <tr><td>Published dashboard policy versions</td><td><code>dashboard_config_heads</code> <code>dashboard_config_versions</code></td><td><code>STR-KPI-007</code>, <code>STR-KPI-008</code>, <code>OPS-KPI-002</code>. <strong>No volume of journeys substitutes for this.</strong></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="stage">
+    <div class="stagehead"><span class="stagenum">STAGE 1</span><h3>Planner</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Populate</th><th>Table</th><th>Turns on</th></tr></thead>
+      <tbody>
+        <tr><td>Plans in all three methods — single, bulk, immediate</td><td><code>visit_plans</code></td><td>The three planning entry routes; <code>M01</code>/<code>M02</code> flows.</td></tr>
+        <tr><td>Visits across all seven planning statuses</td><td><code>visits</code></td><td>Every Planning tab. A tab with no rows reads as broken, not empty.</td></tr>
+        <tr><td>Publish transitions</td><td><code>visit_lifecycle_events</code></td><td>The "last update" column and the audit trail.</td></tr>
+        <tr><td>Assignments to inspectors</td><td><code>assignments</code></td><td><strong>Gate B.</strong> Also <code>OPS-KPI-006</code> Today's schedule load.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="gate"><span class="gk">Gate B</span><p>An unassigned published visit is still visible in Planning and still counts in <code>OPS-KPI-001</code> Visit pipeline — but it is invisible to every inspector and can never be executed. Keep some deliberately unassigned; that state is real.</p></div>
+  </div>
+
+  <div class="stage">
+    <div class="stagehead"><span class="stagenum">STAGE 2</span><h3>Inspector — execution</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Populate</th><th>Table</th><th>Turns on</th></tr></thead>
+      <tbody>
+        <tr><td>Journey start, depart, arrive, GPS override</td><td><code>journey_sessions</code> <code>geo_events</code></td><td>Operations live map; <code>OPS-KPI-007</code> GPS overrides today.</td></tr>
+        <tr><td>Inspections in progress and complete</td><td><code>inspections</code></td><td><code>OPS-KPI-003</code> Active executions; Execution workspace.</td></tr>
+        <tr><td>One response per checklist item</td><td><code>checklist_responses</code></td><td><strong>The compliance rate's entire denominator.</strong> The largest table in the pack.</td></tr>
+        <tr><td>Evidence with hash, findings with severity</td><td><code>evidence</code> <code>findings</code></td><td>Evidence rail, Factory 360 history.</td></tr>
+        <tr><td>Immutable submission snapshot</td><td><code>submission_versions</code></td><td><strong>Gate C.</strong></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="stage">
+    <div class="stagehead"><span class="stagenum">STAGE 3</span><h3>Reviewer — the gate everyone forgets</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Populate</th><th>Table</th><th>Turns on</th></tr></thead>
+      <tbody>
+        <tr><td>Decisions in all three outcomes</td><td><code>reviews</code></td><td><code>STR-KPI-004</code> decision mix; <code>STR-KPI-001</code> compliance rate.</td></tr>
+        <tr><td>Return, then a v2 resubmission</td><td><code>submission_versions</code></td><td>The correction loop — the hardest thing to demonstrate without data.</td></tr>
+        <tr><td>Approval closes the visit</td><td><code>visits.operational_state</code></td><td>Analytics window, Factory 360 history.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="gate"><span class="gk">Gate D · why the dashboard looks dead</span><p>You can load three hundred journeys, complete every checklist, and the national compliance rate will still read <strong>N/A</strong> if none of them were approved. Approval is not paperwork in this platform — it is the event that makes work countable.</p></div>
+  </div>
+
+  <div class="stage">
+    <div class="stagehead"><span class="stagenum">STAGE 4</span><h3>Enforcement</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Populate</th><th>Table</th><th>Turns on</th></tr></thead>
+      <tbody>
+        <tr><td>Violations against a governed code</td><td><code>violations</code></td><td>Enforcement Library; Factory 360 history.</td></tr>
+        <tr><td>Penalties — <strong>only</strong> from approved mappings</td><td><code>inspection_penalties</code> <code>penalty_notices</code></td><td>Penalty register. If mappings are unpublished the journey stops at the violation.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="stage">
+    <div class="stagehead"><span class="stagenum">STAGE 5</span><h3>Dashboard, Analytics, Risk</h3></div>
+    <p class="spine">This stage is populated by nothing. Every number here is a projection over stages 1–4. If a tile is empty, the fix is upstream — which is why the populate order matters more than the volume.</p>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Risk</p>
+    <h2>Two different things are called risk, and only one of them can be filled</h2>
+    <p>This distinction will come up in training, so it is worth getting right before the session rather than during it.</p>
+  </div>
+
+  <pre class="mermaid">
+flowchart TB
+  ES["engine_settings.risk v1<br/>weights and bands"] --> ENGINE["ENG-04 Risk Engine"]
+  RM["risk_models"] --> ENGINE
+  FH["factory attributes<br/>sector · size · licence state"] --> ENGINE
+  VH["violation history<br/>from Stage 4"] --> ENGINE
+  ENGINE --> RS["factories.risk_score<br/>risk_band · risk_version"]
+  RS --> BULK["Planning · bulk cohort selection"]
+  RS --> F360["Factory 360 risk panel"]
+  RS --> K010["STR-KPI-010<br/>Risk-to-attention mismatch"]
+
+  HS["Health Score band"] -.->|"NO SOURCE EXISTS"| K002["STR-KPI-002<br/>Risk distribution"]
+
+  classDef ok fill:#7E61AC,stroke:#413259,color:#fff
+  classDef bad fill:#F8E7E9,stroke:#8C3A46,color:#8C3A46,stroke-dasharray: 4 3
+  class ES,RM,FH,VH,ENGINE,RS,BULK,F360,K010 ok
+  class HS,K002 bad
+  </pre>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th></th><th>Risk Engine score</th><th>Health Score band</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Lives in</strong></td><td><code>factories.risk_score</code> / <code>risk_band</code></td><td>Nowhere — no table, no column</td></tr>
+        <tr><td><strong>Produced by</strong></td><td>ENG-04, from settings + factory + violation history</td><td>An ungoverned measure with no defined source</td></tr>
+        <tr><td><strong>Fills with test data?</strong></td><td><span class="chip live">Yes</span> — load Stage 0 settings, Stage 4 violations, run the engine</td><td><span class="chip blocked">No</span> — needs a migration (DEC-DASH-002)</td></tr>
+        <tr><td><strong>Shows on</strong></td><td>Bulk planning cohorts, Factory 360, <code>STR-KPI-010</code></td><td><code>STR-KPI-002</code> — stays <em>Unavailable</em> forever</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="spine"><strong>The trap:</strong> the seed pack must not write <code>risk_score</code> directly. That would fabricate an engine output — a number with no calculation behind it, which the methodology drawer would then present as governed. The pack supplies the engine's <em>inputs</em> and lets it produce the score.</p>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Round trip</p>
+    <h2>Edit the file, resubmit, everything downstream follows</h2>
+    <p>The property that makes this work: a row's identity is its <strong>code</strong>, never its name. Rename <em>Najd Advanced Plastics</em> to anything you like and <code>F-RUH-001</code> keeps the same UUID, so its licence, its geofence, its twelve visits, its inspections and its violations all stay attached.</p>
+  </div>
+
+  <pre class="mermaid">
+flowchart LR
+  CSV["seed-source/*.csv<br/>you edit this"] --> GEN["generator<br/>uuidv5(batch, 'factory:F-RUH-001')"]
+  GEN --> SQL["idempotent SQL<br/>upsert by derived id"]
+  SQL --> DB[("database")]
+  DB --> VER["verify<br/>one assertion per screen row"]
+  VER -.->|"what is still empty and why"| CSV
+
+  classDef e fill:#FFF7E0,stroke:#8F6407,color:#241C33
+  classDef n fill:#F4F1F8,stroke:#7E61AC,color:#241C33
+  class CSV e
+  class GEN,SQL,DB,VER n
+  </pre>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>If you change…</th><th>What regenerates</th><th>What survives</th></tr></thead>
+      <tbody>
+        <tr><td>A factory name (EN or AR)</td><td>Every screen label, search index, report header</td><td>UUID, journeys, violations, licence — all intact</td></tr>
+        <tr><td>A CR or licence number</td><td>Factory 360 identity rail, global search</td><td>Everything else</td></tr>
+        <tr><td>Coordinates or geofence radius</td><td>Operations map pins, arrival and override checks</td><td>Journey history</td></tr>
+        <tr><td>A persona display name</td><td>Account chip, assignment lists, audit actor labels</td><td>Login, role grants, assignments</td></tr>
+        <tr><td>A journey's terminal stop</td><td>Which tab it appears in and every row it writes downstream</td><td>The factory and inspector it belongs to</td></tr>
+        <tr><td><strong>A factory code</strong></td><td><strong>A new establishment.</strong> The old one is orphaned</td><td>Nothing — codes are identity, treat them as immutable</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Research</p>
+    <h2>Riyadh establishments — and three defects in the current seed</h2>
+    <p>Formats below are verified against a primary source or against a real legacy Ministry export held in this repository. Every establishment is fictitious.</p>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Field</th><th>Current seed</th><th>Verified reality</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr><td>CR number</td><td><code>4030-201101</code></td><td><code>1010600137</code> — 10 digits, no hyphen, <code>1010</code> = Riyadh</td><td>Almarai's audited statements give its Riyadh CR as <code>1010084223</code>. <code>4030</code> is not Riyadh.</td></tr>
+        <tr><td>Licence number</td><td><code>IL-9101</code></td><td><code>4810600673</code> — 10-digit numeric</td><td>Real legacy MIM export in this repo carries <code>inspection_flows.number = 4801072799</code></td></tr>
+        <tr><td>Unified number</td><td>absent</td><td><code>7010450911</code> — separate column, 7-prefixed</td><td><code>commercial_registrations.unified_number</code>; legacy export shows <code>7060138125</code></td></tr>
+        <tr><td>2nd Industrial City</td><td>24.706, 46.768</td><td><strong>24.54444, 46.89806</strong></td><td>Published as 24°32′40″N 46°53′53″E — Km 17 Al-Kharj Road, 1,900 ha. The seed is ~20 km off, in central Riyadh.</td></tr>
+        <tr><td>Establishment names</td><td>SADAFCO · Alkhorayef · SAFCO IV · Al Watania</td><td>Fictitious names from Riyadh places</td><td><strong>Real companies carrying invented risk scores.</strong> SAFCO IV is seeded at 88.25 "high". Not defensible in front of ministry trainers.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Code</th><th>Establishment</th><th>Industrial city</th><th>CR number</th><th>Licence</th><th>Sector</th><th>ISIC 4</th></tr></thead>
+      <tbody>
+        <tr><td><code>F-RUH-001</code></td><td>Najd Advanced Plastics Factory<br><span style="color:var(--muted)">مصنع نجد للبلاستيك المتطور</span></td><td>Riyadh 2nd</td><td class="num">1010600137</td><td class="num">4810600673</td><td>plastics</td><td class="num">2220</td></tr>
+        <tr><td><code>F-RUH-003</code></td><td>Al Yamamah Steel Fabrication<br><span style="color:var(--muted)">اليمامة لتشكيل المعادن</span></td><td>Riyadh 2nd</td><td class="num">1010600411</td><td class="num">4810602019</td><td>steel</td><td class="num">2410</td></tr>
+        <tr><td><code>F-RUH-007</code></td><td>Sudair Pharmaceutical Industries<br><span style="color:var(--muted)">سدير للصناعات الدوائية</span></td><td>Sudair</td><td class="num">1010600959</td><td class="num">4810604711</td><td>pharmaceutical</td><td class="num">2100</td></tr>
+        <tr><td><code>F-RUH-009</code></td><td>Al Malaz Metal Workshop<br><span style="color:var(--muted)">ورشة الملز للمعادن</span></td><td>Riyadh 1st</td><td class="num">1010601233</td><td class="num">4810606057</td><td>steel</td><td class="num">2599</td></tr>
+        <tr><td><code>F-RUH-019</code></td><td>Al Kharj Poultry Processing<br><span style="color:var(--muted)">الخرج لتصنيع الدواجن</span></td><td>Al-Kharj</td><td class="num">1010602603</td><td class="num">4810612787</td><td>food</td><td class="num">1010</td></tr>
+        <tr><td><code>F-RUH-029</code></td><td>Hair Industrial Gases Plant<br><span style="color:var(--muted)">الهير للغازات الصناعية</span></td><td>Riyadh 3rd</td><td class="num">1010603973</td><td class="num">4810619517</td><td>chemical <span class="chip policy">licence expired</span></td><td class="num">2011</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figcaption>6 of 30. Full master: <code>seed-source/factories-riyadh.csv</code>. Provenance for every format: <code>seed-source/RESEARCH-PROVENANCE.md</code>.</figcaption>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Consent</p>
+    <h2>Five decisions I need from you before generating the cohort</h2>
+  </div>
+
+  <div class="askbox">
+    <div class="ask"><span class="qn">01</span><div><b>Riyadh only, or the whole Kingdom?</b><span>You asked for Riyadh, so the master is 30 Riyadh-region establishments across five industrial cities. The dashboard's region lens and the Operations map are more convincing with several regions. I can add Makkah, Eastern, Madinah and Qassim at the same fidelity — that is roughly 30 more researched rows.</span></div></div>
+    <div class="ask"><span class="qn">02</span><div><b>The licence number format is unverified.</b><span>No public source documents it. I matched the shape of a real legacy Ministry export (10-digit numeric). If a trainee cross-checks a number against a live system it will not resolve. Do you want it confirmed with the Ministry or Taadeen first, or is format-plausible enough for training?</span></div></div>
+    <div class="ask"><span class="qn">03</span><div><b>Do I replace the existing seed, or add alongside it?</b><span>The real-company rows and the wrong coordinates live in an applied migration. Replacing means a new forward migration that corrects them. Adding alongside leaves SAFCO IV at 88.25 "high risk" visible in the same demo.</span></div></div>
+    <div class="ask"><span class="qn">04</span><div><b>Which Administration policies may I publish?</b><span>The inspection-cycle policy, SLA urgency fraction and KPI targets unblock three dashboard measures. Each is a governed value. I will not invent them — I need either the real approved numbers or your explicit sign-off on stated placeholders.</span></div></div>
+    <div class="ask"><span class="qn">05</span><div><b>Should the generator write to a database in this session?</b><span>Everything so far is files. Actually loading needs a target, credentials, and a named non-production allowlist. My recommendation is to finish the file layer, have you edit names in the CSVs, and only then wire the loader.</span></div></div>
+  </div>
+</section>
+
+<hr class="rule">
+<p style="margin-top:24px; font-size:.82rem; color:var(--muted)">Master data: <code>product-contract/test-data-architecture/seed-source/factories-riyadh.csv</code> · Provenance: <code>seed-source/RESEARCH-PROVENANCE.md</code> · Nothing has been executed against a database.</p>
+
+</div>

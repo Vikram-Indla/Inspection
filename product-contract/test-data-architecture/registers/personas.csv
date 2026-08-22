@@ -1,0 +1,8 @@
+persona_id,username,role_grants,display_name_ar,region,scope,count_in_demo,purpose
+P-ADM,admin1..admin5,admin,خالد إبراهيم الشمري (+4),Riyadh,national,5,Administration screens policy publication and access review
+P-PLN,planner1..planner6,planner,نورة عبدالعزيز الحربي (+5),"Riyadh Makkah Eastern Madinah Qassim",regional,6,Planning single bulk and immediate
+P-SUP,supervisor1..supervisor8,supervisor,عمر فهد الدوسري (+7),"Riyadh Makkah Eastern Madinah Qassim",regional,8,Supervision publish decisions and the supervisor dashboard
+P-REV,reviewer1..reviewer4,reviewer,ريم سعد العتيبي (+3),Riyadh,regional,4,Review and approval decisions
+P-INS,inspector1..inspector24,inspector,عبدالله محمد القحطاني (+23),"5 regions x 5 cities",own-assignments,24,Field execution evidence and findings
+P-MULTI,multi-role,planner + supervisor,ضابط تخطيط ومراجعة,Riyadh,regional,1,Boundary case — proves role composition and RLS union
+P-NONE,no-workspace,none,مستخدم بلا مساحة عمل,—,none,1,Boundary case — proves fail-closed refusal not a blank screen

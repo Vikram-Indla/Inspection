@@ -1,0 +1,39 @@
+violation_code,title_en,title_ar,level,clause_id,regulation_code,issuing_authority_code,active_from
+V-SBC-01,Portable fire extinguisher provision and servicing — breach,توفير وصيانة طفايات الحريق اليدوية — مخالفة,L3,SBC-801-1.8,SBC-801,SBC,2026-01-01
+V-SBC-02,Fire detection and alarm coverage — breach,تغطية أنظمة كشف الحريق والإنذار — مخالفة,L1,SBC-801-3.4,SBC-801,SBC,2026-01-01
+V-SBC-03,Load-bearing element condition — breach,حالة العناصر الحاملة — مخالفة,L2,SBC-801-5.2,SBC-801,SBC,2026-01-01
+V-SBC-04,Fixed suppression system readiness — breach,جاهزية أنظمة الإطفاء الثابتة — مخالفة,L2,SBC-201-2.4,SBC-201,SBC,2026-01-01
+V-SBC-05,Structural fire separation and compartmentation — breach,الفصل الإنشائي ضد الحريق — مخالفة,L2,SBC-201-4.7,SBC-201,SBC,2026-01-01
+V-HCIS-06,Perimeter control and access points — breach,التحكم في المحيط ونقاط الدخول — مخالفة,L2,HCIS-SEC-01-1.7,HCIS-SEC-01,HCIS,2026-01-01
+V-HCIS-07,Surveillance coverage of critical areas — breach,تغطية المراقبة للمناطق الحرجة — مخالفة,L3,HCIS-SEC-01-3.7,HCIS-SEC-01,HCIS,2026-01-01
+V-HCIS-08,Management of change records — breach,سجلات إدارة التغيير — مخالفة,L2,HCIS-SEC-01-5.8,HCIS-SEC-01,HCIS,2026-01-01
+V-HCIS-09,Access authorisation records — breach,سجلات تصاريح الدخول — مخالفة,L1,HCIS-PRO-04-2.2,HCIS-PRO-04,HCIS,2026-01-01
+V-HCIS-10,Process hazard analysis currency — breach,حداثة تحليل مخاطر العمليات — مخالفة,L1,HCIS-PRO-04-4.6,HCIS-PRO-04,HCIS,2026-01-01
+V-CD-11,Exit route availability and signage — breach,توفر مسارات الخروج واللوحات الإرشادية — مخالفة,L3,CD-EMR-11-1.4,CD-EMR-11,CD,2026-01-01
+V-CD-12,Evacuation drill records — breach,سجلات تمارين الإخلاء — مخالفة,L2,CD-EMR-11-3.3,CD-EMR-11,CD,2026-01-01
+V-CD-13,Safety data sheet availability — breach,توفر صحائف بيانات السلامة — مخالفة,L1,CD-EMR-11-5.7,CD-EMR-11,CD,2026-01-01
+V-CD-14,Assembly point designation — breach,تحديد نقاط التجمع — مخالفة,L3,CD-HAZ-06-2.6,CD-HAZ-06,CD,2026-01-01
+V-CD-15,Hazardous material segregation by class — breach,فصل المواد الخطرة حسب الفئة — مخالفة,L3,CD-HAZ-06-4.4,CD-HAZ-06,CD,2026-01-01
+V-SFDA-16,Personnel hygiene controls — breach,ضوابط النظافة الشخصية للعاملين — مخالفة,L2,SFDA-GMP-02-1.8,SFDA-GMP-02,SFDA,2026-01-01
+V-SFDA-17,Cold chain temperature records — breach,سجلات درجات حرارة سلسلة التبريد — مخالفة,L2,SFDA-GMP-02-3.7,SFDA-GMP-02,SFDA,2026-01-01
+V-SFDA-18,Batch traceability records — breach,سجلات تتبع التشغيلات — مخالفة,L1,SFDA-GMP-02-5.5,SFDA-GMP-02,SFDA,2026-01-01
+V-SFDA-19,Production area cleaning verification — breach,التحقق من نظافة مناطق الإنتاج — مخالفة,L3,SFDA-HYG-05-2.8,SFDA-HYG-05,SFDA,2026-01-01
+V-SFDA-20,Pest control programme evidence — breach,إثبات برنامج مكافحة الآفات — مخالفة,L2,SFDA-HYG-05-4.8,SFDA-HYG-05,SFDA,2026-01-01
+V-SASO-21,Quality management documentation — breach,توثيق إدارة الجودة — مخالفة,L3,SASO-QMS-03-1.1,SASO-QMS-03,SASO,2026-01-01
+V-SASO-22,Instrument calibration certificates — breach,شهادات معايرة الأجهزة — مخالفة,L2,SASO-QMS-03-3.7,SASO-QMS-03,SASO,2026-01-01
+V-SASO-23,Quality management documentation — breach,توثيق إدارة الجودة — مخالفة,L3,SASO-MET-07-1.2,SASO-MET-07,SASO,2026-01-01
+V-SASO-24,Instrument calibration certificates — breach,شهادات معايرة الأجهزة — مخالفة,L2,SASO-MET-07-3.5,SASO-MET-07,SASO,2026-01-01
+V-NCEC-25,Stack emission monitoring records — breach,سجلات مراقبة انبعاثات المداخن — مخالفة,L1,NCEC-EMS-01-1.1,NCEC-EMS-01,NCEC,2026-01-01
+V-NCEC-26,Waste segregation at source — breach,فصل النفايات من المصدر — مخالفة,L2,NCEC-EMS-01-3.3,NCEC-EMS-01,NCEC,2026-01-01
+V-NCEC-27,Stack emission monitoring records — breach,سجلات مراقبة انبعاثات المداخن — مخالفة,L2,NCEC-WST-04-1.5,NCEC-WST-04,NCEC,2026-01-01
+V-NCEC-28,Waste segregation at source — breach,فصل النفايات من المصدر — مخالفة,L1,NCEC-WST-04-3.3,NCEC-WST-04,NCEC,2026-01-01
+V-MHRSD-29,Personal protective equipment provision — breach,توفير معدات الوقاية الشخصية — مخالفة,L2,MHRSD-OSH-09-1.8,MHRSD-OSH-09,MHRSD,2026-01-01
+V-MHRSD-30,Incident reporting records — breach,سجلات الإبلاغ عن الحوادث — مخالفة,L1,MHRSD-OSH-09-3.1,MHRSD-OSH-09,MHRSD,2026-01-01
+V-MHRSD-31,Worker accommodation standards — breach,معايير سكن العمال — مخالفة,L1,MHRSD-OSH-09-5.1,MHRSD-OSH-09,MHRSD,2026-01-01
+V-MHRSD-32,Machine guarding condition — breach,حالة حواجز حماية الآلات — مخالفة,L1,MHRSD-WRK-02-2.5,MHRSD-WRK-02,MHRSD,2026-01-01
+V-MHRSD-33,First aid provision and training — breach,الإسعافات الأولية والتدريب — مخالفة,L1,MHRSD-WRK-02-4.7,MHRSD-WRK-02,MHRSD,2026-01-01
+V-MIM-34,Licence validity and displayed copy — breach,سريان الترخيص والنسخة المعروضة — مخالفة,L3,MIM-LIC-01-1.7,MIM-LIC-01,MIM,2026-01-01
+V-MIM-35,Declared production capacity accuracy — breach,دقة الطاقة الإنتاجية المعلنة — مخالفة,L1,MIM-LIC-01-3.3,MIM-LIC-01,MIM,2026-01-01
+V-MIM-36,Licence validity and displayed copy — breach,سريان الترخيص والنسخة المعروضة — مخالفة,L1,MIM-PRD-03-1.5,MIM-PRD-03,MIM,2026-01-01
+V-MIM-37,Declared production capacity accuracy — breach,دقة الطاقة الإنتاجية المعلنة — مخالفة,L2,MIM-PRD-03-3.7,MIM-PRD-03,MIM,2026-01-01
+V-MOMRAH-38,Municipal permit validity — breach,سريان الرخصة البلدية — مخالفة,L1,MOMRAH-MUN-05-1.3,MOMRAH-MUN-05,MOMRAH,2026-01-01

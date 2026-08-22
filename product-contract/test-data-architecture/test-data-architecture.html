@@ -1,0 +1,491 @@
+<title>Inspection Test Data Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#FBFAFC; --surface:#FFFFFF; --sunk:#F4F1F8;
+    --ink:#241C33; --body:#3D3550; --muted:#6B6280;
+    --brand:#5A4478; --accent:#7E61AC; --line:#E6E1EE; --hair:#EFEBF5;
+    --live:#1B7A5A; --live-bg:#E4F3ED;
+    --policy:#8F6407; --policy-bg:#FAF0DC;
+    --blocked:#8C3A46; --blocked-bg:#F8E7E9;
+    --shadow:0 1px 0 var(--hair);
+    --measure:70ch;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#131019; --surface:#1B1724; --sunk:#221D2E;
+      --ink:#EFEBF5; --body:#CFC8DC; --muted:#968EA9;
+      --brand:#C0A8E0; --accent:#A183D0; --line:#2F2940; --hair:#272134;
+      --live:#5CCB9E; --live-bg:#12281F;
+      --policy:#E0AC46; --policy-bg:#2C2210;
+      --blocked:#E28E98; --blocked-bg:#301A1E;
+    }
+  }
+  :root[data-theme="dark"]{
+      --ground:#131019; --surface:#1B1724; --sunk:#221D2E;
+      --ink:#EFEBF5; --body:#CFC8DC; --muted:#968EA9;
+      --brand:#C0A8E0; --accent:#A183D0; --line:#2F2940; --hair:#272134;
+      --live:#5CCB9E; --live-bg:#12281F;
+      --policy:#E0AC46; --policy-bg:#2C2210;
+      --blocked:#E28E98; --blocked-bg:#301A1E;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--body);
+    font-family:Inter,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 32px 96px}
+  .spine{max-width:var(--measure)}
+  h1,h2,h3{font-family:Spectral,Georgia,serif; color:var(--ink); text-wrap:balance; margin:0}
+  h1{font-size:clamp(2.1rem,4.4vw,3.1rem); font-weight:600; line-height:1.1; letter-spacing:-.015em}
+  h2{font-size:1.65rem; font-weight:500; line-height:1.2}
+  h3{font-size:1.12rem; font-weight:600; line-height:1.35}
+  p{margin:0}
+  a{color:var(--accent)}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86em}
+
+  .eyebrow{
+    font-size:.72rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent); margin:0;
+  }
+  header.masthead{
+    border-bottom:1px solid var(--line); padding:76px 0 40px; margin-bottom:64px;
+    display:flex; flex-direction:column; gap:20px;
+  }
+  header.masthead .lede{font-size:1.16rem; color:var(--body); max-width:64ch}
+  .meta{display:flex; flex-wrap:wrap; gap:10px 28px; font-size:.82rem; color:var(--muted)}
+  .meta b{color:var(--ink); font-weight:600}
+
+  section{display:flex; flex-direction:column; gap:26px; margin-bottom:80px}
+  section > .spine{display:flex; flex-direction:column; gap:16px}
+  .sechead{display:flex; flex-direction:column; gap:8px}
+
+  figure{margin:0; display:flex; flex-direction:column; gap:14px}
+  figure svg{width:100%; height:auto; display:block; color:var(--ink)}
+  figcaption{font-size:.86rem; color:var(--muted); max-width:72ch}
+  .figframe{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:28px 24px; overflow-x:auto;
+  }
+
+  table{border-collapse:collapse; width:100%; font-size:.88rem}
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+  th{
+    text-align:left; font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); padding:14px 16px; border-bottom:1px solid var(--line); white-space:nowrap;
+    background:var(--sunk);
+  }
+  td{padding:13px 16px; border-bottom:1px solid var(--hair); vertical-align:top; color:var(--body)}
+  tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; color:var(--ink); font-weight:500}
+  td strong{color:var(--ink); font-weight:600}
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+    font-size:.72rem; font-weight:600; letter-spacing:.02em;
+    padding:3px 9px; border-radius:3px; border:1px solid transparent;
+  }
+  .chip::before{content:""; width:5px; height:5px; border-radius:50%; background:currentColor}
+  .chip.live{color:var(--live); background:var(--live-bg); border-color:color-mix(in srgb, var(--live) 28%, transparent)}
+  .chip.policy{color:var(--policy); background:var(--policy-bg); border-color:color-mix(in srgb, var(--policy) 30%, transparent)}
+  .chip.blocked{color:var(--blocked); background:var(--blocked-bg); border-color:color-mix(in srgb, var(--blocked) 30%, transparent)}
+
+  .split{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:22px; display:flex; flex-direction:column; gap:10px;
+  }
+  .card .k{font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+  .card .v{font-family:Spectral,Georgia,serif; font-size:2rem; color:var(--ink); line-height:1; font-variant-numeric:tabular-nums}
+  .card p{font-size:.88rem; color:var(--muted)}
+
+  .meter{display:flex; flex-direction:column; gap:12px}
+  .meter .track{display:flex; height:14px; border-radius:3px; overflow:hidden; border:1px solid var(--line)}
+  .meter .seg{height:100%}
+  .meter .legend{display:flex; flex-wrap:wrap; gap:8px 22px; font-size:.84rem; color:var(--muted)}
+  .meter .legend span b{color:var(--ink); font-variant-numeric:tabular-nums}
+
+  pre{
+    margin:0; background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:20px 22px; overflow-x:auto; font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.83rem; line-height:1.85; color:var(--body);
+  }
+  pre b{color:var(--ink); font-weight:500}
+  pre i{color:var(--muted); font-style:normal}
+
+  .rule{border:0; border-top:1px solid var(--line); margin:0}
+  .callout{
+    border-inline-start:2px solid var(--accent); padding:2px 0 2px 20px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  ol.steps{margin:0; padding:0; list-style:none; counter-reset:s; display:flex; flex-direction:column; gap:2px}
+  ol.steps li{
+    counter-increment:s; display:grid; grid-template-columns:28px 1fr; gap:14px;
+    padding:14px 0; border-bottom:1px solid var(--hair); font-size:.92rem;
+  }
+  ol.steps li::before{
+    content:counter(s); font-family:"IBM Plex Mono",monospace; font-size:.78rem;
+    color:var(--accent); padding-top:2px;
+  }
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps b{color:var(--ink); font-weight:600}
+  ul.plain{margin:0; padding-inline-start:20px; display:flex; flex-direction:column; gap:8px}
+  ul.plain li{padding-inline-start:4px}
+  ul.plain::marker{color:var(--accent)}
+  @media (max-width:640px){ .wrap{padding:0 20px 64px} header.masthead{padding-top:48px} }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">MIM Inspection Platform · proposal for approval</p>
+  <h1>Test data architecture</h1>
+  <p class="lede">What to feed the platform so every screen shows real work, what each number on the dashboard is actually made of, and how to take all of it away again in one command.</p>
+  <div class="meta">
+    <span><b>28</b> governed measures</span>
+    <span><b>82</b> screen rows mapped</span>
+    <span><b>300</b> journeys in the demo cohort</span>
+    <span><b>42</b> data units across 5 layers</span>
+    <span>22 August 2026</span>
+  </div>
+</header>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">The problem on the screen</p>
+    <h2>Five different kinds of nothing, shown as one word</h2>
+    <p>The dashboard currently says <em>Unavailable</em> for a measure whose source table does not exist, and for a measure that ran perfectly and counted zero. Those are not the same statement, and a training audience cannot tell them apart. This is the first thing to fix — before any data is loaded.</p>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Kind</th><th>What it actually means</th><th>Shows today</th><th>Should show</th><th>Example on the current dashboard</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Zero</strong></td><td>Source live, query ran, true count is 0</td><td><span class="chip blocked">Unavailable</span></td><td><span class="chip live">0</span></td><td>Risk-to-attention mismatch</td></tr>
+        <tr><td><strong>Not applicable</strong></td><td>Source live, but the rate has no denominator</td><td><span class="chip blocked">Unavailable</span></td><td><span class="chip live">N/A</span></td><td>National compliance rate</td></tr>
+        <tr><td><strong>Not configured</strong></td><td>Computable, waiting on an unpublished Admin policy</td><td><span class="chip policy">N/A</span></td><td><span class="chip policy">Not configured</span></td><td>Inspection coverage against annual target</td></tr>
+        <tr><td><strong>Unavailable</strong></td><td>The source column or table is not in the schema</td><td><span class="chip blocked">Unavailable</span></td><td><span class="chip blocked">Unavailable</span></td><td>Risk distribution · Licence exposure</td></tr>
+        <tr><td><strong>Decision required</strong></td><td>Formula blocked by an open governance decision</td><td><span class="chip blocked">Decision required</span></td><td><span class="chip blocked">Decision required</span></td><td>Violation trend by regulation and severity</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="spine callout">
+    <h3>Where “33% Live source · 2 of 6 measures” comes from</h3>
+    <p>It is the strategic measures not already shown as a card above, counted by how many carry a live source. The six are STR-KPI-002, 003, 005, 009, 010 and 011; two are live — 009 and 010. The earlier 43% counted seven, including cancellation rate. The meter is accurate. What it is not saying is that <strong>one of those four blocked measures, STR-KPI-010, is blocked only by an empty database</strong>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Scale of the fix</p>
+    <h2>Most of the screen is waiting for rows, not for engineering</h2>
+  </div>
+
+  <div class="split">
+    <div class="card"><span class="k">Fixed by loading data</span><span class="v">67</span><p>of 82 mapped screen rows become real values the moment the journey cohort exists.</p></div>
+    <div class="card"><span class="k">Fixed by publishing a policy</span><span class="v">8</span><p>Layer L1 of the load: inspection-cycle policy, SLA urgency, KPI targets, advisory policy.</p></div>
+    <div class="card"><span class="k">Genuinely blocked</span><span class="v">6</span><p>Need a migration or a governance ruling. No amount of seeding moves them.</p></div>
+  </div>
+
+  <div class="meter">
+    <div class="track" role="img" aria-label="67 of 82 screen rows fixed by data, 8 by policy, 6 blocked">
+      <span class="seg" style="flex:67; background:var(--live)"></span>
+      <span class="seg" style="flex:8; background:var(--policy)"></span>
+      <span class="seg" style="flex:6; background:var(--blocked)"></span>
+    </div>
+    <div class="legend">
+      <span style="color:var(--live)">● Data <b>67</b></span>
+      <span style="color:var(--policy)">● Policy <b>8</b></span>
+      <span style="color:var(--blocked)">● Blocked <b>6</b></span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">The architecture</p>
+    <h2>Five layers, loaded low to high and removed high to low</h2>
+    <p>The load order is the whole design. Reference data is verified and never written. Policy comes before master data because a factory without a published package version cannot be planned against. Journeys come last because every journey needs a factory, an inspector and a package to exist first. Unload runs the ladder in reverse, which is the only order that never violates a foreign key.</p>
+  </div>
+
+  <figure>
+    <div class="figframe">
+      <svg viewBox="0 0 900 430" role="img" aria-label="Five data layers stacked: L0 reference verified only and never deleted, L1 policy, L2 master data, L3 journeys, L4 derived. Load runs downward L1 to L3; unload runs upward L3 to L1.">
+        <defs>
+          <marker id="dn" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon points="0,0 10,0 5,10" fill="currentColor"/>
+          </marker>
+          <marker id="up" viewBox="0 0 10 10" refX="5" refY="1" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon points="5,0 10,10 0,10" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <g font-family="Inter, sans-serif">
+          <!-- load rail -->
+          <g stroke="currentColor" opacity="0.55">
+            <line x1="64" y1="86" x2="64" y2="330" stroke-width="1.5" marker-end="url(#dn)"/>
+          </g>
+          <text x="64" y="70" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor" letter-spacing="1.2">LOAD</text>
+          <text x="64" y="360" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.6">L1→L3</text>
+
+          <!-- unload rail -->
+          <g stroke="currentColor" opacity="0.55">
+            <line x1="836" y1="330" x2="836" y2="86" stroke-width="1.5" marker-end="url(#up)"/>
+          </g>
+          <text x="836" y="70" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor" letter-spacing="1.2">UNLOAD</text>
+          <text x="836" y="360" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.6">L3→L1</text>
+
+          <!-- L0 -->
+          <rect x="110" y="24" width="680" height="58" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+          <text x="130" y="48" font-size="12" font-weight="600" fill="currentColor" opacity="0.75">L0 · Reference &amp; governed constants</text>
+          <text x="130" y="67" font-size="11.5" fill="currentColor" opacity="0.6">roles · capabilities · planning lookups · regulation library · violation codes · engine_settings v1</text>
+          <text x="770" y="48" font-size="10.5" font-weight="600" text-anchor="end" fill="currentColor" opacity="0.75">VERIFIED ONLY</text>
+          <text x="770" y="67" font-size="10.5" text-anchor="end" fill="currentColor" opacity="0.55">never written · never deleted</text>
+
+          <!-- L1 -->
+          <rect x="110" y="96" width="680" height="58" rx="4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <text x="130" y="120" font-size="12" font-weight="600" fill="currentColor">L1 · Policy &amp; configuration</text>
+          <text x="130" y="139" font-size="11.5" fill="currentColor" opacity="0.7">inspection-cycle policy · SLA urgency · KPI targets · packages &amp; published versions · expiry rules</text>
+          <text x="770" y="130" font-size="10.5" text-anchor="end" fill="currentColor" opacity="0.7">unblocks 8 measures</text>
+
+          <!-- L2 -->
+          <rect x="110" y="168" width="680" height="58" rx="4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <text x="130" y="192" font-size="12" font-weight="600" fill="currentColor">L2 · Master data</text>
+          <text x="130" y="211" font-size="11.5" fill="currentColor" opacity="0.7">49 personas · 60 factories · geofences · licences · production lines · representatives · devices</text>
+          <text x="770" y="202" font-size="10.5" text-anchor="end" fill="currentColor" opacity="0.7">who and what exists</text>
+
+          <!-- L3 -->
+          <rect x="110" y="240" width="680" height="58" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <text x="130" y="264" font-size="12" font-weight="600" fill="currentColor">L3 · Journeys — the unit</text>
+          <text x="130" y="283" font-size="11.5" fill="currentColor" opacity="0.7">plan → visit → assignment → travel → execution → evidence → submission → review → violation → penalty</text>
+          <text x="770" y="274" font-size="10.5" text-anchor="end" font-weight="600" fill="currentColor">300 journeys</text>
+
+          <!-- L4 -->
+          <rect x="110" y="312" width="680" height="58" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+          <text x="130" y="336" font-size="12" font-weight="600" fill="currentColor" opacity="0.75">L4 · Derived &amp; append-only</text>
+          <text x="130" y="355" font-size="11.5" fill="currentColor" opacity="0.6">audit events · lifecycle events · notifications · analytics snapshots</text>
+          <text x="770" y="336" font-size="10.5" font-weight="600" text-anchor="end" fill="currentColor" opacity="0.75">SIDE EFFECT ONLY</text>
+          <text x="770" y="355" font-size="10.5" text-anchor="end" fill="currentColor" opacity="0.55">audit never deleted</text>
+
+          <text x="450" y="404" font-size="11.5" text-anchor="middle" fill="currentColor" opacity="0.6">Journeys are written through the real RPCs, backdated — so L4 is genuinely produced, never inserted.</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>The two dashed layers are the ones the loader must not write. L0 is verified and the run aborts if it has been mutated; L4 is produced by L3 passing through the same RPCs a real user would call, which is what keeps the audit trail honest.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">The unit</p>
+    <h2>One inspection journey, stopped at a chosen point</h2>
+    <p>Every screen in the product is the same object seen at a different moment. Planning shows journeys before assignment; Operations shows them in motion; Execution shows them being filled in; Reviews shows them awaiting a decision; the dashboard aggregates the ones that finished. So the atom of test data is not a table row — it is a journey and the stop at which it stopped moving. That one choice determines every physical row it creates.</p>
+  </div>
+
+  <figure>
+    <div class="figframe">
+      <svg viewBox="0 0 960 380" role="img" aria-label="An inspection journey spine from draft to approved, with terminal stop counts branching off at each stage and the row cost of each stop.">
+        <defs>
+          <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon points="0,0 10,5 0,10" fill="currentColor"/>
+          </marker>
+        </defs>
+        <g font-family="Inter, sans-serif" fill="currentColor">
+
+          <text x="20" y="26" font-size="11" font-weight="600" letter-spacing="1.2" opacity="0.7">THE SPINE</text>
+
+          <!-- spine line -->
+          <line x1="40" y1="96" x2="905" y2="96" stroke="currentColor" stroke-width="2" marker-end="url(#tip)" opacity="0.85"/>
+
+          <!-- nodes -->
+          <g>
+            <circle cx="60" cy="96" r="5" fill="currentColor"/>
+            <circle cx="196" cy="96" r="5" fill="currentColor"/>
+            <circle cx="332" cy="96" r="5" fill="currentColor"/>
+            <circle cx="468" cy="96" r="5" fill="currentColor"/>
+            <circle cx="604" cy="96" r="5" fill="currentColor"/>
+            <circle cx="740" cy="96" r="5" fill="currentColor"/>
+            <circle cx="866" cy="96" r="7" fill="currentColor"/>
+          </g>
+          <g font-size="11.5" text-anchor="middle" font-weight="600">
+            <text x="60" y="78">J00 draft</text>
+            <text x="196" y="78">J02 published</text>
+            <text x="332" y="78">J06 assigned</text>
+            <text x="468" y="78">J07 en route</text>
+            <text x="604" y="78">J10 executing</text>
+            <text x="740" y="78">J11 under review</text>
+            <text x="866" y="78">J14 approved</text>
+          </g>
+          <g font-size="10.5" text-anchor="middle" opacity="0.6">
+            <text x="60" y="120">2 rows</text>
+            <text x="196" y="120">4</text>
+            <text x="332" y="120">6</text>
+            <text x="468" y="120">11</text>
+            <text x="604" y="120">~80</text>
+            <text x="740" y="120">~150</text>
+            <text x="866" y="120">~155</text>
+          </g>
+
+          <!-- terminal drop-offs -->
+          <g stroke="currentColor" stroke-width="1.2" opacity="0.45">
+            <line x1="60" y1="150" x2="60" y2="176"/>
+            <line x1="196" y1="150" x2="196" y2="176"/>
+            <line x1="332" y1="150" x2="332" y2="176"/>
+            <line x1="468" y1="150" x2="468" y2="176"/>
+            <line x1="604" y1="150" x2="604" y2="176"/>
+            <line x1="740" y1="150" x2="740" y2="176"/>
+            <line x1="866" y1="150" x2="866" y2="176"/>
+          </g>
+          <g font-size="15" text-anchor="middle" font-weight="600" font-family="Spectral, Georgia, serif">
+            <text x="60" y="200">24</text>
+            <text x="196" y="200">22</text>
+            <text x="332" y="200">30</text>
+            <text x="468" y="200">12</text>
+            <text x="604" y="200">18</text>
+            <text x="740" y="200">40</text>
+            <text x="866" y="200">160</text>
+          </g>
+          <text x="480" y="228" font-size="11" text-anchor="middle" opacity="0.6">journeys whose terminal stop is here — 240 planned individually, plus 3 bulk cohorts of 20</text>
+
+          <line x1="40" y1="252" x2="920" y2="252" stroke="currentColor" stroke-width="1" opacity="0.2"/>
+
+          <!-- side exits -->
+          <text x="20" y="282" font-size="11" font-weight="600" letter-spacing="1.2" opacity="0.7">SIDE EXITS</text>
+          <g font-size="11.5">
+            <text x="150" y="282" opacity="0.85">J01 pending supervision <tspan font-weight="600">18</tspan></text>
+            <text x="360" y="282" opacity="0.85">J03 returned to planner <tspan font-weight="600">10</tspan></text>
+            <text x="570" y="282" opacity="0.85">J04 cancelled <tspan font-weight="600">14</tspan></text>
+            <text x="740" y="282" opacity="0.85">J05 expired <tspan font-weight="600">8</tspan></text>
+            <text x="150" y="306" opacity="0.85">J08 arrived in geofence <tspan font-weight="600">8</tspan></text>
+            <text x="360" y="306" opacity="0.85">J09 arrived by override <tspan font-weight="600">6</tspan></text>
+            <text x="570" y="306" opacity="0.85">J12 returned <tspan font-weight="600">12</tspan></text>
+            <text x="740" y="306" opacity="0.85">J15 rejected <tspan font-weight="600">10</tspan></text>
+          </g>
+
+          <text x="20" y="344" font-size="11" font-weight="600" letter-spacing="1.2" opacity="0.7">OVERLAYS</text>
+          <g font-size="11.5">
+            <text x="150" y="344" opacity="0.85">non-compliant answers <tspan font-weight="600">45</tspan></text>
+            <text x="360" y="344" opacity="0.85">findings <tspan font-weight="600">35</tspan></text>
+            <text x="570" y="344" opacity="0.85">violations <tspan font-weight="600">28</tspan></text>
+            <text x="740" y="344" opacity="0.85">penalties <tspan font-weight="600">14</tspan></text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <figcaption>Row cost is cumulative along the spine. A journey stopping at draft writes two rows; one reaching approved writes roughly 155, because it drags a full 142-item checklist through <code>checklist_responses</code> on the way. Overlays are attributes applied to journeys that already exist, not extra journeys.</figcaption>
+  </figure>
+
+  <div class="spine">
+    <h3>Which screen needs which stop</h3>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Screen</th><th>Reads</th><th>Stops it needs</th><th class="num">Demo rows</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Planning</strong> · 7 tabs</td><td><code>visits</code> · <code>visit_plans</code> · <code>visit_lifecycle_events</code></td><td>J00 J01 J02 J03 J04 J05 — one tab each</td><td class="num">300</td></tr>
+        <tr><td><strong>Operations Center</strong></td><td><code>visits</code> · <code>geo_events</code> · <code>factory_locations</code></td><td>J07 J08 J09 in motion, dated today</td><td class="num">26</td></tr>
+        <tr><td><strong>Execution</strong></td><td><code>inspections</code> · <code>checklist_responses</code> · <code>evidence</code></td><td>J10 partial, J11 complete</td><td class="num">58</td></tr>
+        <tr><td><strong>Review &amp; Approval</strong></td><td><code>reviews</code> · <code>submission_versions</code></td><td>J11 pending, J12 J14 J15 decided</td><td class="num">222</td></tr>
+        <tr><td><strong>Enforcement Library</strong></td><td><code>violations</code> · <code>inspection_penalties</code></td><td>overlays on approved journeys</td><td class="num">42</td></tr>
+        <tr><td><strong>Analytics</strong></td><td>windowed snapshot over approved work</td><td>J14 dated inside the rolling 30 days</td><td class="num">120</td></tr>
+        <tr><td><strong>Factory 360</strong></td><td><code>factories</code> · history per factory</td><td>J14 spread across all 60 factories</td><td class="num">60</td></tr>
+        <tr><td><strong>Dashboard</strong></td><td>projection over everything above</td><td>all of them, spread over 12 months</td><td class="num">300</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Identity</p>
+    <h2>Every row's key is derived, which is what makes unload possible</h2>
+    <p>The unloader does not search for rows that look synthetic. It recomputes exactly the same keys the loader computed and deletes those, and nothing else.</p>
+  </div>
+  <pre><b>uuidv5(seed_batch_id, "&lt;table&gt;:&lt;logical key&gt;")</b>
+
+uuidv5(batch, "factory:F-RUH-0042")   <i>→ always the same factory id for this batch</i>
+uuidv5(batch, "journey:JRN-RUH-00417")
+uuidv5(batch, "resp:JRN-RUH-00417:SAFE-014")</pre>
+  <div class="spine">
+    <ul class="plain">
+      <li><strong>Re-running the loader is idempotent.</strong> The same logical key gives the same UUID, so a second run upserts instead of duplicating.</li>
+      <li><strong>No canonical table needs a new column.</strong> The earlier discovery design proposed adding <code>seed_batch_id</code> to forty tables or maintaining a join table. Neither is needed.</li>
+      <li><strong>Nothing is ever deleted heuristically.</strong> A row is removable only if its id appears in the batch manifest.</li>
+    </ul>
+    <p>One new table is required: <code>seed_runs</code>, the ledger of what was loaded, when, by whom, and at which anchor date. Its shape is already specified in the seeding-discovery pack and is adopted unchanged, plus a <code>cleaned</code> status.</p>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Operations</p>
+    <h2>Load, verify, unload</h2>
+  </div>
+
+  <pre><i># load</i>
+npm run testdata:preflight
+npm run testdata:load    -- --profile demo --anchor 2026-08-22
+npm run testdata:verify  -- --batch &lt;id&gt;
+
+<i># inspect</i>
+npm run testdata:status
+
+<i># unload</i>
+npm run testdata:unload  -- --batch &lt;id&gt; --dry-run
+npm run testdata:unload  -- --batch &lt;id&gt; --confirm
+<b>npm run testdata:unload  -- --all --confirm</b>   <i>← the whole-data unload</i></pre>
+
+  <div class="spine">
+    <ol class="steps">
+      <li><b>Preflight writes nothing.</b> It refuses any host off the non-production allowlist, refuses <code>NODE_ENV=production</code>, checks migrations are current, and confirms L0 is present and unmutated.</li>
+      <li><b>The batch is registered before the first write.</b> A row in <code>seed_runs</code> marked <code>in_progress</code>, so a run that dies halfway is still identifiable and still removable.</li>
+      <li><b>The anchor date generates twelve months backwards.</b> About 40% of approved journeys land inside the rolling 30-day analytics window; about 25 are dated today so the live map and the operational tiles are not empty during a demo.</li>
+      <li><b>A run that cannot write its manifest fails.</b> An unmanifested batch would be unremovable, so the manifest is a completion condition, not a byproduct.</li>
+      <li><b>Verify is the artefact the training team needs.</b> It walks the screen map asserting one expectation per row and reports which screens are still empty <em>and why</em>.</li>
+      <li><b>Dry run always comes first.</b> Zero writes; prints exactly which tables and how many rows would go.</li>
+      <li><b>Deletion runs the ladder in reverse</b> — removable L4, then L3, L2, L1 — by explicit row id. It stops at the first row still referenced from outside the batch and reports it rather than cascading.</li>
+      <li><b>The audit trail survives.</b> Append-only tables are excluded by allow-list, not by a filter. The batch's audit trail stays as a permanent record of what happened, which is also what makes the unload auditable.</li>
+      <li><b>Partial failure does not auto-rollback.</b> The batch stays <code>partial</code> and a person decides: resume it, or unload it and start again.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="spine sechead">
+    <p class="eyebrow">Limits</p>
+    <h2>What test data can never fix</h2>
+    <p>Show these to the training team as blocked with a named reason and a decision reference. Do not hide them and do not fill them with a plausible number — the honesty is the platform's strongest governance claim, and the demo should lean on it rather than apologise for it.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Measure</th><th>Blocker</th><th>What is actually missing</th><th>Needs</th></tr></thead>
+      <tbody>
+        <tr><td><strong>STR-KPI-002</strong> Risk distribution</td><td><span class="chip blocked">Schema</span></td><td>No Health Score snapshot source. The Risk Engine's <code>factories.risk_score</code> is a different measure and must not be substituted.</td><td>Migration</td></tr>
+        <tr><td><strong>STR-KPI-003</strong> Violation trend</td><td><span class="chip blocked">Decision</span></td><td><code>violations</code> has no official issue-time column; severity vocabulary is unnormalised.</td><td>Ruling, then migration</td></tr>
+        <tr><td><strong>STR-KPI-005</strong> Licence exposure</td><td><span class="chip blocked">Schema</span></td><td>No governed definition of exposure over industrial licences.</td><td>Ruling, then build</td></tr>
+        <tr><td><strong>STR-KPI-011</strong> Repeat violation rate</td><td><span class="chip blocked">Schema</span></td><td>No governed repeat window or repeat-identity rule.</td><td>Ruling</td></tr>
+        <tr><td><strong>OPS-KPI-005</strong> Pending publish</td><td><span class="chip blocked">Deferred</span></td><td>No projection written — deferred by design.</td><td>Product decision</td></tr>
+        <tr><td><strong>IPAD-KPI-007</strong> Personal trends</td><td><span class="chip blocked">Deferred</span></td><td>Deferred by design.</td><td>Product decision</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="spine callout">
+    <h3>And four open decisions this design does not resolve</h3>
+    <ul class="plain">
+      <li><strong>Demo target values.</strong> 82% compliance, 68% coverage, 5.8% cancellation are shape targets for a believable demo — not governed thresholds. They need sign-off before the loader treats them as goals.</li>
+      <li><strong>Penalty amounts.</strong> Must come from approved <code>penalty_mappings</code>. If those are unpublished, penalty journeys stop at the violation and the penalty stays absent.</li>
+      <li><strong>Retention.</strong> No expiry is proposed for seed batches; they persist until someone unloads them.</li>
+      <li><strong>The non-production allowlist.</strong> The exact host set preflight accepts must be named and stored outside this repository.</li>
+    </ul>
+  </div>
+</section>
+
+<hr class="rule">
+<p style="margin-top:24px; font-size:.82rem; color:var(--muted)">Registers: <code>product-contract/test-data-architecture/registers/*.csv</code> · Workbook: <code>outputs/MIM-Inspection-Test-Data-Pack-v1.xlsx</code> · Nothing in this proposal has been executed against a database and no application code has been changed.</p>
+
+</div>

@@ -1,0 +1,736 @@
+<title>Inspection UAT Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;590&family=IBM+Plex+Sans+Arabic:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --canvas:#080B10; --sunken:#0E131A; --surface:#141A21; --raised:#1C252E; --header:#28323D;
+  --ink:#FFFFFF; --ink2:#C4CDD5; --ink3:#919EAB;
+  --brand:#CDBAEA; --brand-fill:#7E61AC; --brand-tint:#262A35;
+  --ok:#77ED8B; --ok-bg:#16352B; --warn:#FFD666; --warn-bg:#3A311C;
+  --err:#FFAC82; --err-bg:#3A2423; --info:#7EE4F6; --info-bg:#1C3741;
+  --neutral-bg:#282F37;
+  --line:rgba(255,255,255,.16); --line2:rgba(255,255,255,.24); --line3:rgba(255,255,255,.08);
+  --r:10px; --rail:216px;
+  --f:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fa:"IBM Plex Sans Arabic","Inter",system-ui,sans-serif;
+  --fm:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink2);font-family:var(--f);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;color:var(--ink);font-weight:590;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:19px} h2{font-size:16px} h3{font-size:14px}
+a{color:var(--brand);text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+select{font:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+.ar{font-family:var(--fa);direction:rtl;unicode-bidi:isolate}
+.mono{font-family:var(--fm);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+
+.app{display:grid;grid-template-columns:var(--rail) 1fr;min-height:100vh}
+.rail{background:var(--canvas);border-inline-end:1px solid var(--line3);padding:14px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brandmark{display:flex;align-items:center;gap:9px;padding:6px 8px 16px}
+.dot{width:20px;height:20px;border-radius:5px;background:var(--brand-fill);display:grid;place-items:center;color:#fff;font-size:11px;font-weight:590;flex:none}
+.brandmark b{color:var(--ink);font-weight:590;font-size:14px}
+.navgrp{margin:12px 8px 5px}
+.nav{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;color:var(--ink2);font-size:13px;width:100%;text-align:start;transition:background .12s}
+.nav:hover{background:rgba(255,255,255,.05)}
+.nav[aria-current="page"]{background:var(--brand-tint);color:var(--ink);font-weight:500;box-shadow:inset 2px 0 0 var(--brand-fill)}
+.nav[disabled]{color:#5c6773;cursor:not-allowed}
+.nav .ic{width:15px;text-align:center;opacity:.8;flex:none}
+.nav .n{margin-inline-start:auto;font-size:11px;color:var(--brand);font-variant-numeric:tabular-nums}
+.nav .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* The Inspection subgroup: a labelled header with its children indented under a
+   hairline, the way the application draws it. */
+.subgroup{margin:2px 0 2px}
+.subhead{display:flex;align-items:center;gap:9px;padding:7px 9px;margin:0;color:var(--ink3);font-size:13px}
+.subhead .ic{width:15px;text-align:center;opacity:.8;flex:none}
+.nav.child{margin-inline-start:22px;padding-inline-start:12px;border-inline-start:1px solid var(--line3);border-radius:0 7px 7px 0}
+.nav.child[aria-current="page"]{border-inline-start-color:var(--brand-fill)}
+.rail{scrollbar-width:thin}
+.nav .tag{margin-inline-start:auto;font-size:10px;color:var(--ink3);border:1px solid var(--line);padding:0 5px;border-radius:20px}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;background:rgba(8,11,16,.93);backdrop-filter:blur(8px);border-block-end:1px solid var(--line3);padding:11px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top .who{margin-inline-end:auto;display:flex;align-items:baseline;gap:10px;min-width:0}
+.ctl{display:flex;align-items:center;gap:7px}
+.ctl label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+.ctl select{background:var(--raised);color:var(--ink);border:1px solid var(--line2);border-radius:7px;padding:6px 9px;font-size:13px;max-width:270px}
+.load{background:var(--brand-fill);color:#fff;border-radius:7px;padding:6px 13px;font-size:13px;font-weight:500;border:1px solid var(--brand-fill)}
+.load:hover{background:#8f70bf}
+.load.off{background:transparent;color:var(--brand);border-color:var(--line2)}
+.load.off:hover{background:var(--brand-tint)}
+.statechip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line)}
+.statechip b{font-weight:500}
+
+.body{padding:22px;display:flex;flex-direction:column;gap:18px;max-width:1180px}
+
+.steps{display:flex;background:var(--surface);border:1px solid var(--line3);border-radius:var(--r);overflow:hidden;overflow-x:auto}
+.step{flex:1;min-width:152px;padding:11px 14px;text-align:start;border-inline-end:1px solid var(--line3);position:relative;transition:background .12s}
+.step:last-child{border-inline-end:none}
+.step:hover{background:rgba(255,255,255,.04)}
+.step .n{font-size:10px;letter-spacing:.09em;color:var(--ink3);font-weight:500}
+.step .t{color:var(--ink2);font-size:13px;margin-top:2px}
+.step .c{font-size:11px;color:var(--brand);font-variant-numeric:tabular-nums;margin-top:1px}
+.step[aria-current="step"]{background:var(--brand-tint)}
+.step[aria-current="step"] .t{color:var(--ink);font-weight:500}
+.step[aria-current="step"]::after{content:"";position:absolute;inset-block-end:0;inset-inline:0;height:2px;background:var(--brand-fill)}
+
+.card{background:var(--surface);border:1px solid var(--line3);border-radius:var(--r);padding:16px 18px}
+.card>header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-block-end:12px}
+.card .sub{color:var(--ink3);font-size:13px;margin-top:3px}
+.grid{display:grid;gap:12px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(158px,1fr))}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.kpi{background:var(--surface);border:1px solid var(--line3);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:5px;min-height:112px}
+.kpi .v{font-size:27px;font-weight:590;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:auto}
+.kpi .v.na{font-size:19px;color:var(--ink3);font-weight:400}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.err{background:var(--err-bg);color:var(--err)} .pill.info{background:var(--info-bg);color:var(--info)}
+.pill.mute{background:var(--neutral-bg);color:var(--ink2)}
+.pill.brand{background:var(--brand-tint);color:var(--brand)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+.scroll{overflow-x:auto;border:1px solid var(--line3);border-radius:var(--r);background:var(--surface)}
+th{text-align:start;background:var(--header);color:var(--ink2);font-weight:500;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;padding:9px 13px;white-space:nowrap}
+td{padding:9px 13px;border-block-start:1px solid var(--line3);vertical-align:middle;white-space:nowrap}
+td.wrap{white-space:normal;min-width:180px}
+tr:hover td{background:rgba(255,255,255,.03)}
+tr.flash td{animation:flash 1.2s ease-out}
+@keyframes flash{from{background:rgba(205,186,234,.24)}to{background:transparent}}
+.num{text-align:end;font-variant-numeric:tabular-nums}
+.end{text-align:end}
+
+.act{border:1px solid var(--line2);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:500;color:var(--ink);background:var(--raised);white-space:nowrap}
+.act:hover{background:var(--brand-tint);border-color:var(--brand-fill)}
+.act.go{background:var(--brand-fill);border-color:var(--brand-fill);color:#fff}
+.act.go:hover{background:#8f70bf}
+.act.no{color:var(--err);border-color:rgba(255,172,130,.4)}
+.act.no:hover{background:var(--err-bg)}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+
+
+.empty{border:1px dashed var(--line2);border-radius:var(--r);padding:24px 20px;text-align:center;color:var(--ink3);background:var(--sunken)}
+.empty b{display:block;color:var(--ink2);font-weight:500;margin-block-end:5px;font-size:14px}
+.empty .hint{font-size:12.5px;margin-top:9px}
+
+
+.bar{display:flex;flex-direction:column;gap:7px}
+.barrow{display:grid;grid-template-columns:1fr 44px;gap:10px;align-items:center;font-size:12.5px}
+.barrow .track{height:16px;background:var(--sunken);border-radius:4px;overflow:hidden;position:relative}
+.barrow .track i{display:block;height:100%;background:var(--brand-fill);border-radius:4px;transition:width .45s}
+.barrow .lbl{position:absolute;inset-inline-start:8px;top:0;line-height:16px;font-size:11.5px;color:var(--ink)}
+
+.map{position:relative;background:var(--sunken);border:1px solid var(--line3);border-radius:var(--r);height:280px;overflow:hidden}
+.map canvas{display:block;width:100%;height:100%}
+.maplegend{position:absolute;inset-block-end:9px;inset-inline-start:9px;display:flex;gap:12px;font-size:11.5px;background:rgba(8,11,16,.82);padding:6px 10px;border-radius:7px;border:1px solid var(--line3);flex-wrap:wrap}
+.maplegend i{width:7px;height:7px;border-radius:50%;display:block}
+.maplegend span{display:flex;align-items:center;gap:5px}
+
+.logwrap{position:fixed;inset-block-end:0;inset-inline-end:0;width:min(430px,100%);z-index:30}
+.logbar{display:flex;align-items:center;gap:9px;width:100%;background:var(--raised);border:1px solid var(--line2);border-block-end:none;border-start-start-radius:var(--r);padding:8px 14px;font-size:12.5px;text-align:start}
+.logbar b{color:var(--ink);font-weight:500}
+.logbar .sp{margin-inline-start:auto}
+.logbody{background:var(--surface);border:1px solid var(--line2);border-block-end:none;max-height:260px;overflow-y:auto}
+.logrow{display:grid;grid-template-columns:58px 1fr;gap:9px;padding:6px 14px;font-size:12.5px;border-block-start:1px solid var(--line3)}
+.logrow:first-child{border-block-start:none}
+.logrow .t{color:var(--ink3);font-family:var(--fm);font-size:11px}
+.logrow .w{color:var(--ink2)}
+.logrow .w b{color:var(--ink);font-weight:500}
+
+@media(max-width:900px){.split{grid-template-columns:1fr}.app{grid-template-columns:1fr}
+  .rail{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-inline-end:none;border-block-end:1px solid var(--line3)}
+  .brandmark{width:100%;padding-block-end:8px}.navgrp{display:none}.logwrap{position:static;width:auto}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <nav class="rail" aria-label="Sections">
+    <div class="brandmark"><span class="dot">M</span><b>MIM Inspection</b></div>
+    <div id="railNav"></div>
+  </nav>
+  <div class="main">
+    <div class="top">
+      <div class="who"><h1 id="routeTitle">Dashboard</h1><span class="eyebrow" id="routePath">/dashboard</span></div>
+      <div class="ctl"><label for="roleSel">Signed in as</label><select id="roleSel"></select></div>
+      <button class="act" id="demoBtn" hidden>Run one visit end to end</button>
+      <button class="load" id="loadBtn">Load UAT data</button>
+      <span class="statechip" id="stateChip"></span>
+    </div>
+    <div class="body">
+      <div class="steps" id="steps"></div>
+      <div id="screen"></div>
+    </div>
+  </div>
+</div>
+
+<div class="logwrap" id="logwrap" hidden>
+  <button class="logbar" id="logbar"><span id="logCaret">▲</span><b>Activity</b><span class="sp eyebrow" id="logCount"></span></button>
+  <div class="logbody" id="logbody" hidden></div>
+</div>
+
+<script id="simdata" type="application/json">{"visitCols": ["ref", "f", "type", "prio", "planner", "sup", "insp", "stop", "ans", "ok", "nc", "ev", "viol", "day", "time", "method"], "visits": [["0001", 15, "routine", "low", 10, 17, -1, 0, 0, 0, 0, 0, 0, -17, "07:00", "single"], ["0002", 43, "follow_up", "normal", 8, 18, -1, 0, 0, 0, 0, 0, 0, -5, "07:00", "single"], ["0003", 10, "complaint", "high", 5, 14, -1, 0, 0, 0, 0, 0, 0, -109, "07:00", "single"], ["0004", 22, "licensing", "urgent", 7, 13, -1, 0, 0, 0, 0, 0, 0, -56, "07:00", "single"], ["0005", 63, "routine", "normal", 7, 11, -1, 0, 0, 0, 0, 0, 0, -10, "07:00", "single"], ["0006", 38, "follow_up", "high", 7, 17, -1, 0, 0, 0, 0, 0, 0, -84, "07:00", "single"], ["0007", 28, "complaint", "urgent", 10, 11, -1, 0, 0, 0, 0, 0, 0, -48, "07:00", "single"], ["0008", 49, "licensing", "low", 6, 16, -1, 0, 0, 0, 0, 0, 0, -119, "07:00", "single"], ["0009", 45, "routine", "high", 8, 16, -1, 0, 0, 0, 0, 0, 0, -33, "07:00", "single"], ["0010", 21, "follow_up", "urgent", 5, 13, -1, 0, 0, 0, 0, 0, 0, -117, "07:00", "single"], ["0011", 4, "complaint", "low", 9, 13, -1, 0, 0, 0, 0, 0, 0, -88, "07:00", "single"], ["0012", 31, "licensing", "normal", 10, 15, -1, 0, 0, 0, 0, 0, 0, -25, "07:00", "single"], ["0013", 9, "routine", "urgent", 7, 17, -1, 0, 0, 0, 0, 0, 0, -81, "07:00", "single"], ["0014", 59, "follow_up", "low", 8, 16, -1, 0, 0, 0, 0, 0, 0, -26, "07:00", "single"], ["0015", 58, "complaint", "normal", 5, 14, -1, 0, 0, 0, 0, 0, 0, -103, "07:00", "single"], ["0016", 66, "licensing", "high", 10, 15, -1, 0, 0, 0, 0, 0, 0, -33, "07:00", "single"], ["0017", 20, "routine", "low", 6, 13, -1, 0, 0, 0, 0, 0, 0, -45, "07:00", "bulk"], ["0018", 1, "follow_up", "normal", 7, 17, -1, 0, 0, 0, 0, 0, 0, -119, "07:00", "single"], ["0019", 57, "complaint", "high", 9, 11, -1, 0, 0, 0, 0, 0, 0, -19, "07:00", "single"], ["0020", 38, "licensing", "urgent", 7, 14, -1, 0, 0, 0, 0, 0, 0, -66, "07:00", "single"], ["0021", 22, "routine", "normal", 5, 15, -1, 0, 0, 0, 0, 0, 0, -90, "07:00", "single"], ["0022", 67, "follow_up", "high", 5, 15, -1, 0, 0, 0, 0, 0, 0, -96, "07:00", "single"], ["0023", 5, "complaint", "urgent", 6, 18, -1, 0, 0, 0, 0, 0, 0, -112, "07:00", "single"], ["0024", 53, "licensing", "low", 6, 16, -1, 0, 0, 0, 0, 0, 0, -69, "07:00", "single"], ["0025", 36, "routine", "low", 9, 12, -1, 1, 0, 0, 0, 0, 0, -73, "07:00", "single"], ["0026", 1, "follow_up", "normal", 8, 14, -1, 1, 0, 0, 0, 0, 0, -61, "07:00", "single"], ["0027", 47, "complaint", "high", 9, 11, -1, 1, 0, 0, 0, 0, 0, -70, "07:00", "single"], ["0028", 35, "licensing", "urgent", 7, 16, -1, 1, 0, 0, 0, 0, 0, -3, "07:00", "single"], ["0029", 61, "routine", "normal", 8, 17, -1, 1, 0, 0, 0, 0, 0, -7, "07:00", "immediate"], ["0030", 67, "follow_up", "high", 9, 18, -1, 1, 0, 0, 0, 0, 0, -76, "07:00", "single"], ["0031", 34, "complaint", "urgent", 10, 16, -1, 1, 0, 0, 0, 0, 0, -11, "07:00", "single"], ["0032", 11, "licensing", "low", 8, 13, -1, 1, 0, 0, 0, 0, 0, -28, "07:00", "single"], ["0033", 71, "routine", "high", 6, 12, -1, 1, 0, 0, 0, 0, 0, -14, "07:00", "single"], ["0034", 27, "follow_up", "urgent", 8, 17, -1, 1, 0, 0, 0, 0, 0, -88, "07:00", "bulk"], ["0035", 8, "complaint", "low", 7, 14, -1, 1, 0, 0, 0, 0, 0, -109, "07:00", "single"], ["0036", 60, "licensing", "normal", 9, 14, -1, 1, 0, 0, 0, 0, 0, -115, "07:00", "single"], ["0037", 38, "routine", "urgent", 7, 15, -1, 1, 0, 0, 0, 0, 0, -31, "07:00", "single"], ["0038", 4, "follow_up", "low", 8, 12, -1, 1, 0, 0, 0, 0, 0, -10, "07:00", "single"], ["0039", 18, "complaint", "normal", 9, 13, -1, 1, 0, 0, 0, 0, 0, -61, "07:00", "single"], ["0040", 38, "licensing", "high", 5, 16, -1, 1, 0, 0, 0, 0, 0, -47, "07:00", "single"], ["0041", 51, "routine", "low", 9, 17, -1, 1, 0, 0, 0, 0, 0, -63, "07:00", "single"], ["0042", 32, "follow_up", "normal", 8, 11, -1, 1, 0, 0, 0, 0, 0, -103, "07:00", "single"], ["0043", 0, "routine", "low", 5, 12, -1, 2, 0, 0, 0, 0, 0, -5, "07:00", "single"], ["0044", 1, "follow_up", "normal", 6, 14, -1, 2, 0, 0, 0, 0, 0, -6, "07:00", "single"], ["0045", 41, "complaint", "high", 8, 14, -1, 2, 0, 0, 0, 0, 0, -101, "07:00", "single"], ["0046", 50, "licensing", "urgent", 8, 13, -1, 2, 0, 0, 0, 0, 0, -73, "07:00", "single"], ["0047", 54, "routine", "normal", 10, 11, -1, 2, 0, 0, 0, 0, 0, -83, "07:00", "single"], ["0048", 53, "follow_up", "high", 6, 12, -1, 2, 0, 0, 0, 0, 0, -53, "07:00", "single"], ["0049", 66, "complaint", "urgent", 8, 13, -1, 2, 0, 0, 0, 0, 0, -59, "07:00", "single"], ["0050", 50, "licensing", "low", 9, 17, -1, 2, 0, 0, 0, 0, 0, -35, "07:00", "single"], ["0051", 28, "routine", "high", 7, 16, -1, 2, 0, 0, 0, 0, 0, -3, "07:00", "bulk"], ["0052", 33, "follow_up", "urgent", 7, 12, -1, 2, 0, 0, 0, 0, 0, -47, "07:00", "single"], ["0053", 62, "complaint", "low", 10, 17, -1, 2, 0, 0, 0, 0, 0, -91, "07:00", "single"], ["0054", 45, "licensing", "normal", 5, 12, -1, 2, 0, 0, 0, 0, 0, -19, "07:00", "single"], ["0055", 33, "routine", "urgent", 6, 18, -1, 2, 0, 0, 0, 0, 0, -104, "07:00", "single"], ["0056", 53, "follow_up", "low", 6, 12, -1, 2, 0, 0, 0, 0, 0, -54, "07:00", "single"], ["0057", 26, "complaint", "normal", 5, 16, -1, 2, 0, 0, 0, 0, 0, -38, "07:00", "single"], ["0058", 47, "licensing", "high", 9, 16, -1, 2, 0, 0, 0, 0, 0, -41, "07:00", "immediate"], ["0059", 69, "routine", "low", 8, 16, -1, 2, 0, 0, 0, 0, 0, -109, "07:00", "single"], ["0060", 29, "follow_up", "normal", 8, 15, -1, 2, 0, 0, 0, 0, 0, -63, "07:00", "single"], ["0061", 8, "complaint", "high", 10, 13, -1, 2, 0, 0, 0, 0, 0, -12, "07:00", "single"], ["0062", 40, "licensing", "urgent", 7, 13, -1, 2, 0, 0, 0, 0, 0, -5, "07:00", "single"], ["0063", 70, "routine", "normal", 8, 16, -1, 2, 0, 0, 0, 0, 0, -27, "07:00", "single"], ["0064", 41, "follow_up", "high", 8, 17, -1, 2, 0, 0, 0, 0, 0, -47, "07:00", "single"], ["0065", 54, "routine", "low", 6, 18, -1, 9, 0, 0, 0, 0, 0, -28, "07:00", "single"], ["0066", 47, "follow_up", "normal", 8, 14, -1, 9, 0, 0, 0, 0, 0, -3, "07:00", "single"], ["0067", 34, "complaint", "high", 6, 11, -1, 9, 0, 0, 0, 0, 0, -18, "07:00", "single"], ["0068", 19, "licensing", "urgent", 5, 18, -1, 9, 0, 0, 0, 0, 0, -25, "07:00", "bulk"], ["0069", 60, "routine", "normal", 10, 11, -1, 9, 0, 0, 0, 0, 0, -14, "07:00", "single"], ["0070", 1, "follow_up", "high", 5, 15, -1, 9, 0, 0, 0, 0, 0, -89, "07:00", "single"], ["0071", 30, "complaint", "urgent", 9, 12, -1, 9, 0, 0, 0, 0, 0, -10, "07:00", "single"], ["0072", 70, "licensing", "low", 6, 14, -1, 9, 0, 0, 0, 0, 0, -7, "07:00", "single"], ["0073", 60, "routine", "high", 7, 13, -1, 9, 0, 0, 0, 0, 0, -10, "07:00", "single"], ["0074", 68, "follow_up", "urgent", 10, 11, -1, 9, 0, 0, 0, 0, 0, -46, "07:00", "single"], ["0075", 55, "routine", "low", 7, 11, -1, 10, 0, 0, 0, 0, 0, -66, "07:00", "single"], ["0076", 3, "follow_up", "normal", 9, 18, -1, 10, 0, 0, 0, 0, 0, -61, "07:00", "single"], ["0077", 44, "complaint", "high", 5, 14, -1, 10, 0, 0, 0, 0, 0, -84, "07:00", "single"], ["0078", 39, "licensing", "urgent", 6, 11, -1, 10, 0, 0, 0, 0, 0, -98, "07:00", "single"], ["0079", 68, "routine", "normal", 6, 12, -1, 10, 0, 0, 0, 0, 0, -18, "07:00", "single"], ["0080", 0, "follow_up", "high", 7, 16, -1, 10, 0, 0, 0, 0, 0, -88, "07:00", "single"], ["0081", 1, "complaint", "urgent", 8, 11, -1, 10, 0, 0, 0, 0, 0, -110, "07:00", "single"], ["0082", 3, "licensing", "low", 9, 12, -1, 10, 0, 0, 0, 0, 0, -73, "07:00", "single"], ["0083", 28, "routine", "high", 5, 18, -1, 10, 0, 0, 0, 0, 0, -10, "07:00", "single"], ["0084", 8, "follow_up", "urgent", 7, 12, -1, 10, 0, 0, 0, 0, 0, -41, "07:00", "single"], ["0085", 60, "complaint", "low", 10, 16, -1, 10, 0, 0, 0, 0, 0, -66, "07:00", "bulk"], ["0086", 8, "licensing", "normal", 9, 17, -1, 10, 0, 0, 0, 0, 0, -60, "07:00", "single"], ["0087", 30, "routine", "urgent", 9, 17, -1, 10, 0, 0, 0, 0, 0, -88, "07:00", "immediate"], ["0088", 25, "follow_up", "low", 5, 14, -1, 10, 0, 0, 0, 0, 0, -38, "07:00", "single"], ["0089", 1, "routine", "low", 5, 15, -1, 11, 0, 0, 0, 0, 0, -21, "07:00", "single"], ["0090", 36, "follow_up", "normal", 8, 16, -1, 11, 0, 0, 0, 0, 0, -45, "07:00", "single"], ["0091", 66, "complaint", "high", 8, 16, -1, 11, 0, 0, 0, 0, 0, -32, "07:00", "single"], ["0092", 45, "licensing", "urgent", 7, 18, -1, 11, 0, 0, 0, 0, 0, -47, "07:00", "single"], ["0093", 66, "routine", "normal", 10, 11, -1, 11, 0, 0, 0, 0, 0, -59, "07:00", "single"], ["0094", 17, "follow_up", "high", 8, 11, -1, 11, 0, 0, 0, 0, 0, -40, "07:00", "single"], ["0095", 72, "complaint", "urgent", 6, 18, -1, 11, 0, 0, 0, 0, 0, -33, "07:00", "single"], ["0096", 5, "licensing", "low", 5, 13, -1, 11, 0, 0, 0, 0, 0, -47, "07:00", "single"], ["0097", 32, "routine", "low", 8, 18, 23, 3, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0098", 42, "follow_up", "normal", 10, 12, 40, 3, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0099", 49, "complaint", "high", 9, 15, 33, 3, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0100", 8, "licensing", "urgent", 9, 12, 23, 3, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0101", 50, "routine", "normal", 8, 16, 25, 3, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0102", 53, "follow_up", "high", 7, 14, 25, 3, 0, 0, 0, 0, 0, 0, "09:30", "bulk"], ["0103", 18, "complaint", "urgent", 6, 12, 27, 3, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0104", 65, "licensing", "low", 5, 13, 21, 3, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0105", 11, "routine", "high", 7, 17, 41, 3, 0, 0, 0, 0, 0, -4, "07:00", "single"], ["0106", 0, "follow_up", "urgent", 8, 11, 42, 3, 0, 0, 0, 0, 0, -61, "07:00", "single"], ["0107", 62, "complaint", "low", 7, 16, 28, 3, 0, 0, 0, 0, 0, -42, "07:00", "single"], ["0108", 33, "licensing", "normal", 7, 18, 34, 3, 0, 0, 0, 0, 0, -81, "07:00", "single"], ["0109", 57, "routine", "urgent", 6, 16, 21, 3, 0, 0, 0, 0, 0, -68, "07:00", "single"], ["0110", 20, "follow_up", "low", 5, 18, 36, 3, 0, 0, 0, 0, 0, -76, "07:00", "single"], ["0111", 45, "complaint", "normal", 9, 16, 42, 3, 0, 0, 0, 0, 0, -73, "07:00", "single"], ["0112", 14, "licensing", "high", 5, 18, 23, 3, 0, 0, 0, 0, 0, -59, "07:00", "single"], ["0113", 38, "routine", "low", 5, 13, 34, 3, 0, 0, 0, 0, 0, -40, "07:00", "single"], ["0114", 51, "follow_up", "normal", 5, 15, 27, 3, 0, 0, 0, 0, 0, -84, "07:00", "single"], ["0115", 5, "complaint", "high", 5, 14, 32, 3, 0, 0, 0, 0, 0, -76, "07:00", "single"], ["0116", 51, "licensing", "urgent", 7, 18, 26, 3, 0, 0, 0, 0, 0, -20, "07:00", "immediate"], ["0117", 27, "routine", "normal", 8, 13, 33, 3, 0, 0, 0, 0, 0, -14, "07:00", "single"], ["0118", 3, "follow_up", "high", 6, 18, 23, 3, 0, 0, 0, 0, 0, -117, "07:00", "single"], ["0119", 40, "complaint", "urgent", 6, 15, 40, 3, 0, 0, 0, 0, 0, -35, "07:00", "bulk"], ["0120", 67, "licensing", "low", 9, 16, 40, 3, 0, 0, 0, 0, 0, -105, "07:00", "single"], ["0121", 6, "routine", "high", 6, 16, 40, 3, 0, 0, 0, 0, 0, -59, "07:00", "single"], ["0122", 23, "follow_up", "urgent", 8, 16, 34, 3, 0, 0, 0, 0, 0, -35, "07:00", "single"], ["0123", 13, "complaint", "low", 10, 13, 31, 3, 0, 0, 0, 0, 0, -25, "07:00", "single"], ["0124", 5, "licensing", "normal", 7, 15, 22, 3, 0, 0, 0, 0, 0, -38, "07:00", "single"], ["0125", 70, "routine", "urgent", 9, 15, 40, 3, 0, 0, 0, 0, 0, -112, "07:00", "single"], ["0126", 13, "follow_up", "low", 8, 14, 41, 3, 0, 0, 0, 0, 0, -54, "07:00", "single"], ["0127", 2, "routine", "low", 7, 17, 20, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0128", 31, "follow_up", "normal", 8, 18, 42, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0129", 43, "complaint", "high", 6, 13, 27, 4, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0130", 31, "licensing", "urgent", 5, 13, 29, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0131", 45, "routine", "normal", 8, 14, 40, 4, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0132", 7, "follow_up", "high", 7, 12, 39, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0133", 34, "complaint", "urgent", 9, 13, 39, 4, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0134", 61, "licensing", "low", 10, 12, 24, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0135", 50, "routine", "high", 9, 14, 34, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0136", 47, "follow_up", "urgent", 10, 11, 37, 4, 0, 0, 0, 0, 0, 0, "07:00", "bulk"], ["0137", 32, "complaint", "low", 6, 13, 22, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0138", 15, "licensing", "normal", 10, 12, 41, 4, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0139", 13, "routine", "low", 7, 13, 26, 5, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0140", 6, "follow_up", "normal", 10, 11, 29, 5, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0141", 15, "complaint", "high", 10, 12, 23, 5, 0, 0, 0, 0, 0, 0, "12:00", "single"], ["0142", 20, "licensing", "urgent", 6, 17, 34, 5, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0143", 57, "routine", "normal", 6, 15, 42, 5, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0144", 24, "follow_up", "high", 10, 15, 25, 5, 0, 0, 0, 0, 0, 0, "12:00", "single"], ["0145", 16, "complaint", "urgent", 8, 12, 40, 5, 0, 0, 0, 0, 0, 0, "12:00", "immediate"], ["0146", 16, "licensing", "low", 7, 17, 31, 5, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0147", 51, "routine", "low", 5, 13, 39, 5, 0, 0, 0, 0, 0, 0, "12:00", "single"], ["0148", 21, "follow_up", "normal", 7, 13, 40, 5, 0, 0, 0, 0, 0, 0, "14:30", "single"], ["0149", 2, "complaint", "high", 10, 18, 39, 5, 0, 0, 0, 0, 0, 0, "14:30", "single"], ["0150", 58, "licensing", "urgent", 10, 17, 22, 5, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0151", 54, "routine", "normal", 6, 17, 41, 5, 0, 0, 0, 0, 0, 0, "09:30", "single"], ["0152", 29, "follow_up", "high", 10, 14, 38, 5, 0, 0, 0, 0, 0, 0, "07:00", "single"], ["0153", 49, "routine", "low", 6, 11, 37, 6, 48, 37, 7, 4, 0, 0, "09:30", "bulk"], ["0154", 54, "follow_up", "normal", 8, 16, 34, 6, 7, 6, 1, 4, 0, 0, "12:00", "single"], ["0155", 57, "complaint", "high", 9, 18, 27, 6, 20, 15, 3, 6, 0, 0, "12:00", "single"], ["0156", 57, "licensing", "urgent", 9, 17, 32, 6, 15, 12, 2, 3, 0, 0, "07:00", "single"], ["0157", 0, "routine", "normal", 6, 17, 41, 6, 48, 37, 7, 5, 0, 0, "12:00", "single"], ["0158", 40, "follow_up", "high", 7, 12, 21, 6, 7, 6, 1, 6, 0, 0, "09:30", "single"], ["0159", 13, "complaint", "urgent", 8, 18, 27, 6, 20, 15, 3, 6, 0, 0, "14:30", "single"], ["0160", 44, "licensing", "low", 5, 12, 35, 6, 15, 10, 4, 5, 0, 0, "07:00", "single"], ["0161", 34, "routine", "high", 5, 13, 26, 6, 48, 37, 7, 4, 0, 0, "09:30", "single"], ["0162", 60, "follow_up", "urgent", 10, 14, 26, 6, 7, 6, 1, 5, 0, 0, "12:00", "single"], ["0163", 9, "complaint", "low", 7, 15, 41, 6, 20, 15, 3, 6, 0, 0, "14:30", "single"], ["0164", 18, "licensing", "normal", 6, 18, 39, 6, 15, 12, 2, 5, 0, 0, "17:00", "single"], ["0165", 0, "routine", "urgent", 8, 11, 34, 6, 48, 37, 7, 3, 0, 0, "14:30", "single"], ["0166", 20, "follow_up", "low", 6, 18, 21, 6, 7, 5, 2, 4, 0, 0, "12:00", "single"], ["0167", 24, "complaint", "normal", 9, 14, 38, 6, 20, 15, 3, 5, 0, 0, "09:30", "single"], ["0168", 62, "licensing", "high", 7, 14, 19, 6, 15, 12, 2, 4, 0, 0, "07:00", "single"], ["0169", 28, "routine", "low", 7, 17, 34, 6, 48, 37, 7, 5, 0, 0, "17:00", "single"], ["0170", 61, "follow_up", "normal", 8, 15, 25, 6, 7, 6, 1, 6, 0, 0, "14:30", "bulk"], ["0171", 63, "routine", "low", 6, 15, 22, 7, 80, 60, 12, 5, 0, -26, "07:00", "single"], ["0172", 42, "follow_up", "normal", 5, 12, 24, 7, 12, 9, 2, 6, 0, -95, "07:00", "single"], ["0173", 19, "complaint", "high", 10, 12, 23, 7, 34, 26, 5, 3, 0, -102, "07:00", "single"], ["0174", 44, "licensing", "urgent", 9, 14, 22, 7, 26, 20, 4, 4, 0, -11, "07:00", "immediate"], ["0175", 68, "routine", "normal", 9, 18, 32, 7, 80, 60, 12, 3, 0, -108, "07:00", "single"], ["0176", 42, "follow_up", "high", 9, 12, 32, 7, 12, 9, 2, 4, 0, -69, "07:00", "single"], ["0177", 2, "complaint", "urgent", 8, 18, 24, 7, 34, 26, 5, 4, 0, -81, "07:00", "single"], ["0178", 72, "licensing", "low", 10, 12, 19, 7, 26, 20, 4, 4, 0, -81, "07:00", "single"], ["0179", 9, "routine", "high", 6, 13, 38, 7, 80, 60, 12, 6, 0, -80, "07:00", "single"], ["0180", 4, "follow_up", "urgent", 5, 17, 23, 7, 12, 9, 2, 5, 0, -32, "07:00", "single"], ["0181", 33, "complaint", "low", 10, 11, 24, 7, 34, 26, 5, 3, 0, -28, "07:00", "single"], ["0182", 15, "licensing", "normal", 8, 13, 41, 7, 26, 17, 7, 4, 0, -116, "07:00", "single"], ["0183", 45, "routine", "urgent", 5, 13, 36, 7, 80, 50, 22, 3, 0, -89, "07:00", "single"], ["0184", 25, "follow_up", "low", 5, 15, 28, 7, 12, 9, 2, 6, 0, -66, "07:00", "single"], ["0185", 28, "complaint", "normal", 6, 16, 38, 7, 34, 26, 5, 5, 0, -28, "07:00", "single"], ["0186", 20, "licensing", "high", 7, 18, 37, 7, 26, 20, 4, 4, 0, -42, "07:00", "single"], ["0187", 62, "routine", "low", 10, 17, 37, 7, 80, 60, 12, 6, 0, -59, "07:00", "bulk"], ["0188", 1, "follow_up", "normal", 5, 15, 27, 7, 12, 9, 2, 4, 0, -61, "07:00", "single"], ["0189", 35, "complaint", "high", 9, 17, 42, 7, 34, 26, 5, 5, 0, -103, "07:00", "single"], ["0190", 66, "licensing", "urgent", 5, 11, 37, 7, 26, 20, 4, 3, 0, -11, "07:00", "single"], ["0191", 39, "routine", "normal", 9, 18, 29, 7, 80, 60, 12, 3, 0, -6, "07:00", "single"], ["0192", 5, "follow_up", "high", 6, 13, 31, 7, 12, 9, 2, 4, 0, -61, "07:00", "single"], ["0193", 46, "complaint", "urgent", 8, 11, 42, 7, 34, 26, 5, 4, 0, -112, "07:00", "single"], ["0194", 57, "licensing", "low", 8, 16, 24, 7, 26, 20, 4, 5, 0, -112, "07:00", "single"], ["0195", 0, "routine", "high", 6, 17, 35, 7, 80, 60, 12, 3, 0, -69, "07:00", "single"], ["0196", 62, "follow_up", "urgent", 5, 14, 24, 7, 12, 9, 2, 3, 0, -116, "07:00", "single"], ["0197", 37, "complaint", "low", 5, 11, 35, 7, 34, 26, 5, 4, 0, -13, "07:00", "single"], ["0198", 48, "licensing", "normal", 7, 12, 38, 7, 26, 20, 4, 6, 0, -25, "07:00", "single"], ["0199", 59, "routine", "urgent", 7, 18, 25, 7, 80, 60, 12, 6, 0, -118, "07:00", "single"], ["0200", 41, "follow_up", "low", 9, 13, 32, 7, 12, 9, 2, 5, 0, -38, "07:00", "single"], ["0201", 56, "complaint", "normal", 8, 17, 41, 7, 34, 26, 5, 3, 0, -3, "07:00", "single"], ["0202", 4, "licensing", "high", 10, 14, 23, 7, 26, 20, 4, 6, 0, -47, "07:00", "single"], ["0203", 49, "routine", "low", 9, 17, 32, 7, 80, 60, 12, 4, 0, -63, "07:00", "immediate"], ["0204", 10, "follow_up", "normal", 7, 14, 34, 7, 12, 8, 3, 3, 0, -4, "07:00", "bulk"], ["0205", 54, "complaint", "high", 10, 13, 24, 7, 34, 26, 5, 4, 0, -82, "07:00", "single"], ["0206", 55, "licensing", "urgent", 10, 18, 24, 7, 26, 20, 4, 3, 0, -76, "07:00", "single"], ["0207", 9, "routine", "normal", 7, 18, 28, 7, 80, 60, 12, 5, 0, -7, "07:00", "single"], ["0208", 13, "follow_up", "high", 5, 14, 29, 7, 12, 9, 2, 4, 0, -91, "07:00", "single"], ["0209", 42, "complaint", "urgent", 8, 12, 29, 7, 34, 26, 5, 6, 0, -60, "07:00", "single"], ["0210", 38, "licensing", "low", 7, 18, 28, 7, 26, 20, 4, 6, 0, -32, "07:00", "single"], ["0211", 70, "routine", "low", 6, 16, 38, 9, 80, 60, 12, 5, 0, -98, "07:00", "single"], ["0212", 40, "follow_up", "normal", 8, 16, 26, 9, 12, 9, 2, 4, 0, -73, "07:00", "single"], ["0213", 30, "complaint", "high", 6, 12, 29, 9, 34, 26, 5, 4, 0, -40, "07:00", "single"], ["0214", 69, "licensing", "urgent", 9, 14, 23, 9, 26, 20, 4, 6, 0, -46, "07:00", "single"], ["0215", 54, "routine", "normal", 8, 15, 41, 9, 80, 60, 12, 3, 0, -80, "07:00", "single"], ["0216", 47, "follow_up", "high", 6, 13, 33, 9, 12, 9, 2, 3, 0, -91, "07:00", "single"], ["0217", 22, "complaint", "urgent", 8, 18, 38, 9, 34, 26, 5, 5, 0, -28, "09:30", "single"], ["0218", 25, "licensing", "low", 6, 11, 19, 9, 26, 20, 4, 4, 0, -26, "07:00", "single"], ["0219", 28, "routine", "high", 5, 18, 25, 9, 80, 50, 22, 6, 0, -19, "07:00", "single"], ["0220", 5, "follow_up", "urgent", 6, 15, 20, 9, 12, 9, 2, 3, 0, -28, "07:00", "single"], ["0221", 52, "complaint", "low", 6, 14, 21, 9, 34, 26, 5, 3, 0, -108, "07:00", "bulk"], ["0222", 13, "licensing", "normal", 7, 18, 33, 9, 26, 20, 4, 5, 0, -70, "07:00", "single"], ["0223", 65, "routine", "low", 10, 15, 34, 7, 80, 60, 12, 3, 0, -45, "07:00", "single"], ["0224", 45, "follow_up", "normal", 5, 16, 40, 7, 12, 9, 2, 5, 0, -31, "07:00", "single"], ["0225", 72, "complaint", "high", 9, 11, 37, 7, 34, 26, 5, 4, 0, -115, "07:00", "single"], ["0226", 51, "licensing", "urgent", 9, 12, 37, 7, 26, 20, 4, 6, 0, -77, "07:00", "single"], ["0227", 28, "routine", "normal", 10, 16, 27, 7, 80, 60, 12, 6, 0, -19, "07:00", "single"], ["0228", 55, "follow_up", "high", 5, 13, 38, 7, 12, 9, 2, 4, 0, -83, "07:00", "single"], ["0229", 51, "complaint", "urgent", 10, 13, 21, 7, 34, 26, 5, 4, 0, -42, "07:00", "single"], ["0230", 45, "licensing", "low", 6, 14, 23, 7, 26, 20, 4, 3, 0, -55, "07:00", "single"], ["0231", 69, "routine", "low", 8, 16, 30, 8, 80, 60, 12, 6, 2, -4, "07:00", "single"], ["0232", 72, "follow_up", "normal", 7, 12, 38, 8, 12, 9, 2, 6, 1, -17, "07:00", "immediate"], ["0233", 61, "complaint", "high", 8, 12, 27, 8, 34, 26, 5, 5, 1, -187, "07:00", "single"], ["0234", 40, "licensing", "urgent", 5, 12, 28, 8, 26, 20, 4, 5, 2, -171, "07:00", "single"], ["0235", 63, "routine", "normal", 7, 18, 19, 8, 80, 60, 12, 6, 1, -207, "07:00", "single"], ["0236", 67, "follow_up", "high", 8, 12, 23, 8, 12, 9, 2, 3, 1, -26, "07:00", "single"], ["0237", 51, "complaint", "urgent", 10, 15, 37, 8, 34, 26, 5, 3, 2, -21, "07:00", "single"], ["0238", 37, "licensing", "low", 9, 11, 31, 8, 26, 20, 4, 5, 1, -110, "07:00", "bulk"], ["0239", 68, "routine", "high", 10, 11, 28, 8, 80, 60, 12, 6, 1, -117, "07:00", "single"], ["0240", 71, "follow_up", "urgent", 8, 17, 37, 8, 12, 9, 2, 3, 2, -292, "07:00", "single"], ["0241", 55, "complaint", "low", 8, 18, 24, 8, 34, 26, 5, 5, 1, -28, "09:30", "single"], ["0242", 17, "licensing", "normal", 8, 16, 40, 8, 26, 20, 4, 6, 2, 0, "17:00", "single"], ["0243", 64, "routine", "urgent", 9, 16, 37, 8, 80, 60, 12, 4, 1, -40, "07:00", "single"], ["0244", 43, "follow_up", "low", 6, 15, 20, 8, 12, 9, 2, 6, 2, -217, "07:00", "single"], ["0245", 70, "complaint", "normal", 5, 18, 33, 8, 34, 26, 5, 4, 1, -293, "07:00", "single"], ["0246", 59, "licensing", "high", 6, 13, 40, 8, 26, 20, 4, 6, 1, -20, "07:00", "single"], ["0247", 62, "routine", "low", 9, 15, 40, 8, 80, 60, 12, 3, 1, -12, "07:00", "single"], ["0248", 18, "follow_up", "normal", 8, 14, 26, 8, 12, 9, 2, 5, 2, -333, "07:00", "single"], ["0249", 69, "complaint", "high", 7, 12, 23, 8, 34, 26, 5, 6, 1, -167, "07:00", "single"], ["0250", 41, "licensing", "urgent", 8, 14, 40, 8, 26, 17, 7, 3, 1, -42, "07:00", "single"], ["0251", 53, "routine", "normal", 9, 12, 35, 8, 80, 60, 12, 4, 2, -18, "07:00", "single"], ["0252", 72, "follow_up", "high", 5, 15, 27, 8, 12, 9, 2, 4, 2, -26, "07:00", "single"], ["0253", 55, "complaint", "urgent", 7, 12, 39, 8, 34, 26, 5, 3, 2, -154, "07:00", "single"], ["0254", 9, "licensing", "low", 6, 16, 38, 8, 26, 20, 4, 5, 1, -315, "07:00", "single"], ["0255", 29, "routine", "high", 5, 17, 24, 8, 80, 60, 12, 4, 1, -229, "07:00", "bulk"], ["0256", 68, "follow_up", "urgent", 5, 15, 29, 8, 12, 9, 2, 6, 1, -5, "07:00", "single"], ["0257", 39, "complaint", "low", 5, 17, 24, 8, 34, 26, 5, 4, 1, -21, "07:00", "single"], ["0258", 20, "licensing", "normal", 7, 11, 24, 8, 26, 20, 4, 3, 2, -321, "07:00", "single"], ["0259", 25, "routine", "urgent", 8, 14, 42, 8, 80, 60, 12, 5, 1, -360, "07:00", "single"], ["0260", 2, "follow_up", "low", 9, 14, 32, 8, 12, 9, 2, 5, 1, -307, "07:00", "single"], ["0261", 20, "complaint", "normal", 5, 18, 19, 8, 34, 26, 5, 4, 1, -26, "09:30", "immediate"], ["0262", 53, "licensing", "high", 10, 16, 28, 8, 26, 20, 4, 5, 2, -19, "07:00", "single"], ["0263", 50, "routine", "low", 5, 12, 29, 8, 80, 60, 12, 5, 2, -286, "07:00", "single"], ["0264", 2, "follow_up", "normal", 10, 17, 29, 8, 12, 9, 2, 3, 2, -122, "07:00", "single"], ["0265", 17, "complaint", "high", 6, 12, 33, 8, 34, 26, 5, 6, 1, -90, "07:00", "single"], ["0266", 69, "licensing", "urgent", 9, 14, 28, 8, 26, 20, 4, 6, 1, -17, "07:00", "single"], ["0267", 44, "routine", "normal", 5, 11, 23, 8, 80, 60, 12, 3, 1, -6, "07:00", "single"], ["0268", 15, "follow_up", "high", 10, 12, 36, 8, 12, 9, 2, 4, 2, -137, "07:00", "single"], ["0269", 2, "complaint", "urgent", 10, 13, 30, 8, 34, 22, 9, 6, 2, -347, "07:00", "single"], ["0270", 9, "licensing", "low", 6, 15, 41, 8, 26, 20, 4, 6, 1, -109, "07:00", "single"], ["0271", 56, "routine", "high", 7, 16, 35, 8, 80, 60, 12, 4, 2, -7, "07:00", "single"], ["0272", 0, "follow_up", "urgent", 7, 11, 34, 8, 12, 9, 2, 5, 2, 1, "07:00", "bulk"], ["0273", 4, "complaint", "low", 8, 17, 20, 8, 34, 26, 5, 4, 2, -122, "07:00", "single"], ["0274", 15, "licensing", "normal", 8, 12, 22, 8, 26, 20, 4, 4, 2, -252, "07:00", "single"], ["0275", 41, "routine", "urgent", 5, 18, 40, 8, 80, 60, 12, 5, 2, -98, "07:00", "single"], ["0276", 44, "follow_up", "low", 9, 15, 37, 8, 12, 9, 2, 4, 2, -10, "07:00", "single"], ["0277", 50, "complaint", "normal", 5, 17, 27, 8, 34, 26, 5, 3, 1, -17, "07:00", "single"], ["0278", 58, "licensing", "high", 9, 13, 34, 8, 26, 20, 4, 3, 1, -313, "07:00", "single"], ["0279", 1, "routine", "low", 7, 14, 41, 8, 80, 60, 12, 6, 1, -34, "07:00", "single"], ["0280", 6, "follow_up", "normal", 9, 13, 19, 8, 12, 9, 2, 3, 1, -76, "07:00", "single"], ["0281", 63, "complaint", "high", 7, 18, 37, 8, 34, 26, 5, 6, 1, -12, "07:00", "single"], ["0282", 26, "licensing", "urgent", 7, 16, 33, 8, 26, 17, 7, 3, 2, -25, "07:00", "single"], ["0283", 41, "routine", "normal", 9, 14, 20, 8, 80, 60, 12, 6, 1, -73, "07:00", "single"], ["0284", 71, "follow_up", "high", 8, 18, 30, 8, 12, 9, 2, 3, 2, -153, "07:00", "single"], ["0285", 52, "complaint", "urgent", 10, 14, 26, 8, 34, 26, 5, 6, 2, -250, "07:00", "single"], ["0286", 50, "licensing", "low", 8, 11, 28, 8, 26, 20, 4, 3, 2, -5, "07:00", "single"], ["0287", 37, "routine", "high", 8, 18, 19, 8, 80, 60, 12, 6, 1, -5, "07:00", "single"], ["0288", 29, "follow_up", "urgent", 7, 13, 23, 8, 12, 9, 2, 4, 1, -61, "07:00", "single"], ["0289", 46, "complaint", "low", 6, 15, 28, 8, 34, 26, 5, 6, 1, -185, "07:00", "bulk"], ["0290", 43, "licensing", "normal", 8, 14, 19, 8, 26, 20, 4, 4, 2, -146, "07:00", "immediate"], ["0291", 67, "routine", "low", 8, 18, 24, 12, 80, 60, 12, 4, 0, -4, "07:00", "single"], ["0292", 54, "follow_up", "normal", 8, 16, 33, 12, 12, 9, 2, 5, 0, -102, "07:00", "single"], ["0293", 51, "complaint", "high", 7, 11, 21, 12, 34, 26, 5, 4, 0, -56, "07:00", "single"], ["0294", 0, "licensing", "urgent", 7, 15, 24, 12, 26, 20, 4, 5, 0, -31, "07:00", "single"], ["0295", 50, "routine", "normal", 10, 12, 31, 12, 80, 60, 12, 4, 0, -80, "07:00", "single"], ["0296", 4, "follow_up", "high", 8, 12, 27, 12, 12, 9, 2, 3, 0, -76, "07:00", "single"], ["0297", 3, "complaint", "urgent", 8, 12, 22, 12, 34, 26, 5, 6, 0, -73, "07:00", "single"], ["0298", 36, "licensing", "low", 5, 11, 20, 12, 26, 20, 4, 6, 0, -116, "07:00", "single"], ["0299", 28, "routine", "high", 9, 15, 27, 12, 80, 60, 12, 4, 0, -28, "07:00", "single"], ["0300", 30, "follow_up", "urgent", 9, 17, 41, 12, 12, 9, 2, 3, 0, -34, "09:30", "single"]], "factories": [["F-R2-001", "Najd Advanced Plastics Factory", "مصنع نجد للبلاستيك المتطور", "Riyadh", "Riyadh 2nd Industrial City", "1010600137", "legacy_city_coded", "4810600673", "2026-09-09", "active", "plastics", 180, 24.5354, 46.8929, 250, "medium"], ["F-R2-002", "Wadi Hanifah Food Industries", "مصانع وادي حنيفة للصناعات الغذائية", "Riyadh", "Riyadh 2nd Industrial City", "1010600274", "legacy_city_coded", "4810601346", "2026-10-09", "active", "food", 240, 24.5399, 46.8981, 250, "low"], ["F-R2-003", "Al Yamamah Steel Fabrication", "اليمامة لتشكيل المعادن", "Riyadh", "Riyadh 2nd Industrial City", "7101502733", "unified_m83", "4810602019", "2026-11-20", "active", "steel", 320, 24.5444, 46.9033, 250, "high"], ["F-R2-004", "Riyadh Precision Machinery Works", "الرياض للمعدات الدقيقة", "Riyadh", "Riyadh 2nd Industrial City", "1010600548", "legacy_city_coded", "4810602692", "2027-01-27", "active", "machinery", 145, 24.5489, 46.9085, 150, "medium"], ["F-R2-005", "Tuwaiq Chemical Products Co.", "طويق للمنتجات الكيميائية", "Riyadh", "Riyadh 2nd Industrial City", "1010600685", "legacy_city_coded", "4810603365", "2026-12-10", "active", "chemical", 210, 24.5534, 46.8877, 250, "high"], ["F-KH-006", "Al Kharj Dairy Processing Plant", "مصنع الخرج لمنتجات الألبان", "Riyadh", "Al Kharj Industrial City", "7101505466", "unified_m83", "4810604038", "2027-04-06", "active", "food", 410, 24.1685, 47.2998, 250, "low"], ["F-SD-007", "Sudair Pharmaceutical Industries", "سدير للصناعات الدوائية", "Riyadh", "Sudair City for Industry and Business", "1010600959", "legacy_city_coded", "4810604711", "2027-05-13", "active", "pharmaceutical", 260, 25.4465, 45.84, 250, "medium"], ["F-SD-008", "Sudair Building Materials Co.", "سدير لمواد البناء", "Riyadh", "Sudair City for Industry and Business", "1010601096", "legacy_city_coded", "4810605384", "2028-06-17", "active", "building_materials", 190, 25.451, 45.8452, 250, "medium"], ["F-R1-009", "Al Malaz Metal Workshop", "ورشة الملز للمعادن", "Riyadh", "Riyadh 1st Industrial City", "7101508199", "unified_m83", "4810606057", "2028-07-24", "active", "steel", 42, 24.6605, 46.7524, 150, "low"], ["F-R1-010", "Al Batha Furniture Manufacturing", "البطحاء لصناعة الأثاث", "Riyadh", "Riyadh 1st Industrial City", "1010601370", "legacy_city_coded", "4810606730", "2028-08-30", "active", "furniture", 68, 24.665, 46.7316, 150, "low"], ["F-R2-011", "Rawdah Packaging Solutions", "الروضة لحلول التغليف", "Riyadh", "Riyadh 2nd Industrial City", "1010601507", "legacy_city_coded", "4810607403", "2028-10-06", "active", "packaging", 155, 24.5489, 46.8929, 250, "medium"], ["F-R3-012", "Diriyah Textile Mills", "الدرعية لصناعة النسيج", "Riyadh", "Riyadh 3rd Industrial City", "7101510932", "unified_m83", "4810608076", "2026-07-23", "expired", "textiles", 230, 24.114, 46.98, 250, "medium"], ["F-KH-013", "Al Kharj Beverage Bottling Co.", "الخرج لتعبئة المشروبات", "Riyadh", "Al Kharj Industrial City", "1010601781", "legacy_city_coded", "4810608749", "2026-08-28", "active", "beverages", 175, 24.1685, 47.3102, 250, "low"], ["F-R3-014", "Nofa Aluminium Extrusions", "نوفا لسحب الألمنيوم", "Riyadh", "Riyadh 3rd Industrial City", "1010601918", "legacy_city_coded", "4810609422", "2026-10-18", "active", "aluminium", 285, 24.0915, 46.9904, 250, "high"], ["F-R3-015", "Riyadh Cement Products Factory", "الرياض لمنتجات الأسمنت", "Riyadh", "Riyadh 3rd Industrial City", "7101513665", "unified_m83", "4810610095", "2026-11-16", "active", "building_materials", 130, 24.096, 46.9696, 150, "medium"], ["F-R3-016", "Al Uyaynah Paper Converting", "العيينة لتحويل الورق", "Riyadh", "Riyadh 3rd Industrial City", "1010602192", "legacy_city_coded", "4810610768", "2027-02-15", "active", "paper", 95, 24.1005, 46.9748, 150, "low"], ["F-R2-017", "Thumamah Electrical Cables Co.", "الثمامة للكابلات الكهربائية", "Riyadh", "Riyadh 2nd Industrial City", "1010602329", "legacy_city_coded", "4810611441", "2026-12-29", "active", "electrical", 340, 24.5444, 46.8981, 250, "high"], ["F-R1-018", "Manfouhah Rubber Products", "منفوحة للمنتجات المطاطية", "Riyadh", "Riyadh 1st Industrial City", "7101516398", "unified_m83", "4810612114", "2027-07-01", "active", "rubber", 78, 24.6695, 46.7472, 150, "medium"], ["F-KH-019", "Al Kharj Poultry Processing", "الخرج لتصنيع الدواجن", "Riyadh", "Al Kharj Industrial City", "1010602603", "legacy_city_coded", "4810612787", "2027-08-07", "active", "food", 520, 24.164, 47.3154, 250, "high"], ["F-SD-020", "Sudair Solar Panel Assembly", "سدير لتجميع الألواح الشمسية", "Riyadh", "Sudair City for Industry and Business", "1010602740", "legacy_city_coded", "4810613460", "2028-03-20", "active", "electrical", 165, 25.4735, 45.8296, 250, "low"], ["F-R3-021", "Al Ammariyah Glass Works", "العمارية لصناعة الزجاج", "Riyadh", "Riyadh 3rd Industrial City", "7101519131", "unified_m83", "4810614133", "2028-04-26", "active", "glass", 205, 24.0915, 46.9748, 250, "medium"], ["F-R2-022", "Shifa Medical Consumables Co.", "الشفاء للمستلزمات الطبية", "Riyadh", "Riyadh 2nd Industrial City", "1010603014", "legacy_city_coded", "4810614806", "2028-06-02", "active", "medical_devices", 120, 24.5354, 46.8981, 150, "medium"], ["F-R2-023", "Riyadh Paints and Coatings", "الرياض للدهانات والطلاءات", "Riyadh", "Riyadh 2nd Industrial City", "1010603151", "legacy_city_coded", "4810615479", "2028-07-09", "active", "chemical", 148, 24.5399, 46.9033, 150, "high"], ["F-KH-024", "Al Kharj Animal Feed Mills", "مطاحن الخرج للأعلاف", "Riyadh", "Al Kharj Industrial City", "7101521864", "unified_m83", "4810616152", "2026-07-11", "expired", "food", 88, 24.155, 47.3154, 150, "low"], ["F-SD-025", "Sudair Cold Storage Industries", "سدير لصناعات التبريد", "Riyadh", "Sudair City for Industry and Business", "1010603425", "legacy_city_coded", "4810616825", "2026-09-09", "active", "machinery", 112, 25.4645, 45.8296, 150, "medium"], ["F-R1-026", "Irqah Cosmetics Manufacturing", "عرقة لصناعة مستحضرات التجميل", "Riyadh", "Riyadh 1st Industrial City", "1010603562", "legacy_city_coded", "4810617498", "2026-09-28", "active", "chemical", 56, 24.674, 46.7368, 150, "low"], ["F-KH-027", "Al Kharj Date Processing Factory", "مصنع الخرج للتمور", "Riyadh", "Al Kharj Industrial City", "7101524597", "unified_m83", "4810618171", "2026-11-12", "active", "food", 74, 24.1685, 47.305, 150, "low"], ["F-R3-028", "Riyadh Wire and Mesh Co.", "الرياض للأسلاك والشبك", "Riyadh", "Riyadh 3rd Industrial City", "1010603836", "legacy_city_coded", "4810618844", "2026-12-11", "active", "steel", 160, 24.0915, 46.9852, 250, "medium"], ["F-R3-029", "Hair Industrial Gases Plant", "الهير للغازات الصناعية", "Riyadh", "Riyadh 3rd Industrial City", "1010603973", "legacy_city_coded", "4810619517", "2027-01-17", "expired", "chemical", 95, 24.096, 46.9904, 150, "high"], ["F-SD-030", "Sudair Auto Components Factory", "سدير لمكونات المركبات", "Riyadh", "Sudair City for Industry and Business", "7101527330", "unified_m83", "4810620190", "2027-03-30", "pending", "automotive", 275, 25.4555, 45.8296, 250, "medium"], ["F-J1-031", "Al Balad Marine Foods Processing", "البلد لتصنيع الأغذية البحرية", "Makkah", "Jeddah 1st Industrial City", "7101528241", "unified_m83", "4810620863", "2027-05-06", "active", "food", 310, 21.423, 39.2608, 250, "medium"], ["F-J1-032", "Obhur Plastic Packaging Co.", "أبحر للتغليف البلاستيكي", "Makkah", "Jeddah 1st Industrial City", "7101529152", "unified_m83", "4810621536", "2027-12-22", "active", "packaging", 145, 21.4275, 39.266, 150, "low"], ["F-J2-033", "Bahrah Chemical Works", "بحرة للصناعات الكيميائية", "Makkah", "Jeddah 2nd Industrial City", "7101530063", "unified_m83", "4810622209", "2028-01-28", "active", "chemical", 265, 21.407, 39.2882, 250, "high"], ["F-J2-034", "Al Hamra Paper Mills", "الحمراء لمطاحن الورق", "Makkah", "Jeddah 2nd Industrial City", "7101530974", "unified_m83", "4810622882", "2028-03-05", "active", "paper", 190, 21.4115, 39.2934, 250, "medium"], ["F-MK-035", "Hira Construction Products", "حراء لمنتجات البناء", "Makkah", "Makkah Industrial City", "7101531885", "unified_m83", "4810623555", "2028-04-11", "active", "building_materials", 120, 21.3756, 39.8475, 150, "medium"], ["F-MK-036", "Ajyad Bottled Water Plant", "أجياد لتعبئة المياه", "Makkah", "Makkah Industrial City", "7101532796", "unified_m83", "4810624228", "2026-06-29", "expired", "beverages", 88, 21.3801, 39.8527, 150, "low"], ["F-TF-037", "Shafa Highland Fruit Processing", "الشفا لتصنيع الفواكه", "Makkah", "Taif Industrial City", "7101533707", "unified_m83", "4810624901", "2026-08-28", "active", "food", 96, 21.2658, 40.4158, 150, "low"], ["F-TF-038", "Taif Rose Extracts Factory", "مصنع ورد الطائف للمستخلصات", "Makkah", "Taif Industrial City", "7101534618", "unified_m83", "4810625574", "2026-10-07", "active", "chemical", 54, 21.2703, 40.421, 150, "low"], ["F-D1-039", "Al Khobar Steel Structures", "الخبر للمنشآت المعدنية", "Eastern", "Dammam 1st Industrial City", "7101535529", "unified_m83", "4810626247", "2026-11-08", "active", "steel", 380, 26.4385, 50.1134, 250, "high"], ["F-D1-040", "Qatif Marine Equipment Co.", "القطيف للمعدات البحرية", "Eastern", "Dammam 1st Industrial City", "7101536440", "unified_m83", "4810626920", "2026-12-30", "active", "machinery", 165, 26.443, 50.0926, 250, "medium"], ["F-D2-041", "Dhahran Industrial Valves Factory", "الظهران لصناعة الصمامات", "Eastern", "Dammam 2nd Industrial City", "7101537351", "unified_m83", "4810627593", "2027-02-05", "active", "machinery", 210, 26.3655, 50.0298, 250, "medium"], ["F-D2-042", "Half Moon Insulation Products", "نصف القمر لمنتجات العزل", "Eastern", "Dammam 2nd Industrial City", "7101538262", "unified_m83", "4810628266", "2027-06-24", "active", "building_materials", 102, 26.3385, 50.035, 150, "low"], ["F-JB-043", "Jubail Polymer Compounding Co.", "الجبيل لخلط البوليمرات", "Eastern", "Jubail Industrial City", "7101539173", "unified_m83", "4810628939", "2027-07-31", "active", "petrochemical", 445, 26.9956, 49.6513, 250, "high"], ["F-JB-044", "Jubail Industrial Coatings Plant", "الجبيل للطلاءات الصناعية", "Eastern", "Jubail Industrial City", "7101540084", "unified_m83", "4810629612", "2027-09-24", "active", "chemical", 188, 27.0001, 49.6565, 250, "high"], ["F-AH-045", "Hofuf Date Packing Industries", "الهفوف لتعبئة التمور", "Eastern", "Al Ahsa Industrial City", "7101540995", "unified_m83", "4810630285", "2027-10-31", "active", "food", 134, 25.3833, 49.5729, 150, "low"], ["F-AH-046", "Al Ahsa Poultry Feed Mills", "الأحساء لمطاحن أعلاف الدواجن", "Eastern", "Al Ahsa Industrial City", "7101541906", "unified_m83", "4810630958", "2027-12-07", "active", "food", 118, 25.3878, 49.5781, 150, "medium"], ["F-MD-047", "Quba Dates Processing Co.", "قباء لتصنيع التمور", "Madinah", "Madinah Industrial City", "7101542817", "unified_m83", "4810631631", "2028-01-13", "active", "food", 142, 24.44, 39.598, 150, "low"], ["F-MD-048", "Uhud Building Blocks Factory", "أحد لمصنع البلوك", "Madinah", "Madinah Industrial City", "7101543728", "unified_m83", "4810632304", "2026-06-17", "expired", "building_materials", 76, 24.4445, 39.6032, 150, "low"], ["F-MD-049", "Madinah Printing and Binding Works", "المدينة للطباعة والتجليد", "Madinah", "Madinah Industrial City", "7101544639", "unified_m83", "4810632977", "2026-09-09", "active", "paper", 64, 24.4175, 39.6084, 150, "low"], ["F-YB-050", "Yanbu Petrochemical Support Industries", "ينبع للصناعات البتروكيماوية المساندة", "Madinah", "Yanbu Industrial City", "7101545550", "unified_m83", "4810633650", "2026-10-16", "active", "petrochemical", 395, 24.0805, 38.0514, 250, "high"], ["F-YB-051", "Yanbu Marine Fabrication Yard", "ينبع للتصنيع البحري", "Madinah", "Yanbu Industrial City", "7101546461", "unified_m83", "4810634323", "2026-11-04", "active", "steel", 225, 24.085, 38.0566, 250, "medium"], ["F-YB-052", "Red Sea Desalination Components Co.", "البحر الأحمر لمكونات التحلية", "Madinah", "Yanbu Industrial City", "7101547372", "unified_m83", "4810634996", "2027-01-18", "pending", "machinery", 158, 24.0895, 38.0618, 250, "medium"], ["F-QS-053", "Buraydah Grain Milling Co.", "بريدة لمطاحن الحبوب", "Qassim", "Qassim 2nd Industrial City", "7101548283", "unified_m83", "4810635669", "2026-12-01", "active", "food", 186, 26.3305, 43.9802, 250, "low"], ["F-QS-054", "Qassim Agricultural Equipment Works", "القصيم للمعدات الزراعية", "Qassim", "Qassim 2nd Industrial City", "7101549194", "unified_m83", "4810636342", "2027-03-23", "active", "machinery", 148, 26.335, 43.9854, 150, "medium"], ["F-QS-055", "Uyun Al Jawa Plastic Pipes Factory", "عيون الجواء لأنابيب البلاستيك", "Qassim", "Qassim 2nd Industrial City", "7101550105", "unified_m83", "4810637015", "2027-04-29", "active", "plastics", 112, 26.3395, 43.9646, 150, "medium"], ["F-UN-056", "Unaizah Dairy Products Plant", "عنيزة لمنتجات الألبان", "Qassim", "Unaizah Industrial City", "7101551016", "unified_m83", "4810637688", "2028-12-11", "active", "food", 204, 26.0708, 43.9883, 250, "low"], ["F-UN-057", "Unaizah Metal Containers Co.", "عنيزة للعبوات المعدنية", "Qassim", "Unaizah Industrial City", "7101551927", "unified_m83", "4810638361", "2029-01-17", "active", "steel", 82, 26.0753, 43.9935, 150, "low"], ["F-AB-058", "Abha Highland Water Bottling", "أبها لتعبئة مياه المرتفعات", "Asir", "Abha Industrial City", "7101552838", "unified_m83", "4810639034", "2027-09-09", "active", "beverages", 94, 18.2119, 42.5105, 150, "low"], ["F-AB-059", "Asir Honey Processing Co.", "عسير لتصنيع العسل", "Asir", "Abha Industrial City", "7101553749", "unified_m83", "4810639707", "2027-10-16", "active", "food", 38, 18.2164, 42.5157, 150, "low"], ["F-KM-060", "Khamis Mushait Concrete Products", "خميس مشيط لمنتجات الخرسانة", "Asir", "Khamis Mushait Industrial City", "7101554660", "unified_m83", "4810640380", "2026-06-05", "expired", "building_materials", 126, 18.3105, 42.7193, 150, "medium"], ["F-KM-061", "Sarawat Furniture Industries", "السروات لصناعة الأثاث", "Asir", "Khamis Mushait Industrial City", "7101555571", "unified_m83", "4810641053", "2026-08-28", "active", "furniture", 71, 18.315, 42.7245, 150, "low"], ["F-KM-062", "Asir Leather Tanning Works", "عسير لدباغة الجلود", "Asir", "Khamis Mushait Industrial City", "7101556482", "unified_m83", "4810641726", "2026-09-26", "suspended", "leather", 58, 18.3195, 42.7297, 150, "high"], ["F-HL-063", "Hail Cement Additives Factory", "حائل لإضافات الأسمنت", "Hail", "Hail Industrial City", "7101557393", "unified_m83", "4810642399", "2026-10-31", "active", "building_materials", 108, 27.4979, 41.726, 150, "medium"], ["F-HL-064", "Hail Wheat Processing Mills", "حائل لمطاحن القمح", "Hail", "Hail Industrial City", "7101558304", "unified_m83", "4810643072", "2027-02-06", "active", "food", 162, 27.5024, 41.7312, 250, "low"], ["F-TB-065", "Tabuk Cold Chain Logistics Plant", "تبوك لسلسلة التبريد", "Tabuk", "Tabuk Industrial City", "7101559215", "unified_m83", "4810643745", "2026-12-20", "active", "food", 134, 28.379, 36.5558, 150, "low"], ["F-TB-066", "Tabuk Solar Component Assembly", "تبوك لتجميع مكونات الطاقة الشمسية", "Tabuk", "Tabuk Industrial City", "7101560126", "unified_m83", "4810644418", "2027-06-17", "active", "electrical", 212, 28.3835, 36.561, 250, "medium"], ["F-JZ-067", "Jazan Fisheries Processing Co.", "جازان لتصنيع الأسماك", "Jazan", "Jazan Industrial City", "7101561037", "unified_m83", "4810645091", "2027-07-24", "active", "food", 248, 16.8937, 42.5511, 250, "medium"], ["F-JZ-068", "Jazan Aluminium Profiles Factory", "جازان لقطاعات الألمنيوم", "Jazan", "Jazan Industrial City", "7101561948", "unified_m83", "4810645764", "2028-09-13", "active", "aluminium", 296, 16.8982, 42.5563, 250, "high"], ["F-NJ-069", "Najran Cement Products Works", "نجران لمنتجات الأسمنت", "Najran", "Najran Industrial City", "7101562859", "unified_m83", "4810646437", "2028-10-20", "active", "building_materials", 144, 17.5068, 44.1381, 150, "medium"], ["F-BH-070", "Al Baha Mountain Spring Bottling", "الباحة لتعبئة مياه الينابيع", "Al Baha", "Al Baha Industrial City", "7101563770", "unified_m83", "4810647110", "2028-11-26", "active", "beverages", 62, 19.9994, 41.4573, 150, "low"], ["F-AR-071", "Arar Border Logistics Packaging", "عرعر للتغليف اللوجستي", "Northern Borders", "Arar Industrial City", "7101564681", "unified_m83", "4810647783", "2029-01-02", "active", "packaging", 86, 30.9663, 41.0329, 150, "low"], ["F-WS-072", "Waad Al Shamal Phosphate Support Industries", "وعد الشمال للصناعات المساندة للفوسفات", "Northern Borders", "Waad Al Shamal Industrial City", "7101565592", "unified_m83", "4810648456", "2026-05-24", "expired", "chemical", 410, 31.1455, 39.05, 250, "high"], ["F-JF-073", "Al Jouf Olive Oil Pressing Co.", "الجوف لعصر زيت الزيتون", "Al Jouf", "Modon Oasis Al Jouf", "7101566503", "unified_m83", "4810649129", "2026-09-09", "active", "food", 78, 29.9697, 40.2116, 150, "low"]], "people": [["admin1", "admin", "Admin", "خالد إبراهيم الشمري", "National"], ["admin2", "admin", "Admin", "نورة عبدالعزيز الحربي", "National"], ["admin3", "admin", "Admin", "عمر فهد الدوسري", "National"], ["admin4", "admin", "Admin", "ريم سعد العتيبي", "National"], ["admin5", "admin", "Admin", "بندر ناصر المطيري", "National"], ["planner1", "planner", "Planner", "سلطان عايض الشهري", "Al Baha"], ["planner2", "planner", "Planner", "ماجد سليمان الزهراني", "Al Jouf"], ["planner3", "planner", "Planner", "فيصل تركي العنزي", "Asir"], ["planner4", "planner", "Planner", "هاني مشعل الغامدي", "Eastern"], ["planner5", "planner", "Planner", "ياسر راشد البقمي", "Hail"], ["planner6", "planner", "Planner", "عبدالله محمد القحطاني", "Jazan"], ["supervisor1", "supervisor", "Supervisor", "سارة علي الدوسري", "Al Baha"], ["supervisor2", "supervisor", "Supervisor", "تركي سعود الرشيدي", "Al Jouf"], ["supervisor3", "supervisor", "Supervisor", "لطيفة حمد السبيعي", "Asir"], ["supervisor4", "supervisor", "Supervisor", "مشعل بدر الحارثي", "Eastern"], ["supervisor5", "supervisor", "Supervisor", "أحمد صالح العتيبي", "Hail"], ["supervisor6", "supervisor", "Supervisor", "هند فيصل النعيمي", "Jazan"], ["supervisor7", "supervisor", "Supervisor", "سعد مبارك الشهراني", "Madinah"], ["supervisor8", "supervisor", "Supervisor", "وليد عادل الجهني", "Makkah"], ["inspector1", "inspector", "Inspector", "دانة خالد المالكي", "Al Baha"], ["inspector2", "inspector", "Inspector", "ناصر عوض البلوي", "Al Jouf"], ["inspector3", "inspector", "Inspector", "منال يوسف الثقفي", "Asir"], ["inspector4", "inspector", "Inspector", "راكان زياد الشمراني", "Eastern"], ["inspector5", "inspector", "Inspector", "جواهر طلال القرني", "Hail"], ["inspector6", "inspector", "Inspector", "خالد إبراهيم الشمري", "Jazan"], ["inspector7", "inspector", "Inspector", "نورة عبدالعزيز الحربي", "Madinah"], ["inspector8", "inspector", "Inspector", "عمر فهد الدوسري", "Makkah"], ["inspector9", "inspector", "Inspector", "ريم سعد العتيبي", "Najran"], ["inspector10", "inspector", "Inspector", "بندر ناصر المطيري", "Northern Borders"], ["inspector11", "inspector", "Inspector", "سلطان عايض الشهري", "Qassim"], ["inspector12", "inspector", "Inspector", "ماجد سليمان الزهراني", "Riyadh"], ["inspector13", "inspector", "Inspector", "فيصل تركي العنزي", "Tabuk"], ["inspector14", "inspector", "Inspector", "هاني مشعل الغامدي", "Al Baha"], ["inspector15", "inspector", "Inspector", "ياسر راشد البقمي", "Al Jouf"], ["inspector16", "inspector", "Inspector", "عبدالله محمد القحطاني", "Asir"], ["inspector17", "inspector", "Inspector", "سارة علي الدوسري", "Eastern"], ["inspector18", "inspector", "Inspector", "تركي سعود الرشيدي", "Hail"], ["inspector19", "inspector", "Inspector", "لطيفة حمد السبيعي", "Jazan"], ["inspector20", "inspector", "Inspector", "مشعل بدر الحارثي", "Madinah"], ["inspector21", "inspector", "Inspector", "أحمد صالح العتيبي", "Makkah"], ["inspector22", "inspector", "Inspector", "هند فيصل النعيمي", "Najran"], ["inspector23", "inspector", "Inspector", "سعد مبارك الشهراني", "Northern Borders"], ["inspector24", "inspector", "Inspector", "وليد عادل الجهني", "Qassim"], ["multi-role", "planner+supervisor", "Planner + Supervisor", "ضابط تخطيط وإشراف", "Riyadh"], ["no-workspace", "none", "None (refusal case)", "مستخدم بلا صلاحيات", ""]], "pkg": {"routine": 80, "licensing": 26, "complaint": 34, "follow_up": 12}, "regs": [["SBC-801", "Fire Protection Requirements — Industrial", "SBC", "Saudi Building Code National Committee", "fire_and_structure"], ["SBC-201", "Structural Loads and Integrity", "SBC", "Saudi Building Code National Committee", "fire_and_structure"], ["HCIS-SEC-01", "Physical Security of Industrial Facilities", "HCIS", "High Commission for Industrial Security", "industrial_security"], ["HCIS-PRO-04", "Process Safety Management", "HCIS", "High Commission for Industrial Security", "industrial_security"], ["CD-EMR-11", "Emergency Egress and Evacuation", "CD", "Directorate General of Civil Defence", "emergency_readiness"], ["CD-HAZ-06", "Hazardous Materials Storage", "CD", "Directorate General of Civil Defence", "emergency_readiness"], ["SFDA-GMP-02", "Good Manufacturing Practice — Food", "SFDA", "Saudi Food and Drug Authority", "food_and_drug"], ["SFDA-HYG-05", "Facility Hygiene and Pest Control", "SFDA", "Saudi Food and Drug Authority", "food_and_drug"], ["SASO-QMS-03", "Quality Management and Traceability", "SASO", "Saudi Standards, Metrology and Quality Organization", "standards_and_metrology"], ["SASO-MET-07", "Measuring Instrument Calibration", "SASO", "Saudi Standards, Metrology and Quality Organization", "standards_and_metrology"], ["NCEC-EMS-01", "Emissions and Effluent Control", "NCEC", "National Center for Environmental Compliance", "environment"], ["NCEC-WST-04", "Industrial Waste Handling", "NCEC", "National Center for Environmental Compliance", "environment"], ["MHRSD-OSH-09", "Occupational Safety and Health", "MHRSD", "Ministry of Human Resources and Social Development", "occupational_safety"], ["MHRSD-WRK-02", "Worker Accommodation and Welfare", "MHRSD", "Ministry of Human Resources and Social Development", "occupational_safety"], ["MIM-LIC-01", "Industrial Licence Conditions", "MIM", "Ministry of Industry and Mineral Resources", "industrial_licensing"], ["MIM-PRD-03", "Declared Production Lines and Capacity", "MIM", "Ministry of Industry and Mineral Resources", "industrial_licensing"], ["MOMRAH-MUN-05", "Municipal Operating Permit", "MOMRAH", "Ministry of Municipal and Rural Affairs and Housing", "municipal"]], "items": 142, "clauses": 76, "codes": 38, "requests": [["CCR-2026-001", "Amend clause wording", "HCIS-PRO-04", "Draft", "admin3", ""], ["CCR-2026-002", "Amend clause wording", "HCIS-SEC-01", "Draft", "admin3", ""], ["CCR-2026-003", "Add checklist item", "SFDA-GMP-02", "Draft", "admin2", ""], ["CCR-2026-004", "Add checklist item", "NCEC-EMS-01", "Draft", "admin4", ""], ["CCR-2026-005", "Add regulation", "SFDA-HYG-05", "Awaiting review", "admin3", ""], ["CCR-2026-006", "Change penalty mapping", "CD-HAZ-06", "Awaiting review", "admin3", ""], ["CCR-2026-007", "Add regulation", "SASO-MET-07", "Awaiting review", "admin2", ""], ["CCR-2026-008", "Change evidence rule", "MIM-PRD-03", "Awaiting review", "admin5", ""], ["CCR-2026-009", "Add checklist item", "SFDA-HYG-05", "Awaiting review", "admin2", ""], ["CCR-2026-010", "Retire violation code", "MIM-LIC-01", "Awaiting review", "admin1", ""], ["CCR-2026-011", "Retire violation code", "MHRSD-OSH-09", "Awaiting review", "admin2", ""], ["CCR-2026-012", "Add regulation", "SASO-MET-07", "Under review", "admin1", ""], ["CCR-2026-013", "Amend clause wording", "SFDA-HYG-05", "Under review", "admin3", ""], ["CCR-2026-014", "Add regulation", "CD-HAZ-06", "Under review", "admin4", ""], ["CCR-2026-015", "Change evidence rule", "SFDA-GMP-02", "Under review", "admin4", ""], ["CCR-2026-016", "Amend clause wording", "MHRSD-WRK-02", "Under review", "admin5", ""], ["CCR-2026-017", "Retire violation code", "SASO-QMS-03", "Approved", "admin1", "admin1"], ["CCR-2026-018", "Add checklist item", "SFDA-GMP-02", "Approved", "admin1", "admin4"], ["CCR-2026-019", "Amend clause wording", "SFDA-GMP-02", "Approved", "admin2", "admin3"], ["CCR-2026-020", "Change penalty mapping", "HCIS-SEC-01", "Approved", "admin2", "admin2"], ["CCR-2026-021", "Add checklist item", "CD-EMR-11", "Approved", "admin2", "admin2"], ["CCR-2026-022", "Retire violation code", "HCIS-PRO-04", "Approved", "admin2", "admin2"], ["CCR-2026-023", "Amend clause wording", "SASO-QMS-03", "Rejected", "admin5", "admin2"], ["CCR-2026-024", "Amend clause wording", "SASO-MET-07", "Rejected", "admin2", "admin2"], ["CCR-2026-025", "Change evidence rule", "HCIS-PRO-04", "Rejected", "admin1", "admin3"], ["CCR-2026-026", "Amend clause wording", "SBC-801", "Published", "admin3", "admin1"], ["CCR-2026-027", "Add checklist item", "SASO-MET-07", "Published", "admin1", "admin2"], ["CCR-2026-028", "Amend clause wording", "SASO-MET-07", "Published", "admin5", "admin5"], ["CCR-2026-029", "Change evidence rule", "HCIS-SEC-01", "Published", "admin3", "admin2"], ["CCR-2026-030", "Amend clause wording", "NCEC-EMS-01", "Published", "admin5", "admin1"]], "policies": [["cycle_months", "12", "STR-KPI-007 Inspection coverage · STR-KPI-008 Uninspected factories", "TEST VALUE — needs business sign-off"], ["annual_target_pct", "80", "STR-KPI-007 Inspection coverage", "TEST VALUE — needs business sign-off"], ["warn_at_fraction", "0.75", "OPS-KPI-002 Expiring soon", "TEST VALUE — needs business sign-off"], ["compliance_rate_trend.target", "85", "STR-KPI-001 target line", "TEST VALUE — needs business sign-off"], ["level2_decision_mix.target", "80", "STR-KPI-004 target line", "TEST VALUE — needs business sign-off"]], "authorities": [["CD", "Directorate General of Civil Defence"], ["HCIS", "High Commission for Industrial Security"], ["MHRSD", "Ministry of Human Resources and Social Development"], ["MIM", "Ministry of Industry and Mineral Resources"], ["MOMRAH", "Ministry of Municipal and Rural Affairs and Housing"], ["NCEC", "National Center for Environmental Compliance"], ["SASO", "Saudi Standards, Metrology and Quality Organization"], ["SBC", "Saudi Building Code National Committee"], ["SFDA", "Saudi Food and Drug Authority"]], "regionCounts": [["Riyadh", 30], ["Makkah", 8], ["Eastern", 8], ["Madinah", 6], ["Qassim", 5], ["Asir", 5], ["Hail", 2], ["Tabuk", 2], ["Jazan", 2], ["Northern Borders", 2], ["Najran", 1], ["Al Baha", 1], ["Al Jouf", 1]], "weekdays": [["Sun", 106], ["Mon", 36], ["Tue", 60], ["Wed", 45], ["Thu", 53], ["Fri", 0], ["Sat", 0]], "licenceHorizon": [["Lapsed", 6], ["Within 30 days", 7], ["31 to 90 days", 12], ["91 to 180 days", 12], ["181 to 365 days", 12], ["Beyond a year", 24]]}
+</script>
+<script>
+const D = JSON.parse(document.getElementById("simdata").textContent);
+
+/* ---------------------------------------------------------------------------
+   The ladder. A visit sits on exactly one rung and the only way it moves is
+   somebody with the right role acting on it. Every count, queue and dashboard
+   figure is derived from where the 300 visits currently stand — nothing is
+   precomputed. That is the difference between a simulation and a slideshow.
+--------------------------------------------------------------------------- */
+const DRAFT=0, PENDING=1, PUBLISHED=2, ASSIGNED=3, TRAVELLING=4, ARRIVED=5,
+      EXECUTING=6, SUBMITTED=7, APPROVED=8, RETURNED=9, CANCELLED=10,
+      EXPIRED=11, REJECTED=12;
+
+const RUNG = {
+  [DRAFT]:["Draft","mute"], [PENDING]:["Pending supervision","warn"],
+  [PUBLISHED]:["Published","ok"], [ASSIGNED]:["Assigned","info"],
+  [TRAVELLING]:["On the way","info"], [ARRIVED]:["Arrived","info"],
+  [EXECUTING]:["Executing","brand"], [SUBMITTED]:["Pending review","warn"],
+  [APPROVED]:["Approved","ok"], [RETURNED]:["Returned","warn"],
+  [CANCELLED]:["Cancelled","mute"], [EXPIRED]:["Expired","err"],
+  [REJECTED]:["Rejected","err"],
+};
+
+// Who may move a visit off a rung, and where to. A role sees buttons only for
+// the rungs it owns — that is the whole authorisation model, made visible.
+const MOVES = {
+  planner: {
+    [DRAFT]:     [[PENDING,   "Send for supervision","go"]],
+    [PUBLISHED]: [[ASSIGNED,  "Assign to me","go"]],
+    [RETURNED]:  [[DRAFT,     "Reopen as draft",""]],
+  },
+  supervisor: {
+    [PENDING]:   [[PUBLISHED, "Publish","go"], [RETURNED, "Return","no"]],
+    [SUBMITTED]: [[APPROVED,  "Approve","go"], [RETURNED, "Return",""], [REJECTED,"Reject","no"]],
+  },
+  inspector: {
+    [ASSIGNED]:  [[TRAVELLING,"Start travel","go"]],
+    [TRAVELLING]:[[ARRIVED,   "Arrive on site","go"]],
+    [ARRIVED]:   [[EXECUTING, "Begin inspection","go"]],
+    [EXECUTING]: [[SUBMITTED, "Submit report","go"]],
+  },
+  admin: {},
+};
+
+const W = { loaded:false, visits:[], log:[], me:null, flash:new Set() };
+const S = { role:"planner", nav:"dashboard", logOpen:true, busy:false };
+
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const n = v => (v??0).toLocaleString("en");
+const cap = s => String(s||"").replace(/_/g," ").replace(/^./,c=>c.toUpperCase());
+const fac = i => D.factories[i];
+const per = i => (i==null || i<0) ? null : D.people[i];
+const perName = i => { const p = per(i); return p ? p[0] : "—"; };
+const on = () => W.loaded;
+
+function hydrate(){
+  const C = D.visitCols;
+  W.visits = D.visits.map(row => { const v={}; C.forEach((k,i)=>v[k]=row[i]); return v; });
+  W.log = [];
+  // You sign in as whoever carries the most live work, so no queue is empty on
+  // arrival and the inspector view has something to act on immediately.
+  const load = {};
+  W.visits.forEach(v=>{ if(v.stop>=ASSIGNED && v.stop<=EXECUTING && v.insp>=0) load[v.insp]=(load[v.insp]||0)+1; });
+  const busiest = Object.entries(load).sort((a,b)=>b[1]-a[1])[0];
+  W.me = {
+    inspector: busiest ? +busiest[0] : D.people.findIndex(p=>p[1]==="inspector"),
+    planner:   D.people.findIndex(p=>p[1]==="planner"),
+    supervisor:D.people.findIndex(p=>p[1]==="supervisor"),
+    admin:     D.people.findIndex(p=>p[1]==="admin"),
+  };
+}
+
+/* ---- everything below is derived, recomputed on every render ---- */
+const at = r => W.visits.filter(v=>v.stop===r);
+const countAt = r => at(r).length;
+const approved = () => at(APPROVED);
+const decided = () => W.visits.filter(v=>[APPROVED,RETURNED,REJECTED].includes(v.stop) && v.ans>0);
+const inMotion = () => countAt(TRAVELLING)+countAt(ARRIVED)+countAt(EXECUTING);
+const mine = () => W.me ? W.visits.filter(v=>v.insp===W.me.inspector) : [];
+const myQueue = () => mine().filter(v=>v.stop>=ASSIGNED && v.stop<=EXECUTING);
+
+function compliance(){
+  const a = approved();
+  const ok = a.reduce((s,v)=>s+v.ok,0), nc = a.reduce((s,v)=>s+v.nc,0);
+  return ok+nc ? {rate:(ok/(ok+nc)*100).toFixed(1), ok, total:ok+nc} : null;
+}
+function approvalRate(){
+  const d = decided(); if(!d.length) return null;
+  const a = d.filter(v=>v.stop===APPROVED).length;
+  return {rate:(a/d.length*100).toFixed(1), a, d:d.length};
+}
+function coverage(){
+  const seen = new Set(approved().map(v=>v.f));
+  return {n:seen.size, pct:(seen.size/D.factories.length*100).toFixed(1)};
+}
+
+/* ---- acting: the part that makes it a simulation ---- */
+function move(v, to, label){
+  const from = v.stop;
+  v.stop = to;
+  if(to===ASSIGNED && v.insp<0) v.insp = W.me.inspector;
+  // Submitting is when answers come into being. The package answered is the one
+  // for this visit type, and the compliance split follows the site's risk band.
+  if(to===SUBMITTED && !v.ans){
+    const size = D.pkg[v.type] || 20;
+    const na = Math.floor(size/10), eligible = size - na;
+    v.ans = size;
+    v.nc = Math.round(eligible * (fac(v.f)[15]==="high" ? 0.30 : 0.16));
+    v.ok = eligible - v.nc;
+    v.ev = Math.max(1, Math.round(v.nc * 1.4));
+    v.viol = v.nc >= Math.max(2, Math.round(size*0.15)) ? 1 : 0;
+  }
+  W.flash.add(v.ref);
+  log(`${esc(label)} — <b>${esc(fac(v.f)[1])}</b> ${RUNG[from][0].toLowerCase()} → ${RUNG[to][0].toLowerCase()}`);
+  render();
+  setTimeout(()=>{ W.flash.delete(v.ref); }, 1400);
+}
+function log(html){
+  const d = new Date(), p = x => String(x).padStart(2,"0");
+  W.log.unshift({t:`${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`, w:html});
+}
+const movesFor = v => (MOVES[S.role]||{})[v.stop] || [];
+
+/* ---- one visit through all four people, for a trainer to show the chain ---- */
+async function runDemo(){
+  if(S.busy) return;
+  const v = at(DRAFT)[0] || at(PENDING)[0];
+  if(!v){ log("No draft left to walk through."); render(); return; }
+  S.busy = true;
+  const chain = [
+    ["planner",   "planning",              PENDING,    "Planner sent for supervision"],
+    ["supervisor","inspection-review",     PUBLISHED,  "Supervisor published the plan"],
+    ["planner",   "planning",              ASSIGNED,   "Planner assigned an inspector"],
+    ["inspector", "inspection-execution",  TRAVELLING, "Inspector started travel"],
+    ["inspector", "inspection-execution",  ARRIVED,    "Inspector arrived on site"],
+    ["inspector", "inspection-execution",  EXECUTING,  "Inspector began the inspection"],
+    ["inspector", "inspection-execution",  SUBMITTED,  "Inspector submitted the report"],
+    ["supervisor","inspection-review",     APPROVED,   "Supervisor approved"],
+  ];
+  if(v.insp < 0) v.insp = W.me.inspector;
+  for(const [role, route, to, label] of chain){
+    S.role = role; S.nav = route;
+    move(v, to, label);
+    await new Promise(r=>setTimeout(r, 950));
+  }
+  S.nav = "dashboard";
+  log(`<b>Chain complete.</b> One visit crossed four people, and the dashboard moved.`);
+  S.busy = false;
+  render();
+}
+
+/* ---------------------------------- render helpers ---------------------------------- */
+const pill = r => `<span class="pill ${RUNG[r][1]}">${esc(RUNG[r][0])}</span>`;
+const metric = (value, kind) => {
+  if(on()) return `<div class="v">${value}</div>`;
+  return kind === "rate" ? `<div class="v na">N/A</div>` : `<div class="v">0</div>`;
+};
+const kpi = (title,value,kind) =>
+  `<div class="kpi"><h3>${esc(title)}</h3>${metric(value,kind)}</div>`;
+const empty = t => `<div class="empty"><b>${esc(t)}</b></div>`;
+const barlist = (pairs,max) => `<div class="bar">${pairs.map(([k,v])=>
+  `<div class="barrow"><div class="track">${v?`<i style="width:${Math.max(2,v/max*100)}%"></i>`:""}<span class="lbl"${v?"":' style="color:var(--ink3)"'}>${esc(cap(k))}</span></div><div class="num"${v?"":' style="color:var(--ink3)"'}>${n(v)}</div></div>`
+).join("")}</div>`;
+
+function actionCell(v){
+  // A role that cannot move this visit gets no control, exactly as it would in
+  // the application. Nothing explains the absence; the absence is the rule.
+  if(S.role==="inspector" && v.insp!==W.me.inspector) return "";
+  const m = movesFor(v);
+  if(!m.length) return "";
+  return `<div class="acts">${m.map(([to,label,cls])=>
+    `<button class="act ${cls}" data-go="${esc(v.ref)}" data-to="${to}" data-label="${esc(label)}">${esc(label)}</button>`
+  ).join("")}</div>`;
+}
+function queue(rows, cols, cells, emptyTitle){
+  if(!on()) return empty(emptyTitle);
+  if(!rows.length) return `<div class="empty"><b>${esc(emptyTitle)}</b></div>`;
+  return `<div class="scroll"><table><thead><tr>${
+    cols.map(c=>`<th${c.num?' class="num"':(c.end?' class="end"':"")}>${esc(c.h)}</th>`).join("")
+  }</tr></thead><tbody>${rows.map(v=>`<tr${W.flash.has(v.ref)?' class="flash"':""}>${
+    cells(v).map((c,i)=>`<td class="${cols[i].num?"num ":""}${cols[i].wrap?"wrap ":""}${cols[i].end?"end":""}">${c}</td>`).join("")
+  }</tr>`).join("")}</tbody></table></div>`;
+}
+
+/* ---------------------------------- screens ---------------------------------- */
+const SCREEN = {};
+
+SCREEN.admin = () => `
+  <div class="grid g4">
+    ${kpi("Issuing authorities",n(D.authorities.length),"count")}
+    ${kpi("Regulations",n(D.regs.length),"count")}
+    ${kpi("Clauses",n(D.clauses),"count")}
+    ${kpi("Inspection items",n(D.items),"count")}
+  </div>
+  <div class="split">
+    <div class="card"><header><div><h2>Compliance library</h2></div></header>
+      ${on()? `<div class="scroll"><table><thead><tr><th>Code</th><th>Regulation</th><th>Authority</th><th>Domain</th></tr></thead><tbody>${
+        D.regs.slice(0,8).map(r=>`<tr><td class="mono">${esc(r[0])}</td><td class="wrap">${esc(r[1])}</td><td>${esc(r[3])}</td><td>${esc(cap(r[4]))}</td></tr>`).join("")
+      }</tbody></table></div>` : empty("No regulations published")}
+      
+    </div>
+    <div class="card"><header><div><h2>Configuration approvals</h2></div></header>
+      ${on()? `<div class="scroll"><table><thead><tr><th>Request</th><th>Kind</th><th>Against</th><th>State</th></tr></thead><tbody>${
+        D.requests.slice(0,6).map(r=>`<tr><td class="mono">${esc(r[0])}</td><td>${esc(cap(r[1]))}</td><td class="mono">${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("")
+      }</tbody></table></div>` : empty("No configuration requests")}
+      
+    </div>
+  </div>
+  <div class="split">
+    <div class="card"><header><div><h2>People and roles</h2></div></header>
+      ${on()? `<div class="scroll"><table><thead><tr><th>User</th><th>Role</th><th>Name</th><th>Region</th></tr></thead><tbody>${
+        D.people.slice(0,10).map(p=>`<tr><td class="mono">${esc(p[0])}</td><td>${esc(p[2])}</td><td class="ar">${esc(p[3])}</td><td>${esc(p[4])}</td></tr>`).join("")
+      }</tbody></table></div>` : empty("No users provisioned")}
+    </div>
+    <div class="card"><header><div><h2>Policy parameters</h2></div></header>
+      ${on()? `<div class="scroll"><table><thead><tr><th>Parameter</th><th class="num">Value</th><th>Unlocks</th></tr></thead><tbody>${
+        D.policies.map(p=>`<tr><td>${esc(p[0])}</td><td class="num mono">${esc(p[1])}</td><td class="wrap">${esc(p[2])}</td></tr>`).join("")
+      }</tbody></table></div>` : empty("No policy version published")}
+    </div>
+  </div>`;
+
+SCREEN.planning = () => {
+  const board = W.visits.filter(v=>[DRAFT,PENDING,PUBLISHED,RETURNED].includes(v.stop));
+  return `
+  <div class="grid g4">
+    ${kpi("Total visits",n(W.visits.length),"count")}
+    ${kpi("Draft",n(countAt(DRAFT)),"count")}
+    ${kpi("Pending supervision",n(countAt(PENDING)),"count")}
+    ${kpi("Published or assigned",n(countAt(PUBLISHED)+countAt(ASSIGNED)),"count")}
+  </div>
+  <div class="card">
+    <header><div><h2>Visit board</h2></div></header>
+    ${queue(board.slice(0,14),
+      [{h:"Reference"},{h:"Establishment",wrap:1},{h:"Region"},{h:"Type"},{h:"Inspector"},{h:"State"},{h:"Action",end:1}],
+      v=>[`<span class="mono">JRN-${esc(v.ref)}</span>`, esc(fac(v.f)[1]), esc(fac(v.f)[3]),
+          cap(v.type), esc(perName(v.insp)), pill(v.stop), actionCell(v)],
+      "No visits planned", "Every visit has moved past the planning board.")}
+    
+  </div>
+  ${on()?`<div class="split">
+    <div class="card"><header><div><h2>Planning states</h2></div></header>
+      ${barlist([["Published",countAt(PUBLISHED)+countAt(ASSIGNED)],["Draft",countAt(DRAFT)],
+        ["Pending supervision",countAt(PENDING)],["Cancelled",countAt(CANCELLED)],
+        ["Returned",countAt(RETURNED)],["Expired",countAt(EXPIRED)]],
+        Math.max(1,countAt(PUBLISHED)+countAt(ASSIGNED)))}
+    </div>
+    <div class="card"><header><div><h2>The working week</h2></div></header>
+      ${barlist(D.weekdays, Math.max(...D.weekdays.map(x=>x[1])))}
+    </div>
+  </div>`:""}`;
+};
+
+SCREEN.execution = () => {
+  const q = myQueue();
+  const meName = on() ? (per(W.me.inspector)?.[0] || "") : "";
+  return `
+  <div class="grid g4">
+    ${kpi("My queue",n(q.length),"count")}
+    ${kpi("In motion, everyone",n(inMotion()),"count")}
+    ${kpi("Checklist answers",n(W.visits.reduce((s,v)=>s+v.ans,0)),"count")}
+    ${kpi("Evidence files",n(W.visits.reduce((s,v)=>s+v.ev,0)),"count")}
+  </div>
+  <div class="card">
+    <header><div><h2>My assignments${meName?` — ${esc(meName)}`:""}</h2></div></header>
+    ${queue(q,
+      [{h:"Reference"},{h:"Establishment",wrap:1},{h:"Type"},{h:"Answered",num:1},{h:"State"},{h:"Action",end:1}],
+      v=>[`<span class="mono">JRN-${esc(v.ref)}</span>`, esc(fac(v.f)[1]), cap(v.type),
+          v.ans?n(v.ans):"—", pill(v.stop), actionCell(v)],
+      "Nothing assigned to you",)}
+    
+  </div>
+  ${on()?`<div class="card"><header><div><h2>Field positions</h2></div></header>
+    <div class="map"><canvas id="mapc"></canvas>
+      <div class="maplegend"><span><i style="background:#77ED8B"></i>Low risk</span>
+        <span><i style="background:#FFD666"></i>Medium</span>
+        <span><i style="background:#FFAC82"></i>High</span>
+        <span><i style="background:transparent;box-shadow:0 0 0 1.5px #CDBAEA"></i>Inspector in motion</span></div></div>
+  </div>`:""}`;
+};
+
+SCREEN.reviews = () => {
+  const q = at(SUBMITTED), pend = at(PENDING), c = compliance();
+  return `
+  <div class="grid g4">
+    ${kpi("Pending review",n(q.length),"count")}
+    ${kpi("Approved",n(countAt(APPROVED)),"count")}
+    ${kpi("Returned",n(countAt(RETURNED)),"count")}
+    ${kpi("Rejected",n(countAt(REJECTED)),"count")}
+  </div>
+  <div class="card">
+    <header><div><h2>Review queue</h2></div></header>
+    ${queue(q.slice(0,12),
+      [{h:"Reference"},{h:"Establishment",wrap:1},{h:"Inspector"},{h:"Answered",num:1},{h:"Non-compliant",num:1},{h:"Action",end:1}],
+      v=>[`<span class="mono">JRN-${esc(v.ref)}</span>`, esc(fac(v.f)[1]), esc(perName(v.insp)),
+          n(v.ans), `<span style="color:${v.nc?"var(--err)":"inherit"}">${n(v.nc)}</span>`, actionCell(v)],
+      "Review queue is empty",)}
+    
+  </div>
+  <div class="card">
+    <header><div><h2>Plans awaiting publication</h2></div></header>
+    ${queue(pend.slice(0,8),
+      [{h:"Reference"},{h:"Establishment",wrap:1},{h:"Planner"},{h:"Type"},{h:"Action",end:1}],
+      v=>[`<span class="mono">JRN-${esc(v.ref)}</span>`, esc(fac(v.f)[1]), esc(perName(v.planner)), cap(v.type), actionCell(v)],
+      "No plans awaiting publication",)}
+  </div>`;
+};
+
+SCREEN.dashboard = () => {
+  const c = compliance(), ar = approvalRate(), cov = coverage();
+  const viol = W.visits.reduce((s,v)=>s+v.viol,0);
+  const ladder = Object.keys(RUNG).map(r=>[RUNG[r][0], countAt(+r)]).filter(x=>x[1]);
+  return `
+  <div class="card">
+    <header><div><h2>National performance</h2></div></header>
+    <div class="grid g3">
+      ${kpi("Inspection coverage against annual target", on()?`${cov.pct}%`:"", "rate")}
+      ${kpi("National compliance rate",                   on()&&c?`${c.rate}%`:"", "rate")}
+      ${kpi("Inspection approval rate",                   on()&&ar?`${ar.rate}%`:"", "rate")}
+    </div>
+    
+  </div>
+  <div class="grid g4">
+    ${kpi("Approved visits",n(countAt(APPROVED)),"count")}
+    ${kpi("Awaiting review",n(countAt(SUBMITTED)),"count")}
+    ${kpi("Violations",n(viol),"count")}
+    ${kpi("In motion",n(inMotion()),"count")}
+  </div>
+  ${on()?`<div class="split">
+    <div class="card"><header><div><h2>Where the 300 visits stand</h2></div></header>
+      ${barlist(ladder, Math.max(...ladder.map(x=>x[1])))}
+    </div>
+    <div class="card"><header><div><h2>Licence horizon</h2></div></header>
+      ${barlist(D.licenceHorizon, Math.max(...D.licenceHorizon.map(x=>x[1])))}
+    </div>
+  </div>`:""}`;
+};
+
+SCREEN.factories = () => `
+  <div class="grid g4">
+    ${kpi("Establishments",n(D.factories.length),"count")}
+    ${kpi("Regions",n(D.regionCounts.length),"count")}
+    ${kpi("Licences lapsed",n(D.licenceHorizon[0][1]),"count")}
+    ${kpi("Expiring soon",n(D.licenceHorizon[1][1]),"count")}
+  </div>
+  <div class="card"><header><div><h2>Establishment register</h2></div></header>
+    ${on()? `<div class="scroll"><table><thead><tr><th>Code</th><th>Name</th><th>Arabic</th><th>City</th><th>CR number</th><th>Regime</th><th>Expires</th><th>Licence</th><th class="num">Visits</th></tr></thead><tbody>${
+      D.factories.slice(0,10).map((f,i)=>`<tr><td class="mono">${esc(f[0])}</td><td class="wrap">${esc(f[1])}</td>
+        <td class="ar">${esc(f[2])}</td><td>${esc(f[4])}</td><td class="mono">${esc(f[5])}</td>
+        <td>${f[6]==="unified_m83"?'<span class="pill ok">Unified</span>':'<span class="pill mute">Legacy</span>'}</td>
+        <td class="mono">${esc(f[8])}</td>
+        <td>${f[9]==="expired"?'<span class="pill err">Lapsed</span>':'<span class="pill ok">Valid</span>'}</td>
+        <td class="num">${n(W.visits.filter(v=>v.f===i).length)}</td></tr>`).join("")
+    }</tbody></table></div>` : empty("No establishments registered")}
+    
+  </div>
+  ${on()?`<div class="card"><header><div><h2>Regional spread</h2></div></header>
+    ${barlist(D.regionCounts, D.regionCounts[0][1])}</div>`:""}`;
+
+SCREEN.library    = () => SCREEN.admin();
+SCREEN.approvals  = () => SCREEN.admin();
+SCREEN.enforcement= () => SCREEN.admin();
+SCREEN.people     = () => SCREEN.admin();
+SCREEN.packages   = () => SCREEN.admin();
+SCREEN.policy     = () => SCREEN.admin();
+
+// Nav entries the UAT cohort does not populate. The application has these
+// screens; this data set seeds no rows for them, so they read as empty rather
+// than pretending otherwise.
+SCREEN.section = it => `<div class="card"><header><div><h2>${esc(it.en)}</h2></div></header>
+  ${empty(on() ? "No records" : "No UAT data")}</div>`;
+SCREEN.analytics = () => `<div class="card"><header><div><h2>Analytics</h2></div></header></div>`;
+
+/* ---------------------------------- map ---------------------------------- */
+function drawMap(){
+  const cv = document.getElementById("mapc"); if(!cv) return;
+  const r = cv.getBoundingClientRect(); if(!r.width) return;
+  const dpr = window.devicePixelRatio||1;
+  cv.width = r.width*dpr; cv.height = r.height*dpr;
+  const g = cv.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0);
+  const lat0=16.0, lat1=32.4, lng0=34.4, lng1=51.6;
+  const midLat=(lat0+lat1)/2*Math.PI/180, pad=22, Wd=r.width-pad*2, H=r.height-pad*2;
+  const dx=(lng1-lng0)*Math.cos(midLat), dy=(lat1-lat0);
+  const k=Math.min(Wd/dx,H/dy), ox=pad+(Wd-dx*k)/2, oy=pad+(H-dy*k)/2;
+  const px=v=>ox+(v-lng0)*Math.cos(midLat)*k, py=v=>oy+(lat1-v)*k;
+  g.fillStyle="#0E131A"; g.fillRect(0,0,r.width,r.height);
+  g.strokeStyle="rgba(255,255,255,.045)"; g.lineWidth=1;
+  for(let l=36;l<=50;l+=2){g.beginPath();g.moveTo(px(l),py(lat1));g.lineTo(px(l),py(lat0));g.stroke();}
+  for(let l=18;l<=30;l+=2){g.beginPath();g.moveTo(px(lng0),py(l));g.lineTo(px(lng1),py(l));g.stroke();}
+  const BAND={high:"#FFAC82",medium:"#FFD666",low:"#77ED8B"};
+  const live = new Set(W.visits.filter(v=>v.stop>=TRAVELLING&&v.stop<=EXECUTING).map(v=>v.f));
+  D.factories.forEach((f,i)=>{
+    const X=px(f[13]), Y=py(f[12]);
+    g.beginPath(); g.arc(X,Y,8,0,7); g.fillStyle="rgba(126,97,172,.13)"; g.fill();
+    g.beginPath(); g.arc(X,Y,3,0,7); g.fillStyle=BAND[f[15]]||"#CDBAEA"; g.fill();
+    if(live.has(i)){ g.beginPath(); g.arc(X,Y,9.5,0,7); g.strokeStyle="#CDBAEA"; g.lineWidth=1.6; g.stroke(); }
+  });
+  g.fillStyle="rgba(255,255,255,.34)"; g.font='500 10px "Inter",sans-serif';
+  g.fillText(`${D.factories.length} sites · ${live.size} with an inspector in motion`, pad+2, r.height-pad+2);
+}
+
+/* ---------------------------------- shell ---------------------------------- */
+
+/* The rail is not an invention. It mirrors lib/shell-navigation.ts exactly —
+   same groups, same order, same labels in both languages, the Inspection
+   subgroup, and an Administration group that only an admin sees, matching the
+   canonical-admin visibility rule in the application. */
+const NAV = [
+ {id:"overview", en:"Overview", ar:"نظرة عامة", items:[
+   {id:"dashboard",           en:"Dashboard",         ar:"لوحة القيادة",        href:"/dashboard",                  ic:"◈", screen:"dashboard"},
+   {id:"operations-center",   en:"Operations Center", ar:"مركز العمليات",       href:"/operations",                 ic:"◎", screen:"execution"},
+   {id:"factory-360",         en:"Factory 360",       ar:"المصنع 360",          href:"/factories",                  ic:"⌂", screen:"factories"},
+ ]},
+ {id:"operations", en:"Operations", ar:"العمليات", items:[
+   {id:"planning",            en:"Planning",          ar:"التخطيط",             href:"/planning",                   ic:"◱", screen:"planning"},
+   {id:"inspection", en:"Inspection", ar:"التفتيش", ic:"◐", sub:[
+     {id:"inspection-execution", en:"Execution",         ar:"التنفيذ",          href:"/execution",                  screen:"execution"},
+     {id:"inspection-review",    en:"Review & Approval", ar:"المراجعة والاعتماد", href:"/reviews",                  screen:"reviews"},
+   ]},
+ ]},
+ {id:"compliance", en:"Compliance", ar:"الامتثال", items:[
+   {id:"compliance-library",  en:"Compliance Library",ar:"مكتبة الامتثال",      href:"/admin/regulations",          ic:"§", screen:"library"},
+   {id:"approval-queue",      en:"Approval Queue",    ar:"قائمة انتظار الموافقات",href:"/admin/compliance-approvals", ic:"⇄", screen:"approvals"},
+   {id:"enforcement-library", en:"Enforcement Library",ar:"مكتبة الإنفاذ",      href:"/admin/violations",           ic:"⚖", screen:"enforcement"},
+ ]},
+ {id:"insights", en:"Insights", ar:"الرؤى", items:[
+   {id:"analytics",           en:"Analytics",         ar:"التحليلات",           href:"/analytics",                  ic:"◔", off:true, tag:"redesign"},
+ ]},
+ {id:"administration", en:"Administration", ar:"الإدارة", adminOnly:true, items:[
+   {id:"adm-users",     en:"Users & roles",              ar:"المستخدمون والأدوار",   href:"/admin/access",                      ic:"◇", screen:"people"},
+   {id:"adm-survey",    en:"Survey Configuration",       ar:"تهيئة الاستبيانات",     href:"/admin/packages",                    ic:"◇", screen:"packages"},
+   {id:"adm-requests",  en:"Configuration Requests",     ar:"طلبات التهيئة",         href:"/admin/compliance-requests",         ic:"◇", screen:"approvals"},
+   {id:"adm-risk",      en:"Risk Configuration",         ar:"تهيئة المخاطر",         href:"/admin/risk",                        ic:"◇", screen:"policy"},
+   {id:"adm-lookup",    en:"Language & translations",    ar:"اللغة والترجمات",       href:"/admin/localization",                ic:"◇"},
+   {id:"adm-pexp",      en:"Planning Expiry Rules",      ar:"قواعد انتهاء صلاحية التخطيط", href:"/admin/planning/expiry",       ic:"◇"},
+   {id:"adm-plook",     en:"Planning Lookups",           ar:"القوائم المرجعية للتخطيط", href:"/admin/planning/lookups",         ic:"◇"},
+   {id:"adm-pstat",     en:"Planning Status Rules",      ar:"قواعد حالة التخطيط",    href:"/admin/planning/status",             ic:"◇"},
+   {id:"adm-integ",     en:"Integration Management",     ar:"إدارة التكاملات",       href:"/admin/integrations",                ic:"◇"},
+   {id:"adm-gis",       en:"GIS Studio",                 ar:"استوديو الخرائط الجغرافية", href:"/admin/gis",                     ic:"◇"},
+   {id:"adm-gis-sp",    en:"Spatial Canvas",             ar:"اللوحة المكانية",       href:"/admin/gis/spatial",                 ic:"◇"},
+   {id:"adm-notif",     en:"Notification Configuration", ar:"تهيئة الإشعارات",       href:"/admin/notifications",               ic:"◇"},
+   {id:"adm-deleg",     en:"Delegation",                 ar:"التفويض",               href:"/admin/delegation",                  ic:"◇"},
+   {id:"adm-exec",      en:"Execution Settings",         ar:"إعدادات التنفيذ",       href:"/admin/execution",                   ic:"◇"},
+   {id:"adm-sysops",    en:"System Operations",          ar:"عمليات النظام",         href:"/admin/operations",                  ic:"◇"},
+   {id:"adm-enfrec",    en:"Enforcement Recommendations",ar:"توصيات الإنفاذ",        href:"/admin/enforcement-recommendations", ic:"◇"},
+   {id:"adm-wf",        en:"Workflow Builder",           ar:"منشئ سير العمل",        href:"/admin/workflows",                   ic:"◇"},
+   {id:"adm-audit",     en:"Audit Trail",                ar:"سجل التدقيق",           href:"/admin/audit",                       ic:"◇"},
+   {id:"adm-accrev",    en:"Access Review",              ar:"مراجعة الوصول",         href:"/admin/security-access",             ic:"◇"},
+   {id:"adm-devices",   en:"Trusted Devices",            ar:"الأجهزة الموثوقة",      href:"/admin/devices",                     ic:"◇"},
+ ]},
+];
+const NAV_COUNT = {
+  planning:               () => countAt(DRAFT)+countAt(PENDING),
+  "operations-center":    () => inMotion(),
+  "inspection-execution": () => myQueue().length,
+  "inspection-review":    () => countAt(SUBMITTED),
+  "approval-queue":       () => D.requests.length,
+};
+const NAV_ITEMS = NAV.flatMap(g => g.items.flatMap(i => i.sub ? i.sub.map(x=>({...x, group:g.id})) : [{...i, group:g.id}]));
+const navItem = id => NAV_ITEMS.find(i => i.id === id);
+
+const LEGACY_ROUTES = [
+  {id:"dashboard",  label:"Dashboard",           path:"/dashboard",            ic:"◈", grp:"operate"},
+  {id:"planning",   label:"Planning",            path:"/planning",             ic:"◱", grp:"operate", count:()=>countAt(DRAFT)+countAt(PENDING)},
+  {id:"operations", label:"Operations",          path:"/operations",           ic:"◎", grp:"operate", count:()=>inMotion()},
+  {id:"execution",  label:"Execution",           path:"/execution",            ic:"◐", grp:"operate", count:()=>myQueue().length},
+  {id:"reviews",    label:"Reviews",             path:"/reviews",              ic:"✓", grp:"operate", count:()=>countAt(SUBMITTED)},
+  {id:"factories",  label:"Factories",           path:"/factories",            ic:"⌂", grp:"operate"},
+  {id:"analytics",  label:"Analytics",           path:"/analytics",            ic:"◔", grp:"operate", off:true, tag:"redesign"},
+  {id:"admin",      label:"Admin",               path:"/admin",                ic:"⚙", grp:"govern"},
+  {id:"library",    label:"Enforcement library", path:"/enforcement-library",  ic:"§", grp:"govern"},
+  {id:"approvals",  label:"Approvals",           path:"/compliance/approvals", ic:"⇄", grp:"govern"},
+];
+const STEPS = [
+  {id:"admin",     nav:"compliance-library",    role:"admin",      n:"Stage 1", t:"Admin populates",    c:()=>`${D.regs.length} regulations`},
+  {id:"planning",  nav:"planning",              role:"planner",    n:"Stage 2", t:"Planner schedules",  c:()=>`${countAt(DRAFT)+countAt(PENDING)} to act on`},
+  {id:"execution", nav:"inspection-execution",  role:"inspector",  n:"Stage 3", t:"Inspector executes", c:()=>`${myQueue().length} in my queue`},
+  {id:"reviews",   nav:"inspection-review",     role:"supervisor", n:"Stage 4", t:"Supervisor reviews", c:()=>`${countAt(SUBMITTED)} pending`},
+  {id:"dashboard", nav:"dashboard",             role:"admin",      n:"Stage 5", t:"Dashboard reports",  c:()=>{const c=compliance(); return c?`${c.rate}% compliance`:"—";}},
+];
+
+function renderNav(){
+  const row = (it, child) => {
+    const c = on() && NAV_COUNT[it.id] ? NAV_COUNT[it.id]() : 0;
+    return `<button class="nav${child?" child":""}" data-nav="${it.id}" ${it.off?"disabled":""} ${
+      S.nav===it.id?'aria-current="page"':""}>
+      ${child?"":`<span class="ic" aria-hidden="true">${it.ic||"◇"}</span>`}
+      <span class="lbl">${esc(it.en)}</span>
+      ${it.tag?`<span class="tag">${esc(it.tag)}</span>`:(c?`<span class="n">${n(c)}</span>`:"")}</button>`;
+  };
+  document.getElementById("railNav").innerHTML = NAV.filter(g=>!g.adminOnly || S.role==="admin").map(g=>
+    `<div class="navgrp eyebrow">${esc(g.en)}</div>` + g.items.map(it => it.sub
+      ? `<div class="subgroup"><p class="subhead"><span class="ic" aria-hidden="true">${it.ic}</span><span>${esc(it.en)}</span></p>${
+          it.sub.map(x=>row(x,true)).join("")}</div>`
+      : row(it,false)).join("")
+  ).join("");
+}
+function renderSteps(){
+  document.getElementById("steps").innerHTML = STEPS.map(s=>
+    `<button class="step" data-step="${s.id}" ${S.nav===s.nav?'aria-current="step"':""}>
+      <div class="n">${esc(s.n)}</div><div class="t">${esc(s.t)}</div>
+      ${on()?`<div class="c">${esc(s.c())}</div>`:""}</button>`).join("");
+}
+function renderRoles(){
+  const TITLE = {admin:"Admin",planner:"Planner",inspector:"Inspector",supervisor:"Supervisor"};
+  document.getElementById("roleSel").innerHTML = Object.keys(TITLE).map(r=>{
+    const p = on() ? per(W.me[r]) : null;
+    return `<option value="${r}"${S.role===r?" selected":""}>${esc(TITLE[r] + (p?` — ${p[3]}`:""))}</option>`;
+  }).join("");
+}
+function renderChip(){
+  document.getElementById("stateChip").innerHTML = on()
+    ? `<span class="pill ok">UAT data</span><b>${n(W.visits.length)} visits</b>`
+    : `<span class="pill mute">No UAT data</span><b>0 records</b>`;
+  const b = document.getElementById("loadBtn");
+  b.textContent = on() ? "Unload UAT data" : "Load UAT data";
+  b.className = on() ? "load off" : "load";
+  document.getElementById("demoBtn").hidden = !on();
+  document.getElementById("logwrap").hidden = !on();
+  document.getElementById("logCaret").textContent = S.logOpen ? "▼" : "▲";
+  document.getElementById("logCount").textContent = W.log.length ? `${W.log.length} events` : "nothing yet";
+  const lb = document.getElementById("logbody");
+  lb.hidden = !S.logOpen;
+  lb.innerHTML = W.log.slice(0,40).map(e=>
+    `<div class="logrow"><span class="t">${esc(e.t)}</span><span class="w">${e.w}</span></div>`).join("")
+    || `<div class="logrow"><span class="t">—</span><span class="w">Act on a visit and it shows up here.</span></div>`;
+}
+function render(){
+  const it = navItem(S.nav) || navItem("dashboard");
+  document.getElementById("routeTitle").textContent = it.en;
+  document.getElementById("routePath").textContent  = it.href;
+  const view = SCREEN[it.screen] || (() => SCREEN.section(it));
+  document.getElementById("screen").innerHTML = `<div class="grid" style="gap:14px">${view()}</div>`;
+  renderNav(); renderSteps(); renderRoles(); renderChip();
+  requestAnimationFrame(drawMap);
+}
+
+document.addEventListener("click", e=>{
+  const go = e.target.closest("[data-go]");
+  if(go){ const v = W.visits.find(x=>x.ref===go.dataset.go);
+          if(v) move(v, +go.dataset.to, go.dataset.label); return; }
+  const nav = e.target.closest("[data-nav]");
+  if(nav && !nav.disabled){ S.nav = nav.dataset.nav; render(); return; }
+  const st = e.target.closest("[data-step]");
+  if(st){ const x = STEPS.find(y=>y.id===st.dataset.step); S.nav=x.nav; S.role=x.role; render(); return; }
+  if(e.target.closest("#logbar")){ S.logOpen = !S.logOpen; renderChip(); return; }
+  if(e.target.id==="demoBtn"){ runDemo(); return; }
+  if(e.target.id==="loadBtn"){
+    if(on()){ W.loaded=false; W.visits=[]; W.log=[]; W.me=null; }
+    else { W.loaded=true; hydrate(); log("<b>UAT data loaded.</b> 300 visits across 73 establishments."); }
+    render();
+  }
+});
+document.getElementById("roleSel").addEventListener("change", e=>{ S.role=e.target.value; render(); });
+window.addEventListener("resize", drawMap);
+render();
+</script>

@@ -1,0 +1,309 @@
+journey_ref,visit_reference,factory_code,factory_name,region,inspector,seq,kind,observed_lat,observed_lng,accuracy_m,distance_to_site_m,geofence_radius_m,geofence_result,override_reason,gis_version,device_id,occurred_at
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,0,telemetry,24.6713,46.7323,27,22315,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T07:55
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,1,telemetry,24.67111,46.7369,9,21943,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T08:08
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,2,telemetry,24.65842,46.769,15,18577,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T08:21
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,3,telemetry,24.63823,46.7761,19,16561,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T08:34
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,4,telemetry,24.62304,46.7882,8,14557,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T08:47
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,5,telemetry,24.61035,46.8078,20,12126,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T09:00
+JRN-2026-0127,JRN-2026-0127,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector2,6,telemetry,24.59516,46.8349,17,8928,250,,,v1-accepted-2026-07-11,000IPAD-2,2026-08-22T09:13
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,0,telemetry,21.478221,39.202055,9,8695,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T08:23
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,1,telemetry,21.485818,39.2057363,24,8997,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T08:37
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,2,telemetry,21.4659149,39.2019177,26,7889,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T08:51
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,3,telemetry,21.4560119,39.210599,24,6552,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T09:05
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,4,telemetry,21.4686089,39.2167804,16,6844,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T09:19
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,5,telemetry,21.4412058,39.2354618,25,3509,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T09:33
+JRN-2026-0128,JRN-2026-0128,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector24,6,telemetry,21.4488028,39.2391431,21,3652,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T09:47
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,0,telemetry,26.47864,50.04557,28,69677,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:00
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,1,telemetry,26.5301315,50.0059207,29,62725,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:12
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,2,telemetry,26.596623,49.9487715,14,53426,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:24
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,3,telemetry,26.6356145,49.9091223,11,47656,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:36
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,4,telemetry,26.717106,49.886973,23,38896,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:48
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,5,telemetry,26.7560975,49.8448237,10,32940,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:00
+JRN-2026-0129,JRN-2026-0129,F-JB-044,Jubail Industrial Coatings Plant,Eastern,inspector9,6,telemetry,26.817589,49.7926745,28,24376,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:12
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,0,telemetry,21.466561,39.216755,11,6696,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:23
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,1,telemetry,21.4690871,39.2298738,18,5947,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:40
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,2,telemetry,21.4616133,39.2204927,27,6047,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:57
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,3,telemetry,21.4516394,39.2161115,26,5819,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T08:14
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,4,telemetry,21.4541655,39.2292304,13,4824,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T08:31
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,5,telemetry,21.4441917,39.2373492,17,3498,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T08:48
+JRN-2026-0130,JRN-2026-0130,F-J1-032,Obhur Plastic Packaging Co.,Makkah,inspector11,6,telemetry,21.4517178,39.2354681,26,4152,150,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T09:05
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,0,telemetry,26.286423,50.022409,12,109369,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T07:08
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,1,telemetry,26.2295217,49.9955669,17,102501,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T07:28
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,2,telemetry,26.1676204,49.9662247,20,95022,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T07:48
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,3,telemetry,26.0832191,49.9193826,17,84546,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:08
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,4,telemetry,26.0213177,49.8825404,22,76764,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:28
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,5,telemetry,25.9594164,49.8706983,13,69999,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:48
+JRN-2026-0131,JRN-2026-0131,F-AH-046,Al Ahsa Poultry Feed Mills,Eastern,inspector22,6,telemetry,25.9000151,49.8313561,19,62357,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:08
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,0,telemetry,24.93482,46.42627,14,81931,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:15
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,1,telemetry,24.975335,46.3878475,9,76011,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:33
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,2,telemetry,25.01085,46.339425,19,69761,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:51
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,3,telemetry,25.061365,46.2885025,27,62165,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:09
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,4,telemetry,25.10688,46.23508,20,54780,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:27
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,5,telemetry,25.142395,46.1841575,13,48360,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:45
+JRN-2026-0132,JRN-2026-0132,F-SD-008,Sudair Building Materials Co.,Riyadh,inspector21,6,telemetry,25.19291,46.135735,18,40943,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T09:03
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,0,telemetry,21.454944,39.3759,8,49610,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:28
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,1,telemetry,21.4452905,39.438278,12,43066,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:41
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,2,telemetry,21.428137,39.500656,18,36380,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:54
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,3,telemetry,21.4209834,39.560534,13,30135,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:07
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,4,telemetry,21.4213299,39.610412,14,25067,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:20
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,5,telemetry,21.4016764,39.67279,20,18320,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:33
+JRN-2026-0133,JRN-2026-0133,F-MK-035,Hira Construction Products,Makkah,inspector21,6,telemetry,21.3970229,39.720168,24,13397,150,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:46
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,0,telemetry,18.24733,42.57262,18,18424,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T08:15
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,1,telemetry,18.2633442,42.59071,10,15947,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T08:30
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,2,telemetry,18.2468583,42.5938,20,16466,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T08:45
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,3,telemetry,18.2753725,42.60439,20,14110,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T09:00
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,4,telemetry,18.2663867,42.63498,14,11614,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T09:15
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,5,telemetry,18.2774008,42.62557,15,11948,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T09:30
+JRN-2026-0134,JRN-2026-0134,F-KM-062,Asir Leather Tanning Works,Asir,inspector6,6,telemetry,18.283415,42.65116,26,9211,150,,,v1-accepted-2026-07-11,000IPAD-6,2026-08-22T09:45
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,0,telemetry,24.39279,39.11542,27,112679,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:10
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,1,telemetry,24.3770759,39.0283615,29,103749,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:29
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,2,telemetry,24.3313618,38.921303,19,91874,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:48
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,3,telemetry,24.2981477,38.8192445,26,80904,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:07
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,4,telemetry,24.2799337,38.734686,10,72117,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:26
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,5,telemetry,24.2392196,38.6326275,22,60904,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:45
+JRN-2026-0135,JRN-2026-0135,F-YB-051,Yanbu Marine Fabrication Yard,Madinah,inspector16,6,telemetry,24.2235055,38.533069,27,50736,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T10:04
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,0,telemetry,24.499838,39.57974,24,6595,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:06
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,1,telemetry,24.481712,39.5721251,12,5197,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:21
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,2,telemetry,24.4760859,39.5820102,24,4115,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:36
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,3,telemetry,24.4854599,39.5868953,8,4844,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:51
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,4,telemetry,24.4773339,39.5917804,12,3830,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T09:06
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,5,telemetry,24.4767079,39.6016655,23,3585,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T09:21
+JRN-2026-0136,JRN-2026-0136,F-MD-048,Uhud Building Blocks Factory,Madinah,inspector19,6,telemetry,24.4660818,39.5940506,21,2572,150,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T09:36
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,0,telemetry,21.467676,39.214511,14,10183,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:18
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,1,telemetry,21.4502938,39.2309765,19,7633,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:36
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,2,telemetry,21.4429115,39.237442,17,6599,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:54
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,3,telemetry,21.4480293,39.2314075,20,7441,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T09:12
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,4,telemetry,21.425647,39.260373,12,3549,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T09:30
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,5,telemetry,21.4307648,39.2493385,14,4813,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T09:48
+JRN-2026-0137,JRN-2026-0137,F-J2-033,Bahrah Chemical Works,Makkah,inspector4,6,telemetry,21.4233825,39.268304,24,2750,250,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T10:06
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,0,telemetry,24.572587,46.744185,22,57459,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T07:33
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,1,telemetry,24.5115838,46.7803214,17,49778,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T07:51
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,2,telemetry,24.4555806,46.8064577,16,43013,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:09
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,3,telemetry,24.4045774,46.8350941,16,36659,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:27
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,4,telemetry,24.3635742,46.8362305,24,32452,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:45
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,5,telemetry,24.315071,46.8823668,10,25635,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:03
+JRN-2026-0138,JRN-2026-0138,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector23,6,telemetry,24.2515678,46.9010032,28,18391,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:21
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,0,telemetry,24.645169,46.709961,29,67802,250,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T07:56
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,1,telemetry,24.5478908,46.7642008,17,55684,250,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:10
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,2,telemetry,24.4606127,46.8159407,18,44691,250,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:24
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,3,telemetry,24.3683345,46.8501805,23,33908,250,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:38
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,4,telemetry,24.2635563,46.9019203,13,21133,250,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:52
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,5,telemetry,24.1962782,46.9461602,8,12486,250,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T09:06
+JRN-2026-0139,JRN-2026-0139,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector8,6,arrival,24.0915,46.9904,17,0,250,inside,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T09:20
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,0,telemetry,24.918812,46.441416,21,84293,250,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:18
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,1,telemetry,25.01176,46.33868,28,69663,250,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:30
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,2,telemetry,25.102208,46.250944,12,56330,250,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:42
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,3,telemetry,25.170156,46.128208,14,42232,250,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T07:54
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,4,telemetry,25.268104,46.030472,25,27564,250,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T08:06
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,5,telemetry,25.351052,45.945236,15,14979,250,,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T08:18
+JRN-2026-0140,JRN-2026-0140,F-SD-007,Sudair Pharmaceutical Industries,Riyadh,inspector11,6,arrival,25.4465,45.84,28,0,250,inside,,v1-accepted-2026-07-11,00IPAD-11,2026-08-22T08:30
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,0,telemetry,24.52967,46.76515,8,52237,150,,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T07:40
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,1,telemetry,24.4606417,46.8075917,16,43485,150,,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T07:56
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,2,telemetry,24.3916133,46.8450333,20,34942,150,,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T08:12
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,3,telemetry,24.302585,46.864975,24,25080,150,,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T08:28
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,4,telemetry,24.2560567,46.9074167,9,18599,150,,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T08:44
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,5,telemetry,24.1670283,46.9498583,20,7819,150,,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T09:00
+JRN-2026-0141,JRN-2026-0141,F-R3-016,Al Uyaynah Paper Converting,Riyadh,inspector5,6,arrival,24.1005,46.9748,13,0,150,inside,,v1-accepted-2026-07-11,000IPAD-5,2026-08-22T09:16
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,0,telemetry,24.607843,46.726215,29,62695,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:07
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,1,telemetry,24.5117858,46.7751458,8,50926,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:23
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,2,telemetry,24.4482287,46.7965767,29,43587,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:39
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,3,telemetry,24.3571715,46.8555075,12,31922,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:55
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,4,telemetry,24.2711143,46.8944383,27,21572,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:11
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,5,telemetry,24.1800572,46.9258692,10,11028,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:27
+JRN-2026-0142,JRN-2026-0142,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector16,6,arrival,24.0915,46.9748,11,0,250,inside,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:43
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,0,telemetry,18.215725,42.50608,29,632,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T07:40
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,1,telemetry,18.2125875,42.5193167,8,934,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T07:56
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,2,telemetry,18.20695,42.5075533,8,632,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T08:12
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,3,telemetry,18.2163125,42.51579,26,744,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T08:28
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,4,telemetry,18.220675,42.5015267,17,1360,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T08:44
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,5,telemetry,18.2175375,42.5222633,27,1392,150,,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T09:00
+JRN-2026-0143,JRN-2026-0143,F-AB-058,Abha Highland Water Bottling,Asir,inspector24,6,arrival,18.2119,42.5105,26,0,150,inside,,v1-accepted-2026-07-11,00IPAD-24,2026-08-22T09:16
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,0,telemetry,24.841253,46.531531,16,98965,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T07:17
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,1,telemetry,24.9451275,46.4045425,24,81738,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T07:37
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,2,telemetry,25.061502,46.310054,11,65896,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T07:57
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,3,telemetry,25.1403765,46.1680655,18,49565,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T08:17
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,4,telemetry,25.246751,46.076077,10,34636,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T08:37
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,5,telemetry,25.3706255,45.9390885,14,15162,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T08:57
+JRN-2026-0144,JRN-2026-0144,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector7,6,arrival,25.4645,45.8296,11,0,150,inside,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T09:17
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,0,telemetry,24.656072,46.751052,29,19370,250,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T07:59
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,1,telemetry,24.62746,46.76306,24,16485,250,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:16
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,2,telemetry,24.616348,46.802568,29,12543,250,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:33
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,3,telemetry,24.602736,46.832076,15,9309,250,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:50
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,4,telemetry,24.571624,46.856584,26,5176,250,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:07
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,5,telemetry,24.553012,46.866092,15,3376,250,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:24
+JRN-2026-0145,JRN-2026-0145,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector22,6,arrival,24.5444,46.8981,19,0,250,inside,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:41
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,0,telemetry,24.69668,46.69758,29,26412,250,,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T07:45
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,1,telemetry,24.6738,46.726,26,22577,250,,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T07:57
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,2,telemetry,24.65592,46.75442,11,19099,250,,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T08:09
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,3,telemetry,24.60804,46.78534,16,13420,250,,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T08:21
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,4,telemetry,24.60516,46.81876,18,10489,250,,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T08:33
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,5,telemetry,24.57728,46.85468,28,5714,250,,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T08:45
+JRN-2026-0146,JRN-2026-0146,F-R2-017,Thumamah Electrical Cables Co.,Riyadh,inspector13,6,arrival,24.5444,46.8981,9,0,250,inside,,v1-accepted-2026-07-11,00IPAD-13,2026-08-22T08:57
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,0,telemetry,24.407196,39.162202,9,117023,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:37
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,1,telemetry,24.3442467,38.9888017,26,98182,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:50
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,2,telemetry,24.2912973,38.7954013,13,77719,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:03
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,3,telemetry,24.235848,38.599501,17,56927,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:16
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,4,telemetry,24.2028987,38.4311007,15,39536,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:29
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,5,telemetry,24.1424493,38.2577003,17,20735,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:42
+JRN-2026-0147,JRN-2026-0147,F-YB-052,Red Sea Desalination Components Co.,Madinah,inspector21,6,override,24.0927,38.0646,16,455,250,outside,Establishment boundary extends beyond the recorded geofence,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:55
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,0,telemetry,24.693998,46.699808,23,26699,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:06
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,1,telemetry,24.665065,46.7303567,10,22260,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:21
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,2,telemetry,24.643632,46.7734053,10,17430,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:36
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,3,telemetry,24.602199,46.786454,26,13515,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T08:51
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,4,telemetry,24.575766,46.8220027,9,8910,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:06
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,5,telemetry,24.559333,46.8625513,11,4473,150,,,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:21
+JRN-2026-0148,JRN-2026-0148,F-R2-022,Shifa Medical Consumables Co.,Riyadh,inspector22,6,override,24.5386,46.9009,23,455,150,outside,Gate relocated; guard directed entry from the service road,v1-accepted-2026-07-11,00IPAD-22,2026-08-22T09:36
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,0,telemetry,24.693296,46.70266,13,26182,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:57
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,1,telemetry,24.66348,46.7311,19,21873,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:12
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,2,telemetry,24.643664,46.75954,21,18251,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:27
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,3,telemetry,24.631348,46.79298,19,14761,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:42
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,4,telemetry,24.589032,46.84642,28,7597,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:57
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,5,telemetry,24.556716,46.88236,9,2522,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T09:12
+JRN-2026-0149,JRN-2026-0149,F-R2-003,Al Yamamah Steel Fabrication,Riyadh,inspector21,6,override,24.5476,46.9061,29,455,250,outside,"Recorded coordinates point to the office, not the production site",v1-accepted-2026-07-11,00IPAD-21,2026-08-22T09:27
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,0,telemetry,18.2164,42.506964,26,923,150,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:06
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,1,telemetry,18.2214,42.51842,15,626,150,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:21
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,2,telemetry,18.2114,42.519876,12,710,150,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:36
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,3,telemetry,18.2139,42.516332,18,286,150,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T08:51
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,4,telemetry,18.2189,42.500288,23,1651,150,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T09:06
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,5,telemetry,18.2064,42.521744,17,1282,150,,,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T09:21
+JRN-2026-0150,JRN-2026-0150,F-AB-059,Asir Honey Processing Co.,Asir,inspector4,6,override,18.2196,42.5185,17,463,150,outside,Gate relocated; guard directed entry from the service road,v1-accepted-2026-07-11,000IPAD-4,2026-08-22T09:36
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,0,telemetry,26.329645,43.972192,9,1332,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:27
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,1,telemetry,26.3312875,43.9809267,15,1866,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:45
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,2,telemetry,26.33293,43.9746613,27,1241,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:03
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,3,telemetry,26.3370725,43.965896,28,299,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:21
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,4,telemetry,26.348715,43.9696307,15,1141,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:39
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,5,telemetry,26.3403575,43.9583653,13,629,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:57
+JRN-2026-0151,JRN-2026-0151,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector23,6,override,26.3427,43.9674,11,452,150,outside,"Recorded coordinates point to the office, not the production site",v1-accepted-2026-07-11,00IPAD-23,2026-08-22T10:15
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,0,telemetry,24.899075,46.463875,29,88893,250,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:25
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,1,telemetry,24.9993125,46.3606625,23,73666,250,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:41
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,2,telemetry,25.08955,46.26495,25,59767,250,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:57
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,3,telemetry,25.1872875,46.1542375,24,44206,250,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T09:13
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,4,telemetry,25.270025,46.043525,27,29789,250,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T09:29
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,5,telemetry,25.3652625,45.9328125,12,14427,250,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T09:45
+JRN-2026-0152,JRN-2026-0152,F-SD-030,Sudair Auto Components Factory,Riyadh,inspector20,6,override,25.4587,45.8324,8,453,250,outside,Establishment boundary extends beyond the recorded geofence,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T10:01
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,0,telemetry,24.373672,39.053148,20,106681,250,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:19
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,1,telemetry,24.32731,38.88369,22,88760,250,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:38
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,2,telemetry,24.263448,38.709232,23,69766,250,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T08:57
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,3,telemetry,24.227086,38.542274,29,52403,250,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T09:16
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,4,telemetry,24.175724,38.372816,16,34293,250,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T09:35
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,5,telemetry,24.121862,38.218358,15,17560,250,,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T09:54
+JRN-2026-0153,JRN-2026-0153,F-YB-050,Yanbu Petrochemical Support Industries,Madinah,inspector19,6,arrival,24.0805,38.0514,13,0,250,inside,,v1-accepted-2026-07-11,00IPAD-19,2026-08-22T10:13
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,0,telemetry,26.32978,43.972088,18,1313,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T07:03
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,1,telemetry,26.3214,43.97834,27,2434,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T07:18
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,2,telemetry,26.33052,43.979592,14,1797,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T07:33
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,3,telemetry,26.33964,43.955844,16,873,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T07:48
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,4,telemetry,26.34876,43.979596,22,1815,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:03
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,5,telemetry,26.34538,43.965848,24,666,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:18
+JRN-2026-0154,JRN-2026-0154,F-QS-055,Uyun Al Jawa Plastic Pipes Factory,Qassim,inspector16,6,arrival,26.3395,43.9646,20,0,150,inside,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:33
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,0,telemetry,18.21523,42.506652,29,550,150,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:01
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,1,telemetry,18.212175,42.5072933,18,340,150,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:20
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,2,telemetry,18.21412,42.5154347,13,577,150,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:39
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,3,telemetry,18.226065,42.498576,24,2017,150,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:58
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,4,telemetry,18.21551,42.5117173,15,422,150,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T09:17
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,5,telemetry,18.224955,42.5198587,9,1756,150,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T09:36
+JRN-2026-0155,JRN-2026-0155,F-AB-058,Abha Highland Water Bottling,Asir,inspector9,6,arrival,18.2119,42.5105,17,0,150,inside,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T09:55
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,0,telemetry,18.21568,42.506132,23,624,150,,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T08:16
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,1,telemetry,18.20755,42.50936,14,498,150,,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T08:32
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,2,telemetry,18.21192,42.512588,19,221,150,,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T08:48
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,3,telemetry,18.22629,42.495816,12,2228,150,,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T09:04
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,4,telemetry,18.20566,42.506544,11,810,150,,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T09:20
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,5,telemetry,18.21253,42.507272,21,348,150,,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T09:36
+JRN-2026-0156,JRN-2026-0156,F-AB-058,Abha Highland Water Bottling,Asir,inspector14,6,arrival,18.2119,42.5105,24,0,150,inside,,v1-accepted-2026-07-11,00IPAD-14,2026-08-22T09:52
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,0,telemetry,24.68687,46.70794,18,25165,250,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T07:30
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,1,telemetry,24.674125,46.7462667,13,21394,250,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T07:45
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,2,telemetry,24.62888,46.7645933,10,16624,250,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:00
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,3,telemetry,24.598635,46.80792,19,11104,250,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:15
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,4,telemetry,24.57339,46.8362467,18,7119,250,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:30
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,5,telemetry,24.555645,46.8520733,14,4703,250,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:45
+JRN-2026-0157,JRN-2026-0157,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector23,6,arrival,24.5354,46.8929,26,0,250,inside,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:00
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,0,telemetry,26.403588,50.07051,13,5864,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T07:46
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,1,telemetry,26.40224,50.056225,23,4860,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T07:59
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,2,telemetry,26.393392,50.04944,26,3667,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:12
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,3,telemetry,26.374544,50.045155,8,1831,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:25
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,4,telemetry,26.378196,50.03337,24,1456,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:38
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,5,telemetry,26.379348,50.034085,10,1598,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:51
+JRN-2026-0158,JRN-2026-0158,F-D2-041,Dhahran Industrial Valves Factory,Eastern,inspector3,6,arrival,26.3655,50.0298,18,0,250,inside,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T09:04
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,0,telemetry,24.533191,46.766679,19,54094,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:29
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,1,telemetry,24.4720758,46.8064658,18,46243,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:43
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,2,telemetry,24.3909607,46.8387527,8,36677,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T07:57
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,3,telemetry,24.3098455,46.8685395,13,27244,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:11
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,4,telemetry,24.2387303,46.9183263,20,17930,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:25
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,5,telemetry,24.1626152,46.9656132,8,8298,250,,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:39
+JRN-2026-0159,JRN-2026-0159,F-R3-014,Nofa Aluminium Extrusions,Riyadh,inspector9,6,arrival,24.0915,46.9904,24,0,250,inside,,v1-accepted-2026-07-11,000IPAD-9,2026-08-22T08:53
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,0,telemetry,26.244342,50.001097,25,104900,150,,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T07:27
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,1,telemetry,26.095835,49.9172308,17,86411,150,,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T07:39
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,2,telemetry,25.952328,49.8533647,29,69236,150,,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T07:51
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,3,telemetry,25.803821,49.7769985,9,51043,150,,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T08:03
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,4,telemetry,25.680314,49.7031323,21,35518,150,,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T08:15
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,5,telemetry,25.524307,49.6542662,21,17680,150,,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T08:27
+JRN-2026-0160,JRN-2026-0160,F-AH-045,Hofuf Date Packing Industries,Eastern,inspector17,6,arrival,25.3833,49.5729,18,0,150,inside,,v1-accepted-2026-07-11,00IPAD-17,2026-08-22T08:39
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,0,telemetry,21.457148,39.3628,13,50987,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T07:56
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,1,telemetry,21.4335567,39.4360833,12,43077,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:10
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,2,telemetry,21.4374653,39.5193667,28,34659,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:24
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,3,telemetry,21.413874,39.61515,16,24429,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:38
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,4,telemetry,21.4152827,39.6809333,25,17801,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:52
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,5,telemetry,21.3991913,39.7692167,23,8519,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T09:06
+JRN-2026-0161,JRN-2026-0161,F-MK-035,Hira Construction Products,Makkah,inspector8,6,arrival,21.3756,39.8475,17,0,150,inside,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T09:20
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,0,telemetry,18.232176,42.540372,20,21513,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T07:11
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,1,telemetry,18.24098,42.56856,9,18407,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T07:25
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,2,telemetry,18.269784,42.601748,24,13901,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T07:39
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,3,telemetry,18.286088,42.644936,22,8994,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T07:53
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,4,telemetry,18.297392,42.670624,20,6015,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:07
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,5,telemetry,18.303696,42.691312,17,3722,150,,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:21
+JRN-2026-0162,JRN-2026-0162,F-KM-061,Sarawat Furniture Industries,Asir,inspector8,6,arrival,18.315,42.7245,8,0,150,inside,,v1-accepted-2026-07-11,000IPAD-8,2026-08-22T08:35
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,0,telemetry,24.708254,46.681493,14,6983,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T07:26
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,1,telemetry,24.711045,46.6823442,15,7140,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T07:46
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,2,telemetry,24.688836,46.6856953,10,5342,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:06
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,3,telemetry,24.699127,46.7140465,29,4189,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:26
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,4,telemetry,24.666918,46.7123977,24,1952,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T08:46
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,5,telemetry,24.662209,46.7257488,18,668,150,,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:06
+JRN-2026-0163,JRN-2026-0163,F-R1-010,Al Batha Furniture Manufacturing,Riyadh,inspector23,6,arrival,24.665,46.7316,27,0,150,inside,,v1-accepted-2026-07-11,00IPAD-23,2026-08-22T09:26
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,0,telemetry,24.592688,46.816122,19,69493,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:17
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,1,telemetry,24.51374,46.904335,23,56980,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:37
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,2,telemetry,24.457292,46.982548,8,46918,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T07:57
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,3,telemetry,24.368344,47.063261,13,34199,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:17
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,4,telemetry,24.311896,47.148974,19,23563,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:37
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,5,telemetry,24.227948,47.229687,16,11231,250,,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T08:57
+JRN-2026-0164,JRN-2026-0164,F-KH-019,Al Kharj Poultry Processing,Riyadh,inspector21,6,arrival,24.164,47.3154,22,0,250,inside,,v1-accepted-2026-07-11,00IPAD-21,2026-08-22T09:17
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,0,telemetry,24.670832,46.727524,26,22502,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:29
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,1,telemetry,24.65826,46.7500867,12,19878,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:49
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,2,telemetry,24.620688,46.7951493,27,13698,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:09
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,3,telemetry,24.608116,46.800212,24,12379,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:29
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,4,telemetry,24.578044,46.8277747,20,8116,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:49
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,5,telemetry,24.545472,46.8578373,28,3719,250,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T10:09
+JRN-2026-0165,JRN-2026-0165,F-R2-001,Najd Advanced Plastics Factory,Riyadh,inspector16,6,arrival,24.5354,46.8929,9,0,250,inside,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T10:29
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,0,telemetry,24.558075,46.750175,28,56654,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T07:40
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,1,telemetry,24.4878125,46.7826125,11,48181,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T07:56
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,2,telemetry,24.39755,46.81255,9,37799,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:12
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,3,telemetry,24.3372875,46.8699875,18,29325,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:28
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,4,telemetry,24.247025,46.902425,22,18788,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T08:44
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,5,telemetry,24.1667625,46.9348625,17,9299,250,,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T09:00
+JRN-2026-0166,JRN-2026-0166,F-R3-021,Al Ammariyah Glass Works,Riyadh,inspector3,6,arrival,24.0915,46.9748,14,0,250,inside,,v1-accepted-2026-07-11,000IPAD-3,2026-08-22T09:16
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,0,telemetry,24.848762,46.523074,15,97771,150,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T07:48
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,1,telemetry,24.948885,46.399995,12,81119,150,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:03
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,2,telemetry,25.056508,46.279416,17,64065,150,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:18
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,3,telemetry,25.144131,46.186337,12,50548,150,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:33
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,4,telemetry,25.261754,46.053258,12,31832,150,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T08:48
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,5,telemetry,25.356877,45.950179,11,17026,150,,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T09:03
+JRN-2026-0167,JRN-2026-0167,F-SD-025,Sudair Cold Storage Industries,Riyadh,inspector20,6,arrival,25.4645,45.8296,19,0,150,inside,,v1-accepted-2026-07-11,00IPAD-20,2026-08-22T09:18
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,0,telemetry,27.508565,41.721892,15,1253,150,,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T07:31
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,1,telemetry,27.4942875,41.7300767,16,568,150,,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T07:47
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,2,telemetry,27.51001,41.7332613,9,1525,150,,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T08:03
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,3,telemetry,27.5082325,41.713946,28,1653,150,,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T08:19
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,4,telemetry,27.496455,41.7221307,8,414,150,,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T08:35
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,5,telemetry,27.4921775,41.7153153,24,1231,150,,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T08:51
+JRN-2026-0168,JRN-2026-0168,F-HL-063,Hail Cement Additives Factory,Hail,inspector1,6,arrival,27.4979,41.726,24,0,150,inside,,v1-accepted-2026-07-11,000IPAD-1,2026-08-22T09:07
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,0,telemetry,24.602432,46.732018,8,62099,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T07:33
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,1,telemetry,24.5105267,46.7675817,21,51327,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T07:51
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,2,telemetry,24.4211213,46.8206453,22,40039,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:09
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,3,telemetry,24.346716,46.861209,21,30803,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:27
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,4,telemetry,24.2523107,46.8992727,15,19686,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T08:45
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,5,telemetry,24.1729053,46.9448363,13,9721,150,,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:03
+JRN-2026-0169,JRN-2026-0169,F-R3-029,Hair Industrial Gases Plant,Riyadh,inspector16,6,arrival,24.096,46.9904,18,0,150,inside,,v1-accepted-2026-07-11,00IPAD-16,2026-08-22T09:21
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,0,telemetry,18.241144,42.559156,10,20004,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T08:19
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,1,telemetry,18.2517033,42.57508,28,17981,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T08:38
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,2,telemetry,18.2547627,42.613504,16,14224,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T08:57
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,3,telemetry,18.290322,42.646928,21,9321,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T09:16
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,4,telemetry,18.2908813,42.667852,27,7263,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T09:35
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,5,telemetry,18.2939407,42.703776,24,3946,150,,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T09:54
+JRN-2026-0170,JRN-2026-0170,F-KM-062,Asir Leather Tanning Works,Asir,inspector7,6,arrival,18.3195,42.7297,8,0,150,inside,,v1-accepted-2026-07-11,000IPAD-7,2026-08-22T10:13
